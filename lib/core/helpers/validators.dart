@@ -1,24 +1,37 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../l10n/translations/app_localizations.dart';
 import '../helpers/regex.dart';
 
 abstract class Validations {
   static String? validateName(BuildContext context, String? name) {
-    if (name == null || name.isEmpty) {
+    if (name == null || name.trim().isEmpty) {
       return AppLocalizations.of(context)!.name_is_required;
-    } else if (!AppRegExp.isNameValid(name)) {
+    } else if (!AppRegExp.isNameValid(name.trim())) {
       return AppLocalizations.of(context)!.name_is_not_valid;
     }
     return null;
   }
 
   static String? validateEmail(BuildContext context, String? email) {
-    if (email == null || email.isEmpty) {
+    if (email == null || email.trim().isEmpty) {
       return AppLocalizations.of(context)!.email_is_required;
-    } else if (!AppRegExp.isEmailValid(email)) {
+    } else if (!AppRegExp.isEmailValid(email.trim())) {
       return AppLocalizations.of(context)!.email_is_not_valid;
     }
     return null;
+  }
+
+  static String? validateEmailOrPhone(BuildContext context, String? value) {
+    final input = value?.trim() ?? '';
+    if (input.isEmpty) {
+      return AppLocalizations.of(context)!.this_field_is_required;
+    }
+
+    if (input.contains('@')) {
+      return validateEmail(context, input);
+    }
+
+    return validatePhoneNumber(context, input);
   }
 
   static String? validatePassword(BuildContext context, String? password) {
@@ -51,16 +64,16 @@ abstract class Validations {
     BuildContext context,
     String? phoneNumber,
   ) {
-    if (phoneNumber == null || phoneNumber.isEmpty) {
+    if (phoneNumber == null || phoneNumber.trim().isEmpty) {
       return AppLocalizations.of(context)!.phone_number_is_required;
-    } else if (!AppRegExp.isPhoneNumberValid(phoneNumber)) {
+    } else if (!AppRegExp.isPhoneNumberValid(phoneNumber.trim())) {
       return AppLocalizations.of(context)!.phone_number_is_not_valid;
     }
     return null;
   }
 
   static String? validateRequired(BuildContext context, String? value) {
-    if (value == null || value.isEmpty) {
+    if (value == null || value.trim().isEmpty) {
       return AppLocalizations.of(context)!.this_field_is_required;
     }
     return null;

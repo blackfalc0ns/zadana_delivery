@@ -119,7 +119,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get btn_login => 'دخول';
 
   @override
-  String get btn_signup => 'تسجيل';
+  String get btn_signup => 'انشاء حساب';
 
   @override
   String get btn_forgot_password => 'نسيت كلمة المرور؟';
@@ -204,10 +204,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get footer_no_account => 'ما عندك حساب؟ ';
 
   @override
-  String get footer_action_login => 'دخول';
+  String get footer_action_login => 'تسجيل دخول';
 
   @override
-  String get footer_action_signup => 'تسجيل';
+  String get footer_action_signup => 'انشاء حساب';
 
   @override
   String get deliver_to => 'DELIVER TO';
@@ -903,4 +903,129 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get bank_transfer_subtitle => 'Direct transfer from bank';
+
+  @override
+  String get auth_driver_account_caption => 'حساب السائق';
+
+  @override
+  String get auth_login_description => 'سجّل دخولك لمتابعة الرحلات والتسليمات.';
+
+  @override
+  String get auth_login_error =>
+      'تعذر تسجيل الدخول. راجع البيانات وحاول مرة أخرى.';
+
+  @override
+  String get auth_forgot_password_pending =>
+      'سيتم ربط استعادة كلمة المرور في الخطوة التالية.';
+
+  @override
+  String get auth_signup_caption => 'إنشاء حساب السائق';
+
+  @override
+  String get auth_signup_description => 'أدخل بياناتك الأساسية للبدء.';
+
+  @override
+  String get auth_continue => 'متابعة';
+
+  @override
+  String get driver_profile_caption => 'استكمال الملف';
+
+  @override
+  String get driver_profile_title => 'بيانات السائق والمركبة';
+
+  @override
+  String get driver_profile_subtitle =>
+      'أضف صور المستندات وبيانات المركبة لتفعيل الحساب.';
+
+  @override
+  String get driver_profile_description =>
+      'ارفع الصور المطلوبة واملأ البيانات الأساسية.';
+
+  @override
+  String get driver_profile_save => 'حفظ واستكمال';
+
+  @override
+  String get driver_profile_save_success => 'تم حفظ البيانات المبدئية بنجاح.';
+
+  @override
+  String get driver_profile_picker_restart_required =>
+      'ميزة اختيار الصور تحتاج إعادة تشغيل كاملة للتطبيق بعد إضافة الحزمة.';
+
+  @override
+  String get driver_profile_picker_error =>
+      'تعذر فتح اختيار الصور. حاول مرة أخرى.';
+
+  @override
+  String get driver_profile_identity_section => 'صور التعريف';
+
+  @override
+  String get driver_profile_vehicle_section => 'بيانات المركبة';
+
+  @override
+  String get driver_profile_vehicle_images_section => 'صور المركبة';
+
+  @override
+  String get driver_profile_vehicle_type => 'نوع المركبة';
+
+  @override
+  String get driver_profile_vehicle_type_car => 'سيارة';
+
+  @override
+  String get driver_profile_vehicle_type_bike => 'دراجة';
+
+  @override
+  String get driver_profile_portrait_title => 'صورة شخصية للسائق';
+
+  @override
+  String get driver_profile_portrait_subtitle => 'صورة واضحة لوجه السائق.';
+
+  @override
+  String get driver_profile_id_front_title => 'الهوية - الوجه الأمامي';
+
+  @override
+  String get driver_profile_id_front_subtitle => 'ارفع صورة الهوية من الأمام.';
+
+  @override
+  String get driver_profile_id_back_title => 'الهوية - الوجه الخلفي';
+
+  @override
+  String get driver_profile_id_back_subtitle => 'ارفع صورة الهوية من الخلف.';
+
+  @override
+  String get driver_profile_license_title => 'الرخصة';
+
+  @override
+  String get driver_profile_license_subtitle => 'ارفع صورة الرخصة بوضوح.';
+
+  @override
+  String get driver_profile_vehicle_photo_title => 'صورة المركبة';
+
+  @override
+  String get driver_profile_vehicle_photo_subtitle =>
+      'صورة كاملة للمركبة المستخدمة في التوصيل.';
+
+  @override
+  String get driver_profile_plate_photo_title => 'صورة اللوحة';
+
+  @override
+  String get driver_profile_plate_photo_subtitle =>
+      'صورة واضحة للنمرة أو اللوحة.';
+
+  @override
+  String get driver_profile_brand_label => 'الماركة';
+
+  @override
+  String get driver_profile_brand_hint => 'مثال: Toyota أو Yamaha';
+
+  @override
+  String get driver_profile_model_label => 'الموديل';
+
+  @override
+  String get driver_profile_model_hint => 'مثال: 2022 أو NMAX';
+
+  @override
+  String get driver_profile_plate_label => 'رقم اللوحة';
+
+  @override
+  String get driver_profile_plate_hint => 'أدخل رقم اللوحة';
 }

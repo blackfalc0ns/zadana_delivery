@@ -1849,6 +1849,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Direct transfer from bank'**
   String get bank_transfer_subtitle;
+
+  /// No description provided for @auth_driver_account_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver account'**
+  String get auth_driver_account_caption;
+
+  /// No description provided for @auth_login_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to manage your trips and deliveries.'**
+  String get auth_login_description;
+
+  /// No description provided for @auth_login_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to sign in. Check your credentials and try again.'**
+  String get auth_login_error;
+
+  /// No description provided for @auth_forgot_password_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password will be connected in the next step.'**
+  String get auth_forgot_password_pending;
+
+  /// No description provided for @auth_signup_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Create driver account'**
+  String get auth_signup_caption;
+
+  /// No description provided for @auth_signup_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your basic details to get started.'**
+  String get auth_signup_description;
+
+  /// No description provided for @auth_continue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get auth_continue;
+
+  /// No description provided for @driver_profile_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete profile'**
+  String get driver_profile_caption;
+
+  /// No description provided for @driver_profile_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver and vehicle details'**
+  String get driver_profile_title;
+
+  /// No description provided for @driver_profile_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add document photos and vehicle details to activate your account.'**
+  String get driver_profile_subtitle;
+
+  /// No description provided for @driver_profile_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload the required images and fill in the basic information.'**
+  String get driver_profile_description;
+
+  /// No description provided for @driver_profile_save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and continue'**
+  String get driver_profile_save;
+
+  /// No description provided for @driver_profile_save_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial profile data was saved successfully.'**
+  String get driver_profile_save_success;
+
+  /// No description provided for @driver_profile_picker_restart_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Image picking needs a full app restart after adding the plugin.'**
+  String get driver_profile_picker_restart_required;
+
+  /// No description provided for @driver_profile_picker_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the image picker. Please try again.'**
+  String get driver_profile_picker_error;
+
+  /// No description provided for @driver_profile_identity_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity images'**
+  String get driver_profile_identity_section;
+
+  /// No description provided for @driver_profile_vehicle_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle details'**
+  String get driver_profile_vehicle_section;
+
+  /// No description provided for @driver_profile_vehicle_images_section.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle images'**
+  String get driver_profile_vehicle_images_section;
+
+  /// No description provided for @driver_profile_vehicle_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle type'**
+  String get driver_profile_vehicle_type;
+
+  /// No description provided for @driver_profile_vehicle_type_car.
+  ///
+  /// In en, this message translates to:
+  /// **'Car'**
+  String get driver_profile_vehicle_type_car;
+
+  /// No description provided for @driver_profile_vehicle_type_bike.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike'**
+  String get driver_profile_vehicle_type_bike;
+
+  /// No description provided for @driver_profile_portrait_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver portrait'**
+  String get driver_profile_portrait_title;
+
+  /// No description provided for @driver_profile_portrait_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear personal photo of the driver.'**
+  String get driver_profile_portrait_subtitle;
+
+  /// No description provided for @driver_profile_id_front_title.
+  ///
+  /// In en, this message translates to:
+  /// **'ID front side'**
+  String get driver_profile_id_front_title;
+
+  /// No description provided for @driver_profile_id_front_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload the front side of the ID.'**
+  String get driver_profile_id_front_subtitle;
+
+  /// No description provided for @driver_profile_id_back_title.
+  ///
+  /// In en, this message translates to:
+  /// **'ID back side'**
+  String get driver_profile_id_back_title;
+
+  /// No description provided for @driver_profile_id_back_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload the back side of the ID.'**
+  String get driver_profile_id_back_subtitle;
+
+  /// No description provided for @driver_profile_license_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver license'**
+  String get driver_profile_license_title;
+
+  /// No description provided for @driver_profile_license_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear image of the license.'**
+  String get driver_profile_license_subtitle;
+
+  /// No description provided for @driver_profile_vehicle_photo_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle photo'**
+  String get driver_profile_vehicle_photo_title;
+
+  /// No description provided for @driver_profile_vehicle_photo_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A full image of the delivery vehicle.'**
+  String get driver_profile_vehicle_photo_subtitle;
+
+  /// No description provided for @driver_profile_plate_photo_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate image'**
+  String get driver_profile_plate_photo_title;
+
+  /// No description provided for @driver_profile_plate_photo_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A clear image of the vehicle plate.'**
+  String get driver_profile_plate_photo_subtitle;
+
+  /// No description provided for @driver_profile_brand_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get driver_profile_brand_label;
+
+  /// No description provided for @driver_profile_brand_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Toyota or Yamaha'**
+  String get driver_profile_brand_hint;
+
+  /// No description provided for @driver_profile_model_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get driver_profile_model_label;
+
+  /// No description provided for @driver_profile_model_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: 2022 or NMAX'**
+  String get driver_profile_model_hint;
+
+  /// No description provided for @driver_profile_plate_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate number'**
+  String get driver_profile_plate_label;
+
+  /// No description provided for @driver_profile_plate_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter plate number'**
+  String get driver_profile_plate_hint;
 }
 
 class _AppLocalizationsDelegate

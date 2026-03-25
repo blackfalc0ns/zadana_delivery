@@ -909,4 +909,136 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bank_transfer_subtitle => 'Direct transfer from bank';
+
+  @override
+  String get auth_driver_account_caption => 'Driver account';
+
+  @override
+  String get auth_login_description =>
+      'Sign in to manage your trips and deliveries.';
+
+  @override
+  String get auth_login_error =>
+      'Unable to sign in. Check your credentials and try again.';
+
+  @override
+  String get auth_forgot_password_pending =>
+      'Forgot password will be connected in the next step.';
+
+  @override
+  String get auth_signup_caption => 'Create driver account';
+
+  @override
+  String get auth_signup_description =>
+      'Enter your basic details to get started.';
+
+  @override
+  String get auth_continue => 'Continue';
+
+  @override
+  String get driver_profile_caption => 'Complete profile';
+
+  @override
+  String get driver_profile_title => 'Driver and vehicle details';
+
+  @override
+  String get driver_profile_subtitle =>
+      'Add document photos and vehicle details to activate your account.';
+
+  @override
+  String get driver_profile_description =>
+      'Upload the required images and fill in the basic information.';
+
+  @override
+  String get driver_profile_save => 'Save and continue';
+
+  @override
+  String get driver_profile_save_success =>
+      'Initial profile data was saved successfully.';
+
+  @override
+  String get driver_profile_picker_restart_required =>
+      'Image picking needs a full app restart after adding the plugin.';
+
+  @override
+  String get driver_profile_picker_error =>
+      'Unable to open the image picker. Please try again.';
+
+  @override
+  String get driver_profile_identity_section => 'Identity images';
+
+  @override
+  String get driver_profile_vehicle_section => 'Vehicle details';
+
+  @override
+  String get driver_profile_vehicle_images_section => 'Vehicle images';
+
+  @override
+  String get driver_profile_vehicle_type => 'Vehicle type';
+
+  @override
+  String get driver_profile_vehicle_type_car => 'Car';
+
+  @override
+  String get driver_profile_vehicle_type_bike => 'Bike';
+
+  @override
+  String get driver_profile_portrait_title => 'Driver portrait';
+
+  @override
+  String get driver_profile_portrait_subtitle =>
+      'A clear personal photo of the driver.';
+
+  @override
+  String get driver_profile_id_front_title => 'ID front side';
+
+  @override
+  String get driver_profile_id_front_subtitle =>
+      'Upload the front side of the ID.';
+
+  @override
+  String get driver_profile_id_back_title => 'ID back side';
+
+  @override
+  String get driver_profile_id_back_subtitle =>
+      'Upload the back side of the ID.';
+
+  @override
+  String get driver_profile_license_title => 'Driver license';
+
+  @override
+  String get driver_profile_license_subtitle =>
+      'Upload a clear image of the license.';
+
+  @override
+  String get driver_profile_vehicle_photo_title => 'Vehicle photo';
+
+  @override
+  String get driver_profile_vehicle_photo_subtitle =>
+      'A full image of the delivery vehicle.';
+
+  @override
+  String get driver_profile_plate_photo_title => 'Plate image';
+
+  @override
+  String get driver_profile_plate_photo_subtitle =>
+      'A clear image of the vehicle plate.';
+
+  @override
+  String get driver_profile_brand_label => 'Brand';
+
+  @override
+  String get driver_profile_brand_hint => 'Example: Toyota or Yamaha';
+
+  @override
+  String get driver_profile_model_label => 'Model';
+
+  @override
+  String get driver_profile_model_hint => 'Example: 2022 or NMAX';
+
+  @override
+  String get driver_profile_plate_label => 'Plate number';
+
+  @override
+  String get driver_profile_plate_hint => 'Enter plate number';
 }

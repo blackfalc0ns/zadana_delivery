@@ -10,7 +10,8 @@ class Assets {
   static const String _fonts = 'assets/fonts';
 
   // ── Images ── 
-  static const String logo = '$_images/logo.png';
+  static const String logoDark = '$_images/logo_dark.png';
+  static const String logoLight = '$_images/logo_light.png';
   static const String placeholder = '$_images/placeholder.png';
   static const String noInternet = '$_images/no_internet.png';
   static const String empty = '$_images/empty.png';

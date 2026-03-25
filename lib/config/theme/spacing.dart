@@ -28,13 +28,13 @@ class Spacing {
   static const double cardElevation = 2.0;
 
   // ── Button ──
-  static const double buttonHeight = 52.0;
+  static const double buttonHeight = 48.0;
   static const double buttonSmallHeight = 40.0;
   static const double buttonRadius = 12.0;
   static const double buttonSmallRadius = 8.0;
 
   // ── Input field ──
-  static const double inputHeight = 52.0;
+  static const double inputHeight = 48.0;
   static const double inputRadius = 12.0;
 
   // ── Bottom sheet ──

@@ -102,21 +102,18 @@ class AppButton extends StatelessWidget {
     Widget button;
     switch (variant) {
       case AppButtonVariant.filled:
-        button = Padding(
-          padding: const EdgeInsets.symmetric(horizontal: Spacing.sm),
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: effectiveColor,
-              foregroundColor: textColor ?? colors.onPrimary,
-              minimumSize: Size(isExpanded ? double.infinity : 0, h),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(r),
-              ),
-              elevation: 0,
+        button = ElevatedButton(
+          onPressed: isLoading ? null : onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: effectiveColor,
+            foregroundColor: textColor ?? colors.onPrimary,
+            minimumSize: Size(isExpanded ? double.infinity : 0, h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(r),
             ),
-            child: child,
+            elevation: 0,
           ),
+          child: child,
         );
         break;
       case AppButtonVariant.outlined:
