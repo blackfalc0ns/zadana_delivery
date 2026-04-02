@@ -112,6 +112,7 @@ class SignUpForm extends StatelessWidget {
             height: 52,
             borderRadius: 18,
           ),
+          const SizedBox(height: Spacing.base),
         ],
       ),
     );

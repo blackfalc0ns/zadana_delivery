@@ -33,7 +33,6 @@ class AuthExperienceShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F5F5),
       body: Stack(
         children: [
           const _AuthBackground(),
@@ -43,7 +42,7 @@ class AuthExperienceShell extends StatelessWidget {
                 Spacing.base,
                 Spacing.base,
                 Spacing.base,
-                Spacing.xl,
+                0,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

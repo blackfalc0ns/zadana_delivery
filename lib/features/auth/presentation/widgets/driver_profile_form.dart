@@ -242,6 +242,7 @@ class DriverProfileForm extends StatelessWidget {
             height: 54,
             borderRadius: 20,
           ),
+          const SizedBox(height: Spacing.lg),
         ],
       ),
     );

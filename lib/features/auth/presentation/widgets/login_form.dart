@@ -69,7 +69,7 @@ class LoginForm extends StatelessWidget {
               onPressed: isSubmitting ? null : onForgotPassword,
               child: Text(
                 locale.btn_forgot_password,
-                style: getMediumStyle(
+                style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size12,
                   color: color.primary,
