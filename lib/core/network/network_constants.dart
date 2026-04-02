@@ -5,6 +5,14 @@ abstract class NetworkConstants {
 }
 
 abstract class EndPoints {
+  static const String driverRegister = '/drivers/register';
+  static const String driverLogin = '/drivers/auth/login';
+  static const String driverForgotPassword = '/drivers/auth/forgot-password';
+  static const String driverResetPassword = '/drivers/auth/reset-password';
+  static const String driverRefreshToken = '/drivers/auth/refresh-token';
+  static const String driverLogout = '/drivers/auth/logout';
+  static const String driverProfile = '/drivers/auth/me';
+
   static const String register = "/customers/auth/register";
   static const String login = '/customers/auth/login';
   static const String forgetPassword = '/customers/auth/forgot-password';

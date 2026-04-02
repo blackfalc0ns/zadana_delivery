@@ -4,6 +4,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/features/app_shell/presentation/screens/driver_account_screen.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_screen.dart';
 
 class AppShellScreen extends StatefulWidget {
@@ -20,7 +21,11 @@ class _AppShellScreenState extends State<AppShellScreen> {
 
   late final List<PersistentTabConfig> _tabs = [
     PersistentTabConfig(
-      screen: const _AppShellPlaceholderScreen(title: 'الطلبات'),
+      screen: const _AppShellPlaceholderScreen(
+        title: 'طلباتي',
+        subtitle: 'مساحة الطلبات الجارية والقادمة ستظهر هنا قريبًا.',
+        icon: Icons.receipt_long_rounded,
+      ),
       item: ItemConfig(
         icon: const Icon(Icons.receipt_long_rounded),
         inactiveIcon: const Icon(Icons.receipt_long_outlined),
@@ -40,7 +45,7 @@ class _AppShellScreenState extends State<AppShellScreen> {
       ),
     ),
     PersistentTabConfig(
-      screen: const _AppShellPlaceholderScreen(title: 'الحساب'),
+      screen: const DriverAccountScreen(),
       item: ItemConfig(
         icon: const Icon(Icons.person_rounded),
         inactiveIcon: const Icon(Icons.person_outline_rounded),
@@ -171,9 +176,15 @@ class _AppShellNavBar extends StatelessWidget {
 }
 
 class _AppShellPlaceholderScreen extends StatelessWidget {
-  const _AppShellPlaceholderScreen({required this.title});
+  const _AppShellPlaceholderScreen({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
 
   final String title;
+  final String subtitle;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -181,12 +192,52 @@ class _AppShellPlaceholderScreen extends StatelessWidget {
 
     return SafeArea(
       child: Center(
-        child: Text(
-          title,
-          style: getBoldStyle(
-            fontFamily: FontConstant.cairo,
-            fontSize: FontSize.size20,
-            color: color.onSurface,
+        child: Container(
+          margin: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: color.surface,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 68,
+                height: 68,
+                decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: Icon(icon, color: color.primary),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size20,
+                  color: color.onSurface,
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                subtitle,
+                textAlign: TextAlign.center,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size12,
+                  color: color.onSurface.withValues(alpha: 0.62),
+                ),
+              ),
+            ],
           ),
         ),
       ),

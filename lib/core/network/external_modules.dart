@@ -30,24 +30,22 @@ abstract class ExternalModules {
     return dio;
   }
 
- @Named('osmDio')
-@lazySingleton
-Dio provideOsmDio(
-  PrettyDioLogger prettyDioLogger,
-) {
-  final dio = Dio();
+  @Named('osmDio')
+  @lazySingleton
+  Dio provideOsmDio(PrettyDioLogger prettyDioLogger) {
+    final dio = Dio();
 
-  dio.options.baseUrl = 'https://nominatim.openstreetmap.org';
-  dio.options.headers = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'User-Agent': 'zadana-user-app',
-  };
+    dio.options.baseUrl = 'https://nominatim.openstreetmap.org';
+    dio.options.headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'User-Agent': 'zadana-user-app',
+    };
 
-  dio.interceptors.add(prettyDioLogger);
+    dio.interceptors.add(prettyDioLogger);
 
-  return dio;
-}
+    return dio;
+  }
 
   @lazySingleton
   PrettyDioLogger providePrettyDioLogger() {

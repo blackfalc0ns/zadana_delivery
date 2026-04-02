@@ -10,18 +10,12 @@ class LanguageInterceptor extends Interceptor {
   LanguageInterceptor(this._languageService);
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) {
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
     final languageCode = _languageService.getLanguageCode();
 
     options.headers['Accept-Language'] = languageCode;
 
-    log(
-      'Language Header Sent: $languageCode',
-      name: 'LanguageInterceptor',
-    );
+    log('Language Header Sent: $languageCode', name: 'LanguageInterceptor');
 
     handler.next(options);
   }

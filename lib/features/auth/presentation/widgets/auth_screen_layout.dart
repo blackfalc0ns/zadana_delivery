@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -28,6 +28,12 @@ class AuthScreenLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
+    final leadingWidgets = leading == null
+        ? const <Widget>[]
+        : <Widget>[leading!];
+    final footerWidgets = footer == null
+        ? const <Widget>[]
+        : <Widget>[const SizedBox(height: Spacing.xs), footer!];
 
     return Scaffold(
       backgroundColor: color.surface,
@@ -36,7 +42,7 @@ class AuthScreenLayout extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (leading != null) leading!,
+              ...leadingWidgets,
               const SizedBox(height: Spacing.xs),
               AuthHeader(caption: caption, title: title, subtitle: subtitle),
               const SizedBox(height: Spacing.xs),
@@ -50,10 +56,7 @@ class AuthScreenLayout extends StatelessWidget {
               ),
               const SizedBox(height: Spacing.md),
               child,
-              if (footer != null) ...[
-                const SizedBox(height: Spacing.xs),
-                footer!,
-              ],
+              ...footerWidgets,
               const SizedBox(height: Spacing.sm),
             ],
           ),

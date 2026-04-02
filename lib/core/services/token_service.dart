@@ -33,10 +33,9 @@ class TokenService {
     await _prefs.delete(key: AppConstants.accessToken);
   }
 
-
   // ---------------- REFRESH TOKEN ----------------
 
-   bool get isRefreshTokenSaved =>
+  bool get isRefreshTokenSaved =>
       _sharedPreferences.getBool(AppConstants.isRefreshTokenSaved) ?? false;
 
   Future<void> saveRefreshToken(String token) async {

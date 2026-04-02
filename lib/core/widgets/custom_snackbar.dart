@@ -3,7 +3,6 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 
-
 class CustomSnackbar {
   static void showSuccess({
     required BuildContext context,

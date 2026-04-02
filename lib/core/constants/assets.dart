@@ -9,7 +9,7 @@ class Assets {
   static const String _icons = 'assets/icons';
   static const String _fonts = 'assets/fonts';
 
-  // ── Images ── 
+  // ── Images ──
   static const String logoDark = '$_images/logo_dark.png';
   static const String logoLight = '$_images/logo_light.png';
   static const String placeholder = '$_images/placeholder.png';
@@ -19,7 +19,7 @@ class Assets {
   static const String onboarding1 = '$_images/onboarding1.png';
   static const String onboarding2 = '$_images/onboarding2.png';
   static const String onboarding3 = '$_images/onboarding3.png';
-  static const String goole ='$_images/google_icon.png';
+  static const String goole = '$_images/google_icon.png';
 
   // ── Icons (SVG) ──
   static const String icHome = '$_icons/ic_home.svg';
@@ -32,7 +32,7 @@ class Assets {
   static const String icMenu = '$_icons/ic_menu.svg';
   static const String icLocation = '$_icons/ic_location.svg';
   static const String icWallet = '$_icons/ic_wallet.svg';
-  
+
   // ── Search Icon ──
   static const String searchNormal = '$_images/search-normal.svg';
 

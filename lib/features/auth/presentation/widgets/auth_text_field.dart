@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -44,7 +44,9 @@ class AuthTextField extends StatelessWidget {
           style: getSemiBoldStyle(
             fontFamily: FontConstant.cairo,
             fontSize: FontSize.size11,
-            color: enabled ? color.onSurface : color.onSurface.withValues(alpha: 0.55),
+            color: enabled
+                ? color.onSurface
+                : color.onSurface.withValues(alpha: 0.55),
           ),
         ),
         const SizedBox(height: Spacing.sm),
@@ -71,7 +73,10 @@ class AuthTextField extends StatelessWidget {
             prefixIcon: prefixIcon == null
                 ? null
                 : Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 10, end: 6),
+                    padding: const EdgeInsetsDirectional.only(
+                      start: 10,
+                      end: 6,
+                    ),
                     child: prefixIcon,
                   ),
             suffixIcon: suffixIcon,
@@ -85,11 +90,15 @@ class AuthTextField extends StatelessWidget {
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Spacing.inputRadius),
-              borderSide: BorderSide(color: color.outline.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: color.outline.withValues(alpha: 0.2),
+              ),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Spacing.inputRadius),
-              borderSide: BorderSide(color: color.outline.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: color.outline.withValues(alpha: 0.2),
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Spacing.inputRadius),
@@ -105,7 +114,9 @@ class AuthTextField extends StatelessWidget {
             ),
             disabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(Spacing.inputRadius),
-              borderSide: BorderSide(color: color.outline.withValues(alpha: 0.2)),
+              borderSide: BorderSide(
+                color: color.outline.withValues(alpha: 0.2),
+              ),
             ),
             errorStyle: getRegularStyle(
               fontFamily: FontConstant.cairo,

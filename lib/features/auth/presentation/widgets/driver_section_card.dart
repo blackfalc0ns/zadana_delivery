@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -9,9 +9,11 @@ class DriverSectionCard extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
+    this.subtitle,
   });
 
   final String title;
+  final String? subtitle;
   final Widget child;
 
   @override
@@ -19,11 +21,18 @@ class DriverSectionCard extends StatelessWidget {
     final color = context.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(Spacing.sm + 2),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.outline.withValues(alpha: 0.16)),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: color.outline.withValues(alpha: 0.12)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -32,11 +41,22 @@ class DriverSectionCard extends StatelessWidget {
             title,
             style: getBoldStyle(
               fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size14,
+              fontSize: FontSize.size15,
               color: color.onSurface,
             ),
           ),
-          const SizedBox(height: Spacing.sm),
+          if ((subtitle ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              subtitle!,
+              style: getRegularStyle(
+                fontFamily: FontConstant.cairo,
+                fontSize: FontSize.size12,
+                color: color.onSurface.withValues(alpha: 0.62),
+              ),
+            ),
+          ],
+          const SizedBox(height: Spacing.base),
           child,
         ],
       ),

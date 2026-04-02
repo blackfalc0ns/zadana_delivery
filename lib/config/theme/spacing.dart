@@ -19,7 +19,7 @@ class Spacing {
   static const double xxxl = 48.0; // unit × 12
 
   // ── Screen padding ──
-  static const double screenH =8.0; // Horizontal (reduced from 8.0)
+  static const double screenH = 8.0; // Horizontal (reduced from 8.0)
   static const double screenV = 16.0; // Vertical
 
   // ── Card ──

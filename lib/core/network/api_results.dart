@@ -44,9 +44,7 @@ Future<ApiResult<T>> safeApiCall<T>(Future<T> Function() apiCall) async {
       failure: ServerFailure.fromDioError(dioException: dioError),
     );
   } catch (error) {
-    return ApiErrorResult<T>(
-      failure: Failure(errorMessage: error.toString()),
-    );
+    return ApiErrorResult<T>(failure: Failure(errorMessage: error.toString()));
   }
 }
 

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -125,10 +125,7 @@ class IncomingOrderCard extends StatelessWidget {
                   label: order.distance,
                 ),
                 const SizedBox(width: 6),
-                _OrderInfoChip(
-                  icon: Icons.schedule_rounded,
-                  label: order.eta,
-                ),
+                _OrderInfoChip(icon: Icons.schedule_rounded, label: order.eta),
               ],
             ),
           ),
@@ -249,10 +246,7 @@ class _PartySection extends StatelessWidget {
 }
 
 class _OrderInfoChip extends StatelessWidget {
-  const _OrderInfoChip({
-    required this.icon,
-    required this.label,
-  });
+  const _OrderInfoChip({required this.icon, required this.label});
 
   final IconData icon;
   final String label;

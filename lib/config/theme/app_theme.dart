@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/text_styles.dart';
+
 class AppTheme {
   AppTheme._();
 

@@ -1,8 +1,14 @@
 import 'package:intl/intl.dart';
 
 class PriceFormatter {
-  static final NumberFormat _formatterWithDecimals = NumberFormat('#,##0.00', 'en_US');
-  static final NumberFormat _formatterNoDecimals = NumberFormat('#,##0', 'en_US');
+  static final NumberFormat _formatterWithDecimals = NumberFormat(
+    '#,##0.00',
+    'en_US',
+  );
+  static final NumberFormat _formatterNoDecimals = NumberFormat(
+    '#,##0',
+    'en_US',
+  );
 
   /// Format price with thousands separators
   /// Shows decimals only if the price has fractional part
@@ -26,7 +32,7 @@ class PriceFormatter {
     if (priceValue == priceValue.truncateToDouble()) {
       return _formatterNoDecimals.format(priceValue);
     }
-    
+
     return _formatterWithDecimals.format(priceValue);
   }
 

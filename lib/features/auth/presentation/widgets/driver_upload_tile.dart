@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -12,14 +13,16 @@ class DriverUploadTile extends StatelessWidget {
     required this.subtitle,
     required this.icon,
     required this.onTap,
-    this.image,
+    this.imagePath,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
   final VoidCallback onTap;
-  final XFile? image;
+  final String? imagePath;
+
+  bool get _hasImage => (imagePath ?? '').trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -27,31 +30,40 @@ class DriverUploadTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Ink(
-        padding: const EdgeInsets.all(Spacing.sm + 2),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: color.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.outline.withValues(alpha: 0.18)),
+          color: _hasImage
+              ? color.secondary.withValues(alpha: 0.06)
+              : color.surface,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: _hasImage
+                ? color.secondary.withValues(alpha: 0.22)
+                : color.outline.withValues(alpha: 0.16),
+          ),
         ),
         child: Row(
           children: [
             Container(
-              width: 46,
-              height: 46,
+              width: 58,
+              height: 58,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
-                color: image != null
-                    ? color.secondary.withValues(alpha: 0.12)
+                color: _hasImage
+                    ? color.secondary.withValues(alpha: 0.14)
                     : color.primary.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                icon,
-                color: image != null ? color.secondary : color.primary,
-              ),
+              child: _hasImage
+                  ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                  : Icon(
+                      icon,
+                      color: _hasImage ? color.secondary : color.primary,
+                    ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,13 +90,35 @@ class DriverUploadTile extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
-              image != null
-                  ? Icons.check_circle_rounded
-                  : Icons.file_upload_outlined,
-              color: image != null
-                  ? color.secondary
-                  : color.onSurface.withValues(alpha: 0.55),
+            const SizedBox(width: Spacing.sm),
+            Column(
+              children: [
+                Icon(
+                  _hasImage
+                      ? Icons.check_circle_rounded
+                      : Icons.file_upload_outlined,
+                  color: _hasImage
+                      ? color.secondary
+                      : color.onSurface.withValues(alpha: 0.55),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  _hasImage
+                      ? (Localizations.localeOf(context).languageCode == 'ar'
+                            ? 'تم'
+                            : 'Done')
+                      : (Localizations.localeOf(context).languageCode == 'ar'
+                            ? 'رفع'
+                            : 'Upload'),
+                  style: getMediumStyle(
+                    fontFamily: FontConstant.cairo,
+                    fontSize: FontSize.size10,
+                    color: _hasImage
+                        ? color.secondary
+                        : color.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
