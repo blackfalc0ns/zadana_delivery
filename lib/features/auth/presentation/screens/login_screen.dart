@@ -46,10 +46,6 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  String _copy(BuildContext context, String ar, String en) {
-    return Localizations.localeOf(context).languageCode == 'ar' ? ar : en;
-  }
-
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -71,14 +67,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final locale = context.localization;
 
     return AuthExperienceShell(
-      heroBadge: _copy(context, 'جاهز للتوصيل', 'Ready to deliver'),
-      heroTitle: _copy(context, 'تسجيل دخول المندوب', 'Driver sign in'),
-      heroSubtitle: _copy(
-        context,
-        'ادخل لحسابك لاستلام الطلبات الجديدة، ومتابعة نشاطك، ثم استكمال بيانات المركبة بسهولة.',
-        'Access new delivery requests, manage your activity, and continue to the vehicle setup step.',
-      ),
-      sectionBadge: _copy(context, 'حساب المندوب', 'Driver account'),
+      heroBadge: locale.auth_login_hero_badge,
+      heroTitle: locale.auth_login_hero_title,
+      heroSubtitle: locale.auth_login_hero_subtitle,
+      sectionBadge: locale.auth_login_section_badge,
       sectionTitle: locale.auth_title,
       sectionDescription: locale.auth_login_description,
       sectionIcon: Icons.delivery_dining_rounded,

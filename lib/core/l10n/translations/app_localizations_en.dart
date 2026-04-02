@@ -1041,4 +1041,211 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driver_profile_plate_hint => 'Enter plate number';
+
+  @override
+  String get auth_gate_ready_title => 'Ready to roll';
+
+  @override
+  String get auth_gate_ready_description =>
+      'Preparing your driver session and routing you to the right next step.';
+
+  @override
+  String get auth_login_hero_badge => 'Ready to deliver';
+
+  @override
+  String get auth_login_hero_title => 'Driver sign in';
+
+  @override
+  String get auth_login_hero_subtitle =>
+      'Access new delivery requests, manage your activity, and continue to the vehicle setup step.';
+
+  @override
+  String get auth_login_section_badge => 'Driver account';
+
+  @override
+  String get auth_signup_hero_badge => 'Join the driver team';
+
+  @override
+  String get auth_signup_hero_title => 'Create driver account';
+
+  @override
+  String get auth_signup_hero_subtitle =>
+      'Start with your essential details, then move to sign in and continue to the vehicle profile step.';
+
+  @override
+  String get auth_signup_section_badge => 'New journey';
+
+  @override
+  String get auth_forgot_hero_badge => 'Quick recovery';
+
+  @override
+  String get auth_forgot_hero_subtitle =>
+      'Enter the email or phone linked to the account and continue to the new password step.';
+
+  @override
+  String get auth_forgot_section_badge => 'Recover access';
+
+  @override
+  String get auth_reset_hero_badge => 'Account security';
+
+  @override
+  String get auth_reset_hero_subtitle =>
+      'Enter the code and a new password, then return directly to sign in.';
+
+  @override
+  String get auth_reset_section_badge => 'New password';
+
+  @override
+  String get auth_confirm_password_label => 'Confirm password';
+
+  @override
+  String get auth_confirm_password_hint => 'Re-enter your password';
+
+  @override
+  String get auth_header_platform_caption => 'Delivery platform';
+
+  @override
+  String get driver_upload_status_done => 'Done';
+
+  @override
+  String get driver_upload_status_upload => 'Upload';
+
+  @override
+  String get driver_profile_step_identity_title => 'Identity';
+
+  @override
+  String get driver_profile_step_vehicle_title => 'Vehicle';
+
+  @override
+  String get driver_profile_step_uploads_title => 'Uploads';
+
+  @override
+  String get driver_profile_step_submit_title => 'Submit';
+
+  @override
+  String get driver_profile_step_identity_subtitle =>
+      'Enter the driver official identity details.';
+
+  @override
+  String get driver_profile_step_vehicle_subtitle =>
+      'Choose the vehicle and add its key details.';
+
+  @override
+  String get driver_profile_step_uploads_subtitle =>
+      'Upload the required visuals and documents clearly.';
+
+  @override
+  String get driver_profile_step_submit_subtitle =>
+      'Review everything and submit the final information.';
+
+  @override
+  String get driver_profile_page_subtitle =>
+      'Complete the driver profile step by step with a clear guided flow.';
+
+  @override
+  String get driver_profile_step_back => 'Back';
+
+  @override
+  String get driver_profile_step_next => 'Next';
+
+  @override
+  String get driver_profile_submit_information => 'Submit information';
+
+  @override
+  String get driver_profile_images_required_error =>
+      'Please upload all required images before continuing.';
+
+  @override
+  String get driver_profile_submit_success =>
+      'Driver information submitted successfully.';
+
+  @override
+  String get driver_profile_identity_card_title =>
+      'Personal and official details';
+
+  @override
+  String get driver_profile_identity_card_subtitle =>
+      'Fill these details carefully because they anchor the rest of the profile.';
+
+  @override
+  String get driver_profile_address_label => 'Address';
+
+  @override
+  String get driver_profile_address_hint =>
+      'Example: Nasr City, Abbas El Akkad Street';
+
+  @override
+  String get driver_profile_national_id_label => 'National ID';
+
+  @override
+  String get driver_profile_national_id_hint => 'Enter national ID';
+
+  @override
+  String get driver_profile_license_number_label => 'License number';
+
+  @override
+  String get driver_profile_license_number_hint => 'Enter license number';
+
+  @override
+  String get driver_profile_vehicle_card_title => 'Vehicle details';
+
+  @override
+  String get driver_profile_vehicle_card_subtitle =>
+      'Choose the right vehicle for you, then complete its essential data.';
+
+  @override
+  String get driver_profile_vehicle_selected_bike_message =>
+      'Bike selected. This setup emphasizes agility and faster movement in traffic.';
+
+  @override
+  String get driver_profile_vehicle_selected_car_message =>
+      'Car selected. This setup is suitable for larger and more varied orders.';
+
+  @override
+  String get driver_profile_uploads_card_title => 'Images and attachments';
+
+  @override
+  String get driver_profile_uploads_card_subtitle =>
+      'Each upload here makes the driver and vehicle data clearer.';
+
+  @override
+  String get driver_profile_review_card_title => 'Review and submit';
+
+  @override
+  String get driver_profile_review_card_subtitle =>
+      'Review everything you entered before the final submission.';
+
+  @override
+  String get driver_profile_uploaded_images_label => 'Uploaded images';
+
+  @override
+  String get driver_profile_vehicle_type_label => 'Vehicle type';
+
+  @override
+  String get driver_profile_brand_review_label => 'Brand';
+
+  @override
+  String get driver_profile_model_review_label => 'Model';
+
+  @override
+  String get driver_profile_plate_review_label => 'Plate number';
+
+  @override
+  String get driver_profile_incomplete => 'Incomplete';
+
+  @override
+  String get driver_profile_steps_progress => 'Step progress';
+
+  @override
+  String get driver_vehicle_type_car_subtitle =>
+      'Ideal for larger and multiple orders';
+
+  @override
+  String get driver_vehicle_type_bike_subtitle => 'Faster in dense city routes';
+
+  @override
+  String get auth_section_badge_default => 'Member';
+
+  @override
+  String get auth_phone_hint_compact => '5xxxxxxxx';
 }

@@ -2083,6 +2083,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter plate number'**
   String get driver_profile_plate_hint;
+
+  /// No description provided for @auth_gate_ready_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to roll'**
+  String get auth_gate_ready_title;
+
+  /// No description provided for @auth_gate_ready_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing your driver session and routing you to the right next step.'**
+  String get auth_gate_ready_description;
+
+  /// No description provided for @auth_login_hero_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to deliver'**
+  String get auth_login_hero_badge;
+
+  /// No description provided for @auth_login_hero_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver sign in'**
+  String get auth_login_hero_title;
+
+  /// No description provided for @auth_login_hero_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Access new delivery requests, manage your activity, and continue to the vehicle setup step.'**
+  String get auth_login_hero_subtitle;
+
+  /// No description provided for @auth_login_section_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver account'**
+  String get auth_login_section_badge;
+
+  /// No description provided for @auth_signup_hero_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the driver team'**
+  String get auth_signup_hero_badge;
+
+  /// No description provided for @auth_signup_hero_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create driver account'**
+  String get auth_signup_hero_title;
+
+  /// No description provided for @auth_signup_hero_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with your essential details, then move to sign in and continue to the vehicle profile step.'**
+  String get auth_signup_hero_subtitle;
+
+  /// No description provided for @auth_signup_section_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'New journey'**
+  String get auth_signup_section_badge;
+
+  /// No description provided for @auth_forgot_hero_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick recovery'**
+  String get auth_forgot_hero_badge;
+
+  /// No description provided for @auth_forgot_hero_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email or phone linked to the account and continue to the new password step.'**
+  String get auth_forgot_hero_subtitle;
+
+  /// No description provided for @auth_forgot_section_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Recover access'**
+  String get auth_forgot_section_badge;
+
+  /// No description provided for @auth_reset_hero_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Account security'**
+  String get auth_reset_hero_badge;
+
+  /// No description provided for @auth_reset_hero_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code and a new password, then return directly to sign in.'**
+  String get auth_reset_hero_subtitle;
+
+  /// No description provided for @auth_reset_section_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get auth_reset_section_badge;
+
+  /// No description provided for @auth_confirm_password_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get auth_confirm_password_label;
+
+  /// No description provided for @auth_confirm_password_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get auth_confirm_password_hint;
+
+  /// No description provided for @auth_header_platform_caption.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery platform'**
+  String get auth_header_platform_caption;
+
+  /// No description provided for @driver_upload_status_done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get driver_upload_status_done;
+
+  /// No description provided for @driver_upload_status_upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get driver_upload_status_upload;
+
+  /// No description provided for @driver_profile_step_identity_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Identity'**
+  String get driver_profile_step_identity_title;
+
+  /// No description provided for @driver_profile_step_vehicle_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get driver_profile_step_vehicle_title;
+
+  /// No description provided for @driver_profile_step_uploads_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploads'**
+  String get driver_profile_step_uploads_title;
+
+  /// No description provided for @driver_profile_step_submit_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get driver_profile_step_submit_title;
+
+  /// No description provided for @driver_profile_step_identity_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the driver official identity details.'**
+  String get driver_profile_step_identity_subtitle;
+
+  /// No description provided for @driver_profile_step_vehicle_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the vehicle and add its key details.'**
+  String get driver_profile_step_vehicle_subtitle;
+
+  /// No description provided for @driver_profile_step_uploads_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload the required visuals and documents clearly.'**
+  String get driver_profile_step_uploads_subtitle;
+
+  /// No description provided for @driver_profile_step_submit_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review everything and submit the final information.'**
+  String get driver_profile_step_submit_subtitle;
+
+  /// No description provided for @driver_profile_page_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete the driver profile step by step with a clear guided flow.'**
+  String get driver_profile_page_subtitle;
+
+  /// No description provided for @driver_profile_step_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get driver_profile_step_back;
+
+  /// No description provided for @driver_profile_step_next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get driver_profile_step_next;
+
+  /// No description provided for @driver_profile_submit_information.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit information'**
+  String get driver_profile_submit_information;
+
+  /// No description provided for @driver_profile_images_required_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload all required images before continuing.'**
+  String get driver_profile_images_required_error;
+
+  /// No description provided for @driver_profile_submit_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver information submitted successfully.'**
+  String get driver_profile_submit_success;
+
+  /// No description provided for @driver_profile_identity_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal and official details'**
+  String get driver_profile_identity_card_title;
+
+  /// No description provided for @driver_profile_identity_card_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill these details carefully because they anchor the rest of the profile.'**
+  String get driver_profile_identity_card_subtitle;
+
+  /// No description provided for @driver_profile_address_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get driver_profile_address_label;
+
+  /// No description provided for @driver_profile_address_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: Nasr City, Abbas El Akkad Street'**
+  String get driver_profile_address_hint;
+
+  /// No description provided for @driver_profile_national_id_label.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID'**
+  String get driver_profile_national_id_label;
+
+  /// No description provided for @driver_profile_national_id_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter national ID'**
+  String get driver_profile_national_id_hint;
+
+  /// No description provided for @driver_profile_license_number_label.
+  ///
+  /// In en, this message translates to:
+  /// **'License number'**
+  String get driver_profile_license_number_label;
+
+  /// No description provided for @driver_profile_license_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter license number'**
+  String get driver_profile_license_number_hint;
+
+  /// No description provided for @driver_profile_vehicle_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle details'**
+  String get driver_profile_vehicle_card_title;
+
+  /// No description provided for @driver_profile_vehicle_card_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the right vehicle for you, then complete its essential data.'**
+  String get driver_profile_vehicle_card_subtitle;
+
+  /// No description provided for @driver_profile_vehicle_selected_bike_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Bike selected. This setup emphasizes agility and faster movement in traffic.'**
+  String get driver_profile_vehicle_selected_bike_message;
+
+  /// No description provided for @driver_profile_vehicle_selected_car_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Car selected. This setup is suitable for larger and more varied orders.'**
+  String get driver_profile_vehicle_selected_car_message;
+
+  /// No description provided for @driver_profile_uploads_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Images and attachments'**
+  String get driver_profile_uploads_card_title;
+
+  /// No description provided for @driver_profile_uploads_card_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Each upload here makes the driver and vehicle data clearer.'**
+  String get driver_profile_uploads_card_subtitle;
+
+  /// No description provided for @driver_profile_review_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and submit'**
+  String get driver_profile_review_card_title;
+
+  /// No description provided for @driver_profile_review_card_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review everything you entered before the final submission.'**
+  String get driver_profile_review_card_subtitle;
+
+  /// No description provided for @driver_profile_uploaded_images_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded images'**
+  String get driver_profile_uploaded_images_label;
+
+  /// No description provided for @driver_profile_vehicle_type_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle type'**
+  String get driver_profile_vehicle_type_label;
+
+  /// No description provided for @driver_profile_brand_review_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand'**
+  String get driver_profile_brand_review_label;
+
+  /// No description provided for @driver_profile_model_review_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Model'**
+  String get driver_profile_model_review_label;
+
+  /// No description provided for @driver_profile_plate_review_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Plate number'**
+  String get driver_profile_plate_review_label;
+
+  /// No description provided for @driver_profile_incomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Incomplete'**
+  String get driver_profile_incomplete;
+
+  /// No description provided for @driver_profile_steps_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Step progress'**
+  String get driver_profile_steps_progress;
+
+  /// No description provided for @driver_vehicle_type_car_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ideal for larger and multiple orders'**
+  String get driver_vehicle_type_car_subtitle;
+
+  /// No description provided for @driver_vehicle_type_bike_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Faster in dense city routes'**
+  String get driver_vehicle_type_bike_subtitle;
+
+  /// No description provided for @auth_section_badge_default.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get auth_section_badge_default;
+
+  /// No description provided for @auth_phone_hint_compact.
+  ///
+  /// In en, this message translates to:
+  /// **'5xxxxxxxx'**
+  String get auth_phone_hint_compact;
 }
 
 class _AppLocalizationsDelegate

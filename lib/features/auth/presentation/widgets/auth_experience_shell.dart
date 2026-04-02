@@ -3,6 +3,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class AuthExperienceShell extends StatelessWidget {
   const AuthExperienceShell({
@@ -13,7 +14,7 @@ class AuthExperienceShell extends StatelessWidget {
     required this.sectionTitle,
     required this.sectionDescription,
     required this.body,
-    this.sectionBadge = 'Member',
+    this.sectionBadge,
     this.sectionIcon = Icons.lock_outline_rounded,
     this.footer,
     this.showBackButton = false,
@@ -24,7 +25,7 @@ class AuthExperienceShell extends StatelessWidget {
   final String heroSubtitle;
   final String sectionTitle;
   final String sectionDescription;
-  final String sectionBadge;
+  final String? sectionBadge;
   final IconData sectionIcon;
   final Widget body;
   final Widget? footer;
@@ -32,6 +33,9 @@ class AuthExperienceShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedSectionBadge =
+        sectionBadge ?? context.localization.auth_section_badge_default;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -54,7 +58,7 @@ class AuthExperienceShell extends StatelessWidget {
                   ),
                   const SizedBox(height: Spacing.lg),
                   _FormCard(
-                    badge: sectionBadge,
+                    badge: resolvedSectionBadge,
                     title: sectionTitle,
                     description: sectionDescription,
                     icon: sectionIcon,
@@ -162,41 +166,35 @@ class _HeroHeader extends StatelessWidget {
           ),
         ],
       ),
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: getBoldStyle(
-                        fontSize: 26,
-                        fontFamily: FontConstant.cairo,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.sm),
-                    Text(
-                      subtitle,
-                      style: getRegularStyle(
-                        fontSize: FontSize.size16,
-                        fontFamily: FontConstant.cairo,
-                        color: Colors.white.withValues(alpha: 0.92),
-                      ),
-                    ),
-                  ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: getBoldStyle(
+                    fontSize: 26,
+                    fontFamily: FontConstant.cairo,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(width: Spacing.base),
-
-              const _HeroProduceArtwork(),
-            ],
+                const SizedBox(height: Spacing.sm),
+                Text(
+                  subtitle,
+                  style: getRegularStyle(
+                    fontSize: FontSize.size16,
+                    fontFamily: FontConstant.cairo,
+                    color: Colors.white.withValues(alpha: 0.92),
+                  ),
+                ),
+              ],
+            ),
           ),
+          const SizedBox(width: Spacing.base),
+          const _HeroProduceArtwork(),
         ],
       ),
     );
@@ -302,8 +300,7 @@ class _FormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset("assets/images/logo_dark.png", width: 100, height: 100),
-
+          Image.asset('assets/images/logo_dark.png', width: 100, height: 100),
           child,
         ],
       ),

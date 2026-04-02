@@ -1,5 +1,3 @@
-import 'package:device_preview/device_preview.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_generator.dart';
@@ -27,7 +25,7 @@ class MyApp extends StatelessWidget {
       locale: const Locale('ar'),
       theme: AppTheme.light,
       onGenerateRoute: RouteGenerator.getRoute,
-      initialRoute: AppRoutes.mainShell,
+      initialRoute: AppRoutes.driverProfileCompletion,
     );
   }
 }

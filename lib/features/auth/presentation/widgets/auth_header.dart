@@ -20,7 +20,8 @@ class AuthHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
-    final headerCaption = caption ?? 'منصة التوصيل';
+    final headerCaption =
+        caption ?? context.localization.auth_header_platform_caption;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: 4),

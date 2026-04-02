@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -115,36 +114,6 @@ class LoginForm extends StatelessWidget {
             height: 52,
             borderRadius: 18,
           ),
-          const SizedBox(height: Spacing.base),
-          // Container(
-          //   padding: const EdgeInsets.all(14),
-          //   decoration: BoxDecoration(
-          //     color: AppColors.primary.withValues(alpha: 0.05),
-          //     borderRadius: BorderRadius.circular(18),
-          //   ),
-          //   child: Row(
-          //     children: [
-          //       Icon(
-          //         Icons.security_rounded,
-          //         color: AppColors.primary,
-          //         size: 20,
-          //       ),
-          //       const SizedBox(width: Spacing.sm),
-          //       Expanded(
-          //         child: Text(
-          //           Localizations.localeOf(context).languageCode == 'ar'
-          //               ? 'يتم حفظ جلستك بأمان على هذا الجهاز لتسهيل الدخول لاحقًا.'
-          //               : 'Your session is securely stored on this device for a faster next sign in.',
-          //           style: getRegularStyle(
-          //             fontFamily: FontConstant.cairo,
-          //             fontSize: FontSize.size12,
-          //             color: AppColors.textSecondary,
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
         ],
       ),
     );

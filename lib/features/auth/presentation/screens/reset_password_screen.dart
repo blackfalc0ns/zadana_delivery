@@ -32,10 +32,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     super.dispose();
   }
 
-  String _copy(BuildContext context, String ar, String en) {
-    return Localizations.localeOf(context).languageCode == 'ar' ? ar : en;
-  }
-
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -58,14 +54,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     final color = context.colorScheme;
 
     return AuthExperienceShell(
-      heroBadge: _copy(context, 'حماية الحساب', 'Account security'),
+      heroBadge: locale.auth_reset_hero_badge,
       heroTitle: locale.reset_password_title,
-      heroSubtitle: _copy(
-        context,
-        'أدخل الرمز ثم كلمة المرور الجديدة، وبعدها نعيدك مباشرة إلى تسجيل الدخول.',
-        'Enter the code and a new password, then return directly to sign in.',
-      ),
-      sectionBadge: _copy(context, 'كلمة مرور جديدة', 'New password'),
+      heroSubtitle: locale.auth_reset_hero_subtitle,
+      sectionBadge: locale.auth_reset_section_badge,
       sectionTitle: locale.reset_password_title,
       sectionDescription:
           '${locale.reset_password_description_prefix} ${widget.identifier}',
@@ -99,12 +91,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             const SizedBox(height: 12),
             AuthPasswordField(
               controller: _confirmPasswordController,
-              label: _copy(context, 'تأكيد كلمة المرور', 'Confirm password'),
-              hintText: _copy(
-                context,
-                'أعد إدخال كلمة المرور',
-                'Re-enter your password',
-              ),
+              label: locale.auth_confirm_password_label,
+              hintText: locale.auth_confirm_password_hint,
               validator: (value) => Validations.validateConfirmPassword(
                 context,
                 _passwordController.text,

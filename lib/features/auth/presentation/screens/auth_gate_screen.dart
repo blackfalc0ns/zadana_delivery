@@ -5,6 +5,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/constants/assets.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class AuthGateScreen extends StatefulWidget {
   const AuthGateScreen({super.key});
@@ -28,7 +29,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final locale = context.localization;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F8F8),
@@ -75,7 +76,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
               ),
               const SizedBox(height: 20),
               Text(
-                isArabic ? 'جاهز للانطلاق' : 'Ready to roll',
+                locale.auth_gate_ready_title,
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size20,
@@ -84,9 +85,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                isArabic
-                    ? 'نجهز جلسة المندوب ونحدد المسار الأنسب لك الآن.'
-                    : 'Preparing your driver session and routing you to the right next step.',
+                locale.auth_gate_ready_description,
                 textAlign: TextAlign.center,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,

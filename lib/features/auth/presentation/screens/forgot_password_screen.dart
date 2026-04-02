@@ -25,10 +25,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  String _copy(BuildContext context, String ar, String en) {
-    return Localizations.localeOf(context).languageCode == 'ar' ? ar : en;
-  }
-
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
@@ -50,14 +46,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final color = context.colorScheme;
 
     return AuthExperienceShell(
-      heroBadge: _copy(context, 'استرجاع سريع', 'Quick recovery'),
+      heroBadge: locale.auth_forgot_hero_badge,
       heroTitle: locale.forget_password_title,
-      heroSubtitle: _copy(
-        context,
-        'أدخل البريد أو رقم الجوال المرتبط بالحساب وسنوجّهك مباشرة إلى خطوة تعيين كلمة المرور الجديدة.',
-        'Enter the email or phone linked to the account and continue to the new password step.',
-      ),
-      sectionBadge: _copy(context, 'استعادة الوصول', 'Recover access'),
+      heroSubtitle: locale.auth_forgot_hero_subtitle,
+      sectionBadge: locale.auth_forgot_section_badge,
       sectionTitle: locale.forget_password_title,
       sectionDescription: locale.forget_password_description,
       sectionIcon: Icons.lock_reset_rounded,

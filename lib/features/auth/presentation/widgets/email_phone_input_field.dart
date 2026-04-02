@@ -155,7 +155,7 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
                     },
                     decoration: InputDecoration(
                       hintText: _isPhone
-                          ? '5xxxxxxxx'
+                          ? locale.auth_phone_hint_compact
                           : locale.hint_email_or_phone,
                       hintStyle: getRegularStyle(
                         fontSize: FontSize.size13,

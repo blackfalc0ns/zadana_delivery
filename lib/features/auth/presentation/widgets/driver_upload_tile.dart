@@ -104,12 +104,8 @@ class DriverUploadTile extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   _hasImage
-                      ? (Localizations.localeOf(context).languageCode == 'ar'
-                            ? 'تم'
-                            : 'Done')
-                      : (Localizations.localeOf(context).languageCode == 'ar'
-                            ? 'رفع'
-                            : 'Upload'),
+                      ? context.localization.driver_upload_status_done
+                      : context.localization.driver_upload_status_upload,
                   style: getMediumStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size10,

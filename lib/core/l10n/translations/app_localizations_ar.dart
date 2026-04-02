@@ -1028,4 +1028,209 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_plate_hint => 'أدخل رقم اللوحة';
+
+  @override
+  String get auth_gate_ready_title => 'جاهز للانطلاق';
+
+  @override
+  String get auth_gate_ready_description =>
+      'نجهز جلسة المندوب ونحدد المسار الأنسب لك الآن.';
+
+  @override
+  String get auth_login_hero_badge => 'جاهز للتوصيل';
+
+  @override
+  String get auth_login_hero_title => 'تسجيل دخول المندوب';
+
+  @override
+  String get auth_login_hero_subtitle =>
+      'ادخل لحسابك لاستلام الطلبات الجديدة، ومتابعة نشاطك، ثم استكمال بيانات المركبة بسهولة.';
+
+  @override
+  String get auth_login_section_badge => 'حساب المندوب';
+
+  @override
+  String get auth_signup_hero_badge => 'انضم لفريق التوصيل';
+
+  @override
+  String get auth_signup_hero_title => 'أنشئ حساب مندوب';
+
+  @override
+  String get auth_signup_hero_subtitle =>
+      'ابدأ ببياناتك الأساسية أولًا، وبعدها نوجّهك مباشرة إلى شاشة تسجيل الدخول ثم استكمال بيانات المركبة.';
+
+  @override
+  String get auth_signup_section_badge => 'انطلاقة جديدة';
+
+  @override
+  String get auth_forgot_hero_badge => 'استرجاع سريع';
+
+  @override
+  String get auth_forgot_hero_subtitle =>
+      'أدخل البريد أو رقم الجوال المرتبط بالحساب وسنوجّهك مباشرة إلى خطوة تعيين كلمة المرور الجديدة.';
+
+  @override
+  String get auth_forgot_section_badge => 'استعادة الوصول';
+
+  @override
+  String get auth_reset_hero_badge => 'حماية الحساب';
+
+  @override
+  String get auth_reset_hero_subtitle =>
+      'أدخل الرمز ثم كلمة المرور الجديدة، وبعدها نعيدك مباشرة إلى تسجيل الدخول.';
+
+  @override
+  String get auth_reset_section_badge => 'كلمة مرور جديدة';
+
+  @override
+  String get auth_confirm_password_label => 'تأكيد كلمة المرور';
+
+  @override
+  String get auth_confirm_password_hint => 'أعد إدخال كلمة المرور';
+
+  @override
+  String get auth_header_platform_caption => 'منصة التوصيل';
+
+  @override
+  String get driver_upload_status_done => 'تم';
+
+  @override
+  String get driver_upload_status_upload => 'رفع';
+
+  @override
+  String get driver_profile_step_identity_title => 'الهوية';
+
+  @override
+  String get driver_profile_step_vehicle_title => 'المركبة';
+
+  @override
+  String get driver_profile_step_uploads_title => 'الصور';
+
+  @override
+  String get driver_profile_step_submit_title => 'التسليم';
+
+  @override
+  String get driver_profile_step_identity_subtitle =>
+      'أدخل البيانات الرسمية الأساسية الخاصة بالمندوب.';
+
+  @override
+  String get driver_profile_step_vehicle_subtitle =>
+      'اختر نوع المركبة وأضف مواصفاتها الأساسية.';
+
+  @override
+  String get driver_profile_step_uploads_subtitle =>
+      'ارفع الصور والمستندات المطلوبة بوضوح.';
+
+  @override
+  String get driver_profile_step_submit_subtitle =>
+      'راجع كل شيء ثم سلّم المعلومات النهائية.';
+
+  @override
+  String get driver_profile_page_subtitle =>
+      'أكمل ملف السائق خطوة بخطوة. كل مرحلة واضحة وسريعة حتى تصل لمرحلة التسليم النهائية.';
+
+  @override
+  String get driver_profile_step_back => 'السابق';
+
+  @override
+  String get driver_profile_step_next => 'التالي';
+
+  @override
+  String get driver_profile_submit_information => 'تسليم المعلومات';
+
+  @override
+  String get driver_profile_images_required_error =>
+      'من فضلك ارفع كل الصور المطلوبة قبل المتابعة.';
+
+  @override
+  String get driver_profile_submit_success => 'تم تسليم معلومات السائق بنجاح.';
+
+  @override
+  String get driver_profile_identity_card_title => 'المعلومات الشخصية والرسمية';
+
+  @override
+  String get driver_profile_identity_card_subtitle =>
+      'املأ هذه البيانات بدقة لأنها الأساس لبقية الملف.';
+
+  @override
+  String get driver_profile_address_label => 'العنوان';
+
+  @override
+  String get driver_profile_address_hint => 'مثال: مدينة نصر، شارع عباس العقاد';
+
+  @override
+  String get driver_profile_national_id_label => 'الرقم القومي';
+
+  @override
+  String get driver_profile_national_id_hint => 'أدخل الرقم القومي';
+
+  @override
+  String get driver_profile_license_number_label => 'رقم الرخصة';
+
+  @override
+  String get driver_profile_license_number_hint => 'أدخل رقم الرخصة';
+
+  @override
+  String get driver_profile_vehicle_card_title => 'بيانات المركبة';
+
+  @override
+  String get driver_profile_vehicle_card_subtitle =>
+      'اختر المركبة المناسبة لك ثم أكمل بياناتها الأساسية.';
+
+  @override
+  String get driver_profile_vehicle_selected_bike_message =>
+      'تم اختيار الدراجة. سنركّز على السرعة وسهولة الحركة داخل الزحام.';
+
+  @override
+  String get driver_profile_vehicle_selected_car_message =>
+      'تم اختيار السيارة. هذا الاختيار مناسب للطلبات الأكبر والأكثر تنوعًا.';
+
+  @override
+  String get driver_profile_uploads_card_title => 'الصور والمرفقات';
+
+  @override
+  String get driver_profile_uploads_card_subtitle =>
+      'كل صورة هنا تساعد على توضيح بيانات السائق والمركبة بشكل أفضل.';
+
+  @override
+  String get driver_profile_review_card_title => 'مراجعة وتسليم';
+
+  @override
+  String get driver_profile_review_card_subtitle =>
+      'راجع كل ما أدخلته قبل التسليم النهائي.';
+
+  @override
+  String get driver_profile_uploaded_images_label => 'الصور المرفوعة';
+
+  @override
+  String get driver_profile_vehicle_type_label => 'نوع المركبة';
+
+  @override
+  String get driver_profile_brand_review_label => 'الماركة';
+
+  @override
+  String get driver_profile_model_review_label => 'الموديل';
+
+  @override
+  String get driver_profile_plate_review_label => 'رقم اللوحة';
+
+  @override
+  String get driver_profile_incomplete => 'غير مكتمل';
+
+  @override
+  String get driver_profile_steps_progress => 'تقدم الخطوات';
+
+  @override
+  String get driver_vehicle_type_car_subtitle =>
+      'مناسب للطلبات الأكبر والشحنات المتعددة';
+
+  @override
+  String get driver_vehicle_type_bike_subtitle =>
+      'أسرع في التنقل داخل المناطق المزدحمة';
+
+  @override
+  String get auth_section_badge_default => 'عضو';
+
+  @override
+  String get auth_phone_hint_compact => '5xxxxxxxx';
 }
