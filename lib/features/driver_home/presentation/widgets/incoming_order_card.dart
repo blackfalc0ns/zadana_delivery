@@ -166,15 +166,23 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
                         distance: widget.order.distance,
                         eta: widget.order.eta,
                       ),
-                      const SizedBox(width: 12),
+                      if (widget.onLocationTap != null) ...[
+                        const SizedBox(width: 8),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 1),
+                          child: _LocationActionButton(
+                            onTap: widget.onLocationTap!,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             _MiniRow(
                               icon: Icons.storefront_rounded,
-                              label:
-                                  'الاستلام',
+                              label: 'الاستلام',
                               value: widget.order.vendorName,
                               color: color.primary,
                             ),
@@ -184,19 +192,6 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
                               label: 'التوصيل',
                               value: widget.order.deliveryAddress,
                               color: color.secondary,
-                              trailing: widget.onLocationTap != null 
-                                ? Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: widget.onLocationTap,
-                                      borderRadius: BorderRadius.circular(100),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Icon(Icons.my_location_rounded, size: 18, color: color.primary),
-                                      ),
-                                    ),
-                                  ) 
-                                : null,
                             ),
                           ],
                         ),
@@ -288,10 +283,9 @@ class _CompactOrderMeta extends StatelessWidget {
             style: getBoldStyle(
               fontFamily: FontConstant.cairo,
               fontSize: FontSize.size12,
-              color:color.onSurface.withValues(alpha: 0.72),
+              color: color.onSurface.withValues(alpha: 0.72),
             ),
           ),
-          
         ],
       ),
     );
@@ -346,20 +340,60 @@ class _ActionButton extends StatelessWidget {
   }
 }
 
+class _LocationActionButton extends StatelessWidget {
+  const _LocationActionButton({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
+    return Material(
+      color: color.primary.withValues(alpha: 0.09),
+      borderRadius: BorderRadius.circular(999),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            border: Border.all(color: color.primary.withValues(alpha: 0.15)),
+          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.my_location_rounded, size: 14, color: color.primary),
+              const SizedBox(width: 4),
+              Text(
+                'عرض الموقع',
+                style: getSemiBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size10,
+                  color: color.primary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _MiniRow extends StatelessWidget {
   const _MiniRow({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
-    this.trailing,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final Color color;
-  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +408,6 @@ class _MiniRow extends StatelessWidget {
           style: getSemiBoldStyle(
             fontFamily: FontConstant.cairo,
             fontSize: FontSize.size12,
-            //color: scheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
         const SizedBox(width: 4),
@@ -390,10 +423,6 @@ class _MiniRow extends StatelessWidget {
             ),
           ),
         ),
-        if (trailing != null) ...[
-          const SizedBox(width: 4),
-          trailing!,
-        ],
       ],
     );
   }

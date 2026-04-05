@@ -6,6 +6,7 @@ abstract class AppRoutes {
   static const String resetPassword = '/reset-password';
   static const String driverProfileCompletion = '/driver-profile-completion';
   static const String accountPendingApproval = '/account-pending-approval';
+  static const String accountBlocked = '/account-blocked';
   static const String driverHome = '/driver-home';
   static const String mainShell = '/main-shell';
   static const String orderDetails = '/order-details';

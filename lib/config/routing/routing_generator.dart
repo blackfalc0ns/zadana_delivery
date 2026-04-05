@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
+import 'package:zadana_delivery/features/auth/presentation/screens/account_blocked_screen.dart';
 import 'package:zadana_delivery/features/auth/presentation/screens/account_pending_approval_screen.dart';
 import 'package:zadana_delivery/features/auth/presentation/screens/auth_gate_screen.dart';
 import 'package:zadana_delivery/features/auth/presentation/screens/driver_profile_completion_screen.dart';
@@ -42,6 +43,8 @@ class RouteGenerator {
         return _pageRoute(settings, const DriverProfileCompletionScreen());
       case AppRoutes.accountPendingApproval:
         return _pageRoute(settings, const AccountPendingApprovalScreen());
+      case AppRoutes.accountBlocked:
+        return _pageRoute(settings, const AccountBlockedScreen());
       case AppRoutes.driverHome:
         return _pageRoute(settings, const AppShellScreen(initialIndex: 0));
       case AppRoutes.completedOrders:
@@ -79,6 +82,7 @@ class RouteGenerator {
           OrderDetailsScreen(
             order: args['order'],
             driverLocation: args['driverLocation'],
+            startAccepted: args['startAccepted'] as bool? ?? false,
           ),
         );
       default:

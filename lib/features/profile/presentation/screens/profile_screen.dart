@@ -58,8 +58,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final identity = _service.identity;
-    final draft = _service.profileDraft;
-    final profileCompleted = _service.isProfileCompleted || draft.isComplete;
     final avatarLetter = _resolveAvatarLetter(identity.fullName);
     final displayName = identity.fullName.trim().isEmpty
         ? 'اسم المستخدم'
@@ -70,8 +68,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final phone = identity.phone.trim().isEmpty
         ? '+20 100 000 0000'
         : identity.phone.trim();
-    final completionCount = _profileCompletionCount(identity, draft);
-
     return Scaffold(
       backgroundColor: const Color(0xFFF6F7FB),
       appBar: CustomAppBar(
@@ -173,29 +169,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         iconColor: AppColors.info,
                         onTap: () => _open(AppRoutes.privacy),
                       ),
-                      _ProfileActionTile(
-                        title: 'الأمان والمستندات',
-                        subtitle: 'راجع الهوية والرخصة والمرفقات الحالية',
-                        icon: Icons.verified_user_outlined,
-                        iconColor: AppColors.success,
-                        onTap: () => _open(AppRoutes.profileSecurityDocuments),
-                      ),
                     ],
                   ),
                   const SizedBox(height: Spacing.base),
                   _ProfileSectionCard(
                     children: [
-                      _ProfileActionTile(
-                        title: 'استكمال الملف',
-                        subtitle: profileCompleted
-                            ? 'الملف مكتمل ويمكنك تحديثه في أي وقت'
-                            : 'أكمل بياناتك ومستنداتك لتفعيل الحساب بالكامل ($completionCount عنصر محفوظ)',
-                        icon: Icons.assignment_turned_in_outlined,
-                        iconColor: profileCompleted
-                            ? AppColors.success
-                            : AppColors.secondary,
-                        onTap: () => _open(AppRoutes.driverProfileCompletion),
-                      ),
                       _ProfileActionTile(
                         title: 'تسجيل خروج',
                         subtitle: 'تسجيل الخروج من هذا الجهاز بأمان',
@@ -222,29 +200,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
       ),
     );
-  }
-
-  int _profileCompletionCount(
-    DriverIdentity identity,
-    DriverProfileDraft draft,
-  ) {
-    final values = [
-      identity.fullName,
-      identity.email,
-      identity.phone,
-      draft.address,
-      draft.nationalId,
-      draft.licenseNumber,
-      draft.vehicleBrand,
-      draft.vehicleModel,
-      draft.plateNumber,
-    ];
-
-    final imageCount = draft.images.values
-        .where((value) => value.trim().isNotEmpty)
-        .length;
-
-    return values.where((value) => value.trim().isNotEmpty).length + imageCount;
   }
 
   String _resolveAvatarLetter(String fullName) {

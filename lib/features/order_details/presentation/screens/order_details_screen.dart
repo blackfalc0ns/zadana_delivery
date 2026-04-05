@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,10 +17,12 @@ class OrderDetailsScreen extends StatefulWidget {
     super.key,
     required this.order,
     required this.driverLocation,
+    this.startAccepted = false,
   });
 
   final DriverOrderPreview order;
   final LatLng driverLocation;
+  final bool startAccepted;
 
   @override
   State<OrderDetailsScreen> createState() => _OrderDetailsScreenState();
@@ -32,16 +34,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   @override
   void initState() {
     super.initState();
-    _stage = _OrderDeliveryStage.pending;
+    _stage = widget.startAccepted
+        ? _OrderDeliveryStage.accepted
+        : _OrderDeliveryStage.pending;
   }
 
   LatLng get _storeLocation =>
       LatLng(widget.order.pickupLatitude, widget.order.pickupLongitude);
 
-  LatLng get _customerLocation => LatLng(
-    widget.order.deliveryLatitude,
-    widget.order.deliveryLongitude,
-  );
+  LatLng get _customerLocation =>
+      LatLng(widget.order.deliveryLatitude, widget.order.deliveryLongitude);
 
   String get _paymentMethod =>
       int.tryParse(widget.order.id) != null && int.parse(widget.order.id).isEven
@@ -111,7 +113,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
       Uri.parse('google.navigation:q=$destinationText&mode=d'),
     ];
-    
 
     for (final uri in candidates) {
       try {
@@ -149,6 +150,140 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   void _updateStage(_OrderDeliveryStage stage) {
     setState(() => _stage = stage);
+  }
+
+  Future<bool> _showConfirmationDialog({
+    required String title,
+    required String message,
+    required String confirmLabel,
+    required Color confirmColor,
+  }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(26),
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: confirmColor.withValues(alpha: 0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.verified_rounded,
+                  color: confirmColor,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size16,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size13,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(46),
+                      side: BorderSide(
+                        color: AppColors.border.withValues(alpha: 0.90),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      'إلغاء',
+                      style: getSemiBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size13,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(true),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(46),
+                      backgroundColor: confirmColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      confirmLabel,
+                      style: getBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size13,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
+  }
+
+  Future<void> _confirmAcceptOrder() async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'تأكيد قبول الطلب',
+      message: 'هل تريد قبول ${widget.order.title} والبدء في تنفيذ الطلب الآن؟',
+      confirmLabel: 'تأكيد القبول',
+      confirmColor: AppColors.primary,
+    );
+
+    if (!mounted || !confirmed) return;
+    _updateStage(_OrderDeliveryStage.accepted);
+  }
+
+  Future<void> _confirmPickupFromStore() async {
+    final confirmed = await _showConfirmationDialog(
+      title: 'تأكيد الاستلام من المتجر',
+      message:
+          'هل تؤكد استلام الطلب من ${widget.order.vendorName} وأن كل الأصناف جاهزة معك؟',
+      confirmLabel: 'تأكيد الاستلام',
+      confirmColor: AppColors.secondary,
+    );
+
+    if (!mounted || !confirmed) return;
+    _updateStage(_OrderDeliveryStage.pickedUp);
   }
 
   Future<void> _showOrderItemsSheet(BuildContext context) async {
@@ -247,7 +382,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                         controller: scrollController,
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                         itemCount: _orderItems.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 10),
                         itemBuilder: (context, index) {
                           final item = _orderItems[index];
                           return _OrderItemTile(item: item);
@@ -333,9 +469,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 SizedBox(
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.of(sheetContext).pop();
-                      _updateStage(_OrderDeliveryStage.pickedUp);
+                      await _confirmPickupFromStore();
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondary,
@@ -516,7 +652,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 foreground: Colors.white,
                 background: AppColors.primary,
                 borderColor: AppColors.primary,
-                onTap: () => _updateStage(_OrderDeliveryStage.accepted),
+                onTap: _confirmAcceptOrder,
               ),
             ),
             const SizedBox(width: 10),
@@ -1558,7 +1694,10 @@ class _MapCard extends StatelessWidget {
                 right: 12,
                 top: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.94),
                     borderRadius: BorderRadius.circular(999),
@@ -1587,6 +1726,7 @@ class _MapCard extends StatelessWidget {
     );
   }
 }
+
 class _RouteActionButton extends StatelessWidget {
   const _RouteActionButton({
     required this.label,
@@ -1678,8 +1818,4 @@ class _RouteActionButton extends StatelessWidget {
     );
   }
 }
-
-
-
-
 

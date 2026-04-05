@@ -42,15 +42,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1234',
         title: 'طلب #1234',
-        vendorName:
-            'سلة جرين ماركت',
-        pickupAddress:
-            '12 طريق الملك فيصل، مدينة نصر',
+        vendorName: 'سلة جرين ماركت',
+        pickupAddress: '12 طريق الملك فيصل، مدينة نصر',
         pickupLatitude: 30.0724,
         pickupLongitude: 31.2872,
         customerName: 'منى عادل',
-        deliveryAddress:
-            '32 شارع عباس العقاد، مدينة نصر',
+        deliveryAddress: '32 شارع عباس العقاد، مدينة نصر',
         deliveryLatitude: 30.0609,
         deliveryLongitude: 31.3124,
         distance: '3.2 كم',
@@ -70,15 +67,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1235',
         title: 'طلب #1235',
-        vendorName:
-            'أسواق الدانة',
-        pickupAddress:
-            'شارع التخصصي، الرياض',
+        vendorName: 'أسواق الدانة',
+        pickupAddress: 'شارع التخصصي، الرياض',
         pickupLatitude: 30.0219,
         pickupLongitude: 31.2105,
         customerName: 'ناصر',
-        deliveryAddress:
-            'حي الياسمين، الرياض',
+        deliveryAddress: 'حي الياسمين، الرياض',
         deliveryLatitude: 30.0398,
         deliveryLongitude: 31.2336,
         distance: '4.1 كم',
@@ -98,15 +92,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1236',
         title: 'طلب #1236',
-        vendorName:
-            'مخبز السراة',
-        pickupAddress:
-            'حي الندى، الرياض',
+        vendorName: 'مخبز السراة',
+        pickupAddress: 'حي الندى، الرياض',
         pickupLatitude: 30.1236,
         pickupLongitude: 31.3314,
         customerName: 'سعد',
-        deliveryAddress:
-            'حي النرجس، الرياض',
+        deliveryAddress: 'حي النرجس، الرياض',
         deliveryLatitude: 30.1094,
         deliveryLongitude: 31.3482,
         distance: '2.8 كم',
@@ -126,13 +117,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         id: '1237',
         title: 'طلب #1237',
         vendorName: 'كافيه بين',
-        pickupAddress:
-            'شارع الطيران، مصر الجديدة',
+        pickupAddress: 'شارع الطيران، مصر الجديدة',
         pickupLatitude: 30.0912,
         pickupLongitude: 31.3174,
         customerName: 'أحمد',
-        deliveryAddress:
-            'شارع النزهة، مصر الجديدة',
+        deliveryAddress: 'شارع النزهة، مصر الجديدة',
         deliveryLatitude: 30.0986,
         deliveryLongitude: 31.3328,
         distance: '3.6 كم',
@@ -151,15 +140,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1238',
         title: 'طلب #1238',
-        vendorName:
-            'صيدلية الشفاء',
-        pickupAddress:
-            'شارع جابر بن حيان، الدقي',
+        vendorName: 'صيدلية الشفاء',
+        pickupAddress: 'شارع جابر بن حيان، الدقي',
         pickupLatitude: 30.0508,
         pickupLongitude: 31.2001,
         customerName: 'ليلى',
-        deliveryAddress:
-            'شارع البطاويني، الدقي',
+        deliveryAddress: 'شارع البطاويني، الدقي',
         deliveryLatitude: 30.0427,
         deliveryLongitude: 31.2096,
         distance: '2.1 كم',
@@ -178,15 +164,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1239',
         title: 'طلب #1239',
-        vendorName:
-            'سوبر ماركت الخير',
-        pickupAddress:
-            'شارع الجيش، شبرا',
+        vendorName: 'سوبر ماركت الخير',
+        pickupAddress: 'شارع الجيش، شبرا',
         pickupLatitude: 30.0874,
         pickupLongitude: 31.2468,
         customerName: 'خالد',
-        deliveryAddress:
-            'شارع روض الفرج، شبرا',
+        deliveryAddress: 'شارع روض الفرج، شبرا',
         deliveryLatitude: 30.1018,
         deliveryLongitude: 31.2511,
         distance: '5.4 كم',
@@ -208,13 +191,11 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         id: '1240',
         title: 'طلب #1240',
         vendorName: 'مطعم زعتر',
-        pickupAddress:
-            'شارع المكرم عبيد، مدينة نصر',
+        pickupAddress: 'شارع المكرم عبيد، مدينة نصر',
         pickupLatitude: 30.0615,
         pickupLongitude: 31.3365,
         customerName: 'رانيا',
-        deliveryAddress:
-            'حي السابع، مدينة نصر',
+        deliveryAddress: 'حي السابع، مدينة نصر',
         deliveryLatitude: 30.0568,
         deliveryLongitude: 31.3492,
         distance: '3.9 كم',
@@ -233,15 +214,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1241',
         title: 'طلب #1241',
-        vendorName:
-            'ملحمة المها',
-        pickupAddress:
-            'شارع تسعين، التجمع',
+        vendorName: 'ملحمة المها',
+        pickupAddress: 'شارع تسعين، التجمع',
         pickupLatitude: 30.0087,
         pickupLongitude: 31.4321,
         customerName: 'عمر',
-        deliveryAddress:
-            'اللوتس الجنوبي، التجمع',
+        deliveryAddress: 'اللوتس الجنوبي، التجمع',
         deliveryLatitude: 30.0162,
         deliveryLongitude: 31.4465,
         distance: '6.2 كم',
@@ -260,15 +238,12 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverOrderPreview(
         id: '1242',
         title: 'طلب #1242',
-        vendorName:
-            'مخبوزات الدار',
-        pickupAddress:
-            'شارع 9، المعادي',
+        vendorName: 'مخبوزات الدار',
+        pickupAddress: 'شارع 9، المعادي',
         pickupLatitude: 29.9618,
         pickupLongitude: 31.2575,
         customerName: 'نور',
-        deliveryAddress:
-            'زهراء المعادي',
+        deliveryAddress: 'زهراء المعادي',
         deliveryLatitude: 29.9736,
         deliveryLongitude: 31.2749,
         distance: '4.7 كم',
@@ -334,10 +309,128 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     });
   }
 
-  Future<void> _openOrderDetails(DriverOrderPreview order) async {
+  Future<bool> _showAcceptOrderDialog(DriverOrderPreview order) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        final color = context.colorScheme;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(26),
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: 0.10),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle_outline_rounded,
+                  color: color.primary,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 14),
+              Text(
+                'تأكيد قبول الطلب',
+                textAlign: TextAlign.center,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size16,
+                  color: color.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'هل تريد قبول ${order.title} من ${order.vendorName} والانتقال إلى تفاصيل الطلب؟',
+                textAlign: TextAlign.center,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size13,
+                  color: color.onSurface.withValues(alpha: 0.74),
+                ),
+              ),
+            ],
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(false),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(46),
+                      side: BorderSide(
+                        color: color.outline.withValues(alpha: 0.32),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      'إلغاء',
+                      style: getSemiBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size13,
+                        color: color.onSurface.withValues(alpha: 0.72),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () => Navigator.of(dialogContext).pop(true),
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size.fromHeight(46),
+                      backgroundColor: color.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                    child: Text(
+                      'تأكيد القبول',
+                      style: getBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size13,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+
+    return confirmed ?? false;
+  }
+
+  Future<void> _acceptOrderFromCard(DriverOrderPreview order) async {
+    final confirmed = await _showAcceptOrderDialog(order);
+    if (!mounted || !confirmed) return;
+    await _openOrderDetails(order, startAccepted: true);
+  }
+
+  Future<void> _openOrderDetails(
+    DriverOrderPreview order, {
+    bool startAccepted = false,
+  }) async {
     final result = await context.pushNamed(
       AppRoutes.orderDetails,
-      arguments: {'order': order, 'driverLocation': _mockDriverLocation},
+      arguments: {
+        'order': order,
+        'driverLocation': _mockDriverLocation,
+        'startAccepted': startAccepted,
+      },
     );
 
     if (!mounted || result is! String) return;
@@ -357,11 +450,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     if (_mapController == null) return;
     await _mapController!.animateCamera(
       CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: location,
-          zoom: 16.5,
-          tilt: 45.0,
-        ),
+        CameraPosition(target: location, zoom: 16.5, tilt: 45.0),
       ),
     );
   }
@@ -373,10 +462,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       icon:
           _driverMarkerIcon ??
           BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-      infoWindow: const InfoWindow(
-        title:
-            'موقعي الحالي',
-      ),
+      infoWindow: const InfoWindow(title: 'موقعي الحالي'),
     ),
     ..._orders.map(
       (order) => Marker(
@@ -529,7 +615,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                         width: 40,
                         height: 4,
                         decoration: BoxDecoration(
-                          color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                          color: context.colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -563,11 +650,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                               child: IncomingOrderCard(
                                 order: order,
                                 onTap: () => _openOrderDetails(order),
-                                onAccept: () => _removeOrder(order.id),
+                                onAccept: () => _acceptOrderFromCard(order),
                                 onReject: () => _removeOrder(order.id),
                                 onExpired: () => _removeOrder(order.id),
                                 onLocationTap: () => _animateToLocation(
-                                  LatLng(order.deliveryLatitude, order.deliveryLongitude),
+                                  LatLng(
+                                    order.deliveryLatitude,
+                                    order.deliveryLongitude,
+                                  ),
                                 ),
                               ),
                             ),
@@ -820,9 +910,7 @@ class _ConnectionSwitch extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isOnline
-                      ? 'متصل الحين'
-                      : 'غير متصل',
+                  isOnline ? 'متصل الحين' : 'غير متصل',
                   style: getBoldStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size12,
@@ -830,9 +918,7 @@ class _ConnectionSwitch extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  isOnline
-                      ? 'جاهز للطلبات'
-                      : 'موقفه مؤقتاً',
+                  isOnline ? 'جاهز للطلبات' : 'موقفه مؤقتاً',
                   style: getRegularStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size10,
