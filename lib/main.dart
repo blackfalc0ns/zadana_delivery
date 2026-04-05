@@ -8,8 +8,13 @@ import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-
-  runApp(const MyApp());
+  runApp(
+    MyApp(),
+    //    DevicePreview(
+    //   enabled: true,
+    //   builder: (context) => MyApp(),
+    // ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,7 +30,7 @@ class MyApp extends StatelessWidget {
       locale: const Locale('ar'),
       theme: AppTheme.light,
       onGenerateRoute: RouteGenerator.getRoute,
-      initialRoute: AppRoutes.driverProfileCompletion,
+      initialRoute: AppRoutes.accountPendingApproval,
     );
   }
 }

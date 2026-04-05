@@ -62,12 +62,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (!mounted) return;
 
     setState(() => _isSubmitting = false);
-    context.pushReplacementNamed(
-      AppRoutes.login,
-      arguments: _emailController.text.trim().isNotEmpty
-          ? _emailController.text.trim()
-          : _phoneController.text.trim(),
-    );
+    context.pushReplacementNamed(AppRoutes.driverProfileCompletion);
   }
 
   @override

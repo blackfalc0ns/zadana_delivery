@@ -1248,4 +1248,210 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auth_phone_hint_compact => '5xxxxxxxx';
+
+  @override
+  String get completed_orders_title => 'Completed Orders';
+
+  @override
+  String get completed_orders_subtitle =>
+      'Review delivered, cancelled, and failed delivery orders in one organized history.';
+
+  @override
+  String get completed_orders_history_badge => 'History Archive';
+
+  @override
+  String get completed_orders_search_hint =>
+      'Search by order id, merchant, customer, or address';
+
+  @override
+  String get completed_orders_filter_all => 'All';
+
+  @override
+  String get completed_orders_merchant_label => 'Merchant';
+
+  @override
+  String get completed_orders_customer_label => 'Customer';
+
+  @override
+  String get completed_orders_delivery_address_label => 'Delivery address';
+
+  @override
+  String get completed_orders_empty_title => 'No completed orders yet';
+
+  @override
+  String get completed_orders_empty_subtitle =>
+      'Finished driver trips will appear here once an order is delivered, cancelled, or marked as failed.';
+
+  @override
+  String get completed_orders_no_results_title => 'No matching orders found';
+
+  @override
+  String get completed_orders_no_results_subtitle =>
+      'Try another search term or clear the active status filter.';
+
+  @override
+  String get order_delivery_failed => 'Delivery Failed';
+
+  @override
+  String get completed_orders_card_title => 'Your Order';
+
+  @override
+  String get nav_wallet => 'Wallet';
+
+  @override
+  String get wallet_title => 'Wallet';
+
+  @override
+  String get wallet_subtitle =>
+      'Track your live balance, payout readiness, incentives, and every movement in one premium dashboard.';
+
+  @override
+  String get wallet_preview_state => 'Preview state';
+
+  @override
+  String get wallet_state_success => 'Success';
+
+  @override
+  String get wallet_state_empty => 'Empty';
+
+  @override
+  String get wallet_state_error => 'Error';
+
+  @override
+  String get wallet_current_balance => 'Current balance';
+
+  @override
+  String get wallet_available_to_withdraw => 'Available to withdraw';
+
+  @override
+  String get wallet_pending_balance => 'Pending balance';
+
+  @override
+  String get wallet_withdraw_cta => 'Withdraw now';
+
+  @override
+  String get wallet_withdraw_success =>
+      'Withdrawal request created successfully.';
+
+  @override
+  String get wallet_earnings_summary => 'Earnings summary';
+
+  @override
+  String get wallet_metric_today => 'Today';
+
+  @override
+  String get wallet_metric_week => 'This week';
+
+  @override
+  String get wallet_metric_month => 'This month';
+
+  @override
+  String get wallet_transaction_history => 'Transaction history';
+
+  @override
+  String get wallet_payment_methods => 'Payment methods';
+
+  @override
+  String get wallet_bonuses => 'Bonuses & incentives';
+
+  @override
+  String get wallet_alerts => 'Wallet alerts';
+
+  @override
+  String get wallet_primary_method => 'Primary';
+
+  @override
+  String get wallet_unverified_method => 'Needs verification';
+
+  @override
+  String get wallet_bonus_progress => 'completed';
+
+  @override
+  String get wallet_bonus_unlock_before => 'Unlock before';
+
+  @override
+  String get wallet_empty_title => 'Your wallet is ready for the first payout';
+
+  @override
+  String get wallet_empty_subtitle =>
+      'Complete a few delivery trips and your earnings, history, and payout options will appear here.';
+
+  @override
+  String get wallet_error_title => 'Unable to load wallet right now';
+
+  @override
+  String get wallet_error_subtitle =>
+      'We could not fetch the latest wallet snapshot. Try again in a moment.';
+
+  @override
+  String get wallet_retry => 'Try again';
+
+  @override
+  String get wallet_status_completed => 'Completed';
+
+  @override
+  String get wallet_status_pending => 'Pending';
+
+  @override
+  String get wallet_status_failed => 'Failed';
+
+  @override
+  String get wallet_transaction_delivery => 'Delivery earnings';
+
+  @override
+  String get wallet_transaction_withdrawal => 'Withdrawal request';
+
+  @override
+  String get wallet_transaction_bonus => 'Bonus payout';
+
+  @override
+  String get wallet_transaction_adjustment => 'Wallet adjustment';
+
+  @override
+  String get wallet_payment_bank_account => 'Bank account';
+
+  @override
+  String get wallet_payment_debit_card => 'Debit card';
+
+  @override
+  String get wallet_payment_instant_transfer => 'Instant transfer';
+
+  @override
+  String get wallet_bonus_weekend => 'Weekend challenge';
+
+  @override
+  String get wallet_bonus_consistency => 'Consistency streak';
+
+  @override
+  String get wallet_bonus_peak_hours => 'Peak hours boost';
+
+  @override
+  String get wallet_alert_verification_title => 'Verify your payout account';
+
+  @override
+  String get wallet_alert_verification_subtitle =>
+      'A quick account verification keeps withdrawals smooth and secure.';
+
+  @override
+  String get wallet_alert_payout_title => 'Withdrawal is being processed';
+
+  @override
+  String get wallet_alert_payout_subtitle =>
+      'Your latest payout request is queued and should arrive within the expected settlement window.';
+
+  @override
+  String get wallet_alert_incentive_title => 'New incentive unlocked';
+
+  @override
+  String get wallet_alert_incentive_subtitle =>
+      'You are close to unlocking an extra driver reward during peak delivery hours.';
+
+  @override
+  String get wallet_alert_action_verify => 'Verify';
+
+  @override
+  String get wallet_alert_action_view => 'View';
+
+  @override
+  String get wallet_alert_action_claim => 'Claim';
 }

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/text_styles.dart';
+import 'package:zadana_delivery/config/theme/wallet_theme_extension.dart';
 
 class AppTheme {
   AppTheme._();
@@ -25,6 +26,9 @@ class AppTheme {
         error: AppColors.error,
         onError: AppColors.textOnPrimary,
       ),
+      extensions: const <ThemeExtension<dynamic>>[
+        WalletThemeExtension.light,
+      ],
       // ── AppBar ──
       appBarTheme: const AppBarTheme(
         elevation: 0,
@@ -171,6 +175,9 @@ class AppTheme {
         error: AppColors.error,
         onError: AppColors.textOnPrimary,
       ),
+      extensions: const <ThemeExtension<dynamic>>[
+        WalletThemeExtension.dark,
+      ],
       // ── AppBar ──
       appBarTheme: AppBarTheme(
         elevation: 0,

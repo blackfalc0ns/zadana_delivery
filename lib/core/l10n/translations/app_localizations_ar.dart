@@ -1044,7 +1044,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_login_hero_subtitle =>
-      'ادخل لحسابك لاستلام الطلبات الجديدة، ومتابعة نشاطك، ثم استكمال بيانات المركبة بسهولة.';
+      'سجّل دخولك لاستلام الطلبات ومتابعة نشاطك واستكمال بيانات المركبة.';
 
   @override
   String get auth_login_section_badge => 'حساب المندوب';
@@ -1057,7 +1057,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_signup_hero_subtitle =>
-      'ابدأ ببياناتك الأساسية أولًا، وبعدها نوجّهك مباشرة إلى شاشة تسجيل الدخول ثم استكمال بيانات المركبة.';
+      'ابدأ ببياناتك الأساسية، ثم أكمل تسجيل الدخول وبيانات المركبة.';
 
   @override
   String get auth_signup_section_badge => 'انطلاقة جديدة';
@@ -1233,4 +1233,209 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_phone_hint_compact => '5xxxxxxxx';
+
+  @override
+  String get completed_orders_title => 'الطلبات المكتملة';
+
+  @override
+  String get completed_orders_subtitle =>
+      'راجع الطلبات التي تم توصيلها أو إلغاؤها أو فشل تسليمها داخل سجل واحد منظم.';
+
+  @override
+  String get completed_orders_history_badge => 'سجل الطلبات';
+
+  @override
+  String get completed_orders_search_hint =>
+      'ابحث برقم الطلب أو اسم التاجر أو العميل أو العنوان';
+
+  @override
+  String get completed_orders_filter_all => 'الكل';
+
+  @override
+  String get completed_orders_merchant_label => 'التاجر';
+
+  @override
+  String get completed_orders_customer_label => 'العميل';
+
+  @override
+  String get completed_orders_delivery_address_label => 'عنوان التوصيل';
+
+  @override
+  String get completed_orders_empty_title => 'لا توجد طلبات مكتملة حتى الآن';
+
+  @override
+  String get completed_orders_empty_subtitle =>
+      'ستظهر هنا الطلبات التي انتهت بالتوصيل أو الإلغاء أو فشل التسليم.';
+
+  @override
+  String get completed_orders_no_results_title => 'لا توجد نتائج مطابقة';
+
+  @override
+  String get completed_orders_no_results_subtitle =>
+      'جرّب كلمة بحث مختلفة أو ألغِ فلتر الحالة الحالي.';
+
+  @override
+  String get order_delivery_failed => 'فشل التسليم';
+
+  @override
+  String get completed_orders_card_title => 'طلبك';
+
+  @override
+  String get nav_wallet => 'المحفظة';
+
+  @override
+  String get wallet_title => 'المحفظة';
+
+  @override
+  String get wallet_subtitle =>
+      'تابع الرصيد الحالي، الجاهز للسحب، الحوافز، وكل حركة مالية داخل لوحة واضحة وموثوقة.';
+
+  @override
+  String get wallet_preview_state => 'حالة المعاينة';
+
+  @override
+  String get wallet_state_success => 'نجاح';
+
+  @override
+  String get wallet_state_empty => 'فارغة';
+
+  @override
+  String get wallet_state_error => 'خطأ';
+
+  @override
+  String get wallet_current_balance => 'الرصيد الحالي';
+
+  @override
+  String get wallet_available_to_withdraw => 'المتاح للسحب';
+
+  @override
+  String get wallet_pending_balance => 'الرصيد المعلق';
+
+  @override
+  String get wallet_withdraw_cta => 'سحب الآن';
+
+  @override
+  String get wallet_withdraw_success => 'تم إنشاء طلب السحب بنجاح.';
+
+  @override
+  String get wallet_earnings_summary => 'ملخص الأرباح';
+
+  @override
+  String get wallet_metric_today => 'اليوم';
+
+  @override
+  String get wallet_metric_week => 'هذا الأسبوع';
+
+  @override
+  String get wallet_metric_month => 'هذا الشهر';
+
+  @override
+  String get wallet_transaction_history => 'سجل المعاملات';
+
+  @override
+  String get wallet_payment_methods => 'وسائل الدفع';
+
+  @override
+  String get wallet_bonuses => 'المكافآت والحوافز';
+
+  @override
+  String get wallet_alerts => 'تنبيهات المحفظة';
+
+  @override
+  String get wallet_primary_method => 'الأساسية';
+
+  @override
+  String get wallet_unverified_method => 'تحتاج توثيق';
+
+  @override
+  String get wallet_bonus_progress => 'مكتمل';
+
+  @override
+  String get wallet_bonus_unlock_before => 'افتحها قبل';
+
+  @override
+  String get wallet_empty_title => 'محفظتك جاهزة لأول عملية سحب';
+
+  @override
+  String get wallet_empty_subtitle =>
+      'أكمل بعض رحلات التوصيل وستظهر هنا الأرباح وسجل الحركات وخيارات السحب.';
+
+  @override
+  String get wallet_error_title => 'تعذر تحميل المحفظة الآن';
+
+  @override
+  String get wallet_error_subtitle =>
+      'لم نتمكن من جلب آخر بيانات المحفظة. حاول مرة أخرى بعد قليل.';
+
+  @override
+  String get wallet_retry => 'إعادة المحاولة';
+
+  @override
+  String get wallet_status_completed => 'مكتمل';
+
+  @override
+  String get wallet_status_pending => 'قيد الانتظار';
+
+  @override
+  String get wallet_status_failed => 'فشل';
+
+  @override
+  String get wallet_transaction_delivery => 'أرباح التوصيل';
+
+  @override
+  String get wallet_transaction_withdrawal => 'طلب سحب';
+
+  @override
+  String get wallet_transaction_bonus => 'مكافأة';
+
+  @override
+  String get wallet_transaction_adjustment => 'تسوية محفظة';
+
+  @override
+  String get wallet_payment_bank_account => 'حساب بنكي';
+
+  @override
+  String get wallet_payment_debit_card => 'بطاقة خصم';
+
+  @override
+  String get wallet_payment_instant_transfer => 'تحويل فوري';
+
+  @override
+  String get wallet_bonus_weekend => 'تحدي نهاية الأسبوع';
+
+  @override
+  String get wallet_bonus_consistency => 'مكافأة الاستمرارية';
+
+  @override
+  String get wallet_bonus_peak_hours => 'تعزيز ساعات الذروة';
+
+  @override
+  String get wallet_alert_verification_title => 'وثّق حساب السحب';
+
+  @override
+  String get wallet_alert_verification_subtitle =>
+      'توثيق الحساب بسرعة يساعد على إبقاء عمليات السحب سلسة وآمنة.';
+
+  @override
+  String get wallet_alert_payout_title => 'طلب السحب قيد المعالجة';
+
+  @override
+  String get wallet_alert_payout_subtitle =>
+      'آخر طلب سحب تم وضعه في قائمة المعالجة وسيصل خلال نافذة التسوية المعتادة.';
+
+  @override
+  String get wallet_alert_incentive_title => 'تم فتح حافز جديد';
+
+  @override
+  String get wallet_alert_incentive_subtitle =>
+      'أنت قريب من الحصول على مكافأة إضافية خلال ساعات الذروة.';
+
+  @override
+  String get wallet_alert_action_verify => 'وثّق';
+
+  @override
+  String get wallet_alert_action_view => 'عرض';
+
+  @override
+  String get wallet_alert_action_claim => 'استلام';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/wallet_theme_extension.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 
 extension ContextExtension on BuildContext {
@@ -26,4 +27,7 @@ extension ThemeX on BuildContext {
 
   /// Shortcut to colorScheme
   ColorScheme get colorScheme => theme.colorScheme;
+
+  WalletThemeExtension get walletTheme =>
+      theme.extension<WalletThemeExtension>()!;
 }

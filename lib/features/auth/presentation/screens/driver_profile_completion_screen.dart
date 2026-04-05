@@ -118,12 +118,8 @@ class _DriverProfileCompletionScreenState
       if (!mounted) return;
 
       setState(() => _isSubmitting = false);
-      CustomSnackbar.showSuccess(
-        context: context,
-        message: context.localization.driver_profile_submit_success,
-      );
       context.pushNamedAndRemoveUntil(
-        AppRoutes.mainShell,
+        AppRoutes.accountPendingApproval,
         predicate: (route) => false,
       );
       return;

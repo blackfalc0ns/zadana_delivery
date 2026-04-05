@@ -2455,6 +2455,396 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'5xxxxxxxx'**
   String get auth_phone_hint_compact;
+
+  /// No description provided for @completed_orders_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Orders'**
+  String get completed_orders_title;
+
+  /// No description provided for @completed_orders_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review delivered, cancelled, and failed delivery orders in one organized history.'**
+  String get completed_orders_subtitle;
+
+  /// No description provided for @completed_orders_history_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'History Archive'**
+  String get completed_orders_history_badge;
+
+  /// No description provided for @completed_orders_search_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by order id, merchant, customer, or address'**
+  String get completed_orders_search_hint;
+
+  /// No description provided for @completed_orders_filter_all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get completed_orders_filter_all;
+
+  /// No description provided for @completed_orders_merchant_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Merchant'**
+  String get completed_orders_merchant_label;
+
+  /// No description provided for @completed_orders_customer_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get completed_orders_customer_label;
+
+  /// No description provided for @completed_orders_delivery_address_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery address'**
+  String get completed_orders_delivery_address_label;
+
+  /// No description provided for @completed_orders_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed orders yet'**
+  String get completed_orders_empty_title;
+
+  /// No description provided for @completed_orders_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Finished driver trips will appear here once an order is delivered, cancelled, or marked as failed.'**
+  String get completed_orders_empty_subtitle;
+
+  /// No description provided for @completed_orders_no_results_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching orders found'**
+  String get completed_orders_no_results_title;
+
+  /// No description provided for @completed_orders_no_results_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another search term or clear the active status filter.'**
+  String get completed_orders_no_results_subtitle;
+
+  /// No description provided for @order_delivery_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Failed'**
+  String get order_delivery_failed;
+
+  /// No description provided for @completed_orders_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Order'**
+  String get completed_orders_card_title;
+
+  /// No description provided for @nav_wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get nav_wallet;
+
+  /// No description provided for @wallet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet_title;
+
+  /// No description provided for @wallet_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your live balance, payout readiness, incentives, and every movement in one premium dashboard.'**
+  String get wallet_subtitle;
+
+  /// No description provided for @wallet_preview_state.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview state'**
+  String get wallet_preview_state;
+
+  /// No description provided for @wallet_state_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get wallet_state_success;
+
+  /// No description provided for @wallet_state_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty'**
+  String get wallet_state_empty;
+
+  /// No description provided for @wallet_state_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get wallet_state_error;
+
+  /// No description provided for @wallet_current_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get wallet_current_balance;
+
+  /// No description provided for @wallet_available_to_withdraw.
+  ///
+  /// In en, this message translates to:
+  /// **'Available to withdraw'**
+  String get wallet_available_to_withdraw;
+
+  /// No description provided for @wallet_pending_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending balance'**
+  String get wallet_pending_balance;
+
+  /// No description provided for @wallet_withdraw_cta.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw now'**
+  String get wallet_withdraw_cta;
+
+  /// No description provided for @wallet_withdraw_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request created successfully.'**
+  String get wallet_withdraw_success;
+
+  /// No description provided for @wallet_earnings_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings summary'**
+  String get wallet_earnings_summary;
+
+  /// No description provided for @wallet_metric_today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get wallet_metric_today;
+
+  /// No description provided for @wallet_metric_week.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get wallet_metric_week;
+
+  /// No description provided for @wallet_metric_month.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get wallet_metric_month;
+
+  /// No description provided for @wallet_transaction_history.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction history'**
+  String get wallet_transaction_history;
+
+  /// No description provided for @wallet_payment_methods.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment methods'**
+  String get wallet_payment_methods;
+
+  /// No description provided for @wallet_bonuses.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonuses & incentives'**
+  String get wallet_bonuses;
+
+  /// No description provided for @wallet_alerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet alerts'**
+  String get wallet_alerts;
+
+  /// No description provided for @wallet_primary_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary'**
+  String get wallet_primary_method;
+
+  /// No description provided for @wallet_unverified_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs verification'**
+  String get wallet_unverified_method;
+
+  /// No description provided for @wallet_bonus_progress.
+  ///
+  /// In en, this message translates to:
+  /// **'completed'**
+  String get wallet_bonus_progress;
+
+  /// No description provided for @wallet_bonus_unlock_before.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock before'**
+  String get wallet_bonus_unlock_before;
+
+  /// No description provided for @wallet_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet is ready for the first payout'**
+  String get wallet_empty_title;
+
+  /// No description provided for @wallet_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete a few delivery trips and your earnings, history, and payout options will appear here.'**
+  String get wallet_empty_subtitle;
+
+  /// No description provided for @wallet_error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load wallet right now'**
+  String get wallet_error_title;
+
+  /// No description provided for @wallet_error_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not fetch the latest wallet snapshot. Try again in a moment.'**
+  String get wallet_error_subtitle;
+
+  /// No description provided for @wallet_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get wallet_retry;
+
+  /// No description provided for @wallet_status_completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get wallet_status_completed;
+
+  /// No description provided for @wallet_status_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get wallet_status_pending;
+
+  /// No description provided for @wallet_status_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get wallet_status_failed;
+
+  /// No description provided for @wallet_transaction_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery earnings'**
+  String get wallet_transaction_delivery;
+
+  /// No description provided for @wallet_transaction_withdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request'**
+  String get wallet_transaction_withdrawal;
+
+  /// No description provided for @wallet_transaction_bonus.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus payout'**
+  String get wallet_transaction_bonus;
+
+  /// No description provided for @wallet_transaction_adjustment.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet adjustment'**
+  String get wallet_transaction_adjustment;
+
+  /// No description provided for @wallet_payment_bank_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank account'**
+  String get wallet_payment_bank_account;
+
+  /// No description provided for @wallet_payment_debit_card.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit card'**
+  String get wallet_payment_debit_card;
+
+  /// No description provided for @wallet_payment_instant_transfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant transfer'**
+  String get wallet_payment_instant_transfer;
+
+  /// No description provided for @wallet_bonus_weekend.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekend challenge'**
+  String get wallet_bonus_weekend;
+
+  /// No description provided for @wallet_bonus_consistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency streak'**
+  String get wallet_bonus_consistency;
+
+  /// No description provided for @wallet_bonus_peak_hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Peak hours boost'**
+  String get wallet_bonus_peak_hours;
+
+  /// No description provided for @wallet_alert_verification_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your payout account'**
+  String get wallet_alert_verification_title;
+
+  /// No description provided for @wallet_alert_verification_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A quick account verification keeps withdrawals smooth and secure.'**
+  String get wallet_alert_verification_subtitle;
+
+  /// No description provided for @wallet_alert_payout_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal is being processed'**
+  String get wallet_alert_payout_title;
+
+  /// No description provided for @wallet_alert_payout_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your latest payout request is queued and should arrive within the expected settlement window.'**
+  String get wallet_alert_payout_subtitle;
+
+  /// No description provided for @wallet_alert_incentive_title.
+  ///
+  /// In en, this message translates to:
+  /// **'New incentive unlocked'**
+  String get wallet_alert_incentive_title;
+
+  /// No description provided for @wallet_alert_incentive_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are close to unlocking an extra driver reward during peak delivery hours.'**
+  String get wallet_alert_incentive_subtitle;
+
+  /// No description provided for @wallet_alert_action_verify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get wallet_alert_action_verify;
+
+  /// No description provided for @wallet_alert_action_view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get wallet_alert_action_view;
+
+  /// No description provided for @wallet_alert_action_claim.
+  ///
+  /// In en, this message translates to:
+  /// **'Claim'**
+  String get wallet_alert_action_claim;
 }
 
 class _AppLocalizationsDelegate

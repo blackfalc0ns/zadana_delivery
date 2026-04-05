@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
@@ -145,8 +146,8 @@ class _HeroHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 210,
-      padding: const EdgeInsets.all(16),
+      height: 100,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         gradient: const LinearGradient(
@@ -167,33 +168,34 @@ class _HeroHeader extends StatelessWidget {
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   title,
                   style: getBoldStyle(
-                    fontSize: 26,
+                    fontSize: FontSize.size20,
                     fontFamily: FontConstant.cairo,
                     color: Colors.white,
                   ),
                 ),
-                const SizedBox(height: Spacing.sm),
+                const SizedBox(height: 6),
                 Text(
                   subtitle,
                   style: getRegularStyle(
-                    fontSize: FontSize.size16,
+                    fontSize: FontSize.size12,
                     fontFamily: FontConstant.cairo,
-                    color: Colors.white.withValues(alpha: 0.92),
+                    color: Colors.white.withValues(alpha: 0.78),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(width: Spacing.base),
+          const SizedBox(width: 10),
           const _HeroProduceArtwork(),
         ],
       ),
@@ -207,60 +209,18 @@ class _HeroProduceArtwork extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 124,
-      height: 168,
-      child: Stack(
-        children: const [
-          Positioned(
-            top: 0,
-            left: 18,
-            child: _ProduceBox(
-              assetPath: 'assets/images/Cabbage.png',
-              size: 72,
-            ),
-          ),
-          Positioned(
-            top: 60,
-            left: 45,
-            child: _ProduceBox(assetPath: 'assets/images/Tomato.png', size: 72),
-          ),
-          Positioned(
-            top: 99,
-            right: 55,
-            child: _ProduceBox(assetPath: 'assets/images/Chilli.png', size: 65),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProduceBox extends StatelessWidget {
-  const _ProduceBox({required this.assetPath, required this.size});
-
-  final String assetPath;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
-      ),
-      child: Image.asset(
-        assetPath,
+      width: 126,
+      height: 150,
+      child: SvgPicture.asset(
+        'assets/images/fast_delivery.svg',
         fit: BoxFit.contain,
-        errorBuilder: (context, error, stackTrace) {
-          return Icon(
+        placeholderBuilder: (context) => Center(
+          child: Icon(
             Icons.local_shipping_outlined,
+            size: 40,
             color: Colors.white.withValues(alpha: 0.92),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
