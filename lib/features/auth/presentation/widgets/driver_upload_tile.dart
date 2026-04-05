@@ -57,7 +57,12 @@ class DriverUploadTile extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: _hasImage
-                  ? Image.file(File(imagePath!), fit: BoxFit.cover)
+                  ? Image.file(
+                      File(imagePath!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(icon, color: color.secondary),
+                    )
                   : Icon(
                       icon,
                       color: _hasImage ? color.secondary : color.primary,

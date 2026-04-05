@@ -10,6 +10,7 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
+import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/auth_text_field.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/driver_profile/driver_profile_review_list.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/driver_profile/driver_profile_step_header.dart';
@@ -28,6 +29,7 @@ class DriverProfileCompletionScreen extends StatefulWidget {
 
 class _DriverProfileCompletionScreenState
     extends State<DriverProfileCompletionScreen> {
+  final _service = DriverProfileService();
   final _formKey = GlobalKey<FormState>();
   final _addressController = TextEditingController();
   final _nationalIdController = TextEditingController();
@@ -63,6 +65,12 @@ class _DriverProfileCompletionScreenState
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadInitialData();
+  }
+
+  @override
   void dispose() {
     _addressController.dispose();
     _nationalIdController.dispose();
@@ -71,6 +79,59 @@ class _DriverProfileCompletionScreenState
     _vehicleModelController.dispose();
     _plateNumberController.dispose();
     super.dispose();
+  }
+
+  void _loadInitialData() {
+    final draft = _service.profileDraft;
+    final seededDraft = _withFallbackDraft(draft);
+
+    _vehicleType = seededDraft.vehicleType;
+    _addressController.text = seededDraft.address;
+    _nationalIdController.text = seededDraft.nationalId;
+    _licenseNumberController.text = seededDraft.licenseNumber;
+    _vehicleBrandController.text = seededDraft.vehicleBrand;
+    _vehicleModelController.text = seededDraft.vehicleModel;
+    _plateNumberController.text = seededDraft.plateNumber;
+    _images
+      ..clear()
+      ..addAll({
+        'portrait': seededDraft.images['portrait'] ?? '',
+        'idFront': seededDraft.images['idFront'] ?? '',
+        'license': seededDraft.images['license'] ?? '',
+        'vehicle': seededDraft.images['vehicle'] ?? '',
+        'plate': seededDraft.images['plate'] ?? '',
+      });
+  }
+
+  DriverProfileDraft _withFallbackDraft(DriverProfileDraft draft) {
+    final hasRealData = [
+      draft.address,
+      draft.nationalId,
+      draft.licenseNumber,
+      draft.vehicleBrand,
+      draft.vehicleModel,
+      draft.plateNumber,
+      ...draft.images.values,
+    ].any((value) => value.trim().isNotEmpty);
+
+    if (hasRealData) return draft;
+
+    return draft.copyWith(
+      vehicleType: 'bike',
+      address: 'مدينة نصر، القاهرة',
+      nationalId: '29801011234567',
+      licenseNumber: 'C-452188',
+      vehicleBrand: 'Yamaha',
+      vehicleModel: 'NMAX 2023',
+      plateNumber: 'س ط ر 2486',
+      images: {
+        'portrait': 'mock/portrait.jpg',
+        'idFront': 'mock/id-front.jpg',
+        'license': 'mock/license.jpg',
+        'vehicle': 'mock/vehicle.jpg',
+        'plate': 'mock/plate.jpg',
+      },
+    );
   }
 
   Future<void> _pickImage(String key) async {
@@ -114,6 +175,18 @@ class _DriverProfileCompletionScreenState
 
     if (_currentStep == _stepTitles(context).length - 1) {
       setState(() => _isSubmitting = true);
+      await _service.saveProfileDraft(
+        DriverProfileDraft(
+          vehicleType: _vehicleType,
+          address: _addressController.text.trim(),
+          nationalId: _nationalIdController.text.trim(),
+          licenseNumber: _licenseNumberController.text.trim(),
+          vehicleBrand: _vehicleBrandController.text.trim(),
+          vehicleModel: _vehicleModelController.text.trim(),
+          plateNumber: _plateNumberController.text.trim(),
+          images: Map<String, String>.from(_images),
+        ),
+      );
       await Future<void>.delayed(const Duration(milliseconds: 300));
       if (!mounted) return;
 

@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
       locale: const Locale('ar'),
       theme: AppTheme.light,
       onGenerateRoute: RouteGenerator.getRoute,
-      initialRoute: AppRoutes.accountPendingApproval,
+      initialRoute: AppRoutes.mainShell,
     );
   }
 }

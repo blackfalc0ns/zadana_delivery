@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -21,14 +22,13 @@ class WalletAlertTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
-    final walletTheme = context.walletTheme;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: color.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: walletTheme.softBorder),
+        border: Border.all(color: const Color(0xFFE5ECF1)),
       ),
       child: Row(
         children: [
@@ -36,12 +36,12 @@ class WalletAlertTile extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: walletTheme.alertTint.withValues(alpha: 0.12),
+              color: AppColors.primary.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(
+            child: const Icon(
               Icons.notifications_active_rounded,
-              color: walletTheme.alertTint,
+              color: AppColors.primary,
             ),
           ),
           const SizedBox(width: 12),
@@ -77,7 +77,7 @@ class WalletAlertTile extends StatelessWidget {
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size12,
-                color: walletTheme.alertTint,
+                color: AppColors.primary,
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -14,17 +15,14 @@ class WalletPaymentMethodTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
-    final walletTheme = context.walletTheme;
-    final chipColor = item.isVerified
-        ? walletTheme.successTint
-        : walletTheme.warningTint;
+    final chipColor = item.isVerified ? AppColors.success : AppColors.warning;
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: walletTheme.softBorder),
+        border: Border.all(color: const Color(0xFFE5ECF1)),
       ),
       child: Row(
         children: [
@@ -73,8 +71,8 @@ class WalletPaymentMethodTile extends StatelessWidget {
               item.isPrimary
                   ? locale.wallet_primary_method
                   : item.isVerified
-                  ? locale.wallet_status_completed
-                  : locale.wallet_unverified_method,
+                        ? locale.wallet_status_completed
+                        : locale.wallet_unverified_method,
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size10,

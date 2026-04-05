@@ -2,22 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/app_shell/presentation/screens/driver_account_screen.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/screens/completed_orders_screen.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_screen.dart';
+import 'package:zadana_delivery/features/profile/presentation/screens/profile_screen.dart';
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_screen.dart';
 
 class AppShellScreen extends StatefulWidget {
-  const AppShellScreen({super.key});
+  const AppShellScreen({super.key, this.initialIndex = 0});
+
+  final int initialIndex;
+
+  static AppShellTabScope? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<AppShellTabScope>();
+  }
 
   @override
   State<AppShellScreen> createState() => _AppShellScreenState();
 }
 
 class _AppShellScreenState extends State<AppShellScreen> {
-  final PersistentTabController _controller = PersistentTabController(
-    initialIndex: 0,
-  );
+  late final PersistentTabController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PersistentTabController(initialIndex: widget.initialIndex);
+  }
+
+  void _switchToTab(int index) {
+    _controller.jumpToTab(index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +69,7 @@ class _AppShellScreenState extends State<AppShellScreen> {
         ),
       ),
       PersistentTabConfig(
-        screen: const DriverAccountScreen(),
+        screen: const ProfileScreen(),
         item: ItemConfig(
           icon: const Icon(Icons.person_rounded),
           inactiveIcon: const Icon(Icons.person_outline_rounded),
@@ -66,16 +80,34 @@ class _AppShellScreenState extends State<AppShellScreen> {
       ),
     ];
 
-    return PersistentTabView(
-      controller: _controller,
-      tabs: tabs,
-      backgroundColor: color.surface,
-      navBarBuilder: (navBarConfig) => SafeArea(
-        top: false,
-        minimum: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-        child: _AppShellNavBar(navBarConfig: navBarConfig),
+    return AppShellTabScope(
+      switchToTab: _switchToTab,
+      child: PersistentTabView(
+        controller: _controller,
+        tabs: tabs,
+        backgroundColor: color.surface,
+        navBarBuilder: (navBarConfig) => SafeArea(
+          top: false,
+          minimum: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          child: _AppShellNavBar(navBarConfig: navBarConfig),
+        ),
       ),
     );
+  }
+}
+
+class AppShellTabScope extends InheritedWidget {
+  const AppShellTabScope({
+    super.key,
+    required this.switchToTab,
+    required super.child,
+  });
+
+  final ValueChanged<int> switchToTab;
+
+  @override
+  bool updateShouldNotify(AppShellTabScope oldWidget) {
+    return switchToTab != oldWidget.switchToTab;
   }
 }
 
@@ -194,4 +226,3 @@ class _AppShellNavBar extends StatelessWidget {
     );
   }
 }
-

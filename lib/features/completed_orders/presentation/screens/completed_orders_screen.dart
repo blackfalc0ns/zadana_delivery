@@ -25,7 +25,6 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
   List<CompletedOrder> get _filteredOrders {
     return _orders.where((order) => order.status == _selectedStatus).toList();
   }
-
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;

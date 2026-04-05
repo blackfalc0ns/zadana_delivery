@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -20,8 +21,7 @@ class WalletTransactionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
-    final walletTheme = context.walletTheme;
-    final kindColor = _kindColor(context, item.kind);
+    final kindColor = _kindColor(item.kind);
     final statusColor = _statusColor(context, item.status);
 
     return Container(
@@ -29,7 +29,7 @@ class WalletTransactionTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.surface,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: walletTheme.softBorder),
+        border: Border.all(color: const Color(0xFFE5ECF1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class WalletTransactionTile extends StatelessWidget {
                         fontFamily: FontConstant.cairo,
                         fontSize: FontSize.size14,
                         color: item.amount >= 0
-                            ? walletTheme.successTint
+                            ? AppColors.success
                             : color.onSurface,
                       ),
                     ),
@@ -118,29 +118,25 @@ class WalletTransactionTile extends StatelessWidget {
     }
   }
 
-  Color _kindColor(BuildContext context, WalletTransactionKind kind) {
-    final walletTheme = context.walletTheme;
-
+  Color _kindColor(WalletTransactionKind kind) {
     switch (kind) {
       case WalletTransactionKind.delivery:
-        return walletTheme.successTint;
+        return AppColors.success;
       case WalletTransactionKind.withdrawal:
-        return walletTheme.infoTint;
+        return AppColors.info;
       case WalletTransactionKind.bonus:
-        return walletTheme.bonusTint;
+        return AppColors.secondary;
       case WalletTransactionKind.adjustment:
-        return walletTheme.warningTint;
+        return AppColors.warning;
     }
   }
 
   Color _statusColor(BuildContext context, WalletTransactionStatus status) {
-    final walletTheme = context.walletTheme;
-
     switch (status) {
       case WalletTransactionStatus.completed:
-        return walletTheme.successTint;
+        return AppColors.success;
       case WalletTransactionStatus.pending:
-        return walletTheme.warningTint;
+        return AppColors.warning;
       case WalletTransactionStatus.failed:
         return Theme.of(context).colorScheme.error;
     }

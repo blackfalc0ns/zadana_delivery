@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
@@ -17,7 +18,6 @@ class WalletScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
-    final walletTheme = context.walletTheme;
     final snapshot = WalletFakeData.success;
 
     return Scaffold(
@@ -50,8 +50,16 @@ class WalletScreen extends StatelessWidget {
                     ),
                     ctaLabel: locale.wallet_withdraw_cta,
                     onWithdraw: () => _onWithdrawPressed(context),
-                    gradient: walletTheme.heroGradient,
-                    glowColor: walletTheme.heroGlow,
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFF0B8FA3),
+                        Color(0xFF05657D),
+                        Color(0xFF02384E),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    glowColor: const Color(0x332BBBD0),
                   ),
                   const SizedBox(height: 18),
                   WalletSectionShell(
@@ -62,21 +70,21 @@ class WalletScreen extends StatelessWidget {
                           label: locale.wallet_metric_today,
                           value: _formatCurrency(context, snapshot.todayEarnings),
                           icon: Icons.today_rounded,
-                          tint: walletTheme.successTint,
+                          tint: AppColors.success,
                         ),
                         const SizedBox(height: 10),
                         WalletSummaryMetricCard(
                           label: locale.wallet_metric_week,
                           value: _formatCurrency(context, snapshot.weekEarnings),
                           icon: Icons.date_range_rounded,
-                          tint: walletTheme.infoTint,
+                          tint: AppColors.info,
                         ),
                         const SizedBox(height: 10),
                         WalletSummaryMetricCard(
                           label: locale.wallet_metric_month,
                           value: _formatCurrency(context, snapshot.monthEarnings),
                           icon: Icons.insights_rounded,
-                          tint: walletTheme.bonusTint,
+                          tint: AppColors.secondary,
                         ),
                       ],
                     ),
@@ -115,7 +123,6 @@ class WalletScreen extends StatelessWidget {
                           .toList(),
                     ),
                   ),
-               
                   WalletSectionShell(
                     title: locale.wallet_alerts,
                     child: Column(
