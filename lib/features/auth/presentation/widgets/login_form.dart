@@ -114,6 +114,7 @@ class LoginForm extends StatelessWidget {
             height: 52,
             borderRadius: 18,
           ),
+          SizedBox(height: Spacing.base),
         ],
       ),
     );

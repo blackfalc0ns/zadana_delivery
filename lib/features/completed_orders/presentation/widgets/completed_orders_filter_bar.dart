@@ -1,4 +1,5 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
@@ -22,7 +23,9 @@ class CompletedOrdersFilterBar extends StatelessWidget {
       decoration: BoxDecoration(
         color: scheme.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.45)),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.45),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.03),
@@ -90,8 +93,8 @@ class _StatusTab extends StatelessWidget {
               textAlign: TextAlign.center,
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size11,
-                color: selected ? scheme.onSecondary : scheme.onSurfaceVariant,
+                fontSize: FontSize.size12,
+                color: selected ? AppColors.white : scheme.onSurfaceVariant,
               ),
             ),
           ),

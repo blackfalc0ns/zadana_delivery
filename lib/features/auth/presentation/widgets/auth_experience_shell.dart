@@ -42,35 +42,47 @@ class AuthExperienceShell extends StatelessWidget {
         children: [
           const _AuthBackground(),
           SafeArea(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                Spacing.base,
-                Spacing.base,
-                Spacing.base,
-                0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _HeroHeader(
-                    badge: heroBadge,
-                    title: heroTitle,
-                    subtitle: heroSubtitle,
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      Spacing.base,
+                      Spacing.base,
+                      Spacing.base,
+                      0,
+                    ),
+                    child: _HeroHeader(
+                      badge: heroBadge,
+                      title: heroTitle,
+                      subtitle: heroSubtitle,
+                    ),
                   ),
-                  const SizedBox(height: Spacing.lg),
-                  _FormCard(
-                    badge: resolvedSectionBadge,
-                    title: sectionTitle,
-                    description: sectionDescription,
-                    icon: sectionIcon,
-                    child: body,
+                ),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.all(Spacing.base),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _FormCard(
+                          badge: resolvedSectionBadge,
+                          title: sectionTitle,
+                          description: sectionDescription,
+                          icon: sectionIcon,
+                          child: body,
+                        ),
+                        if (footer != null) ...[
+                          const SizedBox(height: Spacing.base),
+                          Center(child: footer),
+                        ],
+                      ],
+                    ),
                   ),
-                  if (footer != null) ...[
-                    const SizedBox(height: Spacing.base),
-                    Center(child: footer),
-                  ],
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -146,7 +158,7 @@ class _HeroHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      height: 120,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),

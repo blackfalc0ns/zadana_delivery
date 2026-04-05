@@ -65,6 +65,7 @@ class IncomingOrderCard extends StatefulWidget {
     required this.onAccept,
     required this.onReject,
     required this.onExpired,
+    this.onLocationTap,
   });
 
   final DriverOrderPreview order;
@@ -72,6 +73,7 @@ class IncomingOrderCard extends StatefulWidget {
   final VoidCallback onAccept;
   final VoidCallback onReject;
   final VoidCallback onExpired;
+  final VoidCallback? onLocationTap;
 
   @override
   State<IncomingOrderCard> createState() => _IncomingOrderCardState();
@@ -182,6 +184,19 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
                               label: 'التوصيل',
                               value: widget.order.deliveryAddress,
                               color: color.secondary,
+                              trailing: widget.onLocationTap != null 
+                                ? Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: widget.onLocationTap,
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(4),
+                                        child: Icon(Icons.my_location_rounded, size: 18, color: color.primary),
+                                      ),
+                                    ),
+                                  ) 
+                                : null,
                             ),
                           ],
                         ),
@@ -337,12 +352,14 @@ class _MiniRow extends StatelessWidget {
     required this.label,
     required this.value,
     required this.color,
+    this.trailing,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final Color color;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
@@ -373,6 +390,10 @@ class _MiniRow extends StatelessWidget {
             ),
           ),
         ),
+        if (trailing != null) ...[
+          const SizedBox(width: 4),
+          trailing!,
+        ],
       ],
     );
   }
