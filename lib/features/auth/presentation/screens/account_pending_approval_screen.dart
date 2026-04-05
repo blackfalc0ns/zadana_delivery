@@ -101,7 +101,9 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.10),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.10,
+                                  ),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                                 child: const Icon(
@@ -158,11 +160,12 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: Spacing.xl),
                         AppButton.filled(
-                          text: 'العودة إلى تسجيل الدخول',
+                          text: 'تسجيل الخروج من الحساب',
                           onPressed: () => context.pushNamedAndRemoveUntil(
                             AppRoutes.login,
                             predicate: (route) => false,
                           ),
+                          color: AppColors.error,
                           height: 54,
                           borderRadius: 18,
                         ),

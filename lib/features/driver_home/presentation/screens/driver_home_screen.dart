@@ -1,4 +1,4 @@
-﻿import 'dart:ui' as ui;
+import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -347,6 +347,25 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
   }
 
+  GoogleMapController? _mapController;
+
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+  }
+
+  Future<void> _animateToLocation(LatLng location) async {
+    if (_mapController == null) return;
+    await _mapController!.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: location,
+          zoom: 16.5,
+          tilt: 45.0,
+        ),
+      ),
+    );
+  }
+
   Set<Marker> get _markers => {
     Marker(
       markerId: const MarkerId('driver_location'),
@@ -369,6 +388,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         infoWindow: InfoWindow(title: order.vendorName),
       ),
     ),
+    ..._orders.map(
+      (order) => Marker(
+        markerId: MarkerId('delivery_${order.id}'),
+        position: LatLng(order.deliveryLatitude, order.deliveryLongitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        infoWindow: InfoWindow(title: 'توصيل: ${order.customerName}'),
+      ),
+    ),
   };
 
   Set<Circle> get _circles => {
@@ -384,14 +411,13 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaPadding = MediaQuery.paddingOf(context);
-
     return Scaffold(
       body: Stack(
         children: [
           Positioned.fill(
             child: GoogleMap(
               initialCameraPosition: _initialCameraPosition,
+              onMapCreated: _onMapCreated,
               markers: _markers,
               circles: _circles,
               myLocationEnabled: _isMyLocationEnabled,
@@ -462,79 +488,97 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              Spacing.base,
-              mediaPadding.top + Spacing.sm,
-              Spacing.base,
-              mediaPadding.bottom + 10,
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: Spacing.sm),
+                child: _ConnectionSwitch(
+                  isOnline: _isOnline,
+                  onChanged: (value) {
+                    setState(() => _isOnline = value);
+                  },
+                ),
+              ),
             ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final ordersHeight = (constraints.maxHeight * 0.8).clamp(
-                  420.0,
-                  820.0,
-                );
-
-                return Stack(
+          ),
+          DraggableScrollableSheet(
+            initialChildSize: 0.5,
+            minChildSize: 0.1,
+            maxChildSize: 0.9,
+            builder: (context, scrollController) {
+              return Container(
+                decoration: BoxDecoration(
+                  color: context.colorScheme.surface,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(24),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 16,
+                      offset: const Offset(0, -4),
+                    ),
+                  ],
+                ),
+                child: Column(
                   children: [
-                    Align(
-                      alignment: Alignment.topCenter,
-                      child: SizedBox(
-                        height: ordersHeight,
-                        child: ListView.builder(
-                          physics: const BouncingScrollPhysics(),
-                          padding: EdgeInsets.zero,
-                          itemCount: _orders.length,
-                          itemBuilder: (context, index) {
-                            final order = _orders[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(
-                                bottom: Spacing.sm,
-                              ),
-                              child: Dismissible(
-                                key: ValueKey(order.id),
-                                direction: DismissDirection.horizontal,
-                                onDismissed: (_) => _removeOrder(order.id),
-                                background: _DismissBackground(
-                                  alignment: Alignment.centerLeft,
-                                  icon: Icons.close_rounded,
-                                  color: context.colorScheme.error,
-                                ),
-                                secondaryBackground: _DismissBackground(
-                                  alignment: Alignment.centerRight,
-                                  icon: Icons.close_rounded,
-                                  color: context.colorScheme.error,
-                                ),
-                                child: IncomingOrderCard(
-                                  order: order,
-                                  onTap: () => _openOrderDetails(order),
-                                  onAccept: () => _removeOrder(order.id),
-                                  onReject: () => _removeOrder(order.id),
-                                  onExpired: () => _removeOrder(order.id),
-                                ),
-                              ),
-                            );
-                          },
+                    Center(
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: _ConnectionSwitch(
-                          isOnline: _isOnline,
-                          onChanged: (value) {
-                            setState(() => _isOnline = value);
-                          },
+                    Expanded(
+                      child: ListView.builder(
+                        controller: scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: Spacing.base,
                         ),
+                        itemCount: _orders.length,
+                        itemBuilder: (context, index) {
+                          final order = _orders[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: Spacing.sm),
+                            child: Dismissible(
+                              key: ValueKey(order.id),
+                              direction: DismissDirection.horizontal,
+                              onDismissed: (_) => _removeOrder(order.id),
+                              background: _DismissBackground(
+                                alignment: Alignment.centerLeft,
+                                icon: Icons.close_rounded,
+                                color: context.colorScheme.error,
+                              ),
+                              secondaryBackground: _DismissBackground(
+                                alignment: Alignment.centerRight,
+                                icon: Icons.close_rounded,
+                                color: context.colorScheme.error,
+                              ),
+                              child: IncomingOrderCard(
+                                order: order,
+                                onTap: () => _openOrderDetails(order),
+                                onAccept: () => _removeOrder(order.id),
+                                onReject: () => _removeOrder(order.id),
+                                onExpired: () => _removeOrder(order.id),
+                                onLocationTap: () => _animateToLocation(
+                                  LatLng(order.deliveryLatitude, order.deliveryLongitude),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
