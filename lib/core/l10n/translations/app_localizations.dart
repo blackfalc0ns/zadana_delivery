@@ -2845,6 +2845,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Claim'**
   String get wallet_alert_action_claim;
+
+  /// No description provided for @profile_edit_profile_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get profile_edit_profile_title;
+
+  /// No description provided for @profile_edit_profile_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your personal, vehicle, and attachment details'**
+  String get profile_edit_profile_subtitle;
+
+  /// No description provided for @profile_language_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get profile_language_subtitle;
+
+  /// No description provided for @profile_notifications_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open notifications and manage alert preferences'**
+  String get profile_notifications_subtitle;
+
+  /// No description provided for @profile_change_password_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open security settings to manage your password'**
+  String get profile_change_password_subtitle;
+
+  /// No description provided for @profile_support_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reach us or browse help resources'**
+  String get profile_support_subtitle;
+
+  /// No description provided for @profile_privacy_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn about data collection, storage, and usage'**
+  String get profile_privacy_subtitle;
+
+  /// No description provided for @profile_logout_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out from this device securely'**
+  String get profile_logout_subtitle;
+
+  /// No description provided for @profile_logout_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged out successfully'**
+  String get profile_logout_success;
+
+  /// No description provided for @profile_language_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Language settings are currently available in English'**
+  String get profile_language_info;
+
+  /// No description provided for @profile_default_name.
+  ///
+  /// In en, this message translates to:
+  /// **'User name'**
+  String get profile_default_name;
+
+  /// No description provided for @profile_default_email.
+  ///
+  /// In en, this message translates to:
+  /// **'example@zadana.com'**
+  String get profile_default_email;
+
+  /// No description provided for @profile_default_phone.
+  ///
+  /// In en, this message translates to:
+  /// **'+20 100 000 0000'**
+  String get profile_default_phone;
+
+  /// No description provided for @profile_security_documents_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Security and documents'**
+  String get profile_security_documents_title;
+
+  /// No description provided for @profile_documents_uploaded_count.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded documents: {count}/5'**
+  String profile_documents_uploaded_count(Object count);
+
+  /// No description provided for @profile_current_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Current documents'**
+  String get profile_current_documents;
+
+  /// No description provided for @profile_not_uploaded_yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not uploaded yet'**
+  String get profile_not_uploaded_yet;
+
+  /// No description provided for @profile_personal_info_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal information saved successfully'**
+  String get profile_personal_info_saved;
+
+  /// No description provided for @profile_vehicle_info_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle information saved successfully'**
+  String get profile_vehicle_info_saved;
+
+  /// No description provided for @profile_security_documents_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Security and documents saved successfully'**
+  String get profile_security_documents_saved;
 }
 
 class _AppLocalizationsDelegate

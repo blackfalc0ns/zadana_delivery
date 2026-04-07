@@ -1454,4 +1454,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wallet_alert_action_claim => 'Claim';
+
+  @override
+  String get profile_edit_profile_title => 'Edit profile';
+
+  @override
+  String get profile_edit_profile_subtitle =>
+      'Update your personal, vehicle, and attachment details';
+
+  @override
+  String get profile_language_subtitle => 'English';
+
+  @override
+  String get profile_notifications_subtitle =>
+      'Open notifications and manage alert preferences';
+
+  @override
+  String get profile_change_password_subtitle =>
+      'Open security settings to manage your password';
+
+  @override
+  String get profile_support_subtitle => 'Reach us or browse help resources';
+
+  @override
+  String get profile_privacy_subtitle =>
+      'Learn about data collection, storage, and usage';
+
+  @override
+  String get profile_logout_subtitle => 'Sign out from this device securely';
+
+  @override
+  String get profile_logout_success => 'Logged out successfully';
+
+  @override
+  String get profile_language_info =>
+      'Language settings are currently available in English';
+
+  @override
+  String get profile_default_name => 'User name';
+
+  @override
+  String get profile_default_email => 'example@zadana.com';
+
+  @override
+  String get profile_default_phone => '+20 100 000 0000';
+
+  @override
+  String get profile_security_documents_title => 'Security and documents';
+
+  @override
+  String profile_documents_uploaded_count(Object count) {
+    return 'Uploaded documents: $count/5';
+  }
+
+  @override
+  String get profile_current_documents => 'Current documents';
+
+  @override
+  String get profile_not_uploaded_yet => 'Not uploaded yet';
+
+  @override
+  String get profile_personal_info_saved =>
+      'Personal information saved successfully';
+
+  @override
+  String get profile_vehicle_info_saved =>
+      'Vehicle information saved successfully';
+
+  @override
+  String get profile_security_documents_saved =>
+      'Security and documents saved successfully';
 }

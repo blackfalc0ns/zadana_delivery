@@ -7,7 +7,6 @@ import 'package:zadana_delivery/features/completed_orders/domain/entities/comple
 
 class CompletedOrderCard extends StatelessWidget {
   const CompletedOrderCard({super.key, required this.order});
-
   final CompletedOrder order;
 
   @override
