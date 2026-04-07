@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
-import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_section_card.dart';
 
 class ProfileSectionsList extends StatelessWidget {
@@ -10,8 +10,8 @@ class ProfileSectionsList extends StatelessWidget {
     required this.itemBuilder,
   });
 
-  final List<ProfileSectionData> sections;
-  final Widget Function(ProfileActionItemData item) itemBuilder;
+  final List<ProfileSectionViewData> sections;
+  final Widget Function(ProfileActionViewData item) itemBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +20,16 @@ class ProfileSectionsList extends StatelessWidget {
       children: [
         for (var index = 0; index < sections.length; index++) ...[
           ProfileSectionCard(
-            children: sections[index].items.map(itemBuilder).toList(),
+            children: _buildSectionItems(sections[index]),
           ),
           if (index < sections.length - 1)
             const SizedBox(height: Spacing.md + 2),
         ],
       ],
     );
+  }
+
+  List<Widget> _buildSectionItems(ProfileSectionViewData section) {
+    return [for (final item in section.items) itemBuilder(item)];
   }
 }

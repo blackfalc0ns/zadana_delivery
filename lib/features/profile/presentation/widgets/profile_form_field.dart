@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/auth_text_field.dart';
 
 class ProfileFormField extends StatelessWidget {
@@ -26,15 +26,7 @@ class ProfileFormField extends StatelessWidget {
       hintText: hint,
       keyboardType: keyboardType,
       prefixIcon: Icon(icon),
-      validator: (value) => _requiredValidator(context, value),
+      validator: (value) => Validations.validateRequired(context, value),
     );
-  }
-
-  static String? _requiredValidator(BuildContext context, String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return context.localization.this_field_is_required;
-    }
-
-    return null;
   }
 }

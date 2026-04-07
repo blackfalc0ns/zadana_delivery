@@ -32,14 +32,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, _) => Scaffold(
-        backgroundColor: context.colorScheme.surface,
-        body: ProfileScreenContent(
-          controller: _controller,
-          onActionTap: _handleAction,
-        ),
+    final color = context.colorScheme;
+
+    return Scaffold(
+      backgroundColor: color.surface,
+      body: ProfileScreenContent(
+        controller: _controller,
+        onActionTap: _handleAction,
       ),
     );
   }
@@ -51,7 +50,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case ProfileActionType.orders:
         return _openOrdersTab();
       case ProfileActionType.language:
-        CustomSnackbar.showInfo(context: context, message: context.localization.profile_language_info);
+        final locale = context.localization;
+        CustomSnackbar.showInfo(
+          context: context,
+          message: locale.profile_language_info,
+        );
         return;
       case ProfileActionType.notifications:
         return _open(AppRoutes.notifications);
@@ -67,10 +70,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
+    final locale = context.localization;
     await _controller.logout();
     if (!mounted) return;
-    CustomSnackbar.showInfo(context: context, message: context.localization.profile_logout_success);
-    context.pushNamedAndRemoveUntil(AppRoutes.login, predicate: (route) => false);
+
+    CustomSnackbar.showInfo(
+      context: context,
+      message: locale.profile_logout_success,
+    );
+    context.pushNamedAndRemoveUntil(
+      AppRoutes.login,
+      predicate: (route) => false,
+    );
   }
 
   Future<void> _open(String route) async {
@@ -84,6 +95,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       shellScope.switchToTab(1);
       return;
     }
-    context.pushNamedAndRemoveUntil(AppRoutes.completedOrders, predicate: (route) => false);
+
+    context.pushNamedAndRemoveUntil(
+      AppRoutes.completedOrders,
+      predicate: (route) => false,
+    );
   }
 }

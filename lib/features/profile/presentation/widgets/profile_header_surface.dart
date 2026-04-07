@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_avatar_badge.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_glow_circle.dart';
-import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_text.dart';
 
 class ProfileHeaderSurface extends StatelessWidget {

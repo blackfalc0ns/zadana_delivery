@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/security_documents_controller.dart';
-import 'package:zadana_delivery/features/profile/presentation/extensions/profile_document_type_extension.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_scaffold.dart';

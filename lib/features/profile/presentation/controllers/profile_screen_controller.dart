@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 
 class ProfileScreenController extends ChangeNotifier {
   ProfileScreenController({DriverProfileService? service})
@@ -12,11 +15,8 @@ class ProfileScreenController extends ChangeNotifier {
   bool _isLoggingOut = false;
   bool _notificationsEnabled = true;
 
-  bool get isLoggingOut => _isLoggingOut;
-  bool get notificationsEnabled => _notificationsEnabled;
-
-  late final List<ProfileSectionData> sections = [
-    const ProfileSectionData(
+  late final List<ProfileSectionData> sections = const [
+    ProfileSectionData(
       items: [
         ProfileActionItemData(
           icon: Icons.person_outline_rounded,
@@ -30,7 +30,7 @@ class ProfileScreenController extends ChangeNotifier {
         ),
       ],
     ),
-    const ProfileSectionData(
+    ProfileSectionData(
       items: [
         ProfileActionItemData(
           icon: Icons.language_rounded,
@@ -49,7 +49,7 @@ class ProfileScreenController extends ChangeNotifier {
         ),
       ],
     ),
-    const ProfileSectionData(
+    ProfileSectionData(
       items: [
         ProfileActionItemData(
           icon: Icons.support_agent_rounded,
@@ -85,6 +85,48 @@ class ProfileScreenController extends ChangeNotifier {
     );
   }
 
+  ProfileHeaderIdentity resolveHeaderIdentity(AppLocalizations locale) {
+    final data = headerData;
+    final fullName = _resolveValue(data.fullName, locale.profile_default_name);
+    final email = _resolveValue(data.email, locale.profile_default_email);
+    final phone = _resolveValue(data.phone, locale.profile_default_phone);
+
+    return ProfileHeaderIdentity(
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      avatarLetter: fullName.substring(0, 1).toUpperCase(),
+    );
+  }
+
+  List<ProfileSectionViewData> buildSectionViewData({
+    required AppLocalizations locale,
+    required ColorScheme colorScheme,
+  }) {
+    return sections
+        .map(
+          (section) => ProfileSectionViewData(
+            items: section.items.map((item) {
+              final copy = item.type.localizedCopy(locale);
+              return ProfileActionViewData(
+                type: item.type,
+                title: copy.$1,
+                subtitle: copy.$2,
+                icon: item.icon,
+                iconColor: item.colorToken.resolveColor(colorScheme),
+                isDestructive: item.isDestructive,
+                isLoading:
+                    item.type == ProfileActionType.logout && _isLoggingOut,
+                isNotificationTile:
+                    item.type == ProfileActionType.notifications,
+                notificationsEnabled: _notificationsEnabled,
+              );
+            }).toList(),
+          ),
+        )
+        .toList();
+  }
+
   void updateNotifications(bool value) {
     if (_notificationsEnabled == value) return;
     _notificationsEnabled = value;
@@ -101,6 +143,7 @@ class ProfileScreenController extends ChangeNotifier {
     _isLoggingOut = false;
     notifyListeners();
   }
+
   static String _resolveEmail(String email) {
     final trimmed = email.trim();
     return trimmed;
@@ -109,6 +152,12 @@ class ProfileScreenController extends ChangeNotifier {
   static String _resolvePhone(String phone) {
     final trimmed = phone.trim();
     if (trimmed.isEmpty) return '+20 100 000 0000';
+    return trimmed;
+  }
+
+  static String _resolveValue(String value, String fallback) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return fallback;
     return trimmed;
   }
 }

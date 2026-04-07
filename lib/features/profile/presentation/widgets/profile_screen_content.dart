@@ -3,7 +3,7 @@ import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/profile_screen_controller.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
-import 'package:zadana_delivery/features/profile/presentation/models/profile_header_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_item_builder.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_sections_list.dart';
@@ -20,11 +20,13 @@ class ProfileScreenContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = context.colorScheme;
+    final locale = context.localization;
+    final color = context.colorScheme;
+    final headerIdentity = controller.resolveHeaderIdentity(locale);
     final headerHeight = 156 + MediaQuery.paddingOf(context).top;
 
     return DecoratedBox(
-      decoration: BoxDecoration(color: colorScheme.surface),
+      decoration: BoxDecoration(color: color.surface),
       child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
@@ -32,7 +34,7 @@ class ProfileScreenContent extends StatelessWidget {
             pinned: true,
             delegate: _ProfileHeaderDelegate(
               extent: headerHeight,
-              data: controller.headerData,
+              identity: headerIdentity,
               onEditTap: () => onActionTap(ProfileActionType.editProfile),
             ),
           ),
@@ -44,14 +46,18 @@ class ProfileScreenContent extends StatelessWidget {
               Spacing.xl,
             ),
             sliver: SliverToBoxAdapter(
-              child: ProfileSectionsList(
-                sections: controller.sections,
-                itemBuilder: (item) => ProfileActionItemBuilder(
-                  item: item,
-                  notificationsEnabled: controller.notificationsEnabled,
-                  isLoggingOut: controller.isLoggingOut,
-                  onNotificationsChanged: controller.updateNotifications,
-                  onActionTap: onActionTap,
+              child: ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => ProfileSectionsList(
+                  sections: controller.buildSectionViewData(
+                    locale: locale,
+                    colorScheme: color,
+                  ),
+                  itemBuilder: (item) => ProfileActionItemBuilder(
+                    item: item,
+                    onNotificationsChanged: controller.updateNotifications,
+                    onActionTap: onActionTap,
+                  ),
                 ),
               ),
             ),
@@ -65,12 +71,12 @@ class ProfileScreenContent extends StatelessWidget {
 class _ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
   const _ProfileHeaderDelegate({
     required this.extent,
-    required this.data,
+    required this.identity,
     required this.onEditTap,
   });
 
   final double extent;
-  final ProfileHeaderData data;
+  final ProfileHeaderIdentity identity;
   final VoidCallback onEditTap;
 
   @override
@@ -85,13 +91,13 @@ class _ProfileHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return ProfileHeaderCard(data: data, onEditTap: onEditTap);
+    return ProfileHeaderCard(identity: identity, onEditTap: onEditTap);
   }
 
   @override
   bool shouldRebuild(covariant _ProfileHeaderDelegate oldDelegate) {
     return extent != oldDelegate.extent ||
-        data != oldDelegate.data ||
+        identity != oldDelegate.identity ||
         onEditTap != oldDelegate.onEditTap;
   }
 }

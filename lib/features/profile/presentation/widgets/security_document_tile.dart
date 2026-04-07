@@ -3,7 +3,6 @@ import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/profile/presentation/extensions/profile_document_type_extension.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 
 class SecurityDocumentTile extends StatelessWidget {
@@ -47,7 +46,7 @@ class SecurityDocumentTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  item.type.titleOf(context),
+                  item.type.localizedTitle(locale),
                   style: getSemiBoldStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size13,

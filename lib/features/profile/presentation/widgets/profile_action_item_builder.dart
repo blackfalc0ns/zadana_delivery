@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/features/profile/presentation/extensions/profile_action_type_extension.dart';
-import 'package:zadana_delivery/features/profile/presentation/extensions/profile_color_token_extension.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_tile.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_notification_tile.dart';
 
@@ -9,50 +8,42 @@ class ProfileActionItemBuilder extends StatelessWidget {
   const ProfileActionItemBuilder({
     super.key,
     required this.item,
-    required this.notificationsEnabled,
-    required this.isLoggingOut,
     required this.onNotificationsChanged,
     required this.onActionTap,
   });
 
-  final ProfileActionItemData item;
-  final bool notificationsEnabled;
-  final bool isLoggingOut;
+  final ProfileActionViewData item;
   final ValueChanged<bool> onNotificationsChanged;
   final ValueChanged<ProfileActionType> onActionTap;
 
   @override
   Widget build(BuildContext context) {
-    final copy = item.type.copyOf(context);
-    final color = item.colorToken.resolve(Theme.of(context).colorScheme);
-    if (item.type == ProfileActionType.notifications) {
+    if (item.isNotificationTile) {
       return ProfileNotificationTile(
-        title: copy.$1,
-        subtitle: copy.$2,
+        title: item.title,
+        subtitle: item.subtitle,
         icon: item.icon,
-        iconColor: color,
-        value: notificationsEnabled,
+        iconColor: item.iconColor,
+        value: item.notificationsEnabled,
         onChanged: onNotificationsChanged,
         onTap: () => onActionTap(item.type),
       );
     }
 
     return ProfileActionTile(
-      title: copy.$1,
-      subtitle: copy.$2,
+      title: item.title,
+      subtitle: item.subtitle,
       icon: item.icon,
-      iconColor: color,
+      iconColor: item.iconColor,
       isDestructive: item.isDestructive,
-      trailing: item.type == ProfileActionType.logout && isLoggingOut
+      trailing: item.isLoading
           ? const SizedBox(
               width: 18,
               height: 18,
               child: CircularProgressIndicator(strokeWidth: 2.2),
             )
           : null,
-      onTap: item.type == ProfileActionType.logout && isLoggingOut
-          ? null
-          : () => onActionTap(item.type),
+      onTap: item.isLoading ? null : () => onActionTap(item.type),
     );
   }
 }

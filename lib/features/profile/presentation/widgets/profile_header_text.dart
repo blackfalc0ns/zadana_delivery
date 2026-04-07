@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_identity.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 
 class ProfileHeaderText extends StatelessWidget {
   const ProfileHeaderText({
