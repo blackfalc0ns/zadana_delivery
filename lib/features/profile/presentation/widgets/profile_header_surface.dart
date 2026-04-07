@@ -22,32 +22,32 @@ class ProfileHeaderSurface extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: -26,
-          right: -10,
+          top: -34,
+          right: -18,
           child: ProfileHeaderGlowCircle(
-            size: 88,
-            color: onPrimary.withValues(alpha: 0.08),
+            size: 112,
+            color: onPrimary.withValues(alpha: 0.07),
           ),
         ),
         Positioned(
-          bottom: -28,
-          left: -8,
+          bottom: -42,
+          left: -14,
           child: ProfileHeaderGlowCircle(
-            size: 100,
-            color: onPrimary.withValues(alpha: 0.05),
+            size: 126,
+            color: onPrimary.withValues(alpha: 0.04),
           ),
         ),
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
-            color: onPrimary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(color: onPrimary.withValues(alpha: 0.10)),
+            color: onPrimary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(color: onPrimary.withValues(alpha: 0.12)),
           ),
           child: Row(
             children: [
               ProfileHeaderAvatarBadge(letter: identity.avatarLetter),
-              const SizedBox(width: Spacing.md),
+              const SizedBox(width: Spacing.base),
               Expanded(
                 child: ProfileHeaderText(
                   identity: identity,

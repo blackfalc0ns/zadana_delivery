@@ -13,13 +13,14 @@ class ProfileActionIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 36,
-      height: 36,
+      width: 42,
+      height: 42,
       decoration: BoxDecoration(
-        color: iconColor.withValues(alpha: 0.10),
-        borderRadius: BorderRadius.circular(12),
+        color: iconColor.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: iconColor.withValues(alpha: 0.08)),
       ),
-      child: Icon(icon, color: iconColor, size: 18),
+      child: Icon(icon, color: iconColor, size: 20),
     );
   }
 }

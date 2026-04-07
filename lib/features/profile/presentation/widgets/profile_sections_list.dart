@@ -16,12 +16,14 @@ class ProfileSectionsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var index = 0; index < sections.length; index++) ...[
           ProfileSectionCard(
             children: sections[index].items.map(itemBuilder).toList(),
           ),
-          if (index < sections.length - 1) const SizedBox(height: Spacing.base),
+          if (index < sections.length - 1)
+            const SizedBox(height: Spacing.md + 2),
         ],
       ],
     );

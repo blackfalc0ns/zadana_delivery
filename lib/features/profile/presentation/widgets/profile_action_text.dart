@@ -27,11 +27,11 @@ class ProfileActionText extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: getSemiBoldStyle(
             fontFamily: FontConstant.cairo,
-            fontSize: FontSize.size14,
+            fontSize: FontSize.size15,
             color: isDestructive ? colorScheme.error : colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 4),
         Text(
           subtitle,
           maxLines: 2,
@@ -39,7 +39,7 @@ class ProfileActionText extends StatelessWidget {
           style: getRegularStyle(
             fontFamily: FontConstant.cairo,
             fontSize: FontSize.size11,
-            color: colorScheme.onSurfaceVariant,
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.92),
           ),
         ),
       ],
