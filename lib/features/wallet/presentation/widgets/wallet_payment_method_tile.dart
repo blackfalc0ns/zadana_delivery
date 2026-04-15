@@ -16,13 +16,14 @@ class WalletPaymentMethodTile extends StatelessWidget {
     final locale = context.localization;
     final color = context.colorScheme;
     final chipColor = item.isVerified ? AppColors.success : AppColors.warning;
+    final borderColor = color.outlineVariant.withValues(alpha: 0.45);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.surface,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE5ECF1)),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -71,8 +72,8 @@ class WalletPaymentMethodTile extends StatelessWidget {
               item.isPrimary
                   ? locale.wallet_primary_method
                   : item.isVerified
-                        ? locale.wallet_status_completed
-                        : locale.wallet_unverified_method,
+                  ? locale.wallet_status_completed
+                  : locale.wallet_unverified_method,
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size10,

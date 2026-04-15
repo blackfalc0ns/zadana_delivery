@@ -22,13 +22,14 @@ class WalletAlertTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
+    final borderColor = color.outlineVariant.withValues(alpha: 0.45);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.surface,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE5ECF1)),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         children: [
@@ -76,8 +77,7 @@ class WalletAlertTile extends StatelessWidget {
               locale.walletAlertActionLabel(action),
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
-                color: AppColors.primary,
+                color: color.primary,
               ),
             ),
           ),

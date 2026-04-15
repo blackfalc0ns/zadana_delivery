@@ -58,6 +58,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       heroTitle: locale.reset_password_title,
       heroSubtitle: locale.auth_reset_hero_subtitle,
       sectionBadge: locale.auth_reset_section_badge,
+      showBackButton: true,
       sectionTitle: locale.reset_password_title,
       sectionDescription:
           '${locale.reset_password_description_prefix} ${widget.identifier}',

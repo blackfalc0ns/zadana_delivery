@@ -20,18 +20,20 @@ class WalletSummaryMetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
+    final borderColor = color.outlineVariant.withValues(alpha: 0.45);
+    final shadowColor = color.shadow.withValues(alpha: 0.06);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.surface,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE5ECF1)),
-        boxShadow: const [
+        border: Border.all(color: borderColor),
+        boxShadow: [
           BoxShadow(
-            color: Color(0x140E2233),
+            color: shadowColor,
             blurRadius: 24,
-            offset: Offset(0, 14),
+            offset: const Offset(0, 14),
             spreadRadius: -10,
           ),
         ],

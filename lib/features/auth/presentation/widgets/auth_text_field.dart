@@ -120,7 +120,6 @@ class AuthTextField extends StatelessWidget {
             ),
             errorStyle: getRegularStyle(
               fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size12,
               color: color.error,
             ),
           ),

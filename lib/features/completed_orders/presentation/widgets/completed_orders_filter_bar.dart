@@ -1,7 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 
 class CompletedOrdersFilterBar extends StatelessWidget {
@@ -17,6 +18,7 @@ class CompletedOrdersFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final locale = context.localization;
 
     return Container(
       padding: const EdgeInsets.all(4),
@@ -39,14 +41,14 @@ class CompletedOrdersFilterBar extends StatelessWidget {
         children: [
           Expanded(
             child: _StatusTab(
-              label: 'تم التسليم',
+              label: locale.order_delivered,
               selected: selectedStatus == CompletedOrderStatus.delivered,
               onTap: () => onStatusChanged(CompletedOrderStatus.delivered),
             ),
           ),
           Expanded(
             child: _StatusTab(
-              label: 'ملغي',
+              label: locale.order_cancelled,
               selected: selectedStatus == CompletedOrderStatus.cancelled,
               onTap: () => onStatusChanged(CompletedOrderStatus.cancelled),
             ),
@@ -93,7 +95,6 @@ class _StatusTab extends StatelessWidget {
               textAlign: TextAlign.center,
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
                 color: selected ? AppColors.white : scheme.onSurfaceVariant,
               ),
             ),

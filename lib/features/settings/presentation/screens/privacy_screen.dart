@@ -71,10 +71,7 @@ class PrivacyScreen extends StatelessWidget {
           ...sections.map(
             (section) => Padding(
               padding: const EdgeInsets.only(bottom: Spacing.md),
-              child: _PrivacySectionCard(
-                title: section.$1,
-                body: section.$2,
-              ),
+              child: _PrivacySectionCard(title: section.$1, body: section.$2),
             ),
           ),
         ],

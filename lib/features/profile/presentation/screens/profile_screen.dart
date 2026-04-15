@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/profile_screen_controller.dart';
@@ -50,12 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case ProfileActionType.orders:
         return _openOrdersTab();
       case ProfileActionType.language:
-        final locale = context.localization;
-        CustomSnackbar.showInfo(
-          context: context,
-          message: locale.profile_language_info,
-        );
-        return;
+        return _showLanguageSheet();
       case ProfileActionType.notifications:
         return _open(AppRoutes.notifications);
       case ProfileActionType.security:
@@ -99,6 +95,103 @@ class _ProfileScreenState extends State<ProfileScreen> {
     context.pushNamedAndRemoveUntil(
       AppRoutes.completedOrders,
       predicate: (route) => false,
+    );
+  }
+
+  Future<void> _showLanguageSheet() async {
+    final locale = context.localization;
+    final color = context.colorScheme;
+    final localeCubit = LocaleCubitScope.of(context);
+    final currentCode = localeCubit.locale.languageCode;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: color.surfaceContainerLow,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (sheetContext) {
+        final sheetColor = Theme.of(sheetContext).colorScheme;
+
+        Widget option({
+          required String code,
+          required String title,
+          required Future<void> Function() onTap,
+        }) {
+          final isSelected = currentCode == code;
+          return ListTile(
+            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            tileColor: isSelected
+                ? sheetColor.primary.withValues(alpha: 0.10)
+                : Colors.transparent,
+            leading: Icon(
+              Icons.language_rounded,
+              color: isSelected ? sheetColor.primary : sheetColor.onSurfaceVariant,
+            ),
+            title: Text(
+              title,
+              style: TextStyle(
+                color: sheetColor.onSurface,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+            trailing: isSelected
+                ? Icon(Icons.check_rounded, color: sheetColor.primary)
+                : null,
+            onTap: () async {
+              Navigator.of(sheetContext).pop();
+              await onTap();
+              if (mounted) setState(() {});
+            },
+          );
+        }
+
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: sheetColor.outlineVariant,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  locale.select_language,
+                  style: TextStyle(
+                    color: sheetColor.onSurface,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                option(
+                  code: 'ar',
+                  title: locale.arabic,
+                  onTap: localeCubit.setArabic,
+                ),
+                const SizedBox(height: 8),
+                option(
+                  code: 'en',
+                  title: locale.english,
+                  onTap: localeCubit.setEnglish,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -77,7 +77,6 @@ class DriverUploadTile extends StatelessWidget {
                     title,
                     style: getSemiBoldStyle(
                       fontFamily: FontConstant.cairo,
-                      fontSize: FontSize.size12,
                       color: color.onSurface,
                     ),
                   ),

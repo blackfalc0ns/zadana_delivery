@@ -13,13 +13,6 @@ import 'package:zadana_delivery/core/constants/durations.dart';
 enum SlideDirection { left, right, top, bottom }
 
 class SlideIn extends StatefulWidget {
-  final Widget child;
-  final SlideDirection direction;
-  final Duration duration;
-  final Duration delay;
-  final Curve curve;
-  final double offset;
-
   const SlideIn({
     super.key,
     required this.child,
@@ -29,6 +22,12 @@ class SlideIn extends StatefulWidget {
     this.curve = Curves.easeOutCubic,
     this.offset = 0.3,
   });
+  final Widget child;
+  final SlideDirection direction;
+  final Duration duration;
+  final Duration delay;
+  final Curve curve;
+  final double offset;
 
   @override
   State<SlideIn> createState() => _SlideInState();

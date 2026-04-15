@@ -1,7 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
-import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class CompletedOrdersEmptyState extends StatelessWidget {
   const CompletedOrdersEmptyState({
@@ -24,7 +23,9 @@ class CompletedOrdersEmptyState extends StatelessWidget {
         decoration: BoxDecoration(
           color: scheme.surface,
           borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
+          border: Border.all(
+            color: scheme.outlineVariant.withValues(alpha: 0.5),
+          ),
           boxShadow: [
             BoxShadow(
               color: scheme.shadow.withValues(alpha: 0.08),
@@ -42,10 +43,7 @@ class CompletedOrdersEmptyState extends StatelessWidget {
               height: 84,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [
-                    scheme.primaryContainer,
-                    scheme.secondaryContainer,
-                  ],
+                  colors: [scheme.primaryContainer, scheme.secondaryContainer],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -73,7 +71,6 @@ class CompletedOrdersEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
               style: getRegularStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
                 color: scheme.onSurfaceVariant,
               ),
             ),

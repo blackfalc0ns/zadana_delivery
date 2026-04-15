@@ -4,6 +4,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/constants/assets.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class AuthExperienceShell extends StatelessWidget {
@@ -36,6 +37,7 @@ class AuthExperienceShell extends StatelessWidget {
   Widget build(BuildContext context) {
     final resolvedSectionBadge =
         sectionBadge ?? context.localization.auth_section_badge_default;
+    final color = context.colorScheme;
 
     return Scaffold(
       body: Stack(
@@ -52,10 +54,30 @@ class AuthExperienceShell extends StatelessWidget {
                       Spacing.base,
                       0,
                     ),
-                    child: _HeroHeader(
-                      badge: heroBadge,
-                      title: heroTitle,
-                      subtitle: heroSubtitle,
+                    child: Column(
+                      children: [
+                        if (showBackButton) ...[
+                          Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: IconButton(
+                              onPressed: () => Navigator.of(context).maybePop(),
+                              icon: const Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                              ),
+                              style: IconButton.styleFrom(
+                                backgroundColor: color.surfaceContainerLow,
+                                foregroundColor: color.onSurface,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                        ],
+                        _HeroHeader(
+                          badge: heroBadge,
+                          title: heroTitle,
+                          subtitle: heroSubtitle,
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -64,9 +86,8 @@ class AuthExperienceShell extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(Spacing.base),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        const SizedBox(height: Spacing.lg),
                         _FormCard(
                           badge: resolvedSectionBadge,
                           title: sectionTitle,
@@ -105,10 +126,13 @@ class AuthPromptText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.92),
+        color: color.surfaceContainerLow.withValues(alpha: 0.92),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Wrap(
@@ -120,7 +144,7 @@ class AuthPromptText extends StatelessWidget {
             style: getRegularStyle(
               fontSize: FontSize.size14,
               fontFamily: FontConstant.cairo,
-              color: AppColors.textSecondary,
+              color: color.onSurfaceVariant,
             ),
           ),
           InkWell(
@@ -133,7 +157,7 @@ class AuthPromptText extends StatelessWidget {
                 style: getBoldStyle(
                   fontSize: FontSize.size14,
                   fontFamily: FontConstant.cairo,
-                  color: AppColors.primary,
+                  color: color.primary,
                 ),
               ),
             ),
@@ -157,6 +181,8 @@ class _HeroHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Container(
       height: 120,
       padding: const EdgeInsets.all(10),
@@ -173,14 +199,13 @@ class _HeroHeader extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.18),
+            color: color.shadow.withValues(alpha: 0.14),
             blurRadius: 24,
             offset: const Offset(0, 16),
           ),
         ],
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -199,7 +224,6 @@ class _HeroHeader extends StatelessWidget {
                 Text(
                   subtitle,
                   style: getRegularStyle(
-                    fontSize: FontSize.size12,
                     fontFamily: FontConstant.cairo,
                     color: Colors.white.withValues(alpha: 0.78),
                   ),
@@ -224,8 +248,7 @@ class _HeroProduceArtwork extends StatelessWidget {
       width: 126,
       height: 150,
       child: SvgPicture.asset(
-        'assets/images/fast_delivery.svg',
-        fit: BoxFit.contain,
+        Assets.fastDelivery,
         placeholderBuilder: (context) => Center(
           child: Icon(
             Icons.local_shipping_outlined,
@@ -255,24 +278,27 @@ class _FormCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
+            color: color.shadow.withValues(alpha: 0.08),
             blurRadius: 24,
             offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset('assets/images/logo_dark.png', width: 100, height: 100),
+          Image.asset(Assets.logoDark, width: 100, height: 100),
+          const SizedBox(height: 8),
           child,
         ],
       ),
@@ -285,15 +311,18 @@ class _AuthBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Stack(
       children: [
         Positioned.fill(
           child: DecoratedBox(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [Color(0xFFF1F5F5), Color(0xFFF7F8F8)],
+                colors: [color.surface, color.surfaceContainerLowest],
               ),
             ),
           ),
@@ -305,7 +334,7 @@ class _AuthBackground extends StatelessWidget {
             width: 180,
             height: 180,
             decoration: BoxDecoration(
-              color: const Color(0x220A8597),
+              color: color.primary.withValues(alpha: isDark ? 0.12 : 0.14),
               borderRadius: BorderRadius.circular(60),
             ),
           ),
@@ -317,7 +346,7 @@ class _AuthBackground extends StatelessWidget {
             width: 130,
             height: 130,
             decoration: BoxDecoration(
-              color: const Color(0x14FFFFFF),
+              color: color.secondary.withValues(alpha: isDark ? 0.10 : 0.08),
               borderRadius: BorderRadius.circular(40),
             ),
           ),

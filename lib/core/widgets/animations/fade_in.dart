@@ -9,11 +9,6 @@ import 'package:zadana_delivery/core/constants/durations.dart';
 ///   FadeIn(delay: Duration(milliseconds: 200), child: MyWidget())
 /// ─────────────────────────────────────────────────────────────
 class FadeIn extends StatefulWidget {
-  final Widget child;
-  final Duration duration;
-  final Duration delay;
-  final Curve curve;
-
   const FadeIn({
     super.key,
     required this.child,
@@ -21,6 +16,10 @@ class FadeIn extends StatefulWidget {
     this.delay = Duration.zero,
     this.curve = Curves.easeIn,
   });
+  final Widget child;
+  final Duration duration;
+  final Duration delay;
+  final Curve curve;
 
   @override
   State<FadeIn> createState() => _FadeInState();

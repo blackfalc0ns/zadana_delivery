@@ -5,6 +5,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/utils/constants.dart';
 
 class DriverProfileDraft {
+  factory DriverProfileDraft.fromJson(Map<String, dynamic> json) {
+    return DriverProfileDraft(
+      vehicleType: json['vehicleType']?.toString() ?? 'car',
+      address: json['address']?.toString() ?? '',
+      nationalId: json['nationalId']?.toString() ?? '',
+      licenseNumber: json['licenseNumber']?.toString() ?? '',
+      vehicleBrand: json['vehicleBrand']?.toString() ?? '',
+      vehicleModel: json['vehicleModel']?.toString() ?? '',
+      plateNumber: json['plateNumber']?.toString() ?? '',
+      images: Map<String, String>.from(
+        (json['images'] as Map?)?.map(
+              (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
+            ) ??
+            const <String, String>{},
+      ),
+    );
+  }
   const DriverProfileDraft({
     required this.vehicleType,
     required this.address,
@@ -59,24 +76,6 @@ class DriverProfileDraft {
     'plateNumber': plateNumber,
     'images': images,
   };
-
-  factory DriverProfileDraft.fromJson(Map<String, dynamic> json) {
-    return DriverProfileDraft(
-      vehicleType: json['vehicleType']?.toString() ?? 'car',
-      address: json['address']?.toString() ?? '',
-      nationalId: json['nationalId']?.toString() ?? '',
-      licenseNumber: json['licenseNumber']?.toString() ?? '',
-      vehicleBrand: json['vehicleBrand']?.toString() ?? '',
-      vehicleModel: json['vehicleModel']?.toString() ?? '',
-      plateNumber: json['plateNumber']?.toString() ?? '',
-      images: Map<String, String>.from(
-        (json['images'] as Map?)?.map(
-              (key, value) => MapEntry(key.toString(), value?.toString() ?? ''),
-            ) ??
-            const <String, String>{},
-      ),
-    );
-  }
 
   DriverProfileDraft copyWith({
     String? vehicleType,

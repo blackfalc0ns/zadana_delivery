@@ -1,11 +1,8 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 
 class CompletedOrderStatusBadge extends StatelessWidget {
-  const CompletedOrderStatusBadge({
-    super.key,
-    required this.status,
-  });
+  const CompletedOrderStatusBadge({super.key, required this.status});
 
   final CompletedOrderStatus status;
 

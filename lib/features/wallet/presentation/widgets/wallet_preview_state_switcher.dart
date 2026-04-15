@@ -47,7 +47,6 @@ class WalletPreviewStateSwitcher extends StatelessWidget {
               locale.walletPreviewLabel(item),
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
                 color: isSelected ? color.primary : color.onSurfaceVariant,
               ),
             ),

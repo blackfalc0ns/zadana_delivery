@@ -1,7 +1,7 @@
-﻿import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class AuthFooterPrompt extends StatelessWidget {
   const AuthFooterPrompt({
@@ -17,6 +17,8 @@ class AuthFooterPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
@@ -27,7 +29,7 @@ class AuthFooterPrompt extends StatelessWidget {
           style: getRegularStyle(
             fontFamily: FontConstant.cairo,
             fontSize: FontSize.size14,
-            color: AppColors.textSecondary,
+            color: color.onSurfaceVariant,
           ),
         ),
         TextButton(
@@ -42,7 +44,7 @@ class AuthFooterPrompt extends StatelessWidget {
             style: getSemiBoldStyle(
               fontFamily: FontConstant.cairo,
               fontSize: FontSize.size14,
-              color: AppColors.secondary,
+              color: color.secondary,
             ),
           ),
         ),

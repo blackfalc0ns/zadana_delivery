@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -48,6 +47,7 @@ class _DriverProfileCompletionScreenState
 
   int _currentStep = 0;
   bool _isSubmitting = false;
+  bool _didLoadInitialData = false;
   String _vehicleType = 'car';
 
   List<String> _stepTitles(BuildContext context) => [
@@ -67,6 +67,13 @@ class _DriverProfileCompletionScreenState
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didLoadInitialData) return;
+    _didLoadInitialData = true;
     _loadInitialData();
   }
 
@@ -104,6 +111,7 @@ class _DriverProfileCompletionScreenState
   }
 
   DriverProfileDraft _withFallbackDraft(DriverProfileDraft draft) {
+    final locale = context.localization;
     final hasRealData = [
       draft.address,
       draft.nationalId,
@@ -118,12 +126,12 @@ class _DriverProfileCompletionScreenState
 
     return draft.copyWith(
       vehicleType: 'bike',
-      address: 'مدينة نصر، القاهرة',
-      nationalId: '29801011234567',
-      licenseNumber: 'C-452188',
-      vehicleBrand: 'Yamaha',
-      vehicleModel: 'NMAX 2023',
-      plateNumber: 'س ط ر 2486',
+      address: locale.driver_profile_mock_address,
+      nationalId: locale.driver_profile_mock_national_id,
+      licenseNumber: locale.driver_profile_mock_license_number,
+      vehicleBrand: locale.driver_profile_mock_vehicle_brand,
+      vehicleModel: locale.driver_profile_mock_vehicle_model,
+      plateNumber: locale.driver_profile_mock_plate_number,
       images: {
         'portrait': 'mock/portrait.jpg',
         'idFront': 'mock/id-front.jpg',
@@ -154,9 +162,7 @@ class _DriverProfileCompletionScreenState
 
   bool _validateCurrentStep() {
     if (_currentStep == 2 || _currentStep == 3) {
-      final hasImages = _images.values.every(
-        (value) => value.trim().isNotEmpty,
-      );
+      final hasImages = _images.values.every((value) => value.trim().isNotEmpty);
       if (!hasImages) {
         CustomSnackbar.showError(
           context: context,
@@ -212,11 +218,12 @@ class _DriverProfileCompletionScreenState
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
+    final color = context.colorScheme;
     final titles = _stepTitles(context);
     final subtitles = _stepSubtitles(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F7),
+      backgroundColor: color.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(
@@ -292,6 +299,7 @@ class _DriverProfileCompletionScreenState
 
   Widget _buildStepContent(BuildContext context) {
     final locale = context.localization;
+    final color = context.colorScheme;
 
     switch (_currentStep) {
       case 0:
@@ -341,7 +349,7 @@ class _DriverProfileCompletionScreenState
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.06),
+                  color: color.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Row(
@@ -350,20 +358,17 @@ class _DriverProfileCompletionScreenState
                       _vehicleType == 'bike'
                           ? Icons.route_outlined
                           : Icons.inventory_2_outlined,
-                      color: AppColors.primary,
+                      color: color.primary,
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         _vehicleType == 'bike'
-                            ? locale
-                                  .driver_profile_vehicle_selected_bike_message
-                            : locale
-                                  .driver_profile_vehicle_selected_car_message,
+                            ? locale.driver_profile_vehicle_selected_bike_message
+                            : locale.driver_profile_vehicle_selected_car_message,
                         style: getRegularStyle(
                           fontFamily: FontConstant.cairo,
-                          fontSize: FontSize.size12,
-                          color: AppColors.textPrimary,
+                          color: color.onSurface,
                         ),
                       ),
                     ),
@@ -553,6 +558,8 @@ class _PageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -560,8 +567,8 @@ class _PageHeader extends StatelessWidget {
           onPressed: onBack,
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
           style: IconButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: AppColors.textPrimary,
+            backgroundColor: color.surfaceContainerLow,
+            foregroundColor: color.onSurface,
           ),
         ),
         const SizedBox(width: 8),
@@ -574,7 +581,7 @@ class _PageHeader extends StatelessWidget {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size24,
-                  color: AppColors.textPrimary,
+                  color: color.onSurface,
                 ),
               ),
               const SizedBox(height: 6),
@@ -582,8 +589,7 @@ class _PageHeader extends StatelessWidget {
                 subtitle,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
-                  color: AppColors.textSecondary,
+                  color: color.onSurfaceVariant,
                 ),
               ),
             ],
@@ -644,24 +650,26 @@ class _OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.08)),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.primary, size: 20),
+          Icon(icon, color: color.primary, size: 20),
           const SizedBox(height: 10),
           Text(
             label,
             style: getRegularStyle(
               fontFamily: FontConstant.cairo,
               fontSize: FontSize.size11,
-              color: AppColors.textSecondary,
+              color: color.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 4),
@@ -670,7 +678,7 @@ class _OverviewCard extends StatelessWidget {
             style: getBoldStyle(
               fontFamily: FontConstant.cairo,
               fontSize: FontSize.size15,
-              color: AppColors.textPrimary,
+              color: color.onSurface,
             ),
           ),
         ],

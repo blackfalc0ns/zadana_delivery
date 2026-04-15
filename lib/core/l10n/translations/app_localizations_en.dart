@@ -560,9 +560,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get egp => 'EGP';
-
-  @override
   String get buy_now => 'Buy Now';
 
   @override
@@ -1250,6 +1247,106 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_phone_hint_compact => '5xxxxxxxx';
 
   @override
+  String get auth_pending_title => 'Your account is under review';
+
+  @override
+  String get auth_pending_description =>
+      'Your details were received successfully. Our team will review and activate the account before you start receiving orders.';
+
+  @override
+  String get auth_pending_notification_hint =>
+      'You will receive a new notification as soon as the account is approved, and you can track all alerts from the notifications button above.';
+
+  @override
+  String get auth_pending_eta_hint =>
+      'Account review usually happens shortly after the submitted data is confirmed as complete.';
+
+  @override
+  String get auth_blocked_title => 'Account temporarily blocked';
+
+  @override
+  String get auth_blocked_description =>
+      'Access to your account is currently suspended. If you believe this action was taken by mistake, contact support to review your case.';
+
+  @override
+  String get auth_blocked_access_hint =>
+      'You will not be able to receive orders or use app features until the block is lifted or the account is reviewed by the admin team.';
+
+  @override
+  String get auth_blocked_support_hint =>
+      'You can return to support and help to send an inquiry or follow up on the reason for the block and the account recovery steps.';
+
+  @override
+  String get auth_contact_support => 'Contact support';
+
+  @override
+  String get auth_logout_account => 'Log out of account';
+
+  @override
+  String get auth_session_parse_error =>
+      'Unable to read session data from the sign-in response.';
+
+  @override
+  String get driver_home_accept => 'Accept';
+
+  @override
+  String get driver_home_reject => 'Reject';
+
+  @override
+  String get driver_home_pickup_label => 'Pickup';
+
+  @override
+  String get driver_home_delivery_label => 'Delivery';
+
+  @override
+  String get driver_home_distance_unit => 'km';
+
+  @override
+  String get driver_home_accept_order_dialog_title =>
+      'Accept order confirmation';
+
+  @override
+  String driver_home_accept_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  ) {
+    return 'Do you want to accept $orderTitle from $vendorName and continue to the order details?';
+  }
+
+  @override
+  String get driver_home_accept_order_dialog_confirm => 'Confirm acceptance';
+
+  @override
+  String get driver_home_connection_online_title => 'Online now';
+
+  @override
+  String get driver_home_connection_offline_title => 'Offline';
+
+  @override
+  String get driver_home_connection_online_subtitle => 'Ready for orders';
+
+  @override
+  String get driver_home_connection_offline_subtitle => 'Temporarily paused';
+
+  @override
+  String get driver_profile_mock_address => 'Nasr City, Cairo';
+
+  @override
+  String get driver_profile_mock_national_id => '29801011234567';
+
+  @override
+  String get driver_profile_mock_license_number => 'C-452188';
+
+  @override
+  String get driver_profile_mock_vehicle_brand => 'Yamaha';
+
+  @override
+  String get driver_profile_mock_vehicle_model => 'NMAX 2023';
+
+  @override
+  String get driver_profile_mock_plate_number => 'STR 2486';
+
+  @override
   String get completed_orders_title => 'Completed Orders';
 
   @override
@@ -1273,7 +1370,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get completed_orders_customer_label => 'Customer';
 
   @override
+  String get completed_orders_customer_name_label => 'Customer name';
+
+  @override
   String get completed_orders_delivery_address_label => 'Delivery address';
+
+  @override
+  String get completed_orders_summary_orders => 'Orders';
+
+  @override
+  String get completed_orders_summary_distance => 'Distance km';
+
+  @override
+  String get completed_orders_distance_label => 'Distance';
+
+  @override
+  String get completed_orders_order_total_label => 'Order total';
+
+  @override
+  String get completed_orders_view_details_hint => 'Tap to view details';
+
+  @override
+  String get completed_orders_customer_section_title => 'Customer information';
+
+  @override
+  String get completed_orders_order_details_section_title => 'Order details';
+
+  @override
+  String get completed_orders_items_section_title => 'Items & quantities';
+
+  @override
+  String get completed_orders_date_label => 'Date';
+
+  @override
+  String get completed_orders_time_label => 'Time';
+
+  @override
+  String get completed_orders_order_number_prefix => 'Order';
 
   @override
   String get completed_orders_empty_title => 'No completed orders yet';
@@ -1524,4 +1657,166 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profile_security_documents_saved =>
       'Security and documents saved successfully';
+
+  @override
+  String get order_details_title => 'Order details';
+
+  @override
+  String get order_details_distance_label => 'Distance';
+
+  @override
+  String get order_details_accept_order => 'Accept order';
+
+  @override
+  String get order_details_reject_order => 'Reject';
+
+  @override
+  String get order_details_show_pickup_code => 'Show pickup code from store';
+
+  @override
+  String get order_details_start_delivery => 'Start delivery to customer';
+
+  @override
+  String get order_details_confirm_delivery_with_code =>
+      'Confirm delivery with customer code';
+
+  @override
+  String get order_details_order_delivered => 'Order delivered';
+
+  @override
+  String get order_details_customer_details_title => 'Customer details';
+
+  @override
+  String get order_details_customer_name_label => 'Customer name';
+
+  @override
+  String get order_details_customer_address_label => 'Customer address';
+
+  @override
+  String get order_details_pickup_details_title => 'Pickup details';
+
+  @override
+  String get order_details_store_label => 'Store';
+
+  @override
+  String get order_details_store_address_label => 'Store address';
+
+  @override
+  String get order_details_open_customer_location => 'Open customer location';
+
+  @override
+  String get order_details_open_customer_location_hint =>
+      'Opens the customer\'s location in maps';
+
+  @override
+  String get order_details_open_store_location => 'Open store location';
+
+  @override
+  String get order_details_open_store_location_hint =>
+      'Opens the store location in maps';
+
+  @override
+  String get order_details_customer_otp_hint =>
+      'Enter the customer\'s delivery code';
+
+  @override
+  String get order_details_customer_otp_title => 'Confirm order delivery';
+
+  @override
+  String get order_details_customer_otp_subtitle =>
+      'Take the delivery code from the customer and enter it here to complete delivery';
+
+  @override
+  String get order_details_confirm_delivery => 'Confirm delivery';
+
+  @override
+  String get order_details_pickup_code_title => 'Order pickup code';
+
+  @override
+  String get order_details_pickup_code_subtitle =>
+      'Show this code to the store so the order can be handed to you';
+
+  @override
+  String get order_details_confirm_pickup => 'Confirm pickup from store';
+
+  @override
+  String get order_details_order_items_title => 'Order items';
+
+  @override
+  String get order_details_items_unit => 'items';
+
+  @override
+  String get order_details_pieces_unit => 'pieces';
+
+  @override
+  String get order_details_route_map_title => 'Route map';
+
+  @override
+  String get order_details_map_hint => 'Drag and zoom the map';
+
+  @override
+  String get order_details_items_details_title => 'Received order details';
+
+  @override
+  String get order_details_total_pieces_label => 'Total pieces';
+
+  @override
+  String get order_details_items_count_label => 'Items count';
+
+  @override
+  String get order_details_view_products => 'View products';
+
+  @override
+  String get order_details_status_accepted => 'Order accepted';
+
+  @override
+  String get order_details_status_picked_up => 'Picked up from store';
+
+  @override
+  String get order_details_status_on_the_way => 'On the way to customer';
+
+  @override
+  String get order_details_status_delivered => 'Delivered';
+
+  @override
+  String get order_details_sheet_hint =>
+      'In the demo build, any 4 digits will work for confirmation';
+
+  @override
+  String get order_details_enter_otp_snackbar =>
+      'Enter the code so we can confirm delivery';
+
+  @override
+  String get order_details_package_note_fallback =>
+      'Review the item count and make sure the package is sealed before moving.';
+
+  @override
+  String get order_details_accept_dialog_title => 'Accept order confirmation';
+
+  @override
+  String order_details_accept_dialog_message(Object orderTitle) {
+    return 'Do you want to accept $orderTitle and start working on the order now?';
+  }
+
+  @override
+  String get order_details_accept_dialog_confirm => 'Confirm acceptance';
+
+  @override
+  String get order_details_pickup_dialog_title => 'Confirm pickup from store';
+
+  @override
+  String order_details_pickup_dialog_message(Object vendorName) {
+    return 'Do you confirm picking up the order from $vendorName and that all items are ready with you?';
+  }
+
+  @override
+  String get order_details_pickup_dialog_confirm => 'Confirm pickup';
+
+  @override
+  String get order_details_call_failure =>
+      'Could not open the calling app on this device';
+
+  @override
+  String get order_details_maps_failure =>
+      'Could not open the maps app on this device';
 }

@@ -4,20 +4,6 @@ import 'package:flutter/material.dart';
 /// Base scaffold with optional AppBar, FAB, and common defaults.
 /// ─────────────────────────────────────────────────────────────
 class AppScaffold extends StatelessWidget {
-  final String? title;
-  final Widget body;
-  final Widget? floatingActionButton;
-  final FloatingActionButtonLocation? floatingActionButtonLocation;
-  final Widget? bottomNavigationBar;
-  final Widget? drawer;
-  final List<Widget>? actions;
-  final Widget? leading;
-  final bool showAppBar;
-  final bool centerTitle;
-  final bool resizeToAvoidBottomInset;
-  final Color? backgroundColor;
-  final PreferredSizeWidget? appBar;
-
   const AppScaffold({
     super.key,
     this.title,
@@ -34,6 +20,19 @@ class AppScaffold extends StatelessWidget {
     this.backgroundColor,
     this.appBar,
   });
+  final String? title;
+  final Widget body;
+  final Widget? floatingActionButton;
+  final FloatingActionButtonLocation? floatingActionButtonLocation;
+  final Widget? bottomNavigationBar;
+  final Widget? drawer;
+  final List<Widget>? actions;
+  final Widget? leading;
+  final bool showAppBar;
+  final bool centerTitle;
+  final bool resizeToAvoidBottomInset;
+  final Color? backgroundColor;
+  final PreferredSizeWidget? appBar;
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,9 @@
 import 'package:dio/dio.dart';
 
 class Failure {
+  const Failure({required this.errorMessage, this.code = 'unknown'});
   final String errorMessage;
   final String code;
-
-  const Failure({required this.errorMessage, this.code = 'unknown'});
 }
 
 class ServerFailure extends Failure {
@@ -51,7 +50,6 @@ class ServerFailure extends Failure {
       case DioExceptionType.unknown:
         return const ServerFailure(
           errorMessage: 'Unexpected error occurred. Please try again later.',
-          code: 'unknown',
         );
 
       case DioExceptionType.badResponse:

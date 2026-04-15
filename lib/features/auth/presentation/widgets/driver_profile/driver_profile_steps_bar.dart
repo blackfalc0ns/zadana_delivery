@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -17,16 +16,17 @@ class DriverProfileStepsBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = (currentStep + 1) / titles.length;
+    final color = context.colorScheme;
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border.withValues(alpha: 0.45)),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: color.shadow.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -41,7 +41,7 @@ class DriverProfileStepsBar extends StatelessWidget {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size14,
-                  color: AppColors.textPrimary,
+                  color: color.onSurface,
                 ),
               ),
               const Spacer(),
@@ -49,8 +49,7 @@ class DriverProfileStepsBar extends StatelessWidget {
                 '${(progress * 100).round()}%',
                 style: getSemiBoldStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
-                  color: AppColors.primary,
+                  color: color.primary,
                 ),
               ),
             ],
@@ -59,8 +58,8 @@ class DriverProfileStepsBar extends StatelessWidget {
           LinearProgressIndicator(
             value: progress,
             minHeight: 8,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.08),
-            valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+            backgroundColor: color.primary.withValues(alpha: 0.10),
+            valueColor: AlwaysStoppedAnimation(color.primary),
             borderRadius: BorderRadius.circular(99),
           ),
           const SizedBox(height: 14),
@@ -78,25 +77,24 @@ class DriverProfileStepsBar extends StatelessWidget {
                       height: 34,
                       decoration: BoxDecoration(
                         color: isDone || isActive
-                            ? AppColors.primary
-                            : AppColors.border.withValues(alpha: 0.35),
+                            ? color.primary
+                            : color.outlineVariant.withValues(alpha: 0.55),
                         shape: BoxShape.circle,
                       ),
                       child: Center(
                         child: isDone
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check_rounded,
                                 size: 18,
-                                color: Colors.white,
+                                color: color.onPrimary,
                               )
                             : Text(
                                 '${index + 1}',
                                 style: getBoldStyle(
                                   fontFamily: FontConstant.cairo,
-                                  fontSize: FontSize.size12,
                                   color: isActive || isDone
-                                      ? Colors.white
-                                      : Colors.grey,
+                                      ? color.onPrimary
+                                      : color.onSurfaceVariant,
                                 ),
                               ),
                       ),
@@ -111,8 +109,8 @@ class DriverProfileStepsBar extends StatelessWidget {
                         fontFamily: FontConstant.cairo,
                         fontSize: FontSize.size10,
                         color: isActive || isDone
-                            ? AppColors.textPrimary
-                            : AppColors.textSecondary,
+                            ? color.onSurface
+                            : color.onSurfaceVariant,
                       ),
                     ),
                   ],

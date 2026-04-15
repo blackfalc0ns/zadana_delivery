@@ -42,7 +42,6 @@ class VehicleTypeChip extends StatelessWidget {
           label,
           style: getSemiBoldStyle(
             fontFamily: FontConstant.cairo,
-            fontSize: FontSize.size12,
             color: isSelected ? colorScheme.primary : colorScheme.onSurface,
           ),
         ),

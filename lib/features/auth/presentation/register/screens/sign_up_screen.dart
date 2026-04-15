@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/features/auth/presentation/register/widgets/sign_up_form.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/auth_experience_shell.dart';
-import 'package:zadana_delivery/features/auth/presentation/widgets/sign_up_form.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});

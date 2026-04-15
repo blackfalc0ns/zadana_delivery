@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/font_manger.dart';
+import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
+
+class CustomerOtpField extends StatelessWidget {
+  const CustomerOtpField({super.key, required this.onChanged});
+
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.colorScheme;
+    return TextField(
+      keyboardType: TextInputType.number,
+      textAlign: TextAlign.center,
+      maxLength: 4,
+      onChanged: onChanged,
+      style: getBoldStyle(
+        fontFamily: FontConstant.cairo,
+        fontSize: FontSize.size20,
+        color: scheme.onSurface,
+      ),
+      decoration: InputDecoration(
+        counterText: '',
+        hintText: context.localization.order_details_customer_otp_hint,
+        filled: true,
+        fillColor: scheme.surfaceContainerLow,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}

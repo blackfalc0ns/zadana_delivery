@@ -6,6 +6,8 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/constants/assets.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 
 class AccountBlockedScreen extends StatelessWidget {
@@ -13,8 +15,11 @@ class AccountBlockedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.localization;
+    final color = context.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFC),
+      backgroundColor: color.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -42,13 +47,13 @@ class AccountBlockedScreen extends StatelessWidget {
                           width: 132,
                           height: 132,
                           decoration: BoxDecoration(
-                            color: AppColors.error.withValues(alpha: 0.08),
+                            color: color.error.withValues(alpha: 0.08),
                             shape: BoxShape.circle,
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(18),
                             child: Lottie.asset(
-                              'assets/animation/no_access.json',
+                              Assets.noAccess,
                               repeat: true,
                               fit: BoxFit.contain,
                             ),
@@ -56,22 +61,22 @@ class AccountBlockedScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: Spacing.lg),
                         Text(
-                          'الحساب محظور مؤقتًا',
+                          locale.auth_blocked_title,
                           textAlign: TextAlign.center,
                           style: getBoldStyle(
                             fontFamily: FontConstant.cairo,
                             fontSize: FontSize.size24,
-                            color: AppColors.textPrimary,
+                            color: color.onSurface,
                           ),
                         ),
                         const SizedBox(height: Spacing.sm),
                         Text(
-                          'تم إيقاف الوصول إلى حسابك في الوقت الحالي. إذا كنت تعتقد أن هذا الإجراء بالخطأ، تواصل مع فريق الدعم لمراجعة الحالة.',
+                          locale.auth_blocked_description,
                           textAlign: TextAlign.center,
                           style: getRegularStyle(
                             fontFamily: FontConstant.cairo,
                             fontSize: FontSize.size14,
-                            color: AppColors.textSecondary,
+                            color: color.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: Spacing.lg),
@@ -79,16 +84,16 @@ class AccountBlockedScreen extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.white,
+                            color: color.surfaceContainerLow,
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
-                              color: AppColors.error.withValues(alpha: 0.16),
+                              color: color.error.withValues(alpha: 0.16),
                             ),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
-                                color: Color(0x0A000000),
+                                color: color.shadow.withValues(alpha: 0.06),
                                 blurRadius: 16,
-                                offset: Offset(0, 8),
+                                offset: const Offset(0, 8),
                               ),
                             ],
                           ),
@@ -99,24 +104,22 @@ class AccountBlockedScreen extends StatelessWidget {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: AppColors.error.withValues(
-                                    alpha: 0.10,
-                                  ),
+                                  color: color.error.withValues(alpha: 0.10),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.block_rounded,
-                                  color: AppColors.error,
+                                  color: color.error,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'لن تتمكن من استلام الطلبات أو استخدام مزايا التطبيق إلى حين رفع الحظر أو مراجعة الحساب من الإدارة.',
+                                  locale.auth_blocked_access_hint,
                                   style: getRegularStyle(
                                     fontFamily: FontConstant.cairo,
                                     fontSize: FontSize.size13,
-                                    color: AppColors.textPrimary,
+                                    color: color.onSurface,
                                   ),
                                 ),
                               ),
@@ -130,8 +133,8 @@ class AccountBlockedScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                const Color(0xFFFFE8E6),
-                                AppColors.error.withValues(alpha: 0.06),
+                                color.error.withValues(alpha: 0.14),
+                                color.error.withValues(alpha: 0.06),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(22),
@@ -146,11 +149,11 @@ class AccountBlockedScreen extends StatelessWidget {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'يمكنك الرجوع إلى الدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.',
+                                  locale.auth_blocked_support_hint,
                                   style: getMediumStyle(
                                     fontFamily: FontConstant.cairo,
                                     fontSize: FontSize.size13,
-                                    color: AppColors.textPrimary,
+                                    color: color.onSurface,
                                   ),
                                 ),
                               ),
@@ -159,23 +162,21 @@ class AccountBlockedScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: Spacing.xl),
                         AppButton.filled(
-                          text: 'التواصل مع الدعم',
-                          onPressed: () => context.pushNamed(
-                            AppRoutes.supportHelp,
-                          ),
-                          color: AppColors.error,
+                          text: locale.auth_contact_support,
+                          onPressed: () => context.pushNamed(AppRoutes.supportHelp),
+                          color: color.error,
                           height: 54,
                           borderRadius: 18,
                         ),
                         const SizedBox(height: Spacing.md),
                         AppButton.outlined(
-                          text: 'تسجيل الخروج من الحساب',
+                          text: locale.auth_logout_account,
                           onPressed: () => context.pushNamedAndRemoveUntil(
                             AppRoutes.login,
                             predicate: (route) => false,
                           ),
-                          color: AppColors.error,
-                          textColor: AppColors.error,
+                          color: color.error,
+                          textColor: color.error,
                           height: 54,
                           borderRadius: 18,
                         ),
@@ -200,11 +201,13 @@ class _NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Material(
-          color: AppColors.white,
+          color: color.surfaceContainerLow,
           borderRadius: BorderRadius.circular(18),
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
@@ -214,11 +217,13 @@ class _NotificationButton extends StatelessWidget {
               height: 54,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(
+                  color: color.outlineVariant.withValues(alpha: 0.45),
+                ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none_rounded,
-                color: AppColors.textPrimary,
+                color: color.onSurface,
               ),
             ),
           ),
@@ -240,7 +245,7 @@ class _NotificationButton extends StatelessWidget {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size11,
-                  color: AppColors.white,
+                  color: Colors.white,
                 ),
               ),
             ),

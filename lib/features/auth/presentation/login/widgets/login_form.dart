@@ -70,7 +70,6 @@ class LoginForm extends StatelessWidget {
                 locale.btn_forgot_password,
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
                   color: color.primary,
                 ),
               ),
@@ -97,7 +96,6 @@ class LoginForm extends StatelessWidget {
                       errorMessage!,
                       style: getRegularStyle(
                         fontFamily: FontConstant.cairo,
-                        fontSize: FontSize.size12,
                         color: color.error,
                       ),
                     ),
@@ -114,7 +112,7 @@ class LoginForm extends StatelessWidget {
             height: 52,
             borderRadius: 18,
           ),
-          SizedBox(height: Spacing.base),
+          const SizedBox(height: Spacing.base),
         ],
       ),
     );

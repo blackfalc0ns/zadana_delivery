@@ -11,8 +11,7 @@ enum ProfileActionType {
   security,
   support,
   privacy,
-  logout,
-  ;
+  logout;
 
   (String, String) localizedCopy(AppLocalizations locale) {
     return switch (this) {
@@ -26,7 +25,7 @@ enum ProfileActionType {
       ),
       ProfileActionType.language => (
         locale.language,
-        locale.profile_language_subtitle,
+        locale.localeName.startsWith('ar') ? locale.arabic : locale.english,
       ),
       ProfileActionType.notifications => (
         locale.notifications,

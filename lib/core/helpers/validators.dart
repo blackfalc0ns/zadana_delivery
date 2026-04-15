@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
-import '../l10n/translations/app_localizations.dart';
+import 'package:flutter/material.dart';
+
 import '../helpers/regex.dart';
+import '../l10n/translations/app_localizations.dart';
 
 abstract class Validations {
   static String? validateName(BuildContext context, String? name) {

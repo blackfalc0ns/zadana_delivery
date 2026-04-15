@@ -1160,12 +1160,6 @@ abstract class AppLocalizations {
   /// **'Added {quantity} of {name} to cart'**
   String product_added_to_cart(Object quantity, Object name);
 
-  /// No description provided for @egp.
-  ///
-  /// In en, this message translates to:
-  /// **'EGP'**
-  String get egp;
-
   /// No description provided for @buy_now.
   ///
   /// In en, this message translates to:
@@ -2456,6 +2450,183 @@ abstract class AppLocalizations {
   /// **'5xxxxxxxx'**
   String get auth_phone_hint_compact;
 
+  /// No description provided for @auth_pending_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is under review'**
+  String get auth_pending_title;
+
+  /// No description provided for @auth_pending_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details were received successfully. Our team will review and activate the account before you start receiving orders.'**
+  String get auth_pending_description;
+
+  /// No description provided for @auth_pending_notification_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive a new notification as soon as the account is approved, and you can track all alerts from the notifications button above.'**
+  String get auth_pending_notification_hint;
+
+  /// No description provided for @auth_pending_eta_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Account review usually happens shortly after the submitted data is confirmed as complete.'**
+  String get auth_pending_eta_hint;
+
+  /// No description provided for @auth_blocked_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Account temporarily blocked'**
+  String get auth_blocked_title;
+
+  /// No description provided for @auth_blocked_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to your account is currently suspended. If you believe this action was taken by mistake, contact support to review your case.'**
+  String get auth_blocked_description;
+
+  /// No description provided for @auth_blocked_access_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You will not be able to receive orders or use app features until the block is lifted or the account is reviewed by the admin team.'**
+  String get auth_blocked_access_hint;
+
+  /// No description provided for @auth_blocked_support_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can return to support and help to send an inquiry or follow up on the reason for the block and the account recovery steps.'**
+  String get auth_blocked_support_hint;
+
+  /// No description provided for @auth_contact_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get auth_contact_support;
+
+  /// No description provided for @auth_logout_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out of account'**
+  String get auth_logout_account;
+
+  /// No description provided for @auth_session_parse_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read session data from the sign-in response.'**
+  String get auth_session_parse_error;
+
+  /// No description provided for @driver_home_accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get driver_home_accept;
+
+  /// No description provided for @driver_home_reject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get driver_home_reject;
+
+  /// No description provided for @driver_home_pickup_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get driver_home_pickup_label;
+
+  /// No description provided for @driver_home_delivery_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get driver_home_delivery_label;
+
+  /// No description provided for @driver_home_distance_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'km'**
+  String get driver_home_distance_unit;
+
+  /// No description provided for @driver_home_accept_order_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept order confirmation'**
+  String get driver_home_accept_order_dialog_title;
+
+  /// No description provided for @driver_home_accept_order_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to accept {orderTitle} from {vendorName} and continue to the order details?'**
+  String driver_home_accept_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  );
+
+  /// No description provided for @driver_home_accept_order_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm acceptance'**
+  String get driver_home_accept_order_dialog_confirm;
+
+  /// No description provided for @driver_home_connection_online_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Online now'**
+  String get driver_home_connection_online_title;
+
+  /// No description provided for @driver_home_connection_offline_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get driver_home_connection_offline_title;
+
+  /// No description provided for @driver_home_connection_online_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for orders'**
+  String get driver_home_connection_online_subtitle;
+
+  /// No description provided for @driver_home_connection_offline_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporarily paused'**
+  String get driver_home_connection_offline_subtitle;
+
+  /// No description provided for @driver_profile_mock_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Nasr City, Cairo'**
+  String get driver_profile_mock_address;
+
+  /// No description provided for @driver_profile_mock_national_id.
+  ///
+  /// In en, this message translates to:
+  /// **'29801011234567'**
+  String get driver_profile_mock_national_id;
+
+  /// No description provided for @driver_profile_mock_license_number.
+  ///
+  /// In en, this message translates to:
+  /// **'C-452188'**
+  String get driver_profile_mock_license_number;
+
+  /// No description provided for @driver_profile_mock_vehicle_brand.
+  ///
+  /// In en, this message translates to:
+  /// **'Yamaha'**
+  String get driver_profile_mock_vehicle_brand;
+
+  /// No description provided for @driver_profile_mock_vehicle_model.
+  ///
+  /// In en, this message translates to:
+  /// **'NMAX 2023'**
+  String get driver_profile_mock_vehicle_model;
+
+  /// No description provided for @driver_profile_mock_plate_number.
+  ///
+  /// In en, this message translates to:
+  /// **'STR 2486'**
+  String get driver_profile_mock_plate_number;
+
   /// No description provided for @completed_orders_title.
   ///
   /// In en, this message translates to:
@@ -2498,11 +2669,83 @@ abstract class AppLocalizations {
   /// **'Customer'**
   String get completed_orders_customer_label;
 
+  /// No description provided for @completed_orders_customer_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get completed_orders_customer_name_label;
+
   /// No description provided for @completed_orders_delivery_address_label.
   ///
   /// In en, this message translates to:
   /// **'Delivery address'**
   String get completed_orders_delivery_address_label;
+
+  /// No description provided for @completed_orders_summary_orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get completed_orders_summary_orders;
+
+  /// No description provided for @completed_orders_summary_distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance km'**
+  String get completed_orders_summary_distance;
+
+  /// No description provided for @completed_orders_distance_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get completed_orders_distance_label;
+
+  /// No description provided for @completed_orders_order_total_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Order total'**
+  String get completed_orders_order_total_label;
+
+  /// No description provided for @completed_orders_view_details_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view details'**
+  String get completed_orders_view_details_hint;
+
+  /// No description provided for @completed_orders_customer_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer information'**
+  String get completed_orders_customer_section_title;
+
+  /// No description provided for @completed_orders_order_details_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order details'**
+  String get completed_orders_order_details_section_title;
+
+  /// No description provided for @completed_orders_items_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Items & quantities'**
+  String get completed_orders_items_section_title;
+
+  /// No description provided for @completed_orders_date_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get completed_orders_date_label;
+
+  /// No description provided for @completed_orders_time_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get completed_orders_time_label;
+
+  /// No description provided for @completed_orders_order_number_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get completed_orders_order_number_prefix;
 
   /// No description provided for @completed_orders_empty_title.
   ///
@@ -2965,6 +3208,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security and documents saved successfully'**
   String get profile_security_documents_saved;
+
+  /// No description provided for @order_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order details'**
+  String get order_details_title;
+
+  /// No description provided for @order_details_distance_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get order_details_distance_label;
+
+  /// No description provided for @order_details_accept_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept order'**
+  String get order_details_accept_order;
+
+  /// No description provided for @order_details_reject_order.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get order_details_reject_order;
+
+  /// No description provided for @order_details_show_pickup_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Show pickup code from store'**
+  String get order_details_show_pickup_code;
+
+  /// No description provided for @order_details_start_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Start delivery to customer'**
+  String get order_details_start_delivery;
+
+  /// No description provided for @order_details_confirm_delivery_with_code.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm delivery with customer code'**
+  String get order_details_confirm_delivery_with_code;
+
+  /// No description provided for @order_details_order_delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Order delivered'**
+  String get order_details_order_delivered;
+
+  /// No description provided for @order_details_customer_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer details'**
+  String get order_details_customer_details_title;
+
+  /// No description provided for @order_details_customer_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer name'**
+  String get order_details_customer_name_label;
+
+  /// No description provided for @order_details_customer_address_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer address'**
+  String get order_details_customer_address_label;
+
+  /// No description provided for @order_details_pickup_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup details'**
+  String get order_details_pickup_details_title;
+
+  /// No description provided for @order_details_store_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get order_details_store_label;
+
+  /// No description provided for @order_details_store_address_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Store address'**
+  String get order_details_store_address_label;
+
+  /// No description provided for @order_details_open_customer_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Open customer location'**
+  String get order_details_open_customer_location;
+
+  /// No description provided for @order_details_open_customer_location_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the customer\'s location in maps'**
+  String get order_details_open_customer_location_hint;
+
+  /// No description provided for @order_details_open_store_location.
+  ///
+  /// In en, this message translates to:
+  /// **'Open store location'**
+  String get order_details_open_store_location;
+
+  /// No description provided for @order_details_open_store_location_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Opens the store location in maps'**
+  String get order_details_open_store_location_hint;
+
+  /// No description provided for @order_details_customer_otp_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the customer\'s delivery code'**
+  String get order_details_customer_otp_hint;
+
+  /// No description provided for @order_details_customer_otp_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm order delivery'**
+  String get order_details_customer_otp_title;
+
+  /// No description provided for @order_details_customer_otp_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Take the delivery code from the customer and enter it here to complete delivery'**
+  String get order_details_customer_otp_subtitle;
+
+  /// No description provided for @order_details_confirm_delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm delivery'**
+  String get order_details_confirm_delivery;
+
+  /// No description provided for @order_details_pickup_code_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order pickup code'**
+  String get order_details_pickup_code_title;
+
+  /// No description provided for @order_details_pickup_code_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show this code to the store so the order can be handed to you'**
+  String get order_details_pickup_code_subtitle;
+
+  /// No description provided for @order_details_confirm_pickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm pickup from store'**
+  String get order_details_confirm_pickup;
+
+  /// No description provided for @order_details_order_items_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order items'**
+  String get order_details_order_items_title;
+
+  /// No description provided for @order_details_items_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get order_details_items_unit;
+
+  /// No description provided for @order_details_pieces_unit.
+  ///
+  /// In en, this message translates to:
+  /// **'pieces'**
+  String get order_details_pieces_unit;
+
+  /// No description provided for @order_details_route_map_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Route map'**
+  String get order_details_route_map_title;
+
+  /// No description provided for @order_details_map_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag and zoom the map'**
+  String get order_details_map_hint;
+
+  /// No description provided for @order_details_items_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Received order details'**
+  String get order_details_items_details_title;
+
+  /// No description provided for @order_details_total_pieces_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Total pieces'**
+  String get order_details_total_pieces_label;
+
+  /// No description provided for @order_details_items_count_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Items count'**
+  String get order_details_items_count_label;
+
+  /// No description provided for @order_details_view_products.
+  ///
+  /// In en, this message translates to:
+  /// **'View products'**
+  String get order_details_view_products;
+
+  /// No description provided for @order_details_status_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Order accepted'**
+  String get order_details_status_accepted;
+
+  /// No description provided for @order_details_status_picked_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked up from store'**
+  String get order_details_status_picked_up;
+
+  /// No description provided for @order_details_status_on_the_way.
+  ///
+  /// In en, this message translates to:
+  /// **'On the way to customer'**
+  String get order_details_status_on_the_way;
+
+  /// No description provided for @order_details_status_delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get order_details_status_delivered;
+
+  /// No description provided for @order_details_sheet_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'In the demo build, any 4 digits will work for confirmation'**
+  String get order_details_sheet_hint;
+
+  /// No description provided for @order_details_enter_otp_snackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code so we can confirm delivery'**
+  String get order_details_enter_otp_snackbar;
+
+  /// No description provided for @order_details_package_note_fallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the item count and make sure the package is sealed before moving.'**
+  String get order_details_package_note_fallback;
+
+  /// No description provided for @order_details_accept_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept order confirmation'**
+  String get order_details_accept_dialog_title;
+
+  /// No description provided for @order_details_accept_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to accept {orderTitle} and start working on the order now?'**
+  String order_details_accept_dialog_message(Object orderTitle);
+
+  /// No description provided for @order_details_accept_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm acceptance'**
+  String get order_details_accept_dialog_confirm;
+
+  /// No description provided for @order_details_pickup_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm pickup from store'**
+  String get order_details_pickup_dialog_title;
+
+  /// No description provided for @order_details_pickup_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you confirm picking up the order from {vendorName} and that all items are ready with you?'**
+  String order_details_pickup_dialog_message(Object vendorName);
+
+  /// No description provided for @order_details_pickup_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm pickup'**
+  String get order_details_pickup_dialog_confirm;
+
+  /// No description provided for @order_details_call_failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the calling app on this device'**
+  String get order_details_call_failure;
+
+  /// No description provided for @order_details_maps_failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the maps app on this device'**
+  String get order_details_maps_failure;
 }
 
 class _AppLocalizationsDelegate

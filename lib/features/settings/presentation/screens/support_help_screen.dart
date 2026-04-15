@@ -75,7 +75,9 @@ class SupportHelpScreen extends StatelessWidget {
                 ? 'تواصل سريع مع فريق الدعم'
                 : 'Quick chat with the support team',
             iconColor: const Color(0xFF25D366),
-            onTap: () => _launchExternal('https://wa.me/${_whatsApp.replaceAll('+', '')}'),
+            onTap: () => _launchExternal(
+              'https://wa.me/${_whatsApp.replaceAll('+', '')}',
+            ),
           ),
           const SizedBox(height: Spacing.sm),
           _ContactTile(
@@ -138,7 +140,11 @@ class _HelpSupportHeader extends StatelessWidget {
               color: color.primary.withValues(alpha: 0.10),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: Icon(Icons.support_agent_rounded, color: color.primary, size: 30),
+            child: Icon(
+              Icons.support_agent_rounded,
+              color: color.primary,
+              size: 30,
+            ),
           ),
           const SizedBox(height: Spacing.md),
           Text(
@@ -215,7 +221,9 @@ class _ContactTile extends StatelessWidget {
           decoration: BoxDecoration(
             color: color.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: color.outlineVariant.withValues(alpha: 0.40)),
+            border: Border.all(
+              color: color.outlineVariant.withValues(alpha: 0.40),
+            ),
           ),
           child: Row(
             children: [
@@ -226,9 +234,7 @@ class _ContactTile extends StatelessWidget {
                   color: iconColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Center(
-                  child: FaIcon(icon, size: 18, color: iconColor),
-                ),
+                child: Center(child: FaIcon(icon, size: 18, color: iconColor)),
               ),
               const SizedBox(width: Spacing.md),
               Expanded(
@@ -248,7 +254,6 @@ class _ContactTile extends StatelessWidget {
                       subtitle,
                       style: getRegularStyle(
                         fontFamily: FontConstant.cairo,
-                        fontSize: FontSize.size12,
                         color: color.onSurfaceVariant,
                       ),
                     ),
@@ -309,7 +314,11 @@ class _FaqTile extends StatelessWidget {
             color: color.primary.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(Icons.help_outline_rounded, size: 18, color: color.primary),
+          child: Icon(
+            Icons.help_outline_rounded,
+            size: 18,
+            color: color.primary,
+          ),
         ),
         title: Text(
           question,
@@ -328,7 +337,6 @@ class _FaqTile extends StatelessWidget {
               answer,
               style: getRegularStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
                 color: color.onSurfaceVariant,
               ).copyWith(height: 1.6),
             ),

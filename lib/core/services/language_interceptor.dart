@@ -5,9 +5,8 @@ import '../services/language_service.dart';
 
 @injectable
 class LanguageInterceptor extends Interceptor {
-  final LanguageService _languageService;
-
   LanguageInterceptor(this._languageService);
+  final LanguageService _languageService;
 
   @override
   void onRequest(RequestOptions options, RequestInterceptorHandler handler) {

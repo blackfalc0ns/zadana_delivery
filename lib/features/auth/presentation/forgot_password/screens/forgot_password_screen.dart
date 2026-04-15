@@ -5,7 +5,7 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/features/auth/presentation/widgets/auth_experience_shell.dart';
-import 'package:zadana_delivery/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:zadana_delivery/features/auth/presentation/widgets/email_phone_input_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -43,13 +43,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
-    final color = context.colorScheme;
 
     return AuthExperienceShell(
       heroBadge: locale.auth_forgot_hero_badge,
       heroTitle: locale.forget_password_title,
       heroSubtitle: locale.auth_forgot_hero_subtitle,
       sectionBadge: locale.auth_forgot_section_badge,
+      showBackButton: true,
       sectionTitle: locale.forget_password_title,
       sectionDescription: locale.forget_password_description,
       sectionIcon: Icons.lock_reset_rounded,
@@ -58,18 +58,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            AuthTextField(
+            EmailPhoneInputField(
               controller: _identifierController,
-              label: locale.label_email_or_phone,
-              hintText: locale.hint_email_or_phone,
               validator: (value) =>
                   Validations.validateEmailOrPhone(context, value),
-              enabled: !_isSubmitting,
-              keyboardType: TextInputType.emailAddress,
-              prefixIcon: Icon(
-                Icons.mark_email_read_outlined,
-                color: color.onSurface.withValues(alpha: 0.6),
-              ),
             ),
             const SizedBox(height: 20),
             AppButton.filled(

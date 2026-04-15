@@ -5,9 +5,8 @@ import '../utils/constants.dart';
 
 @injectable
 class LanguageService {
-  final SharedPreferences _sharedPreferences;
-
   LanguageService(this._sharedPreferences);
+  final SharedPreferences _sharedPreferences;
 
   Future<void> saveLanguageCode(String code) async {
     await _sharedPreferences.setString(AppConstants.languageCode, code);

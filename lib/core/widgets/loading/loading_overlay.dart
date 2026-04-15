@@ -12,16 +12,15 @@ import 'package:flutter/material.dart';
 ///   LoadingOverlay.wrap(isLoading: state.isLoading, child: …)
 /// ─────────────────────────────────────────────────────────────
 class LoadingOverlay extends StatelessWidget {
-  final bool isLoading;
-  final Widget child;
-  final Color? barrierColor;
-
   const LoadingOverlay({
     super.key,
     required this.isLoading,
     required this.child,
     this.barrierColor,
   });
+  final bool isLoading;
+  final Widget child;
+  final Color? barrierColor;
 
   @override
   Widget build(BuildContext context) {

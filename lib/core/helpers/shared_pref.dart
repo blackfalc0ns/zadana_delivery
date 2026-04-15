@@ -3,9 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 @injectable
 class SharedPrefHelper {
-  final SharedPreferences sharedPreferences;
-
   SharedPrefHelper(this.sharedPreferences);
+  final SharedPreferences sharedPreferences;
 
   Future<bool> saveData({required String key, required dynamic val}) {
     if (val is int) {

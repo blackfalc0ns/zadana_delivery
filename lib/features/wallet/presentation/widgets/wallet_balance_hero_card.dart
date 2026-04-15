@@ -81,7 +81,6 @@ class WalletBalanceHeroCard extends StatelessWidget {
                 subtitle,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
                   color: Colors.white.withValues(alpha: 0.82),
                 ),
               ),

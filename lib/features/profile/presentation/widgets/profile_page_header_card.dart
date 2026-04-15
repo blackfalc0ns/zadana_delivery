@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 
 class ProfilePageHeaderCard extends StatelessWidget {

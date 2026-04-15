@@ -17,13 +17,10 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.background,
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
-        onPrimary: AppColors.textOnPrimary,
         secondary: AppColors.secondary,
         onSecondary: AppColors.textPrimary,
-        surface: AppColors.surface,
         onSurface: AppColors.textPrimary,
         error: AppColors.error,
-        onError: AppColors.textOnPrimary,
       ),
       // ── AppBar ──
       appBarTheme: const AppBarTheme(
@@ -155,7 +152,7 @@ class AppTheme {
 
   // ═══════════ DARK ═══════════
   static ThemeData get dark {
-    return ThemeData( 
+    return ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       fontFamily: 'Cairo',
@@ -282,4 +279,3 @@ class AppTheme {
     );
   }
 }
-

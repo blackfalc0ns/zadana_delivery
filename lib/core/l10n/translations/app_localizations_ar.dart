@@ -551,9 +551,6 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get egp => 'ج.م';
-
-  @override
   String get buy_now => 'اشترِ الآن';
 
   @override
@@ -753,7 +750,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get price_range => 'نطاق السعر';
 
   @override
-  String get currency => 'ر.س';
+  String get currency => 'ريال';
 
   @override
   String get filter_type => 'النوع';
@@ -1233,6 +1230,105 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_phone_hint_compact => '5xxxxxxxx';
 
   @override
+  String get auth_pending_title => 'حسابك قيد المراجعة';
+
+  @override
+  String get auth_pending_description =>
+      'تم استلام بياناتك بنجاح. سيقوم فريقنا بمراجعة الحساب وتفعيله قبل بدء استلام الطلبات.';
+
+  @override
+  String get auth_pending_notification_hint =>
+      'سيصلك إشعار جديد فور الموافقة على الحساب، ويمكنك متابعة كل التنبيهات من زر الإشعارات بالأعلى.';
+
+  @override
+  String get auth_pending_eta_hint =>
+      'عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.';
+
+  @override
+  String get auth_blocked_title => 'الحساب محظور مؤقتًا';
+
+  @override
+  String get auth_blocked_description =>
+      'تم إيقاف الوصول إلى حسابك في الوقت الحالي. إذا كنت تعتقد أن هذا الإجراء بالخطأ، تواصل مع فريق الدعم لمراجعة الحالة.';
+
+  @override
+  String get auth_blocked_access_hint =>
+      'لن تتمكن من استلام الطلبات أو استخدام مزايا التطبيق إلى حين رفع الحظر أو مراجعة الحساب من الإدارة.';
+
+  @override
+  String get auth_blocked_support_hint =>
+      'يمكنك الرجوع إلى الدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.';
+
+  @override
+  String get auth_contact_support => 'التواصل مع الدعم';
+
+  @override
+  String get auth_logout_account => 'تسجيل الخروج من الحساب';
+
+  @override
+  String get auth_session_parse_error =>
+      'تعذر قراءة بيانات الجلسة من استجابة تسجيل الدخول.';
+
+  @override
+  String get driver_home_accept => 'قبول';
+
+  @override
+  String get driver_home_reject => 'رفض';
+
+  @override
+  String get driver_home_pickup_label => 'الاستلام';
+
+  @override
+  String get driver_home_delivery_label => 'التوصيل';
+
+  @override
+  String get driver_home_distance_unit => 'كم';
+
+  @override
+  String get driver_home_accept_order_dialog_title => 'تأكيد قبول الطلب';
+
+  @override
+  String driver_home_accept_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  ) {
+    return 'هل تريد قبول $orderTitle من $vendorName والانتقال إلى تفاصيل الطلب؟';
+  }
+
+  @override
+  String get driver_home_accept_order_dialog_confirm => 'تأكيد القبول';
+
+  @override
+  String get driver_home_connection_online_title => 'متصل الآن';
+
+  @override
+  String get driver_home_connection_offline_title => 'غير متصل';
+
+  @override
+  String get driver_home_connection_online_subtitle => 'جاهز للطلبات';
+
+  @override
+  String get driver_home_connection_offline_subtitle => 'موقفه مؤقتًا';
+
+  @override
+  String get driver_profile_mock_address => 'مدينة نصر، القاهرة';
+
+  @override
+  String get driver_profile_mock_national_id => '29801011234567';
+
+  @override
+  String get driver_profile_mock_license_number => 'C-452188';
+
+  @override
+  String get driver_profile_mock_vehicle_brand => 'ياماها';
+
+  @override
+  String get driver_profile_mock_vehicle_model => 'NMAX 2023';
+
+  @override
+  String get driver_profile_mock_plate_number => 'س ط ر 2486';
+
+  @override
   String get completed_orders_title => 'الطلبات المكتملة';
 
   @override
@@ -1256,7 +1352,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get completed_orders_customer_label => 'العميل';
 
   @override
+  String get completed_orders_customer_name_label => 'اسم العميل';
+
+  @override
   String get completed_orders_delivery_address_label => 'عنوان التسليم';
+
+  @override
+  String get completed_orders_summary_orders => 'طلب';
+
+  @override
+  String get completed_orders_summary_distance => 'كم مسافة';
+
+  @override
+  String get completed_orders_distance_label => 'المسافة';
+
+  @override
+  String get completed_orders_order_total_label => 'إجمالي الطلب';
+
+  @override
+  String get completed_orders_view_details_hint => 'اضغط لعرض التفاصيل';
+
+  @override
+  String get completed_orders_customer_section_title => 'بيانات العميل';
+
+  @override
+  String get completed_orders_order_details_section_title => 'تفاصيل الطلب';
+
+  @override
+  String get completed_orders_items_section_title => 'الأصناف والكميات';
+
+  @override
+  String get completed_orders_date_label => 'التاريخ';
+
+  @override
+  String get completed_orders_time_label => 'الوقت';
+
+  @override
+  String get completed_orders_order_number_prefix => 'طلب';
 
   @override
   String get completed_orders_empty_title => 'لا توجد طلبات مكتملة بعد';
@@ -1504,4 +1636,164 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get profile_security_documents_saved =>
       'تم حفظ بيانات الأمان والمستندات بنجاح';
+
+  @override
+  String get order_details_title => 'تفاصيل الطلب';
+
+  @override
+  String get order_details_distance_label => 'المسافة';
+
+  @override
+  String get order_details_accept_order => 'قبول الطلب';
+
+  @override
+  String get order_details_reject_order => 'رفض';
+
+  @override
+  String get order_details_show_pickup_code => 'عرض كود الاستلام من المتجر';
+
+  @override
+  String get order_details_start_delivery => 'بدء التوصيل للعميل';
+
+  @override
+  String get order_details_confirm_delivery_with_code =>
+      'تأكيد التسليم برمز العميل';
+
+  @override
+  String get order_details_order_delivered => 'تم تسليم الطلب';
+
+  @override
+  String get order_details_customer_details_title => 'بيانات العميل';
+
+  @override
+  String get order_details_customer_name_label => 'اسم العميل';
+
+  @override
+  String get order_details_customer_address_label => 'عنوان العميل';
+
+  @override
+  String get order_details_pickup_details_title => 'بيانات الاستلام';
+
+  @override
+  String get order_details_store_label => 'المتجر';
+
+  @override
+  String get order_details_store_address_label => 'عنوان المتجر';
+
+  @override
+  String get order_details_open_customer_location => 'افتح موقع العميل';
+
+  @override
+  String get order_details_open_customer_location_hint =>
+      'يفتح لك موقع العميل في تطبيق الخرائط';
+
+  @override
+  String get order_details_open_store_location => 'افتح موقع المتجر';
+
+  @override
+  String get order_details_open_store_location_hint =>
+      'يفتح لك موقع المتجر على الخريطة';
+
+  @override
+  String get order_details_customer_otp_hint => 'اكتب رمز تسليم العميل';
+
+  @override
+  String get order_details_customer_otp_title => 'تأكيد تسليم الطلب';
+
+  @override
+  String get order_details_customer_otp_subtitle =>
+      'خذ رمز التسليم من العميل واكتبه هنا عشان نكمل تسليم الطلب';
+
+  @override
+  String get order_details_confirm_delivery => 'تأكيد التسليم';
+
+  @override
+  String get order_details_pickup_code_title => 'كود استلام الطلب';
+
+  @override
+  String get order_details_pickup_code_subtitle =>
+      'اعرض هذا الكود للمتجر حتى يتم تسليم الطلب لك';
+
+  @override
+  String get order_details_confirm_pickup => 'تأكيد الاستلام من المتجر';
+
+  @override
+  String get order_details_order_items_title => 'أصناف الطلب';
+
+  @override
+  String get order_details_items_unit => 'صنف';
+
+  @override
+  String get order_details_pieces_unit => 'قطعة';
+
+  @override
+  String get order_details_route_map_title => 'خريطة المسار';
+
+  @override
+  String get order_details_map_hint => 'اسحب وكبر الخريطة';
+
+  @override
+  String get order_details_items_details_title => 'تفاصيل الطلب المستلم';
+
+  @override
+  String get order_details_total_pieces_label => 'إجمالي القطع';
+
+  @override
+  String get order_details_items_count_label => 'عدد الأصناف';
+
+  @override
+  String get order_details_view_products => 'عرض المنتجات';
+
+  @override
+  String get order_details_status_accepted => 'تم قبول الطلب';
+
+  @override
+  String get order_details_status_picked_up => 'تم الاستلام من المتجر';
+
+  @override
+  String get order_details_status_on_the_way => 'في الطريق للعميل';
+
+  @override
+  String get order_details_status_delivered => 'تم التسليم';
+
+  @override
+  String get order_details_sheet_hint =>
+      'في النسخة التجريبية تقدر تكتب أي 4 أرقام للتأكيد';
+
+  @override
+  String get order_details_enter_otp_snackbar => 'اكتب الرمز عشان نأكد التسليم';
+
+  @override
+  String get order_details_package_note_fallback =>
+      'راجع عدد القطع وتأكد إن التغليف مقفول قبل التحرك.';
+
+  @override
+  String get order_details_accept_dialog_title => 'تأكيد قبول الطلب';
+
+  @override
+  String order_details_accept_dialog_message(Object orderTitle) {
+    return 'هل تريد قبول $orderTitle والبدء في تنفيذ الطلب الآن؟';
+  }
+
+  @override
+  String get order_details_accept_dialog_confirm => 'تأكيد القبول';
+
+  @override
+  String get order_details_pickup_dialog_title => 'تأكيد الاستلام من المتجر';
+
+  @override
+  String order_details_pickup_dialog_message(Object vendorName) {
+    return 'هل تؤكد استلام الطلب من $vendorName وأن كل الأصناف جاهزة معك؟';
+  }
+
+  @override
+  String get order_details_pickup_dialog_confirm => 'تأكيد الاستلام';
+
+  @override
+  String get order_details_call_failure =>
+      'تعذر فتح تطبيق الاتصال على هذا الجهاز';
+
+  @override
+  String get order_details_maps_failure =>
+      'تعذر فتح تطبيق الخرائط على هذا الجهاز';
 }

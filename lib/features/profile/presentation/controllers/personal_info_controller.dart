@@ -43,9 +43,7 @@ class PersonalInfoController {
       email: email.trim(),
       phone: phone.trim(),
     );
-    final draft = _service.profileDraft.copyWith(
-      address: address.trim(),
-    );
+    final draft = _service.profileDraft.copyWith(address: address.trim());
 
     await _service.saveIdentity(identity);
     await _service.saveProfileDraft(draft);

@@ -13,7 +13,7 @@ class AppColors {
   static const Color primaryDark = Color(0XFF007A92);
   static const Color primarySurface = Color(0XFF007A92);
 
-  static final LinearGradient primarygradient = LinearGradient(
+  static const LinearGradient primarygradient = LinearGradient(
     colors: [primaryLight, primarySurface, primary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,

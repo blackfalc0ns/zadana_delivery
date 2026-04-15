@@ -7,6 +7,8 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/constants/assets.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 
 class AccountPendingApprovalScreen extends StatelessWidget {
@@ -14,8 +16,11 @@ class AccountPendingApprovalScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.localization;
+    final color = context.colorScheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF7FAFC),
+      backgroundColor: color.surface,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -43,7 +48,7 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                           width: 120,
                           height: 120,
                           child: Lottie.asset(
-                            'assets/animation/blue_loading.json',
+                            Assets.blueLoading,
                             repeat: true,
                             fit: BoxFit.contain,
                           ),
@@ -51,29 +56,26 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                         const SizedBox(height: Spacing.md),
                         SizedBox(
                           height: 155,
-                          child: SvgPicture.asset(
-                            'assets/images/fast_delivery.svg',
-                            fit: BoxFit.contain,
-                          ),
+                          child: SvgPicture.asset(Assets.fastDelivery),
                         ),
                         const SizedBox(height: Spacing.lg),
                         Text(
-                          'حسابك قيد المراجعة',
+                          locale.auth_pending_title,
                           textAlign: TextAlign.center,
                           style: getBoldStyle(
                             fontFamily: FontConstant.cairo,
                             fontSize: FontSize.size24,
-                            color: AppColors.textPrimary,
+                            color: color.onSurface,
                           ),
                         ),
                         const SizedBox(height: Spacing.sm),
                         Text(
-                          'تم استلام بياناتك بنجاح. سيقوم فريقنا بمراجعة الحساب وتفعيله قبل بدء استلام الطلبات.',
+                          locale.auth_pending_description,
                           textAlign: TextAlign.center,
                           style: getRegularStyle(
                             fontFamily: FontConstant.cairo,
                             fontSize: FontSize.size14,
-                            color: AppColors.textSecondary,
+                            color: color.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: Spacing.lg),
@@ -81,16 +83,16 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                           width: double.infinity,
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.white,
+                            color: color.surfaceContainerLow,
                             borderRadius: BorderRadius.circular(22),
                             border: Border.all(
-                              color: AppColors.primary.withValues(alpha: 0.10),
+                              color: color.primary.withValues(alpha: 0.14),
                             ),
-                            boxShadow: const [
+                            boxShadow: [
                               BoxShadow(
-                                color: Color(0x0A000000),
+                                color: color.shadow.withValues(alpha: 0.06),
                                 blurRadius: 16,
-                                offset: Offset(0, 8),
+                                offset: const Offset(0, 8),
                               ),
                             ],
                           ),
@@ -101,24 +103,22 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                                 width: 42,
                                 height: 42,
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.10,
-                                  ),
+                                  color: color.primary.withValues(alpha: 0.10),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.notifications_active_outlined,
-                                  color: AppColors.primary,
+                                  color: color.primary,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'سيصلك إشعار جديد فور الموافقة على الحساب، ويمكنك متابعة كل التنبيهات من زر الإشعارات بالأعلى.',
+                                  locale.auth_pending_notification_hint,
                                   style: getRegularStyle(
                                     fontFamily: FontConstant.cairo,
                                     fontSize: FontSize.size13,
-                                    color: AppColors.textPrimary,
+                                    color: color.onSurface,
                                   ),
                                 ),
                               ),
@@ -132,8 +132,8 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                AppColors.secondary.withValues(alpha: 0.12),
-                                AppColors.secondary.withValues(alpha: 0.05),
+                                AppColors.secondary.withValues(alpha: 0.14),
+                                AppColors.secondary.withValues(alpha: 0.06),
                               ],
                             ),
                             borderRadius: BorderRadius.circular(22),
@@ -147,11 +147,11 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  'عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.',
+                                  locale.auth_pending_eta_hint,
                                   style: getMediumStyle(
                                     fontFamily: FontConstant.cairo,
                                     fontSize: FontSize.size13,
-                                    color: AppColors.textPrimary,
+                                    color: color.onSurface,
                                   ),
                                 ),
                               ),
@@ -160,12 +160,12 @@ class AccountPendingApprovalScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: Spacing.xl),
                         AppButton.filled(
-                          text: 'تسجيل الخروج من الحساب',
+                          text: locale.auth_logout_account,
                           onPressed: () => context.pushNamedAndRemoveUntil(
                             AppRoutes.login,
                             predicate: (route) => false,
                           ),
-                          color: AppColors.error,
+                          color: color.error,
                           height: 54,
                           borderRadius: 18,
                         ),
@@ -190,11 +190,13 @@ class _NotificationButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Material(
-          color: AppColors.white,
+          color: color.surfaceContainerLow,
           borderRadius: BorderRadius.circular(18),
           child: InkWell(
             borderRadius: BorderRadius.circular(18),
@@ -204,11 +206,13 @@ class _NotificationButton extends StatelessWidget {
               height: 54,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(
+                  color: color.outlineVariant.withValues(alpha: 0.45),
+                ),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.notifications_none_rounded,
-                color: AppColors.textPrimary,
+                color: color.onSurface,
               ),
             ),
           ),
@@ -230,7 +234,7 @@ class _NotificationButton extends StatelessWidget {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size11,
-                  color: AppColors.white,
+                  color: Colors.white,
                 ),
               ),
             ),

@@ -30,19 +30,20 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
+    final color = context.colorScheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F8F8),
+      backgroundColor: color.surface,
       body: Center(
         child: Container(
           width: 240,
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: color.surfaceContainerLow,
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.06),
+                color: color.shadow.withValues(alpha: 0.08),
                 blurRadius: 24,
                 offset: const Offset(0, 14),
               ),
@@ -65,7 +66,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                 ),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: color.surface,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Padding(
@@ -80,7 +81,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size20,
-                  color: AppColors.textPrimary,
+                  color: color.onSurface,
                 ),
               ),
               const SizedBox(height: 8),
@@ -89,8 +90,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                 textAlign: TextAlign.center,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
-                  color: AppColors.textSecondary,
+                  color: color.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 18),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class DriverProfileStepHeader extends StatelessWidget {
   const DriverProfileStepHeader({
@@ -19,14 +19,16 @@ class DriverProfileStepHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           width: 52,
           height: 52,
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.10),
+        decoration: BoxDecoration(
+            color: color.primary.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(18),
           ),
           child: Center(
@@ -34,8 +36,7 @@ class DriverProfileStepHeader extends StatelessWidget {
               '$step/$total',
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
-                color: AppColors.primary,
+                color: color.primary,
               ),
             ),
           ),
@@ -50,7 +51,7 @@ class DriverProfileStepHeader extends StatelessWidget {
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size18,
-                  color: AppColors.textPrimary,
+                  color: color.onSurface,
                 ),
               ),
               const SizedBox(height: 4),
@@ -58,8 +59,7 @@ class DriverProfileStepHeader extends StatelessWidget {
                 subtitle,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
-                  color: AppColors.textSecondary,
+                  color: color.onSurfaceVariant,
                 ),
               ),
             ],

@@ -111,6 +111,15 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Text(
+          locale.label_email_or_phone,
+          style: getSemiBoldStyle(
+            fontSize: FontSize.size11,
+            fontFamily: FontConstant.cairo,
+            color: color.onSurface,
+          ),
+        ),
+        const SizedBox(height: Spacing.sm),
         IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -128,7 +137,7 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
                         : TextInputType.emailAddress,
                     textInputAction: widget.textInputAction,
                     style: getRegularStyle(
-                      fontSize: FontSize.size9,
+                      fontSize: FontSize.size13,
                       fontFamily: FontConstant.cairo,
                       color: color.onSurface,
                     ),
@@ -215,7 +224,6 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
                       errorStyle: _isPhone
                           ? const TextStyle(height: 0, fontSize: 0)
                           : getRegularStyle(
-                              fontSize: FontSize.size12,
                               fontFamily: FontConstant.cairo,
                               color: color.error,
                             ),
@@ -241,7 +249,14 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
                             size: Spacing.iconMd,
                           ),
                           const SizedBox(width: 4),
-                          const Text('🇸🇦', style: TextStyle(fontSize: 20)),
+                          Text(
+                            '+966',
+                            style: getSemiBoldStyle(
+                              fontSize: FontSize.size13,
+                              fontFamily: FontConstant.cairo,
+                              color: color.onSurface,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -258,7 +273,6 @@ class _EmailPhoneInputFieldState extends State<EmailPhoneInputField> {
             child: Text(
               _errorText!,
               style: getRegularStyle(
-                fontSize: FontSize.size12,
                 fontFamily: FontConstant.cairo,
                 color: color.error,
               ),

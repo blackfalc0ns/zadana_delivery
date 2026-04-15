@@ -7,7 +7,7 @@ class LocationPermissionService {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
 
     if (!serviceEnabled) {
-      throw LocationServiceException(
+      throw const LocationServiceException(
         "خدمة الموقع غير مفعلة. يرجى تفعيل خدمة الموقع من الإعدادات.",
         LocationErrorType.serviceDisabled,
       );
@@ -20,14 +20,14 @@ class LocationPermissionService {
     }
 
     if (permission == LocationPermission.denied) {
-      throw LocationServiceException(
+      throw const LocationServiceException(
         "تم رفض إذن الوصول للموقع. يرجى السماح للتطبيق بالوصول للموقع.",
         LocationErrorType.permissionDenied,
       );
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw LocationServiceException(
+      throw const LocationServiceException(
         "تم رفض إذن الوصول للموقع نهائياً. يرجى الذهاب للإعدادات وتفعيل إذن الموقع للتطبيق.",
         LocationErrorType.permissionDeniedForever,
       );
@@ -36,10 +36,9 @@ class LocationPermissionService {
 }
 
 class LocationServiceException implements Exception {
+  const LocationServiceException(this.message, this.type);
   final String message;
   final LocationErrorType type;
-
-  const LocationServiceException(this.message, this.type);
 
   @override
   String toString() => message;

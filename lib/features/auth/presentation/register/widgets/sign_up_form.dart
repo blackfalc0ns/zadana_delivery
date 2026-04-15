@@ -98,7 +98,6 @@ class SignUpForm extends StatelessWidget {
                 errorMessage!,
                 style: getRegularStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size12,
                   color: color.error,
                 ),
               ),

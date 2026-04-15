@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 
 @immutable
 class CompletedOrder {
@@ -42,4 +42,9 @@ class CompletedOrderItem {
 
 enum CompletedOrderStatus { delivered, cancelled, deliveryFailed }
 
-enum CompletedOrderPaymentMethod { cashOnDelivery, card, applePay, bankTransfer }
+enum CompletedOrderPaymentMethod {
+  cashOnDelivery,
+  card,
+  applePay,
+  bankTransfer,
+}

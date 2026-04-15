@@ -1,11 +1,24 @@
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 
 class DriverAuthUser {
+  factory DriverAuthUser.fromJson(Map<String, dynamic> json) {
+    return DriverAuthUser(
+      id: json['id']?.toString() ?? '',
+      fullName: json['fullName']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      phone: json['phone']?.toString() ?? '',
+      role: json['role']?.toString() ?? 'driver',
+    );
+  }
+
   const DriverAuthUser({
     required this.id,
     required this.fullName,
@@ -19,16 +32,6 @@ class DriverAuthUser {
   final String email;
   final String phone;
   final String role;
-
-  factory DriverAuthUser.fromJson(Map<String, dynamic> json) {
-    return DriverAuthUser(
-      id: json['id']?.toString() ?? '',
-      fullName: json['fullName']?.toString() ?? '',
-      email: json['email']?.toString() ?? '',
-      phone: json['phone']?.toString() ?? '',
-      role: json['role']?.toString() ?? 'driver',
-    );
-  }
 }
 
 class DriverAuthResult {
@@ -80,7 +83,10 @@ class DriverAuthRepository {
 
       final map = _normalizeMap(response);
       final user = _extractUser(map);
-      final message = _extractMessage(map, fallback: 'تم إنشاء الحساب بنجاح');
+      final message = _extractMessage(
+        map,
+        fallback: _localeText((l) => l.register_success),
+      );
 
       if (user != null) {
         await _profileService.saveIdentity(
@@ -118,7 +124,7 @@ class DriverAuthRepository {
       final refreshToken = _extractToken(map, 'refreshToken');
 
       if (accessToken.isEmpty || refreshToken.isEmpty) {
-        throw Exception('تعذر قراءة بيانات الجلسة من استجابة تسجيل الدخول.');
+        throw Exception(_localeText((l) => l.auth_session_parse_error));
       }
 
       await _tokenService.saveAccessToken(accessToken);
@@ -145,7 +151,10 @@ class DriverAuthRepository {
       }
 
       return DriverAuthResult(
-        message: _extractMessage(map, fallback: 'تم تسجيل الدخول بنجاح'),
+        message: _extractMessage(
+          map,
+          fallback: _localeText((l) => l.login_success),
+        ),
         user: user,
       );
     });
@@ -157,7 +166,10 @@ class DriverAuthRepository {
         'identifier': identifier.trim(),
       });
 
-      return _extractMessage(response, fallback: 'تم إرسال رمز التحقق.');
+      return _extractMessage(
+        response,
+        fallback: _localeText((l) => l.msg_verification_code_sent),
+      );
     });
   }
 
@@ -173,7 +185,10 @@ class DriverAuthRepository {
         'newPassword': newPassword,
       });
 
-      return _extractMessage(response, fallback: 'تم تحديث كلمة المرور بنجاح.');
+      return _extractMessage(
+        response,
+        fallback: _localeText((l) => l.msg_password_reset_success),
+      );
     });
   }
 
@@ -275,5 +290,10 @@ class DriverAuthRepository {
     if (value is bool) return value;
     if (value is String) return value.toLowerCase() == 'true';
     return defaultValue;
+  }
+
+  String _localeText(String Function(AppLocalizations locale) selector) {
+    final locale = lookupAppLocalizations(PlatformDispatcher.instance.locale);
+    return selector(locale);
   }
 }

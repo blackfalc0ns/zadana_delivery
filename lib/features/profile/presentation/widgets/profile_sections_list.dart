@@ -19,9 +19,7 @@ class ProfileSectionsList extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (var index = 0; index < sections.length; index++) ...[
-          ProfileSectionCard(
-            children: _buildSectionItems(sections[index]),
-          ),
+          ProfileSectionCard(children: _buildSectionItems(sections[index])),
           if (index < sections.length - 1)
             const SizedBox(height: Spacing.md + 2),
         ],

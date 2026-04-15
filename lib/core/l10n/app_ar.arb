@@ -186,7 +186,6 @@
       }
     }
   },
-  "egp": "ج.م",
   "buy_now": "اشترِ الآن",
   "store_price_comparison": "مقارنة أسعار المتاجر",
   "fresh_products": "منتجات طازجة",
@@ -253,7 +252,7 @@
   "select_product_type": "اختر نوع المنتج",
   "category": "الفئة",
   "price_range": "نطاق السعر",
-  "currency": "ر.س",
+  "currency": "ريال",
   "filter_type": "النوع",
   "filter_part": "الجزء",
   "filter_brand": "العلامة التجارية",
@@ -402,6 +401,45 @@
   "driver_vehicle_type_bike_subtitle": "أسرع داخل طرق المدينة المزدحمة",
   "auth_section_badge_default": "عضو",
   "auth_phone_hint_compact": "5xxxxxxxx",
+  "auth_pending_title": "حسابك قيد المراجعة",
+  "auth_pending_description": "تم استلام بياناتك بنجاح. سيقوم فريقنا بمراجعة الحساب وتفعيله قبل بدء استلام الطلبات.",
+  "auth_pending_notification_hint": "سيصلك إشعار جديد فور الموافقة على الحساب، ويمكنك متابعة كل التنبيهات من زر الإشعارات بالأعلى.",
+  "auth_pending_eta_hint": "عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.",
+  "auth_blocked_title": "الحساب محظور مؤقتًا",
+  "auth_blocked_description": "تم إيقاف الوصول إلى حسابك في الوقت الحالي. إذا كنت تعتقد أن هذا الإجراء بالخطأ، تواصل مع فريق الدعم لمراجعة الحالة.",
+  "auth_blocked_access_hint": "لن تتمكن من استلام الطلبات أو استخدام مزايا التطبيق إلى حين رفع الحظر أو مراجعة الحساب من الإدارة.",
+  "auth_blocked_support_hint": "يمكنك الرجوع إلى الدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.",
+  "auth_contact_support": "التواصل مع الدعم",
+  "auth_logout_account": "تسجيل الخروج من الحساب",
+  "auth_session_parse_error": "تعذر قراءة بيانات الجلسة من استجابة تسجيل الدخول.",
+  "driver_home_accept": "قبول",
+  "driver_home_reject": "رفض",
+  "driver_home_pickup_label": "الاستلام",
+  "driver_home_delivery_label": "التوصيل",
+  "driver_home_distance_unit": "كم",
+  "driver_home_accept_order_dialog_title": "تأكيد قبول الطلب",
+  "driver_home_accept_order_dialog_message": "هل تريد قبول {orderTitle} من {vendorName} والانتقال إلى تفاصيل الطلب؟",
+  "@driver_home_accept_order_dialog_message": {
+    "placeholders": {
+      "orderTitle": {
+        "type": "Object"
+      },
+      "vendorName": {
+        "type": "Object"
+      }
+    }
+  },
+  "driver_home_accept_order_dialog_confirm": "تأكيد القبول",
+  "driver_home_connection_online_title": "متصل الآن",
+  "driver_home_connection_offline_title": "غير متصل",
+  "driver_home_connection_online_subtitle": "جاهز للطلبات",
+  "driver_home_connection_offline_subtitle": "موقفه مؤقتًا",
+  "driver_profile_mock_address": "مدينة نصر، القاهرة",
+  "driver_profile_mock_national_id": "29801011234567",
+  "driver_profile_mock_license_number": "C-452188",
+  "driver_profile_mock_vehicle_brand": "ياماها",
+  "driver_profile_mock_vehicle_model": "NMAX 2023",
+  "driver_profile_mock_plate_number": "س ط ر 2486",
   "completed_orders_title": "الطلبات المكتملة",
   "completed_orders_subtitle": "راجع الطلبات التي تم تسليمها أو إلغاؤها أو التي فشل تسليمها ضمن سجل منظم.",
   "completed_orders_history_badge": "أرشيف السجل",
@@ -409,7 +447,19 @@
   "completed_orders_filter_all": "الكل",
   "completed_orders_merchant_label": "التاجر",
   "completed_orders_customer_label": "العميل",
+  "completed_orders_customer_name_label": "اسم العميل",
   "completed_orders_delivery_address_label": "عنوان التسليم",
+  "completed_orders_summary_orders": "طلب",
+  "completed_orders_summary_distance": "كم مسافة",
+  "completed_orders_distance_label": "المسافة",
+  "completed_orders_order_total_label": "إجمالي الطلب",
+  "completed_orders_view_details_hint": "اضغط لعرض التفاصيل",
+  "completed_orders_customer_section_title": "بيانات العميل",
+  "completed_orders_order_details_section_title": "تفاصيل الطلب",
+  "completed_orders_items_section_title": "الأصناف والكميات",
+  "completed_orders_date_label": "التاريخ",
+  "completed_orders_time_label": "الوقت",
+  "completed_orders_order_number_prefix": "طلب",
   "completed_orders_empty_title": "لا توجد طلبات مكتملة بعد",
   "completed_orders_empty_subtitle": "ستظهر رحلات السائق المنتهية هنا بعد تسليم الطلب أو إلغائه أو اعتباره فاشلًا.",
   "completed_orders_no_results_title": "لا توجد طلبات مطابقة",
@@ -486,5 +536,68 @@
   "profile_not_uploaded_yet": "لم يتم الرفع بعد",
   "profile_personal_info_saved": "تم حفظ المعلومات الشخصية بنجاح",
   "profile_vehicle_info_saved": "تم حفظ بيانات المركبة بنجاح",
-  "profile_security_documents_saved": "تم حفظ بيانات الأمان والمستندات بنجاح"
+  "profile_security_documents_saved": "تم حفظ بيانات الأمان والمستندات بنجاح",
+  "order_details_title": "تفاصيل الطلب",
+  "order_details_distance_label": "المسافة",
+  "order_details_accept_order": "قبول الطلب",
+  "order_details_reject_order": "رفض",
+  "order_details_show_pickup_code": "عرض كود الاستلام من المتجر",
+  "order_details_start_delivery": "بدء التوصيل للعميل",
+  "order_details_confirm_delivery_with_code": "تأكيد التسليم برمز العميل",
+  "order_details_order_delivered": "تم تسليم الطلب",
+  "order_details_customer_details_title": "بيانات العميل",
+  "order_details_customer_name_label": "اسم العميل",
+  "order_details_customer_address_label": "عنوان العميل",
+  "order_details_pickup_details_title": "بيانات الاستلام",
+  "order_details_store_label": "المتجر",
+  "order_details_store_address_label": "عنوان المتجر",
+  "order_details_open_customer_location": "افتح موقع العميل",
+  "order_details_open_customer_location_hint": "يفتح لك موقع العميل في تطبيق الخرائط",
+  "order_details_open_store_location": "افتح موقع المتجر",
+  "order_details_open_store_location_hint": "يفتح لك موقع المتجر على الخريطة",
+  "order_details_customer_otp_hint": "اكتب رمز تسليم العميل",
+  "order_details_customer_otp_title": "تأكيد تسليم الطلب",
+  "order_details_customer_otp_subtitle": "خذ رمز التسليم من العميل واكتبه هنا عشان نكمل تسليم الطلب",
+  "order_details_confirm_delivery": "تأكيد التسليم",
+  "order_details_pickup_code_title": "كود استلام الطلب",
+  "order_details_pickup_code_subtitle": "اعرض هذا الكود للمتجر حتى يتم تسليم الطلب لك",
+  "order_details_confirm_pickup": "تأكيد الاستلام من المتجر",
+  "order_details_order_items_title": "أصناف الطلب",
+  "order_details_items_unit": "صنف",
+  "order_details_pieces_unit": "قطعة",
+  "order_details_route_map_title": "خريطة المسار",
+  "order_details_map_hint": "اسحب وكبر الخريطة",
+  "order_details_items_details_title": "تفاصيل الطلب المستلم",
+  "order_details_total_pieces_label": "إجمالي القطع",
+  "order_details_items_count_label": "عدد الأصناف",
+  "order_details_view_products": "عرض المنتجات",
+  "order_details_status_accepted": "تم قبول الطلب",
+  "order_details_status_picked_up": "تم الاستلام من المتجر",
+  "order_details_status_on_the_way": "في الطريق للعميل",
+  "order_details_status_delivered": "تم التسليم",
+  "order_details_sheet_hint": "في النسخة التجريبية تقدر تكتب أي 4 أرقام للتأكيد",
+  "order_details_enter_otp_snackbar": "اكتب الرمز عشان نأكد التسليم",
+  "order_details_package_note_fallback": "راجع عدد القطع وتأكد إن التغليف مقفول قبل التحرك.",
+  "order_details_accept_dialog_title": "تأكيد قبول الطلب",
+  "order_details_accept_dialog_message": "هل تريد قبول {orderTitle} والبدء في تنفيذ الطلب الآن؟",
+  "@order_details_accept_dialog_message": {
+    "placeholders": {
+      "orderTitle": {
+        "type": "Object"
+      }
+    }
+  },
+  "order_details_accept_dialog_confirm": "تأكيد القبول",
+  "order_details_pickup_dialog_title": "تأكيد الاستلام من المتجر",
+  "order_details_pickup_dialog_message": "هل تؤكد استلام الطلب من {vendorName} وأن كل الأصناف جاهزة معك؟",
+  "@order_details_pickup_dialog_message": {
+    "placeholders": {
+      "vendorName": {
+        "type": "Object"
+      }
+    }
+  },
+  "order_details_pickup_dialog_confirm": "تأكيد الاستلام",
+  "order_details_call_failure": "تعذر فتح تطبيق الاتصال على هذا الجهاز",
+  "order_details_maps_failure": "تعذر فتح تطبيق الخرائط على هذا الجهاز"
 }

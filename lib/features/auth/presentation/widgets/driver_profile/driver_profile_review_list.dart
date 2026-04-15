@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -11,6 +10,8 @@ class DriverProfileReviewList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return Column(
       children: List.generate(items.length, (index) {
         final item = items[index];
@@ -23,7 +24,7 @@ class DriverProfileReviewList extends StatelessWidget {
                 ? null
                 : Border(
                     bottom: BorderSide(
-                      color: AppColors.border.withValues(alpha: 0.35),
+                      color: color.outlineVariant.withValues(alpha: 0.45),
                     ),
                   ),
           ),
@@ -34,8 +35,7 @@ class DriverProfileReviewList extends StatelessWidget {
                   item.label,
                   style: getRegularStyle(
                     fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size12,
-                    color: AppColors.textSecondary,
+                    color: color.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -48,8 +48,7 @@ class DriverProfileReviewList extends StatelessWidget {
                   textAlign: TextAlign.end,
                   style: getSemiBoldStyle(
                     fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size12,
-                    color: AppColors.textPrimary,
+                    color: color.onSurface,
                   ),
                 ),
               ),

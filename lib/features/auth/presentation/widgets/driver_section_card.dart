@@ -23,12 +23,12 @@ class DriverSectionCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.outline.withValues(alpha: 0.12)),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: color.shadow.withValues(alpha: 0.05),
             blurRadius: 18,
             offset: const Offset(0, 8),
           ),
@@ -49,12 +49,11 @@ class DriverSectionCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               subtitle!,
-              style: getRegularStyle(
-                fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size12,
-                color: color.onSurface.withValues(alpha: 0.62),
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  color: color.onSurfaceVariant,
+                ),
               ),
-            ),
           ],
           const SizedBox(height: Spacing.base),
           child,

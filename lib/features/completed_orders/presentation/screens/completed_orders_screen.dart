@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -25,6 +25,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
   List<CompletedOrder> get _filteredOrders {
     return _orders.where((order) => order.status == _selectedStatus).toList();
   }
+
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
@@ -40,7 +41,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
         child: Column(
           children: [
             CustomAppBar.modern(
-              title: 'طلباتي',
+              title: locale.completed_orders_title,
               onBackPressed: () => Navigator.of(context).maybePop(),
             ),
             Padding(
@@ -58,14 +59,14 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                   Expanded(
                     child: _SummaryCard(
                       value: '${filteredOrders.length}',
-                      label: 'طلب',
+                      label: locale.completed_orders_summary_orders,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _SummaryCard(
                       value: totalDistance.toStringAsFixed(1),
-                      label: 'كم مسافة',
+                      label: locale.completed_orders_summary_distance,
                     ),
                   ),
                 ],
@@ -84,7 +85,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                       padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
                       physics: const BouncingScrollPhysics(),
                       itemCount: filteredOrders.length,
-                      separatorBuilder: (_, __) =>
+                      separatorBuilder: (_, _) =>
                           const SizedBox(height: Spacing.md),
                       itemBuilder: (context, index) {
                         final order = filteredOrders[index];
@@ -150,12 +151,12 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
         id: '662534',
         merchantName: 'كارفور',
         customerName: 'نورا خالد',
-        completedAt: DateTime(2026, 4, 3, 13, 0),
+        completedAt: DateTime(2026, 4, 3, 13),
         status: CompletedOrderStatus.delivered,
         amount: 60,
         distanceKm: 7.1,
         paymentMethod: CompletedOrderPaymentMethod.bankTransfer,
-        deliveryAddress: 'شارع البطاويني، الدقي، الجيزة',
+        deliveryAddress: 'شارع البطل أحمد عبد العزيز، الدقي، الجيزة',
         items: const [
           CompletedOrderItem(name: 'حليب', quantity: 2),
           CompletedOrderItem(name: 'بيض', quantity: 1),
@@ -196,7 +197,8 @@ class _SummaryCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: scheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(width: .5,
+        border: Border.all(
+          width: .5,
           color: scheme.outlineVariant.withValues(alpha: 0.35),
         ),
       ),

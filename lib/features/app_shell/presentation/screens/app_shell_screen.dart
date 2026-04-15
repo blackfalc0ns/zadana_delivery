@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/screens/completed_orders_screen.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_screen.dart';
@@ -37,6 +36,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final locale = context.localization;
+    final activeColor = color.secondary;
+    final inactiveColor = color.onSurfaceVariant;
     final tabs = [
       PersistentTabConfig(
         screen: const DriverHomeScreen(),
@@ -44,8 +45,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
           icon: const Icon(Icons.home_rounded),
           inactiveIcon: const Icon(Icons.home_outlined),
           title: locale.nav_home,
-          activeForegroundColor: AppColors.secondary,
-          inactiveForegroundColor: const Color(0xFF7D8793),
+          activeForegroundColor: activeColor,
+          inactiveForegroundColor: inactiveColor,
         ),
       ),
       PersistentTabConfig(
@@ -54,8 +55,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
           icon: const Icon(Icons.receipt_long_rounded),
           inactiveIcon: const Icon(Icons.receipt_long_outlined),
           title: locale.nav_orders,
-          activeForegroundColor: AppColors.secondary,
-          inactiveForegroundColor: const Color(0xFF7D8793),
+          activeForegroundColor: activeColor,
+          inactiveForegroundColor: inactiveColor,
         ),
       ),
       PersistentTabConfig(
@@ -64,8 +65,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
           icon: const Icon(Icons.account_balance_wallet_rounded),
           inactiveIcon: const Icon(Icons.account_balance_wallet_outlined),
           title: locale.nav_wallet,
-          activeForegroundColor: AppColors.secondary,
-          inactiveForegroundColor: const Color(0xFF7D8793),
+          activeForegroundColor: activeColor,
+          inactiveForegroundColor: inactiveColor,
         ),
       ),
       PersistentTabConfig(
@@ -74,8 +75,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
           icon: const Icon(Icons.person_rounded),
           inactiveIcon: const Icon(Icons.person_outline_rounded),
           title: locale.nav_profile,
-          activeForegroundColor: AppColors.secondary,
-          inactiveForegroundColor: const Color(0xFF7D8793),
+          activeForegroundColor: activeColor,
+          inactiveForegroundColor: inactiveColor,
         ),
       ),
     ];
@@ -119,23 +120,31 @@ class _AppShellNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final backgroundStart = isDark
+        ? color.surfaceContainerHigh
+        : color.surface.withValues(alpha: 0.97);
+    final backgroundEnd = isDark
+        ? color.surfaceContainer
+        : color.surfaceContainerLowest.withValues(alpha: 0.94);
+    final borderColor = isDark
+        ? color.outlineVariant.withValues(alpha: 0.35)
+        : Colors.white.withValues(alpha: 0.85);
+    final shadowColor = color.shadow.withValues(alpha: isDark ? 0.24 : 0.12);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Colors.white.withValues(alpha: 0.97),
-            const Color(0xFFF7F9FC).withValues(alpha: 0.94),
-          ],
+          colors: [backgroundStart, backgroundEnd],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.85)),
+        border: Border.all(color: borderColor),
         boxShadow: [
           BoxShadow(
-            color: const Color(0x1F102033),
+            color: shadowColor,
             blurRadius: 28,
             offset: const Offset(0, 16),
             spreadRadius: -4,
@@ -167,13 +176,13 @@ class _AppShellNavBar extends StatelessWidget {
                         color: isSelected
                             ? item.activeForegroundColor
                             : color.surfaceContainerHighest.withValues(
-                                alpha: 0.45,
+                                alpha: isDark ? 0.65 : 0.45,
                               ),
                         boxShadow: isSelected
                             ? [
                                 BoxShadow(
                                   color: item.activeForegroundColor.withValues(
-                                    alpha: 0.28,
+                                    alpha: isDark ? 0.34 : 0.28,
                                   ),
                                   blurRadius: 16,
                                   offset: const Offset(0, 8),

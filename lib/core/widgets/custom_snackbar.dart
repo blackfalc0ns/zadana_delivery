@@ -112,7 +112,7 @@ class CustomSnackbar {
               ),
             ),
             IconButton(
-              onPressed: () => scaffoldMessenger.hideCurrentSnackBar(),
+              onPressed: scaffoldMessenger.hideCurrentSnackBar,
               icon: const Icon(Icons.close, color: Colors.white, size: 18),
               constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               padding: EdgeInsets.zero,

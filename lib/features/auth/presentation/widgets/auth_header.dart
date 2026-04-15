@@ -65,7 +65,6 @@ class AuthHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: getMediumStyle(
                     fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size12,
                     color: color.onPrimary,
                   ),
                 ),
@@ -99,7 +98,6 @@ class AuthHeader extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: getRegularStyle(
               fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size12,
               color: color.onPrimary.withValues(alpha: 0.88),
             ).copyWith(height: 1.2),
           ),

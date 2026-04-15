@@ -198,7 +198,6 @@ class _NotificationCard extends StatelessWidget {
                   item.time,
                   style: getMediumStyle(
                     fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size12,
                     color: AppColors.primary,
                   ),
                 ),

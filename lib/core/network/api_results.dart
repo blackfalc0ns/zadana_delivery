@@ -5,15 +5,13 @@ import 'failures.dart';
 sealed class ApiResult<T> {}
 
 class ApiSuccessResult<T> extends ApiResult<T> {
-  final T data;
-
   ApiSuccessResult({required this.data});
+  final T data;
 }
 
 class ApiErrorResult<T> extends ApiResult<T> {
-  final Failure failure;
-
   ApiErrorResult({required this.failure});
+  final Failure failure;
 }
 
 // Future<ApiResult<T>> safeApiCall<T>(Future<T> Function() apiCall) async {

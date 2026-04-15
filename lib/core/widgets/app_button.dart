@@ -9,18 +9,6 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 enum AppButtonVariant { filled, outlined, text }
 
 class AppButton extends StatelessWidget {
-  final String text;
-  final VoidCallback? onPressed;
-  final AppButtonVariant variant;
-  final bool isLoading;
-  final bool isExpanded;
-  final IconData? icon;
-  final double? height;
-  final double? borderRadius;
-  final Color? color;
-  final Color? textColor;
-  final FontWeight? fontWeight;
-
   const AppButton({
     super.key,
     required this.text,
@@ -78,6 +66,17 @@ class AppButton extends StatelessWidget {
     this.textColor,
     this.fontWeight,
   }) : variant = AppButtonVariant.text;
+  final String text;
+  final VoidCallback? onPressed;
+  final AppButtonVariant variant;
+  final bool isLoading;
+  final bool isExpanded;
+  final IconData? icon;
+  final double? height;
+  final double? borderRadius;
+  final Color? color;
+  final Color? textColor;
+  final FontWeight? fontWeight;
 
   @override
   Widget build(BuildContext context) {

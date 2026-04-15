@@ -19,8 +19,7 @@ extension ProfileDocumentTypeX on ProfileDocumentType {
       ProfileDocumentType.portrait => locale.driver_profile_portrait_title,
       ProfileDocumentType.idFront => locale.driver_profile_id_front_title,
       ProfileDocumentType.license => locale.driver_profile_license_title,
-      ProfileDocumentType.vehicle =>
-        locale.driver_profile_vehicle_photo_title,
+      ProfileDocumentType.vehicle => locale.driver_profile_vehicle_photo_title,
       ProfileDocumentType.plate => locale.driver_profile_plate_photo_title,
     };
   }

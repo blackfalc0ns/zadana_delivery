@@ -23,13 +23,14 @@ class WalletTransactionTile extends StatelessWidget {
     final color = context.colorScheme;
     final kindColor = _kindColor(item.kind);
     final statusColor = _statusColor(context, item.status);
+    final borderColor = color.outlineVariant.withValues(alpha: 0.45);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: color.surface,
+        color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE5ECF1)),
+        border: Border.all(color: borderColor),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -37,7 +37,10 @@ class WalletScreen extends StatelessWidget {
                   WalletBalanceHeroCard(
                     title: locale.wallet_current_balance,
                     subtitle: locale.wallet_subtitle,
-                    balanceValue: _formatCurrency(context, snapshot.currentBalance),
+                    balanceValue: _formatCurrency(
+                      context,
+                      snapshot.currentBalance,
+                    ),
                     availableLabel: locale.wallet_available_to_withdraw,
                     availableValue: _formatCurrency(
                       context,
@@ -68,21 +71,30 @@ class WalletScreen extends StatelessWidget {
                       children: [
                         WalletSummaryMetricCard(
                           label: locale.wallet_metric_today,
-                          value: _formatCurrency(context, snapshot.todayEarnings),
+                          value: _formatCurrency(
+                            context,
+                            snapshot.todayEarnings,
+                          ),
                           icon: Icons.today_rounded,
                           tint: AppColors.success,
                         ),
                         const SizedBox(height: 10),
                         WalletSummaryMetricCard(
                           label: locale.wallet_metric_week,
-                          value: _formatCurrency(context, snapshot.weekEarnings),
+                          value: _formatCurrency(
+                            context,
+                            snapshot.weekEarnings,
+                          ),
                           icon: Icons.date_range_rounded,
                           tint: AppColors.info,
                         ),
                         const SizedBox(height: 10),
                         WalletSummaryMetricCard(
                           label: locale.wallet_metric_month,
-                          value: _formatCurrency(context, snapshot.monthEarnings),
+                          value: _formatCurrency(
+                            context,
+                            snapshot.monthEarnings,
+                          ),
                           icon: Icons.insights_rounded,
                           tint: AppColors.secondary,
                         ),
@@ -156,7 +168,7 @@ class WalletScreen extends StatelessWidget {
     final localeName = Localizations.localeOf(context).toLanguageTag();
     return NumberFormat.currency(
       locale: localeName,
-      symbol: '${context.localization.egp} ',
+      symbol: '${context.localization.currency} ',
       decimalDigits: value.truncateToDouble() == value ? 0 : 2,
     ).format(value);
   }

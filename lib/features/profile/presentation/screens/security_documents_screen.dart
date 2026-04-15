@@ -11,7 +11,8 @@ class SecurityDocumentsScreen extends StatefulWidget {
   const SecurityDocumentsScreen({super.key});
 
   @override
-  State<SecurityDocumentsScreen> createState() => _SecurityDocumentsScreenState();
+  State<SecurityDocumentsScreen> createState() =>
+      _SecurityDocumentsScreenState();
 }
 
 class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
@@ -48,7 +49,9 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
     final locale = context.localization;
     return ProfileFormScaffold(
       title: locale.profile_security_documents_title,
-      headerTitle: locale.profile_documents_uploaded_count(_controller.uploadedCount),
+      headerTitle: locale.profile_documents_uploaded_count(
+        _controller.uploadedCount,
+      ),
       headerSubtitle: locale.driver_profile_uploads_card_subtitle,
       headerIcon: Icons.verified_user_outlined,
       headerColorToken: ProfileColorToken.tertiary,

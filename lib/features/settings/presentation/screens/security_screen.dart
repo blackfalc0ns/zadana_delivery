@@ -140,7 +140,6 @@ class _SecurityItem extends StatelessWidget {
                   subtitle,
                   style: getRegularStyle(
                     fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size12,
                     color: AppColors.textSecondary,
                   ),
                 ),

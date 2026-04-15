@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -62,6 +61,8 @@ class _VehicleOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),
@@ -69,19 +70,19 @@ class _VehicleOptionCard extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : Colors.white,
+              ? color.primary.withValues(alpha: 0.10)
+              : color.surfaceContainerLow,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: selected
-                ? AppColors.primary
-                : AppColors.border.withValues(alpha: 0.75),
+                ? color.primary
+                : color.outlineVariant.withValues(alpha: 0.65),
             width: selected ? 1.6 : 1,
           ),
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.12),
+                    color: color.shadow.withValues(alpha: 0.10),
                     blurRadius: 16,
                     offset: const Offset(0, 8),
                   ),
@@ -98,13 +99,13 @@ class _VehicleOptionCard extends StatelessWidget {
                   height: 42,
                   decoration: BoxDecoration(
                     color: selected
-                        ? AppColors.primary
-                        : AppColors.primaryLight.withValues(alpha: 0.12),
+                        ? color.primary
+                        : color.primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Icon(
                     icon,
-                    color: selected ? AppColors.white : AppColors.primaryLight,
+                    color: selected ? color.onPrimary : color.primary,
                   ),
                 ),
                 const Spacer(),
@@ -113,16 +114,16 @@ class _VehicleOptionCard extends StatelessWidget {
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
-                    color: selected ? AppColors.primary : Colors.transparent,
+                    color: selected ? color.primary : Colors.transparent,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: selected
-                          ? AppColors.primary
-                          : AppColors.border.withValues(alpha: 0.9),
+                          ? color.primary
+                          : color.outlineVariant.withValues(alpha: 0.9),
                     ),
                   ),
                   child: selected
-                      ? const Icon(Icons.check, size: 14, color: Colors.white)
+                      ? Icon(Icons.check, size: 14, color: color.onPrimary)
                       : null,
                 ),
               ],
@@ -133,7 +134,7 @@ class _VehicleOptionCard extends StatelessWidget {
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size14,
-                color: AppColors.textPrimary,
+                color: color.onSurface,
               ),
             ),
             const SizedBox(height: 4),
@@ -144,7 +145,7 @@ class _VehicleOptionCard extends StatelessWidget {
               style: getRegularStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size11,
-                color: AppColors.textSecondary,
+                color: color.onSurfaceVariant,
               ),
             ),
           ],
