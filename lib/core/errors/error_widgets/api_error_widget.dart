@@ -3,7 +3,6 @@ import 'package:zadana_delivery/core/errors/api_error_type.dart';
 import 'package:zadana_delivery/core/errors/api_exception.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 
-
 import 'client_error_widget.dart';
 import 'generic_error_widget.dart';
 import 'no_internet_error_widget.dart';
@@ -30,9 +29,7 @@ class ApiErrorWidget extends StatelessWidget {
     switch (exception.errorType) {
       // Network errors
       case ApiErrorType.noInternetConnection:
-        return NoInternetErrorWidget(
-          onRetry: onRetry,
-        );
+        return NoInternetErrorWidget(onRetry: onRetry);
 
       // Timeout errors
       case ApiErrorType.connectionTimeout:

@@ -37,16 +37,16 @@ class ProfileActionTile extends StatelessWidget {
       color: colorScheme.surface.withValues(alpha: 0),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: Spacing.base,
-            vertical: 16,
+            vertical: 13,
           ),
           child: Row(
             children: [
               ProfileActionIcon(icon: icon, iconColor: iconColor),
-              const SizedBox(width: Spacing.base),
+              const SizedBox(width: 12),
               Expanded(
                 child: ProfileActionText(
                   title: title,
@@ -54,18 +54,18 @@ class ProfileActionTile extends StatelessWidget {
                   isDestructive: isDestructive,
                 ),
               ),
-              const SizedBox(width: Spacing.md),
+              const SizedBox(width: Spacing.sm),
               trailing ??
                   Container(
-                    width: 30,
-                    height: 30,
+                    width: 26,
+                    height: 26,
                     decoration: BoxDecoration(
                       color: trailingContainerColor,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.arrow_forward_ios_rounded,
-                      size: 14,
+                      size: 12,
                       color: arrowColor,
                     ),
                   ),

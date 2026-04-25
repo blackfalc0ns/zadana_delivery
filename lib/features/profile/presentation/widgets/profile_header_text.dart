@@ -30,28 +30,28 @@ class ProfileHeaderText extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: getBoldStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size16,
+                  fontSize: FontSize.size15,
                   color: onPrimary,
                 ),
               ),
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 4),
             InkWell(
               onTap: onEditTap,
               borderRadius: BorderRadius.circular(999),
               child: Container(
-                width: 30,
-                height: 30,
+                width: 28,
+                height: 28,
                 decoration: BoxDecoration(
                   color: onPrimary.withValues(alpha: 0.16),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.edit_outlined, color: onPrimary, size: 15),
+                child: Icon(Icons.edit_outlined, color: onPrimary, size: 14),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: 3),
         _HeaderMetaText(value: identity.email, alpha: 0.92),
         const SizedBox(height: 2),
         _HeaderMetaText(value: identity.phone, alpha: 0.78),
@@ -74,7 +74,7 @@ class _HeaderMetaText extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: getRegularStyle(
         fontFamily: FontConstant.cairo,
-        fontSize: FontSize.size11,
+        fontSize: FontSize.size10,
         color: context.colorScheme.onPrimary.withValues(alpha: alpha),
       ),
     );

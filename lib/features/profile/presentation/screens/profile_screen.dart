@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
-import 'package:zadana_delivery/features/profile/presentation/controllers/profile_screen_controller.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_loading_skeleton.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_screen_content.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -18,37 +22,75 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final ProfileScreenController _controller;
+  late final ProfileCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _controller = getIt<ProfileScreenController>();
+    _cubit = getIt<ProfileCubit>()..loadProfile();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _cubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final color = context.colorScheme;
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state.failure != null && state.profile != null) {
+            CustomSnackbar.showError(
+              context: context,
+              message: state.failure!.errorMessage,
+            );
+            _cubit.clearError();
+          }
+        },
+        builder: (context, state) {
+          if (state.profile == null && state.isLoading) {
+            return const ProfileScreenLoadingSkeleton();
+          }
 
-    return Scaffold(
-      backgroundColor: color.surface,
-      body: ProfileScreenContent(
-        controller: _controller,
-        onActionTap: _handleAction,
+          if (state.profile == null &&
+              state.failure != null &&
+              !state.isLoading) {
+            return Scaffold(
+              backgroundColor: context.colorScheme.surface,
+              body: SafeArea(
+                child: ApiErrorWidget.fromFailure(
+                  state.failure!,
+                  onRetry: _cubit.loadProfile,
+                  onGoBack: _cubit.clearError,
+                ),
+              ),
+            );
+          }
+
+          return Scaffold(
+            backgroundColor: context.colorScheme.surface,
+            body: ProfileScreenContent(
+              state: state,
+              onActionTap: _handleAction,
+              onNotificationsChanged: _cubit.updateNotifications,
+            ),
+          );
+        },
       ),
     );
   }
 
   Future<void> _handleAction(ProfileActionType type) async {
     switch (type) {
-      case ProfileActionType.editProfile:
-        return _open(AppRoutes.driverProfileCompletion);
+      case ProfileActionType.personalInfo:
+        return _open(AppRoutes.profileEdit);
+      case ProfileActionType.vehicleInfo:
+        return _open(AppRoutes.profileVehicleInfo);
+      case ProfileActionType.documents:
+        return _open(AppRoutes.profileSecurityDocuments);
       case ProfileActionType.orders:
         return _openOrdersTab();
       case ProfileActionType.language:
@@ -67,18 +109,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _logout() async {
+    final confirmed = await _showLogoutConfirmationDialog();
+    if (confirmed != true || !mounted) return;
+
     final locale = context.localization;
-    try {
-      await _controller.logout();
-    } catch (error) {
-      if (!mounted) return;
-      CustomSnackbar.showError(
-        context: context,
-        message: error.toString().replaceFirst('Exception: ', ''),
-      );
+    final didLogout = await _cubit.logout();
+    if (!mounted) return;
+
+    if (!didLogout) {
+      final errorMessage = _cubit.state.failure?.errorMessage;
+      if ((errorMessage ?? '').trim().isNotEmpty) {
+        CustomSnackbar.showError(context: context, message: errorMessage!);
+      }
       return;
     }
-    if (!mounted) return;
 
     CustomSnackbar.showInfo(
       context: context,
@@ -90,9 +134,125 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<bool?> _showLogoutConfirmationDialog() {
+    final locale = context.localization;
+    final colorScheme = context.colorScheme;
+
+    return showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+          backgroundColor: Colors.transparent,
+          child: Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: BorderRadius.circular(28),
+              border: Border.all(
+                color: colorScheme.outlineVariant.withValues(alpha: 0.25),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: colorScheme.shadow.withValues(alpha: 0.12),
+                  blurRadius: 32,
+                  offset: const Offset(0, 14),
+                ),
+              ],
+            ),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Align(
+                    child: Container(
+                      width: 58,
+                      height: 58,
+                      decoration: BoxDecoration(
+                        color: colorScheme.error.withValues(alpha: 0.10),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.logout_rounded,
+                        size: 28,
+                        color: colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    locale.logout,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(dialogContext).textTheme.titleLarge
+                        ?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: colorScheme.onSurface,
+                        ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    locale.logout_confirm,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(dialogContext).textTheme.bodyMedium
+                        ?.copyWith(
+                          height: 1.5,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                  const SizedBox(height: 22),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () =>
+                              Navigator.of(dialogContext).pop(false),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            side: BorderSide(
+                              color: colorScheme.outlineVariant.withValues(
+                                alpha: 0.65,
+                              ),
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Text(
+                            MaterialLocalizations.of(context).cancelButtonLabel,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: FilledButton(
+                          onPressed: () =>
+                              Navigator.of(dialogContext).pop(true),
+                          style: FilledButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            backgroundColor: colorScheme.error,
+                            foregroundColor: colorScheme.onError,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
+                          child: Text(locale.logout),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _open(String route) async {
     await context.pushNamed(route);
-    if (mounted) setState(() {});
+    if (mounted) _cubit.loadProfile();
   }
 
   Future<void> _openOrdersTab() async {

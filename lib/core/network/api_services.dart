@@ -42,9 +42,52 @@ abstract class ApiServices {
   @GET(EndPoints.driverStatus)
   Future<dynamic> getDriverStatus();
 
+  @GET(EndPoints.driverHome)
+  Future<dynamic> getDriverHome();
+
+  @GET(EndPoints.driverCompletedOrders)
+  Future<dynamic> getDriverCompletedOrders({@Query('status') String? status});
+
+  @GET('${EndPoints.driverCompletedOrders}/{orderId}')
+  Future<dynamic> getDriverCompletedOrderDetails(
+    @Path('orderId') String orderId,
+  );
+
+  @GET(EndPoints.driverUnifiedProfile)
+  Future<dynamic> getDriverUnifiedProfile();
+
   @GET(EndPoints.driverZones)
   Future<dynamic> getDriverZones();
 
   @PUT(EndPoints.driverProfile)
   Future<dynamic> updateDriverProfile(@Body() Map<String, dynamic> request);
+
+  @PUT(EndPoints.driverProfilePersonal)
+  Future<dynamic> updateDriverPersonalProfile(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @PUT(EndPoints.driverProfileVehicle)
+  Future<dynamic> updateDriverVehicleProfile(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @PUT(EndPoints.driverProfileDocuments)
+  Future<dynamic> updateDriverDocumentsProfile(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @PUT(EndPoints.driverAvailability)
+  Future<dynamic> updateDriverAvailability(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST('/drivers/offers/{assignmentId}/accept')
+  Future<dynamic> acceptDriverOffer(@Path('assignmentId') String assignmentId);
+
+  @POST('/drivers/offers/{assignmentId}/reject')
+  Future<dynamic> rejectDriverOffer(
+    @Path('assignmentId') String assignmentId,
+    @Body() Map<String, dynamic> request,
+  );
 }

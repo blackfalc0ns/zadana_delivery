@@ -29,14 +29,48 @@ class IncomingOrderCard extends StatefulWidget {
 
 class _IncomingOrderCardState extends State<IncomingOrderCard>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _controller =
-      AnimationController(
-          vsync: this,
-          duration: Duration(seconds: widget.order.countdownSeconds),
-        )
-        ..addListener(_handleProgress)
-        ..forward();
+  late AnimationController _controller;
   bool _expiredNotified = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = _buildController();
+  }
+
+  @override
+  void didUpdateWidget(covariant IncomingOrderCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.order.id == widget.order.id &&
+        oldWidget.order.countdownSeconds == widget.order.countdownSeconds) {
+      return;
+    }
+
+    _controller
+      ..removeListener(_handleProgress)
+      ..dispose();
+    _expiredNotified = false;
+    _controller = _buildController();
+  }
+
+  AnimationController _buildController() {
+    final controller = AnimationController(
+      vsync: this,
+      duration: Duration(seconds: widget.order.countdownSeconds),
+    )..addListener(_handleProgress);
+
+    if (widget.order.countdownSeconds <= 0) {
+      controller.value = 1;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _expiredNotified) return;
+        _handleProgress();
+      });
+    } else {
+      controller.forward();
+    }
+
+    return controller;
+  }
 
   void _handleProgress() {
     if (_expiredNotified || _controller.status != AnimationStatus.completed) {

@@ -53,6 +53,13 @@ class CompletedOrdersFilterBar extends StatelessWidget {
               onTap: () => onStatusChanged(CompletedOrderStatus.cancelled),
             ),
           ),
+          Expanded(
+            child: _StatusTab(
+              label: locale.order_delivery_failed,
+              selected: selectedStatus == CompletedOrderStatus.deliveryFailed,
+              onTap: () => onStatusChanged(CompletedOrderStatus.deliveryFailed),
+            ),
+          ),
         ],
       ),
     );

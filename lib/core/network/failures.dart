@@ -4,6 +4,25 @@ class Failure {
   const Failure({required this.errorMessage, this.code = 'unknown'});
   final String errorMessage;
   final String code;
+
+  String get normalizedCode => code.trim().toLowerCase();
+
+  bool get isConnectivityIssue =>
+      {
+        'error_no_internet_connection',
+        'error_no_internet',
+        'connection_error',
+        'nointernetconnection',
+        'no_internet_connection',
+        'error_connection_timeout',
+        'connection_timeout',
+        'error_send_timeout',
+        'send_timeout',
+        'error_receive_timeout',
+        'receive_timeout',
+        'error_no_response',
+        'no_response',
+      }.contains(normalizedCode);
 }
 
 class ServerFailure extends Failure {

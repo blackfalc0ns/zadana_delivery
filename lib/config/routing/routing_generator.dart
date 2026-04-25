@@ -12,6 +12,7 @@ import 'package:zadana_delivery/features/auth/session/presentation/pages/account
 import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
 import 'package:zadana_delivery/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_details_screen.dart';
+import 'package:zadana_delivery/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/personal_info_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/security_documents_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/vehicle_info_screen.dart';
@@ -68,6 +69,8 @@ class RouteGenerator {
         return _pageRoute(settings, const PrivacyScreen());
       case AppRoutes.security:
         return _pageRoute(settings, const SecurityScreen());
+      case AppRoutes.profileEdit:
+        return _pageRoute(settings, const EditProfileScreen());
       case AppRoutes.profilePersonalInfo:
         return _pageRoute(settings, const PersonalInfoScreen());
       case AppRoutes.profileVehicleInfo:

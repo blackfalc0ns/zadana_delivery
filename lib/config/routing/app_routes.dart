@@ -17,6 +17,7 @@ abstract class AppRoutes {
   static const String supportHelp = '/support-help';
   static const String privacy = '/privacy';
   static const String security = '/security';
+  static const String profileEdit = '/profile-edit';
   static const String profilePersonalInfo = '/profile-personal-info';
   static const String profileVehicleInfo = '/profile-vehicle-info';
   static const String profileSecurityDocuments = '/profile-security-documents';

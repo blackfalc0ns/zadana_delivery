@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/profile/presentation/controllers/profile_screen_controller.dart';
+import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_item_builder.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_card.dart';
@@ -11,19 +13,22 @@ import 'package:zadana_delivery/features/profile/presentation/widgets/profile_se
 class ProfileScreenContent extends StatelessWidget {
   const ProfileScreenContent({
     super.key,
-    required this.controller,
+    required this.state,
     required this.onActionTap,
+    required this.onNotificationsChanged,
   });
 
-  final ProfileScreenController controller;
+  final ProfileState state;
   final ValueChanged<ProfileActionType> onActionTap;
+  final ValueChanged<bool> onNotificationsChanged;
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
-    final headerIdentity = controller.resolveHeaderIdentity(locale);
-    final headerHeight = 156 + MediaQuery.paddingOf(context).top;
+    final headerIdentity = _resolveHeaderIdentity(locale);
+    final headerHeight = 140 + MediaQuery.paddingOf(context).top;
+    final profile = state.profile;
 
     return DecoratedBox(
       decoration: BoxDecoration(color: color.surface),
@@ -35,36 +40,163 @@ class ProfileScreenContent extends StatelessWidget {
             delegate: _ProfileHeaderDelegate(
               extent: headerHeight,
               identity: headerIdentity,
-              onEditTap: () => onActionTap(ProfileActionType.editProfile),
+              onEditTap: () => onActionTap(ProfileActionType.personalInfo),
             ),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
               Spacing.base,
-              Spacing.md,
+              Spacing.sm,
               Spacing.base,
-              Spacing.xl,
+              Spacing.lg,
             ),
             sliver: SliverToBoxAdapter(
-              child: ListenableBuilder(
-                listenable: controller,
-                builder: (context, _) => ProfileSectionsList(
-                  sections: controller.buildSectionViewData(
-                    locale: locale,
-                    colorScheme: color,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (profile != null) const SizedBox(height: 1),
+                  ProfileSectionsList(
+                    sections: _buildSections(locale, color),
+                    itemBuilder: (item) => ProfileActionItemBuilder(
+                      item: item,
+                      onNotificationsChanged: onNotificationsChanged,
+                      onActionTap: onActionTap,
+                    ),
                   ),
-                  itemBuilder: (item) => ProfileActionItemBuilder(
-                    item: item,
-                    onNotificationsChanged: controller.updateNotifications,
-                    onActionTap: onActionTap,
-                  ),
-                ),
+                ],
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  ProfileHeaderIdentity _resolveHeaderIdentity(AppLocalizations locale) {
+    final profile = state.profile;
+    final fullName = _resolveValue(
+      profile?.fullName ?? '',
+      locale.profile_default_name,
+    );
+    final email = _resolveValue(
+      profile?.email ?? '',
+      locale.profile_default_email,
+    );
+    final phone = _resolveValue(
+      profile?.phone ?? '',
+      locale.profile_default_phone,
+    );
+
+    return ProfileHeaderIdentity(
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      avatarLetter: fullName.substring(0, 1).toUpperCase(),
+    );
+  }
+
+  List<ProfileSectionViewData> _buildSections(
+    AppLocalizations locale,
+    ColorScheme colorScheme,
+  ) {
+    final sections = [
+      const ProfileSectionData(
+        items: [
+          ProfileActionItemData(
+            icon: Icons.person_outline_rounded,
+            colorToken: ProfileColorToken.primary,
+            type: ProfileActionType.personalInfo,
+          ),
+          ProfileActionItemData(
+            icon: Icons.two_wheeler_outlined,
+            colorToken: ProfileColorToken.secondary,
+            type: ProfileActionType.vehicleInfo,
+          ),
+          ProfileActionItemData(
+            icon: Icons.verified_user_outlined,
+            colorToken: ProfileColorToken.tertiary,
+            type: ProfileActionType.documents,
+          ),
+          ProfileActionItemData(
+            icon: Icons.receipt_long_outlined,
+            colorToken: ProfileColorToken.tertiary,
+            type: ProfileActionType.orders,
+          ),
+        ],
+      ),
+      const ProfileSectionData(
+        items: [
+          ProfileActionItemData(
+            icon: Icons.language_rounded,
+            colorToken: ProfileColorToken.tertiary,
+            type: ProfileActionType.language,
+          ),
+          ProfileActionItemData(
+            icon: Icons.notifications_none_rounded,
+            colorToken: ProfileColorToken.primary,
+            type: ProfileActionType.notifications,
+          ),
+          ProfileActionItemData(
+            icon: Icons.lock_outline_rounded,
+            colorToken: ProfileColorToken.secondary,
+            type: ProfileActionType.security,
+          ),
+        ],
+      ),
+      const ProfileSectionData(
+        items: [
+          ProfileActionItemData(
+            icon: Icons.support_agent_rounded,
+            colorToken: ProfileColorToken.primary,
+            type: ProfileActionType.support,
+          ),
+          ProfileActionItemData(
+            icon: Icons.privacy_tip_outlined,
+            colorToken: ProfileColorToken.tertiary,
+            type: ProfileActionType.privacy,
+          ),
+        ],
+      ),
+      const ProfileSectionData(
+        items: [
+          ProfileActionItemData(
+            icon: Icons.logout_rounded,
+            colorToken: ProfileColorToken.error,
+            type: ProfileActionType.logout,
+            isDestructive: true,
+          ),
+        ],
+      ),
+    ];
+
+    return sections
+        .map(
+          (section) => ProfileSectionViewData(
+            items: section.items.map((item) {
+              final copy = item.type.localizedCopy(locale);
+              return ProfileActionViewData(
+                type: item.type,
+                title: copy.$1,
+                subtitle: copy.$2,
+                icon: item.icon,
+                iconColor: item.colorToken.resolveColor(colorScheme),
+                isDestructive: item.isDestructive,
+                isLoading:
+                    item.type == ProfileActionType.logout && state.isLoggingOut,
+                isNotificationTile:
+                    item.type == ProfileActionType.notifications,
+                notificationsEnabled: state.notificationsEnabled,
+              );
+            }).toList(),
+          ),
+        )
+        .toList();
+  }
+
+  static String _resolveValue(String value, String fallback) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return fallback;
+    return trimmed;
   }
 }
 

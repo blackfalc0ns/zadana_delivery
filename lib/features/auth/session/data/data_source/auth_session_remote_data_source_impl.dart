@@ -49,15 +49,6 @@ class AuthSessionRemoteDataSourceImpl implements AuthSessionRemoteDataSource {
     }
   }
 
-  @override
-  Future<void> logout(String refreshToken) async {
-    try {
-      await _apiServices.logoutDriver({'refreshToken': refreshToken});
-    } on DioException catch (exception) {
-      throw ApiExceptionMapper.fromDioException(exception);
-    }
-  }
-
   Map<String, dynamic> _normalizeMap(dynamic response) {
     if (response is Map<String, dynamic>) return response;
     if (response is Map) return Map<String, dynamic>.from(response);

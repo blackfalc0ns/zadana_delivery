@@ -30,6 +30,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get password_is_not_valid => 'كلمة المرور هذه غير صالحة';
 
   @override
+  String get password_requirements_prefix => 'كلمة المرور ناقصها';
+
+  @override
+  String get password_requirements_separator => '، ';
+
+  @override
+  String get password_requirement_min_length => '8 أحرف على الأقل';
+
+  @override
+  String get password_requirement_uppercase => 'حرف كبير';
+
+  @override
+  String get password_requirement_lowercase => 'حرف صغير';
+
+  @override
+  String get password_requirement_number => 'رقم';
+
+  @override
+  String get password_requirement_special_character => 'رمز خاص مثل !';
+
+  @override
   String get password_must_be_at_least_6_characters =>
       'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل';
 
@@ -1236,8 +1257,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_login_hero_title => 'تسجيل دخول السائق';
 
   @override
-  String get auth_login_hero_subtitle =>
-      'الوصول إلى طلبات التوصيل الجديدة، وإدارة نشاطك، والمتابعة إلى خطوة إعداد المركبة.';
+  String get auth_login_hero_subtitle => 'الوصول للطلبات وإدارة نشاطك بسهولة.';
 
   @override
   String get auth_login_section_badge => 'حساب السائق';
@@ -1250,7 +1270,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_signup_hero_subtitle =>
-      'ابدأ ببياناتك الأساسية، ثم انتقل إلى تسجيل الدخول، وبعدها أكمل خطوة ملف المركبة.';
+      'ابدأ ببياناتك الأساسية للانضمام سريعًا.';
 
   @override
   String get auth_signup_section_badge => 'رحلة جديدة';
@@ -1260,7 +1280,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_forgot_hero_subtitle =>
-      'أدخل البريد الإلكتروني أو الهاتف المرتبط بالحساب ثم انتقل إلى خطوة كلمة المرور الجديدة.';
+      'استعد الوصول إلى حسابك بخطوات بسيطة.';
 
   @override
   String get auth_forgot_section_badge => 'استعادة الوصول';
@@ -1269,8 +1289,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_reset_hero_badge => 'أمان الحساب';
 
   @override
-  String get auth_reset_hero_subtitle =>
-      'أدخل الرمز وكلمة مرور جديدة، ثم عد مباشرة إلى تسجيل الدخول.';
+  String get auth_reset_hero_subtitle => 'عيّن كلمة مرور جديدة لحسابك.';
 
   @override
   String get auth_reset_section_badge => 'كلمة مرور جديدة';

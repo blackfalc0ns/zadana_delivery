@@ -4,7 +4,9 @@ import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 enum ProfileColorToken { primary, secondary, tertiary, error }
 
 enum ProfileActionType {
-  editProfile,
+  personalInfo,
+  vehicleInfo,
+  documents,
   orders,
   language,
   notifications,
@@ -15,9 +17,17 @@ enum ProfileActionType {
 
   (String, String) localizedCopy(AppLocalizations locale) {
     return switch (this) {
-      ProfileActionType.editProfile => (
-        locale.profile_edit_profile_title,
-        locale.profile_edit_profile_subtitle,
+      ProfileActionType.personalInfo => (
+        locale.personal_info,
+        locale.driver_profile_identity_card_subtitle,
+      ),
+      ProfileActionType.vehicleInfo => (
+        locale.driver_profile_vehicle_card_title,
+        locale.driver_profile_vehicle_card_subtitle,
+      ),
+      ProfileActionType.documents => (
+        locale.profile_security_documents_title,
+        locale.driver_profile_uploads_card_subtitle,
       ),
       ProfileActionType.orders => (
         locale.my_orders_title,

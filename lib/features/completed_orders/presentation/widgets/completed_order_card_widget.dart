@@ -6,12 +6,12 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_order_card_helpers.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_order_card_summary_parts.dart';
-import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_order_details_sheet.dart';
 
 class CompletedOrderCard extends StatelessWidget {
-  const CompletedOrderCard({super.key, required this.order});
+  const CompletedOrderCard({super.key, required this.order, this.onTap});
 
   final CompletedOrder order;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class CompletedOrderCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: () => showCompletedOrderDetailsSheet(context, order),
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(

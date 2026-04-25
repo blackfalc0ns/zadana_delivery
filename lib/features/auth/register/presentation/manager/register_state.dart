@@ -7,7 +7,6 @@ class RegisterState {
   const RegisterState({
     this.isLoading = false,
     this.isSuccess = false,
-    this.errorMessage,
     this.response,
     this.failure,
     this.draft = RegisterProfileDraft.empty,
@@ -15,7 +14,6 @@ class RegisterState {
 
   final bool isLoading;
   final bool isSuccess;
-  final String? errorMessage;
   final RegisterResponseEntity? response;
   final Failure? failure;
   final RegisterProfileDraft draft;
@@ -23,7 +21,6 @@ class RegisterState {
   RegisterState copyWith({
     bool? isLoading,
     bool? isSuccess,
-    String? errorMessage,
     RegisterResponseEntity? response,
     Failure? failure,
     RegisterProfileDraft? draft,
@@ -32,7 +29,6 @@ class RegisterState {
     return RegisterState(
       isLoading: isLoading ?? this.isLoading,
       isSuccess: isSuccess ?? this.isSuccess,
-      errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       response: response ?? this.response,
       failure: clearError ? null : failure ?? this.failure,
       draft: draft ?? this.draft,

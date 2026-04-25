@@ -15,6 +15,4 @@ abstract class AuthSessionRepository {
   Future<ApiResult<RefreshTokenResponseEntity>> refreshToken(
     RefreshTokenRequestEntity request,
   );
-
-  Future<ApiResult<void>> logout();
 }

@@ -17,13 +17,11 @@ class AuthSessionRepositoryImpl implements AuthSessionRepository {
     this._dataSource,
     this._tokenService,
     this._identityService,
-    this._draftService,
   );
 
   final AuthSessionRemoteDataSource _dataSource;
   final TokenService _tokenService;
   final DriverIdentityService _identityService;
-  final DriverProfileDraftService _draftService;
 
   @override
   Future<ApiResult<AuthSessionUserEntity>> getCurrentDriver() {
@@ -66,26 +64,6 @@ class AuthSessionRepositoryImpl implements AuthSessionRepository {
       }
 
       return entity;
-    });
-  }
-
-  @override
-  Future<ApiResult<void>> logout() {
-    return safeApiCall(() async {
-      final refreshToken = await _tokenService.getRefreshToken();
-
-      if (refreshToken != null && refreshToken.trim().isNotEmpty) {
-        try {
-          await _dataSource.logout(refreshToken.trim());
-        } catch (_) {
-          // Best effort server logout. Local cleanup still runs.
-        }
-      }
-
-      await _tokenService.deleteToken();
-      await _tokenService.deleteRefreshToken();
-      await _identityService.clearIdentity();
-      await _draftService.clearDraft();
     });
   }
 

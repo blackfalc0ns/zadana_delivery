@@ -2,6 +2,9 @@ abstract class NetworkConstants {
   static const String baseUrl = "https://zadana.runasp.net/api";
   static const String authorization = 'Authorization';
   static const String bearer = "Bearer";
+  static const String notificationsHub = '/hubs/notifications';
+  static const String driverNotificationEvent = 'ReceiveNotification';
+  static const String driverOfferNotificationType = 'driver-offer';
 }
 
 abstract class EndPoints {
@@ -14,6 +17,13 @@ abstract class EndPoints {
   static const String driverLogout = '/drivers/auth/logout';
   static const String driverProfile = '/drivers/auth/me';
   static const String driverStatus = '/drivers/me/status';
+  static const String driverHome = '/drivers/home';
+  static const String driverAvailability = '/drivers/me/availability';
+  static const String driverCompletedOrders = '/drivers/orders/completed';
+  static const String driverUnifiedProfile = '/drivers/me/profile';
+  static const String driverProfilePersonal = '/drivers/me/profile/personal';
+  static const String driverProfileVehicle = '/drivers/me/profile/vehicle';
+  static const String driverProfileDocuments = '/drivers/me/profile/documents';
   static const String driverZones = '/public/delivery-zones';
 
   static const String register = "/customers/auth/register";

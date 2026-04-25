@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/network/failures.dart';
+import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_zone_selector.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_field.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/vehicle_type_selector.dart';
 
@@ -9,16 +12,28 @@ class VehicleInfoFields extends StatelessWidget {
     super.key,
     required this.groupValue,
     required this.onTypeChanged,
-    required this.brandController,
-    required this.modelController,
-    required this.plateController,
+    required this.nationalIdController,
+    required this.licenseController,
+    required this.zones,
+    required this.isZonesLoading,
+    required this.selectedZoneId,
+    required this.selectedZoneName,
+    required this.zonesFailure,
+    required this.onRetryZones,
+    required this.onZoneChanged,
   });
 
   final String groupValue;
   final ValueChanged<String> onTypeChanged;
-  final TextEditingController brandController;
-  final TextEditingController modelController;
-  final TextEditingController plateController;
+  final TextEditingController nationalIdController;
+  final TextEditingController licenseController;
+  final List<DriverZoneEntity> zones;
+  final bool isZonesLoading;
+  final String selectedZoneId;
+  final String selectedZoneName;
+  final Failure? zonesFailure;
+  final VoidCallback onRetryZones;
+  final ValueChanged<DriverZoneEntity> onZoneChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -28,24 +43,28 @@ class VehicleInfoFields extends StatelessWidget {
         VehicleTypeSelector(groupValue: groupValue, onChanged: onTypeChanged),
         const SizedBox(height: Spacing.md),
         ProfileFormField(
-          controller: brandController,
-          label: locale.driver_profile_brand_label,
-          hint: locale.driver_profile_brand_hint,
-          icon: Icons.directions_car_outlined,
+          controller: nationalIdController,
+          label: locale.driver_profile_national_id_label,
+          hint: locale.driver_profile_national_id_hint,
+          icon: Icons.badge_outlined,
         ),
         const SizedBox(height: Spacing.md),
         ProfileFormField(
-          controller: modelController,
-          label: locale.driver_profile_model_label,
-          hint: locale.driver_profile_model_hint,
-          icon: Icons.tune_rounded,
+          controller: licenseController,
+          label: locale.driver_profile_license_number_label,
+          hint: locale.driver_profile_license_number_hint,
+          icon: Icons.assignment_outlined,
         ),
         const SizedBox(height: Spacing.md),
-        ProfileFormField(
-          controller: plateController,
-          label: locale.driver_profile_plate_label,
-          hint: locale.driver_profile_plate_hint,
-          icon: Icons.pin_outlined,
+        DriverZoneSelector(
+          zones: zones,
+          isLoading: isZonesLoading,
+          selectedZoneId: selectedZoneId,
+          selectedZoneName: selectedZoneName,
+          selectedZoneCity: '',
+          failure: zonesFailure,
+          onRetry: onRetryZones,
+          onChanged: onZoneChanged,
         ),
       ],
     );

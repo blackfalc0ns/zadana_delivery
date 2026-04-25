@@ -8,7 +8,7 @@ import 'package:zadana_delivery/features/completed_orders/presentation/widgets/c
 class CompletedOrderProductCard extends StatelessWidget {
   const CompletedOrderProductCard({super.key, required this.item});
 
-  final CompletedOrderItem item;
+  final CompletedOrderLineItem item;
 
   @override
   Widget build(BuildContext context) {
@@ -85,17 +85,15 @@ class CompletedOrderProductCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                if (item.note != null) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    item.note!,
-                    style: getRegularStyle(
-                      fontFamily: FontConstant.cairo,
-                      fontSize: FontSize.size10,
-                      color: scheme.onSurfaceVariant,
-                    ),
+                const SizedBox(height: 6),
+                Text(
+                  '${item.lineTotal.toStringAsFixed(0)} ${locale.currency} • ${item.unitPrice.toStringAsFixed(0)} ${locale.currency}',
+                  style: getRegularStyle(
+                    fontFamily: FontConstant.cairo,
+                    fontSize: FontSize.size10,
+                    color: scheme.onSurfaceVariant,
                   ),
-                ],
+                ),
               ],
             ),
           ),

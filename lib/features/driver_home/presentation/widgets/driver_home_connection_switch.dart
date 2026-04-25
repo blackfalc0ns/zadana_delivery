@@ -8,10 +8,14 @@ class DriverHomeConnectionSwitch extends StatelessWidget {
     super.key,
     required this.isOnline,
     required this.onChanged,
+    this.isEnabled = true,
+    this.isLoading = false,
   });
 
   final bool isOnline;
   final ValueChanged<bool> onChanged;
+  final bool isEnabled;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -100,18 +104,31 @@ class DriverHomeConnectionSwitch extends StatelessWidget {
               ],
             ),
             const SizedBox(width: 10),
-            Transform.scale(
-              scale: 0.78,
-              child: Switch(
-                value: isOnline,
-                onChanged: onChanged,
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                activeThumbColor: color.primary,
-                activeTrackColor: color.primary.withValues(alpha: 0.32),
-                inactiveThumbColor: color.surface,
-                inactiveTrackColor: color.outline.withValues(alpha: 0.28),
+            if (isLoading)
+              SizedBox(
+                width: 28,
+                height: 28,
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.2,
+                    color: color.primary,
+                  ),
+                ),
+              )
+            else
+              Transform.scale(
+                scale: 0.78,
+                child: Switch(
+                  value: isOnline,
+                  onChanged: isEnabled ? onChanged : null,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  activeThumbColor: color.primary,
+                  activeTrackColor: color.primary.withValues(alpha: 0.32),
+                  inactiveThumbColor: color.surface,
+                  inactiveTrackColor: color.outline.withValues(alpha: 0.28),
+                ),
               ),
-            ),
           ],
         ),
       ),

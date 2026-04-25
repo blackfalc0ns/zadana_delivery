@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
-import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
+import 'package:zadana_delivery/features/completed_orders/presentation/manager/completed_orders_state.dart';
+import 'package:zadana_delivery/features/completed_orders/presentation/manager/completed_orders_view_model.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_order_card.dart';
+import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_order_details_sheet.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_orders_empty_state.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_orders_filter_bar.dart';
+import 'package:zadana_delivery/features/completed_orders/presentation/widgets/completed_orders_loading_skeleton.dart';
 
 class CompletedOrdersScreen extends StatefulWidget {
   const CompletedOrdersScreen({super.key});
@@ -17,168 +23,240 @@ class CompletedOrdersScreen extends StatefulWidget {
 }
 
 class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
-  CompletedOrderStatus _selectedStatus = CompletedOrderStatus.delivered;
+  late final CompletedOrdersViewModel _viewModel;
 
-  late final List<CompletedOrder> _orders = _seedOrders()
-    ..sort((a, b) => b.completedAt.compareTo(a.completedAt));
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = getIt<CompletedOrdersViewModel>()..loadInitial();
+  }
 
-  List<CompletedOrder> get _filteredOrders {
-    return _orders.where((order) => order.status == _selectedStatus).toList();
+  @override
+  void dispose() {
+    _viewModel.close();
+    super.dispose();
+  }
+
+  Future<void> _openOrderDetails(CompletedOrder order) async {
+    final detailedOrder = await _viewModel.loadOrderDetails(order.id);
+    if (!mounted) return;
+
+    if (detailedOrder != null) {
+      await showCompletedOrderDetailsSheet(context, detailedOrder);
+    }
+  }
+
+  Future<void> _showRetryErrorDialog({
+    required CompletedOrdersState state,
+    required VoidCallback onRetry,
+  }) async {
+    final failure = state.failure;
+    if (failure == null || !mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return Dialog(
+          insetPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 24,
+          ),
+          backgroundColor: Theme.of(dialogContext).colorScheme.surface,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: ApiErrorWidget.fromFailure(
+              failure,
+              onRetry: () {
+                Navigator.of(dialogContext).pop();
+                onRetry();
+              },
+              onGoBack: () {
+                Navigator.of(dialogContext).pop();
+                _viewModel.clearError();
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
-    final filteredOrders = _filteredOrders;
-    final totalDistance = filteredOrders.fold<double>(
-      0,
-      (sum, order) => sum + order.distanceKm,
-    );
 
-    return Scaffold(
-      body: SafeArea(
-        top: false,
-        child: Column(
-          children: [
-            CustomAppBar.modern(
-              title: locale.completed_orders_title,
-              onBackPressed: () => Navigator.of(context).maybePop(),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
-              child: CompletedOrdersFilterBar(
-                selectedStatus: _selectedStatus,
-                onStatusChanged: (status) =>
-                    setState(() => _selectedStatus = status),
+    return BlocProvider.value(
+      value: _viewModel,
+      child: BlocConsumer<CompletedOrdersViewModel, CompletedOrdersState>(
+        listener: (context, state) {
+          if (state.failure == null) return;
+
+          if (_viewModel.showGlobalError) return;
+
+          final detailsOrderId = state.lastDetailsOrderId;
+          final failedOrder = detailsOrderId == null
+              ? null
+              : _viewModel.findOrderById(detailsOrderId);
+          if (failedOrder != null) {
+            _showRetryErrorDialog(
+              state: state,
+              onRetry: () => _openOrderDetails(failedOrder),
+            );
+            return;
+          }
+
+          _showRetryErrorDialog(
+            state: state,
+            onRetry: _viewModel.retryCurrentRequest,
+          );
+        },
+        builder: (context, state) {
+          final showGlobalError = _viewModel.showGlobalError;
+          final showSkeleton = _viewModel.showSkeleton;
+          final orders = state.orders;
+          final totalDistance = _viewModel.totalDistance;
+
+          if (showGlobalError) {
+            return Scaffold(
+              backgroundColor: context.colorScheme.surface,
+              body: SafeArea(
+                child: ApiErrorWidget.fromFailure(
+                  state.failure!,
+                  onRetry: _viewModel.retryCurrentRequest,
+                  onGoBack: _viewModel.clearError,
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
-              child: Row(
+            );
+          }
+
+          return Scaffold(
+            body: SafeArea(
+              top: false,
+              child: Column(
                 children: [
-                  Expanded(
-                    child: _SummaryCard(
-                      value: '${filteredOrders.length}',
-                      label: locale.completed_orders_summary_orders,
+                  CustomAppBar.modern(
+                    title: locale.completed_orders_title,
+                    onBackPressed: () => Navigator.of(context).maybePop(),
+                  ),
+                  if (state.isRefreshing) const LinearProgressIndicator(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+                    child: CompletedOrdersFilterBar(
+                      selectedStatus: state.selectedStatus,
+                      onStatusChanged: _viewModel.selectStatus,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   Expanded(
-                    child: _SummaryCard(
-                      value: totalDistance.toStringAsFixed(1),
-                      label: locale.completed_orders_summary_distance,
-                    ),
+                    child: showSkeleton
+                        ? const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 16),
+                            child: CompletedOrdersLoadingSkeleton(),
+                          )
+                        : Column(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  0,
+                                  16,
+                                  10,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: _SummaryCard(
+                                        value: '${state.totalCount}',
+                                        label: locale
+                                            .completed_orders_summary_orders,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: _SummaryCard(
+                                        value: totalDistance.toStringAsFixed(1),
+                                        label: locale
+                                            .completed_orders_summary_distance,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: orders.isEmpty
+                                    ? Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: CompletedOrdersEmptyState(
+                                          title: locale
+                                              .completed_orders_empty_title,
+                                          subtitle: locale
+                                              .completed_orders_empty_subtitle,
+                                        ),
+                                      )
+                                    : RefreshIndicator(
+                                        onRefresh: _viewModel.refreshOrders,
+                                        child: ListView.separated(
+                                          padding: const EdgeInsets.fromLTRB(
+                                            16,
+                                            0,
+                                            16,
+                                            28,
+                                          ),
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(
+                                                parent: BouncingScrollPhysics(),
+                                              ),
+                                          itemCount: orders.length,
+                                          separatorBuilder: (_, _) =>
+                                              const SizedBox(height: 12),
+                                          itemBuilder: (context, index) {
+                                            final order = orders[index];
+                                            final isLoadingDetails = _viewModel
+                                                .isDetailsLoadingFor(order.id);
+                                            return Stack(
+                                              children: [
+                                                CompletedOrderCard(
+                                                  order: order,
+                                                  onTap: isLoadingDetails
+                                                      ? null
+                                                      : () => _openOrderDetails(
+                                                          order,
+                                                        ),
+                                                ),
+                                                if (isLoadingDetails)
+                                                  Positioned.fill(
+                                                    child: Container(
+                                                      decoration: BoxDecoration(
+                                                        color: Colors.black
+                                                            .withValues(
+                                                              alpha: 0.08,
+                                                            ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              20,
+                                                            ),
+                                                      ),
+                                                      child: const Center(
+                                                        child:
+                                                            CircularProgressIndicator(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                              ],
+                                            );
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          ),
                   ),
                 ],
               ),
             ),
-            Expanded(
-              child: filteredOrders.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: CompletedOrdersEmptyState(
-                        title: locale.completed_orders_no_results_title,
-                        subtitle: locale.completed_orders_no_results_subtitle,
-                      ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 28),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: filteredOrders.length,
-                      separatorBuilder: (_, _) =>
-                          const SizedBox(height: Spacing.md),
-                      itemBuilder: (context, index) {
-                        final order = filteredOrders[index];
-                        return CompletedOrderCard(order: order);
-                      },
-                    ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
-  }
-
-  List<CompletedOrder> _seedOrders() {
-    return [
-      CompletedOrder(
-        id: '662531',
-        merchantName: 'ماكدونالدز',
-        customerName: 'أحمد',
-        completedAt: DateTime(2026, 4, 4, 9, 15),
-        status: CompletedOrderStatus.delivered,
-        amount: 35,
-        distanceKm: 3.2,
-        paymentMethod: CompletedOrderPaymentMethod.card,
-        deliveryAddress: '٣٢ شارع عباس العقاد، مدينة نصر، القاهرة',
-        items: const [
-          CompletedOrderItem(name: 'بيج ماك', quantity: 1),
-          CompletedOrderItem(name: 'بطاطس كبيرة', quantity: 1),
-          CompletedOrderItem(name: 'كوكاكولا', quantity: 1),
-        ],
-      ),
-      CompletedOrder(
-        id: '662532',
-        merchantName: 'بيتزا هت',
-        customerName: 'سارة علي',
-        completedAt: DateTime(2026, 4, 4, 10, 40),
-        status: CompletedOrderStatus.delivered,
-        amount: 50,
-        distanceKm: 5.8,
-        paymentMethod: CompletedOrderPaymentMethod.cashOnDelivery,
-        deliveryAddress: 'الحي السابع، مدينة نصر، القاهرة',
-        items: const [
-          CompletedOrderItem(name: 'بيتزا بيبروني وسط', quantity: 1),
-          CompletedOrderItem(name: 'بطاطس ودجز', quantity: 1),
-        ],
-      ),
-      CompletedOrder(
-        id: '662533',
-        merchantName: 'ستاربكس',
-        customerName: 'محمود حسين',
-        completedAt: DateTime(2026, 4, 3, 11, 20),
-        status: CompletedOrderStatus.cancelled,
-        amount: 0,
-        distanceKm: 1.5,
-        paymentMethod: CompletedOrderPaymentMethod.applePay,
-        deliveryAddress: 'حي الياسمين، القاهرة الجديدة',
-        items: const [
-          CompletedOrderItem(name: 'لاتيه', quantity: 2),
-          CompletedOrderItem(name: 'كوكيز', quantity: 1),
-        ],
-      ),
-      CompletedOrder(
-        id: '662534',
-        merchantName: 'كارفور',
-        customerName: 'نورا خالد',
-        completedAt: DateTime(2026, 4, 3, 13),
-        status: CompletedOrderStatus.delivered,
-        amount: 60,
-        distanceKm: 7.1,
-        paymentMethod: CompletedOrderPaymentMethod.bankTransfer,
-        deliveryAddress: 'شارع البطل أحمد عبد العزيز، الدقي، الجيزة',
-        items: const [
-          CompletedOrderItem(name: 'حليب', quantity: 2),
-          CompletedOrderItem(name: 'بيض', quantity: 1),
-          CompletedOrderItem(name: 'عصير برتقال', quantity: 3),
-        ],
-      ),
-      CompletedOrder(
-        id: '662535',
-        merchantName: 'كنتاكي',
-        customerName: 'عمر يسري',
-        completedAt: DateTime(2026, 4, 2, 14, 30),
-        status: CompletedOrderStatus.deliveryFailed,
-        amount: 0,
-        distanceKm: 2.4,
-        paymentMethod: CompletedOrderPaymentMethod.card,
-        deliveryAddress: 'اللوتس الجنوبي، القاهرة الجديدة',
-        items: const [
-          CompletedOrderItem(name: 'وجبة تويستر', quantity: 1),
-          CompletedOrderItem(name: 'كول سلو', quantity: 1),
-        ],
-      ),
-    ];
   }
 }
 

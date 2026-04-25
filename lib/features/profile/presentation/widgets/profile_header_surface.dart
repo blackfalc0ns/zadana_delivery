@@ -22,26 +22,26 @@ class ProfileHeaderSurface extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: -34,
+          top: -28,
           right: -18,
           child: ProfileHeaderGlowCircle(
-            size: 112,
+            size: 96,
             color: onPrimary.withValues(alpha: 0.07),
           ),
         ),
         Positioned(
-          bottom: -42,
+          bottom: -34,
           left: -14,
           child: ProfileHeaderGlowCircle(
-            size: 126,
+            size: 108,
             color: onPrimary.withValues(alpha: 0.04),
           ),
         ),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: BoxDecoration(
             color: onPrimary.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(26),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(color: onPrimary.withValues(alpha: 0.12)),
           ),
           child: Row(

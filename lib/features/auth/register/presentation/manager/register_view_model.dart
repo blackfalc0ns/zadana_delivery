@@ -22,7 +22,7 @@ class RegisterViewModel extends Cubit<RegisterState> {
   }
 
   void clearError() {
-    if (state.errorMessage == null && state.failure == null) return;
+    if (state.failure == null) return;
     emit(state.copyWith(clearError: true));
   }
 
@@ -54,7 +54,6 @@ class RegisterViewModel extends Cubit<RegisterState> {
           state.copyWith(
             isLoading: false,
             isSuccess: false,
-            errorMessage: result.failure.errorMessage,
             failure: result.failure,
           ),
         );

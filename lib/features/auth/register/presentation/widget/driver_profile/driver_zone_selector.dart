@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 
 class DriverZoneSelector extends StatelessWidget {
@@ -15,7 +17,7 @@ class DriverZoneSelector extends StatelessWidget {
     required this.selectedZoneCity,
     required this.onChanged,
     required this.onRetry,
-    this.errorMessage,
+    this.failure,
   });
 
   final List<DriverZoneEntity> zones;
@@ -23,7 +25,7 @@ class DriverZoneSelector extends StatelessWidget {
   final String selectedZoneId;
   final String selectedZoneName;
   final String selectedZoneCity;
-  final String? errorMessage;
+  final Failure? failure;
   final ValueChanged<DriverZoneEntity> onChanged;
   final VoidCallback onRetry;
 
@@ -126,21 +128,11 @@ class DriverZoneSelector extends StatelessWidget {
             ),
           ),
         ),
-        if (errorMessage != null && errorMessage!.trim().isNotEmpty) ...[
+        if (failure != null) ...[
           const SizedBox(height: Spacing.sm),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  errorMessage!,
-                  style: getRegularStyle(
-                    fontFamily: FontConstant.cairo,
-                    color: color.error,
-                  ),
-                ),
-              ),
-              TextButton(onPressed: onRetry, child: Text(locale.retry)),
-            ],
+          ApiErrorWidget.fromFailure(
+            failure!,
+            onRetry: onRetry,
           ),
         ],
       ],

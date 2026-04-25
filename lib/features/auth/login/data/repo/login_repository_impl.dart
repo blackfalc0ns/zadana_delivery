@@ -1,4 +1,6 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/errors/api_error_type.dart';
+import 'package:zadana_delivery/core/errors/api_exception.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
@@ -25,8 +27,20 @@ class LoginRepositoryImpl implements LoginRepository {
   Future<ApiResult<LoginResponseEntity>> login(LoginRequestEntity request) {
     return safeApiCall(() async {
       final result = await _remoteDataSource.login(request.toDto());
-      await _tokenService.saveAccessToken(result.tokens.accessToken);
-      await _tokenService.saveRefreshToken(result.tokens.refreshToken);
+      final accessToken = result.tokens.accessToken.trim();
+      final refreshToken = result.tokens.refreshToken.trim();
+
+      if (accessToken.isEmpty || refreshToken.isEmpty) {
+        throw ApiException(
+          errorType: ApiErrorType.unauthorized,
+          message: result.message.trim().isNotEmpty
+              ? result.message.trim()
+              : 'Unable to sign in. Check your credentials and try again.',
+        );
+      }
+
+      await _tokenService.saveAccessToken(accessToken);
+      await _tokenService.saveRefreshToken(refreshToken);
 
       final entity = result.toEntity();
 

@@ -20,25 +20,25 @@ class ProfileHeaderCard extends StatelessWidget {
     final topInset = MediaQuery.paddingOf(context).top;
 
     return Container(
-      height: 156 + topInset,
+      height: 140 + topInset,
       width: double.infinity,
       padding: EdgeInsets.fromLTRB(
         Spacing.base,
-        topInset + 14,
+        topInset + 10,
         Spacing.base,
-        20,
+        16,
       ),
       decoration: BoxDecoration(
         color: color.primary,
         borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(36),
-          bottomRight: Radius.circular(36),
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
         ),
         boxShadow: [
           BoxShadow(
             color: color.shadow.withValues(alpha: 0.10),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
+            blurRadius: 22,
+            offset: const Offset(0, 10),
           ),
         ],
       ),

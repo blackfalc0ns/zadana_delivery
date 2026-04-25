@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
-import 'package:zadana_delivery/features/profile/presentation/controllers/security_documents_controller.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
+import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_scaffold.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_loading_skeleton.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/security_documents_fields.dart';
 
 class SecurityDocumentsScreen extends StatefulWidget {
@@ -17,76 +22,120 @@ class SecurityDocumentsScreen extends StatefulWidget {
 }
 
 class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
-  late final SecurityDocumentsController _controller;
+  late final ProfileCubit _cubit;
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _nationalIdController;
-  late final TextEditingController _licenseController;
-  bool _isSaving = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = getIt<SecurityDocumentsController>()..addListener(_refresh);
-    final data = _controller.loadInitialData();
-    _nationalIdController = TextEditingController(text: data.nationalId);
-    _licenseController = TextEditingController(text: data.licenseNumber);
+    _cubit = getIt<ProfileCubit>()
+      ..doIntent(const ProfileFormLoadEvent());
   }
 
   @override
   void dispose() {
-    _controller.removeListener(_refresh);
-    _controller.dispose();
-    _nationalIdController.dispose();
-    _licenseController.dispose();
+    _cubit.close();
     super.dispose();
-  }
-
-  void _refresh() {
-    if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
-    return ProfileFormScaffold(
-      title: locale.profile_security_documents_title,
-      headerTitle: locale.profile_documents_uploaded_count(
-        _controller.uploadedCount,
-      ),
-      headerSubtitle: locale.driver_profile_uploads_card_subtitle,
-      headerIcon: Icons.verified_user_outlined,
-      headerColorToken: ProfileColorToken.tertiary,
-      formKey: _formKey,
-      isSaving: _isSaving,
-      onSave: _save,
-      children: [
-        SecurityDocumentsFields(
-          nationalIdController: _nationalIdController,
-          licenseController: _licenseController,
-          documents: _controller.documents,
-          onSelect: _pickDocument,
-        ),
-      ],
-    );
-  }
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocConsumer<ProfileCubit, ProfileState>(
+        listener: (context, state) {
+          if (state.isSuccess) {
+            CustomSnackbar.showSuccess(
+              context: context,
+              message: context.localization.profile_security_documents_saved,
+            );
+            Navigator.of(context).pop();
+            return;
+          }
 
-  void _pickDocument(ProfileDocumentType type) {
-    _controller.pickImage(type.storageKey);
+          if (state.failure != null && state.profile != null) {
+            if (state.failure!.isConnectivityIssue) return;
+            final message = state.failure!.code == 'image_picker'
+                ? locale.driver_profile_picker_error
+                : state.failure!.errorMessage;
+            CustomSnackbar.showError(context: context, message: message);
+            _cubit.clearError();
+          }
+        },
+        builder: (context, state) {
+          final showGlobalError =
+              !state.isLoading && state.profile == null && state.failure != null;
+
+          if (state.profile == null && state.isLoading) {
+            return ProfileFormLoadingSkeleton(
+              title: locale.profile_security_documents_title,
+              includeDocumentGrid: true,
+            );
+          }
+
+          if (showGlobalError) {
+            return Scaffold(
+              backgroundColor: context.colorScheme.surface,
+              body: SafeArea(
+                child: ApiErrorWidget.fromFailure(
+                  state.failure!,
+                  onRetry: () => _cubit.doIntent(const ProfileFormLoadEvent()),
+                  onGoBack: () =>
+                      _cubit.doIntent(const ProfileFormClearErrorEvent()),
+                ),
+              ),
+            );
+          }
+
+          final documents = [
+            ProfileDocumentItemData(
+              type: ProfileDocumentType.portrait,
+              icon: Icons.person_rounded,
+              path: state.documentPaths['portrait'] ?? '',
+            ),
+            ProfileDocumentItemData(
+              type: ProfileDocumentType.idFront,
+              icon: Icons.badge_outlined,
+              path: state.documentPaths['idFront'] ?? '',
+            ),
+            ProfileDocumentItemData(
+              type: ProfileDocumentType.license,
+              icon: Icons.assignment_ind_outlined,
+              path: state.documentPaths['license'] ?? '',
+            ),
+            ProfileDocumentItemData(
+              type: ProfileDocumentType.vehicle,
+              icon: Icons.two_wheeler_rounded,
+              path: state.documentPaths['vehicle'] ?? '',
+            ),
+          ];
+
+          final uploadedCount = documents.where((item) => item.hasFile).length;
+
+          return ProfileFormScaffold(
+            title: locale.profile_security_documents_title,
+            headerTitle: locale.profile_documents_uploaded_count(uploadedCount),
+            headerSubtitle: locale.driver_profile_uploads_card_subtitle,
+            headerIcon: Icons.verified_user_outlined,
+            headerColorToken: ProfileColorToken.tertiary,
+            formKey: _formKey,
+            isSaving: state.isSaving || state.isLoading,
+            onSave: _save,
+            children: [
+              SecurityDocumentsFields(
+                documents: documents,
+                onSelect: (type) =>
+                    _cubit.doIntent(ProfileFormPickDocumentEvent(type)),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _save() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    setState(() => _isSaving = true);
-    await _controller.save(
-      nationalId: _nationalIdController.text,
-      licenseNumber: _licenseController.text,
-    );
-    if (!mounted) return;
-    setState(() => _isSaving = false);
-    CustomSnackbar.showSuccess(
-      context: context,
-      message: context.localization.profile_security_documents_saved,
-    );
-    Navigator.of(context).pop();
+    await _cubit.doIntent(const ProfileFormSaveDocumentsEvent());
   }
 }

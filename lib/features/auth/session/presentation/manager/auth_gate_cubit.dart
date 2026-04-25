@@ -25,7 +25,6 @@ class AuthGateCubit extends Cubit<AuthGateState> {
 
   Future<void> _resolve() async {
     emit(state.copyWith(isLoading: true, clearTargetRoute: true));
-    await Future<void>.delayed(const Duration(milliseconds: 350));
 
     final accessToken = await _tokenService.getToken();
     if ((accessToken ?? '').trim().isEmpty) {
@@ -67,9 +66,16 @@ class AuthGateCubit extends Cubit<AuthGateState> {
           ),
         );
       case ApiErrorResult():
-        emit(
-          state.copyWith(isLoading: false, targetRoute: AppRoutes.mainShell),
-        );
+        final code = result.failure.normalizedCode;
+        if (code == 'error_unauthorized' ||
+            code == 'unauthorized' ||
+            code == '401' ||
+            code == 'error_forbidden' ||
+            code == 'forbidden' ||
+            code == '403') {
+          await _tokenService.clearTokens();
+        }
+        emit(state.copyWith(isLoading: false, targetRoute: AppRoutes.login));
     }
   }
 }

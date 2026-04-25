@@ -21,7 +21,7 @@ class LoginViewModel extends Cubit<LoginState> {
   }
 
   void clearError() {
-    if (state.errorMessage == null && state.failure == null) return;
+    if (state.failure == null) return;
     emit(state.copyWith(clearError: true));
   }
 
@@ -45,7 +45,6 @@ class LoginViewModel extends Cubit<LoginState> {
           state.copyWith(
             isLoading: false,
             isSuccess: false,
-            errorMessage: result.failure.errorMessage,
             failure: result.failure,
           ),
         );

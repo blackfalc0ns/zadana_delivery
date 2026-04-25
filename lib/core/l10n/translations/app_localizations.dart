@@ -140,6 +140,48 @@ abstract class AppLocalizations {
   /// **'This password is not valid'**
   String get password_is_not_valid;
 
+  /// No description provided for @password_requirements_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Password still needs'**
+  String get password_requirements_prefix;
+
+  /// No description provided for @password_requirements_separator.
+  ///
+  /// In en, this message translates to:
+  /// **', '**
+  String get password_requirements_separator;
+
+  /// No description provided for @password_requirement_min_length.
+  ///
+  /// In en, this message translates to:
+  /// **'at least 8 characters'**
+  String get password_requirement_min_length;
+
+  /// No description provided for @password_requirement_uppercase.
+  ///
+  /// In en, this message translates to:
+  /// **'an uppercase letter'**
+  String get password_requirement_uppercase;
+
+  /// No description provided for @password_requirement_lowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'a lowercase letter'**
+  String get password_requirement_lowercase;
+
+  /// No description provided for @password_requirement_number.
+  ///
+  /// In en, this message translates to:
+  /// **'a number'**
+  String get password_requirement_number;
+
+  /// No description provided for @password_requirement_special_character.
+  ///
+  /// In en, this message translates to:
+  /// **'a special character like !'**
+  String get password_requirement_special_character;
+
   /// No description provided for @password_must_be_at_least_6_characters.
   ///
   /// In en, this message translates to:
@@ -2465,7 +2507,7 @@ abstract class AppLocalizations {
   /// No description provided for @auth_login_hero_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Access new delivery requests, manage your activity, and continue to the vehicle setup step.'**
+  /// **'Access deliveries and manage your activity easily.'**
   String get auth_login_hero_subtitle;
 
   /// No description provided for @auth_login_section_badge.
@@ -2489,7 +2531,7 @@ abstract class AppLocalizations {
   /// No description provided for @auth_signup_hero_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Start with your essential details, then move to sign in and continue to the vehicle profile step.'**
+  /// **'Start with your basic details and join quickly.'**
   String get auth_signup_hero_subtitle;
 
   /// No description provided for @auth_signup_section_badge.
@@ -2507,7 +2549,7 @@ abstract class AppLocalizations {
   /// No description provided for @auth_forgot_hero_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter the email or phone linked to the account and continue to the new password step.'**
+  /// **'Recover access to your account in a few steps.'**
   String get auth_forgot_hero_subtitle;
 
   /// No description provided for @auth_forgot_section_badge.
@@ -2525,7 +2567,7 @@ abstract class AppLocalizations {
   /// No description provided for @auth_reset_hero_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'Enter the code and a new password, then return directly to sign in.'**
+  /// **'Set a new password for your account.'**
   String get auth_reset_hero_subtitle;
 
   /// No description provided for @auth_reset_section_badge.

@@ -32,24 +32,73 @@ String completedOrderStatusText(
 }
 
 String completedOrderMerchantEmoji(String name) {
-  if (name.contains('ماكدونالدز')) return '🍔';
-  if (name.contains('بيتزا')) return '🍕';
-  if (name.contains('ستاربكس')) return '☕';
-  if (name.contains('كارفور')) return '🛒';
-  if (name.contains('كنتاكي')) return '🍗';
+  final normalizedName = name.trim().toLowerCase();
+  if (_containsAny(normalizedName, const ['pizza', 'بيتزا'])) return '🍕';
+  if (_containsAny(normalizedName, const ['burger', 'mac', 'برجر', 'ماك'])) {
+    return '🍔';
+  }
+  if (_containsAny(normalizedName, const [
+    'coffee',
+    'star',
+    'قهوة',
+    'ستاربكس',
+  ])) {
+    return '☕';
+  }
+  if (_containsAny(normalizedName, const [
+    'market',
+    'carrefour',
+    'سوبر',
+    'كارفور',
+  ])) {
+    return '🛒';
+  }
+  if (_containsAny(normalizedName, const [
+    'chicken',
+    'kfc',
+    'دجاج',
+    'كنتاكي',
+  ])) {
+    return '🍗';
+  }
   return '🏬';
 }
 
 String completedOrderItemEmoji(String name) {
-  if (name.contains('بيتزا')) return '🍕';
-  if (name.contains('برجر') || name.contains('ماك')) return '🍔';
-  if (name.contains('بطاطس')) return '🍟';
-  if (name.contains('كوكا') || name.contains('عصير')) return '🥤';
-  if (name.contains('قهوة') || name.contains('لاتيه')) return '☕';
-  if (name.contains('كوكيز')) return '🍪';
-  if (name.contains('حليب')) return '🥛';
-  if (name.contains('بيض')) return '🥚';
-  if (name.contains('دجاج') || name.contains('تويستر')) return '🍗';
+  final normalizedName = name.trim().toLowerCase();
+  if (_containsAny(normalizedName, const ['pizza', 'بيتزا'])) return '🍕';
+  if (_containsAny(normalizedName, const ['burger', 'mac', 'برجر', 'ماك'])) {
+    return '🍔';
+  }
+  if (_containsAny(normalizedName, const ['fries', 'بطاطس'])) return '🍟';
+  if (_containsAny(normalizedName, const [
+    'juice',
+    'cola',
+    'coke',
+    'عصير',
+    'كوكا',
+  ])) {
+    return '🥤';
+  }
+  if (_containsAny(normalizedName, const [
+    'coffee',
+    'latte',
+    'قهوة',
+    'لاتيه',
+  ])) {
+    return '☕';
+  }
+  if (_containsAny(normalizedName, const ['cookie', 'كوكي'])) return '🍪';
+  if (_containsAny(normalizedName, const ['milk', 'حليب'])) return '🥛';
+  if (_containsAny(normalizedName, const ['egg', 'بيض'])) return '🥚';
+  if (_containsAny(normalizedName, const [
+    'chicken',
+    'twister',
+    'دجاج',
+    'تويستر',
+  ])) {
+    return '🍗';
+  }
   return '🍽️';
 }
 
@@ -68,4 +117,11 @@ String completedOrderPaymentMethodLabel(
     case CompletedOrderPaymentMethod.bankTransfer:
       return locale.bank_transfer;
   }
+}
+
+bool _containsAny(String value, List<String> candidates) {
+  for (final candidate in candidates) {
+    if (value.contains(candidate)) return true;
+  }
+  return false;
 }

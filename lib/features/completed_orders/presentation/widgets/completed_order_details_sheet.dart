@@ -11,13 +11,16 @@ import 'package:zadana_delivery/features/completed_orders/presentation/widgets/c
 
 Future<void> showCompletedOrderDetailsSheet(
   BuildContext context,
-  CompletedOrder order,
+  CompletedOrderDetails order,
 ) async {
   final scheme = Theme.of(context).colorScheme;
   final locale = context.localization;
   final localeName = Localizations.localeOf(context).languageCode;
   final timeText = DateFormat('h:mm a', localeName).format(order.completedAt);
-  final dateText = DateFormat('EEEE d MMMM', localeName).format(order.completedAt);
+  final dateText = DateFormat(
+    'EEEE d MMMM',
+    localeName,
+  ).format(order.completedAt);
   final accentColor = completedOrderAccentColor(context, order.status);
 
   await showModalBottomSheet<void>(
@@ -52,6 +55,17 @@ Future<void> showCompletedOrderDetailsSheet(
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 20),
                 children: [
                   _CompletedOrderHero(order: order, accentColor: accentColor),
+                  if ((order.merchantPhone ?? '').trim().isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    CompletedOrderSheetSection(
+                      title: locale.completed_orders_merchant_label,
+                      accentColor: accentColor,
+                      child: CompletedOrderSheetRow(
+                        label: locale.phone,
+                        value: order.merchantPhone!,
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   CompletedOrderSheetSection(
                     title: locale.completed_orders_customer_section_title,
@@ -67,6 +81,13 @@ Future<void> showCompletedOrderDetailsSheet(
                           label: locale.completed_orders_delivery_address_label,
                           value: order.deliveryAddress,
                         ),
+                        if ((order.customerPhone ?? '').trim().isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          CompletedOrderSheetRow(
+                            label: locale.phone,
+                            value: order.customerPhone!,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -105,6 +126,13 @@ Future<void> showCompletedOrderDetailsSheet(
                             order.paymentMethod,
                           ),
                         ),
+                        if ((order.pickupAddress ?? '').trim().isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          CompletedOrderSheetRow(
+                            label: locale.driver_home_pickup_label,
+                            value: order.pickupAddress!,
+                          ),
+                        ],
                         const SizedBox(height: 10),
                         CompletedOrderSheetRow(
                           label: locale.completed_orders_distance_label,
@@ -149,7 +177,7 @@ Future<void> showCompletedOrderDetailsSheet(
 class _CompletedOrderHero extends StatelessWidget {
   const _CompletedOrderHero({required this.order, required this.accentColor});
 
-  final CompletedOrder order;
+  final CompletedOrderDetails order;
   final Color accentColor;
 
   @override
@@ -202,7 +230,7 @@ class _CompletedOrderHero extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${locale.completed_orders_order_number_prefix} #${order.id}',
+                  '${locale.completed_orders_order_number_prefix} #${order.orderNumber}',
                   style: getMediumStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size11,

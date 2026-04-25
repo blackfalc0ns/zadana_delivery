@@ -21,7 +21,7 @@ class ForgotPasswordViewModel extends Cubit<ForgotPasswordState> {
   }
 
   void clearError() {
-    if (state.errorMessage == null && state.failure == null) return;
+    if (state.failure == null) return;
     emit(state.copyWith(clearError: true));
   }
 
@@ -45,7 +45,6 @@ class ForgotPasswordViewModel extends Cubit<ForgotPasswordState> {
           state.copyWith(
             isLoading: false,
             isSuccess: false,
-            errorMessage: result.failure.errorMessage,
             failure: result.failure,
           ),
         );

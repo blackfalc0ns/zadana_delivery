@@ -30,6 +30,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get password_is_not_valid => 'This password is not valid';
 
   @override
+  String get password_requirements_prefix => 'Password still needs';
+
+  @override
+  String get password_requirements_separator => ', ';
+
+  @override
+  String get password_requirement_min_length => 'at least 8 characters';
+
+  @override
+  String get password_requirement_uppercase => 'an uppercase letter';
+
+  @override
+  String get password_requirement_lowercase => 'a lowercase letter';
+
+  @override
+  String get password_requirement_number => 'a number';
+
+  @override
+  String get password_requirement_special_character =>
+      'a special character like !';
+
+  @override
   String get password_must_be_at_least_6_characters =>
       'Password must be at least 6 characters';
 
@@ -1262,7 +1284,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auth_login_hero_subtitle =>
-      'Access new delivery requests, manage your activity, and continue to the vehicle setup step.';
+      'Access deliveries and manage your activity easily.';
 
   @override
   String get auth_login_section_badge => 'Driver account';
@@ -1275,7 +1297,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auth_signup_hero_subtitle =>
-      'Start with your essential details, then move to sign in and continue to the vehicle profile step.';
+      'Start with your basic details and join quickly.';
 
   @override
   String get auth_signup_section_badge => 'New journey';
@@ -1285,7 +1307,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get auth_forgot_hero_subtitle =>
-      'Enter the email or phone linked to the account and continue to the new password step.';
+      'Recover access to your account in a few steps.';
 
   @override
   String get auth_forgot_section_badge => 'Recover access';
@@ -1294,8 +1316,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_reset_hero_badge => 'Account security';
 
   @override
-  String get auth_reset_hero_subtitle =>
-      'Enter the code and a new password, then return directly to sign in.';
+  String get auth_reset_hero_subtitle => 'Set a new password for your account.';
 
   @override
   String get auth_reset_section_badge => 'New password';

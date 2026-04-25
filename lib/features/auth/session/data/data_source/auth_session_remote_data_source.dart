@@ -13,6 +13,4 @@ abstract class AuthSessionRemoteDataSource {
   Future<RefreshTokenResponseModelDto> refreshToken(
     RefreshTokenRequestModelDto request,
   );
-
-  Future<void> logout(String refreshToken);
 }

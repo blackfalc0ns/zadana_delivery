@@ -5,7 +5,9 @@ import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_experience_shell.dart';
+import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/auth/login/domain/entities/login_request_entity.dart';
 import 'package:zadana_delivery/features/auth/login/domain/entities/login_response_entity.dart';
 import 'package:zadana_delivery/features/auth/login/presentation/manager/login_event.dart';
@@ -92,10 +94,23 @@ class _LoginScreenState extends State<LoginScreen> {
               _resolveSuccessRoute(response),
               predicate: (route) => false,
             );
+            return;
+          }
+
+          final failure = state.failure;
+          if (!state.isLoading &&
+              failure != null &&
+              !_shouldShowFullScreenError(failure)) {
+            CustomSnackbar.showError(
+              context: context,
+              message: failure.errorMessage,
+            );
           }
         },
         builder: (context, state) {
-          if (!state.isLoading && state.failure != null) {
+          if (!state.isLoading &&
+              state.failure != null &&
+              _shouldShowFullScreenError(state.failure!)) {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
@@ -148,5 +163,22 @@ class _LoginScreenState extends State<LoginScreen> {
       return AppRoutes.driverProfileCompletion;
     }
     return AppRoutes.mainShell;
+  }
+
+  bool _shouldShowFullScreenError(Failure failure) {
+    final code = failure.normalizedCode;
+
+    if (failure.isConnectivityIssue) return true;
+
+    return code == 'unknown' ||
+        code == 'error_unknown' ||
+        code == 'cancelled' ||
+        code == 'error_cancelled' ||
+        code == 'other' ||
+        code == 'error_other' ||
+        code == 'bad_certificate' ||
+        code == 'error_bad_certificate' ||
+        code == 'no_response' ||
+        code == 'error_no_response';
   }
 }
