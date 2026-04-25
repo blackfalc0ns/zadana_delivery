@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/security_documents_controller.dart';
@@ -25,7 +26,7 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = SecurityDocumentsController()..addListener(_refresh);
+    _controller = getIt<SecurityDocumentsController>()..addListener(_refresh);
     final data = _controller.loadInitialData();
     _nationalIdController = TextEditingController(text: data.nationalId);
     _licenseController = TextEditingController(text: data.licenseNumber);

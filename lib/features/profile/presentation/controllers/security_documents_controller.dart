@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 
@@ -13,20 +14,17 @@ class SecurityDocumentsInitialData {
   final String licenseNumber;
 }
 
+@injectable
 class SecurityDocumentsController extends ChangeNotifier {
-  SecurityDocumentsController({
-    DriverProfileService? service,
-    ImagePicker? picker,
-  }) : _service = service ?? DriverProfileService(),
-       _picker = picker ?? ImagePicker();
+  SecurityDocumentsController(this._draftService, this._picker);
 
-  final DriverProfileService _service;
+  final DriverProfileDraftService _draftService;
   final ImagePicker _picker;
 
   Map<String, String> _images = const <String, String>{};
 
   SecurityDocumentsInitialData loadInitialData() {
-    final draft = _service.profileDraft;
+    final draft = _draftService.profileDraft;
     _images = Map<String, String>.from(draft.images);
 
     return SecurityDocumentsInitialData(
@@ -81,12 +79,12 @@ class SecurityDocumentsController extends ChangeNotifier {
     required String nationalId,
     required String licenseNumber,
   }) async {
-    final draft = _service.profileDraft.copyWith(
+    final draft = _draftService.profileDraft.copyWith(
       nationalId: nationalId.trim(),
       licenseNumber: licenseNumber.trim(),
       images: Map<String, String>.from(_images),
     );
 
-    await _service.saveProfileDraft(draft);
+    await _draftService.saveProfileDraft(draft);
   }
 }

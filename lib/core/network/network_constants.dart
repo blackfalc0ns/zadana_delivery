@@ -5,6 +5,7 @@ abstract class NetworkConstants {
 }
 
 abstract class EndPoints {
+  static const String fileUpload = '/files/upload';
   static const String driverRegister = '/drivers/register';
   static const String driverLogin = '/drivers/auth/login';
   static const String driverForgotPassword = '/drivers/auth/forgot-password';
@@ -12,6 +13,8 @@ abstract class EndPoints {
   static const String driverRefreshToken = '/drivers/auth/refresh-token';
   static const String driverLogout = '/drivers/auth/logout';
   static const String driverProfile = '/drivers/auth/me';
+  static const String driverStatus = '/drivers/me/status';
+  static const String driverZones = '/public/delivery-zones';
 
   static const String register = "/customers/auth/register";
   static const String login = '/customers/auth/login';

@@ -1,13 +1,9 @@
-import 'dart:convert';
-
-import 'package:get_it/get_it.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:zadana_delivery/core/utils/constants.dart';
+import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 
 class DriverProfileDraft {
   factory DriverProfileDraft.fromJson(Map<String, dynamic> json) {
     return DriverProfileDraft(
-      vehicleType: json['vehicleType']?.toString() ?? 'car',
+      vehicleType: _normalizeVehicleType(json['vehicleType']?.toString()),
       address: json['address']?.toString() ?? '',
       nationalId: json['nationalId']?.toString() ?? '',
       licenseNumber: json['licenseNumber']?.toString() ?? '',
@@ -44,21 +40,13 @@ class DriverProfileDraft {
 
   bool get isComplete {
     final hasFields = [
+      vehicleType,
       address,
       nationalId,
       licenseNumber,
-      vehicleBrand,
-      vehicleModel,
-      plateNumber,
     ].every((value) => value.trim().isNotEmpty);
 
-    final requiredImages = [
-      'portrait',
-      'idFront',
-      'license',
-      'vehicle',
-      'plate',
-    ];
+    final requiredImages = ['portrait', 'idFront', 'license', 'vehicle'];
     final hasImages = requiredImages.every(
       (key) => (images[key] ?? '').trim().isNotEmpty,
     );
@@ -100,7 +88,7 @@ class DriverProfileDraft {
   }
 
   static const empty = DriverProfileDraft(
-    vehicleType: 'car',
+    vehicleType: DriverVehicleType.car,
     address: '',
     nationalId: '',
     licenseNumber: '',
@@ -109,6 +97,10 @@ class DriverProfileDraft {
     plateNumber: '',
     images: <String, String>{},
   );
+
+  static String _normalizeVehicleType(String? rawValue) {
+    return DriverVehicleType.normalize(rawValue);
+  }
 }
 
 class DriverIdentity {
@@ -147,80 +139,32 @@ class DriverIdentity {
   }
 }
 
-class DriverProfileService {
-  DriverProfileService({SharedPreferences? sharedPreferences})
-    : _sharedPreferences =
-          sharedPreferences ?? GetIt.instance<SharedPreferences>();
+class DriverIdentityService {
+  DriverIdentity _identity = const DriverIdentity();
 
-  final SharedPreferences _sharedPreferences;
-
-  DriverIdentity get identity => DriverIdentity(
-    id: _sharedPreferences.getString(AppConstants.driverId) ?? '',
-    fullName: _sharedPreferences.getString(AppConstants.driverFullName) ?? '',
-    email: _sharedPreferences.getString(AppConstants.driverEmail) ?? '',
-    phone: _sharedPreferences.getString(AppConstants.driverPhone) ?? '',
-    role: _sharedPreferences.getString(AppConstants.driverRole) ?? 'driver',
-    lastIdentifier:
-        _sharedPreferences.getString(AppConstants.driverLastIdentifier) ?? '',
-  );
-
-  bool get isProfileCompleted =>
-      _sharedPreferences.getBool(AppConstants.isDriverProfileCompleted) ??
-      false;
-
-  DriverProfileDraft get profileDraft {
-    final raw = _sharedPreferences.getString(AppConstants.driverProfileDraft);
-    if (raw == null || raw.isEmpty) return DriverProfileDraft.empty;
-
-    try {
-      return DriverProfileDraft.fromJson(
-        Map<String, dynamic>.from(jsonDecode(raw) as Map),
-      );
-    } catch (_) {
-      return DriverProfileDraft.empty;
-    }
-  }
+  DriverIdentity get identity => _identity;
 
   Future<void> saveIdentity(DriverIdentity identity) async {
-    await _sharedPreferences.setString(AppConstants.driverId, identity.id);
-    await _sharedPreferences.setString(
-      AppConstants.driverFullName,
-      identity.fullName,
-    );
-    await _sharedPreferences.setString(
-      AppConstants.driverEmail,
-      identity.email,
-    );
-    await _sharedPreferences.setString(
-      AppConstants.driverPhone,
-      identity.phone,
-    );
-    await _sharedPreferences.setString(AppConstants.driverRole, identity.role);
-    await _sharedPreferences.setString(
-      AppConstants.driverLastIdentifier,
-      identity.lastIdentifier,
-    );
+    _identity = identity;
   }
+
+  Future<void> clearIdentity() async {
+    _identity = const DriverIdentity();
+  }
+}
+
+class DriverProfileDraftService {
+  DriverProfileDraft _profileDraft = DriverProfileDraft.empty;
+
+  bool get isProfileCompleted => _profileDraft.isComplete;
+
+  DriverProfileDraft get profileDraft => _profileDraft;
 
   Future<void> saveProfileDraft(DriverProfileDraft draft) async {
-    await _sharedPreferences.setString(
-      AppConstants.driverProfileDraft,
-      jsonEncode(draft.toJson()),
-    );
-    await _sharedPreferences.setBool(
-      AppConstants.isDriverProfileCompleted,
-      draft.isComplete,
-    );
+    _profileDraft = draft;
   }
 
-  Future<void> clearSession() async {
-    await _sharedPreferences.remove(AppConstants.driverId);
-    await _sharedPreferences.remove(AppConstants.driverFullName);
-    await _sharedPreferences.remove(AppConstants.driverEmail);
-    await _sharedPreferences.remove(AppConstants.driverPhone);
-    await _sharedPreferences.remove(AppConstants.driverRole);
-    await _sharedPreferences.remove(AppConstants.driverLastIdentifier);
-    await _sharedPreferences.remove(AppConstants.driverProfileDraft);
-    await _sharedPreferences.remove(AppConstants.isDriverProfileCompleted);
+  Future<void> clearDraft() async {
+    _profileDraft = DriverProfileDraft.empty;
   }
 }

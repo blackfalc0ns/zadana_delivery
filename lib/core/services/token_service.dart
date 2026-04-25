@@ -51,4 +51,9 @@ class TokenService {
     await _sharedPreferences.setBool(AppConstants.isRefreshTokenSaved, false);
     await _prefs.delete(key: AppConstants.refreshToken);
   }
+
+  Future<void> clearTokens() async {
+    await deleteToken();
+    await deleteRefreshToken();
+  }
 }

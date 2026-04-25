@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 
 class VehicleInfoInitialData {
@@ -14,14 +15,14 @@ class VehicleInfoInitialData {
   final String plateNumber;
 }
 
+@injectable
 class VehicleInfoController {
-  VehicleInfoController({DriverProfileService? service})
-    : _service = service ?? DriverProfileService();
+  VehicleInfoController(this._draftService);
 
-  final DriverProfileService _service;
+  final DriverProfileDraftService _draftService;
 
   VehicleInfoInitialData get initialData {
-    final draft = _service.profileDraft;
+    final draft = _draftService.profileDraft;
 
     return VehicleInfoInitialData(
       vehicleType: draft.vehicleType,
@@ -37,13 +38,13 @@ class VehicleInfoController {
     required String vehicleModel,
     required String plateNumber,
   }) async {
-    final draft = _service.profileDraft.copyWith(
+    final draft = _draftService.profileDraft.copyWith(
       vehicleType: vehicleType,
       vehicleBrand: vehicleBrand.trim(),
       vehicleModel: vehicleModel.trim(),
       plateNumber: plateNumber.trim(),
     );
 
-    await _service.saveProfileDraft(draft);
+    await _draftService.saveProfileDraft(draft);
   }
 }

@@ -1,3 +1,4 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 
 class PersonalInfoInitialData {
@@ -14,15 +15,16 @@ class PersonalInfoInitialData {
   final String address;
 }
 
+@injectable
 class PersonalInfoController {
-  PersonalInfoController({DriverProfileService? service})
-    : _service = service ?? DriverProfileService();
+  PersonalInfoController(this._identityService, this._draftService);
 
-  final DriverProfileService _service;
+  final DriverIdentityService _identityService;
+  final DriverProfileDraftService _draftService;
 
   PersonalInfoInitialData get initialData {
-    final identity = _service.identity;
-    final draft = _service.profileDraft;
+    final identity = _identityService.identity;
+    final draft = _draftService.profileDraft;
 
     return PersonalInfoInitialData(
       fullName: identity.fullName,
@@ -38,14 +40,14 @@ class PersonalInfoController {
     required String phone,
     required String address,
   }) async {
-    final identity = _service.identity.copyWith(
+    final identity = _identityService.identity.copyWith(
       fullName: fullName.trim(),
       email: email.trim(),
       phone: phone.trim(),
     );
-    final draft = _service.profileDraft.copyWith(address: address.trim());
+    final draft = _draftService.profileDraft.copyWith(address: address.trim());
 
-    await _service.saveIdentity(identity);
-    await _service.saveProfileDraft(draft);
+    await _identityService.saveIdentity(identity);
+    await _draftService.saveProfileDraft(draft);
   }
 }

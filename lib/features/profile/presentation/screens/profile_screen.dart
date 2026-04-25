@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
@@ -22,7 +23,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = ProfileScreenController();
+    _controller = getIt<ProfileScreenController>();
   }
 
   @override
@@ -67,7 +68,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _logout() async {
     final locale = context.localization;
-    await _controller.logout();
+    try {
+      await _controller.logout();
+    } catch (error) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context: context,
+        message: error.toString().replaceFirst('Exception: ', ''),
+      );
+      return;
+    }
     if (!mounted) return;
 
     CustomSnackbar.showInfo(
@@ -129,7 +139,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : Colors.transparent,
             leading: Icon(
               Icons.language_rounded,
-              color: isSelected ? sheetColor.primary : sheetColor.onSurfaceVariant,
+              color: isSelected
+                  ? sheetColor.primary
+                  : sheetColor.onSurfaceVariant,
             ),
             title: Text(
               title,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/helpers/validators.dart';
-import 'package:zadana_delivery/features/auth/presentation/widgets/auth_text_field.dart';
+import 'package:zadana_delivery/core/widgets/auth/auth_text_field.dart';
 
 class ProfileFormField extends StatelessWidget {
   const ProfileFormField({

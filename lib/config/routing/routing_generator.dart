@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/forgot_password/screens/forgot_password_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/login/screens/login_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/register/screens/sign_up_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/reset_password/screens/reset_password_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/screens/account_blocked_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/screens/account_pending_approval_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/screens/auth_gate_screen.dart';
-import 'package:zadana_delivery/features/auth/presentation/screens/driver_profile_completion_screen.dart';
+import 'package:zadana_delivery/features/auth/forgot_password/presentation/pages/forgot_password_screen.dart';
+import 'package:zadana_delivery/features/auth/login/presentation/pages/login_screen.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/models/register_account_draft.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/pages/driver_profile_completion_screen.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/pages/sign_up_screen.dart';
+import 'package:zadana_delivery/features/auth/reset_password/presentation/pages/reset_password_screen.dart';
+import 'package:zadana_delivery/features/auth/session/presentation/pages/account_blocked_screen.dart';
+import 'package:zadana_delivery/features/auth/session/presentation/pages/account_pending_approval_screen.dart';
+import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
 import 'package:zadana_delivery/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_details_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/personal_info_screen.dart';
@@ -40,7 +41,11 @@ class RouteGenerator {
           ResetPasswordScreen(identifier: identifier),
         );
       case AppRoutes.driverProfileCompletion:
-        return _pageRoute(settings, const DriverProfileCompletionScreen());
+        final draft = settings.arguments as RegisterAccountDraft?;
+        return _pageRoute(
+          settings,
+          DriverProfileCompletionScreen(registrationDraft: draft),
+        );
       case AppRoutes.accountPendingApproval:
         return _pageRoute(settings, const AccountPendingApprovalScreen());
       case AppRoutes.accountBlocked:

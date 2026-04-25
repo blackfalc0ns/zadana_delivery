@@ -206,17 +206,353 @@ abstract class AppLocalizations {
   /// **'Location service is disabled'**
   String get location_service_disabled;
 
+  /// No description provided for @location_service_disabled_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable location services and try again.'**
+  String get location_service_disabled_message;
+
   /// No description provided for @location_permission_denied.
   ///
   /// In en, this message translates to:
   /// **'Location permission denied'**
   String get location_permission_denied;
 
+  /// No description provided for @location_permission_denied_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Please allow location access to continue.'**
+  String get location_permission_denied_message;
+
   /// No description provided for @location_permission_denied_forever.
   ///
   /// In en, this message translates to:
   /// **'Location permission permanently denied'**
   String get location_permission_denied_forever;
+
+  /// No description provided for @location_permission_denied_forever_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission is permanently denied. Please enable it from your device settings.'**
+  String get location_permission_denied_forever_message;
+
+  /// No description provided for @error_no_internet_connection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get error_no_internet_connection;
+
+  /// No description provided for @error_no_internet_connection_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your internet connection and try again.'**
+  String get error_no_internet_connection_desc;
+
+  /// No description provided for @error_connection_timeout_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection took too long. Please try again.'**
+  String get error_connection_timeout_desc;
+
+  /// No description provided for @error_receive_timeout_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The server took too long to respond. Please try again.'**
+  String get error_receive_timeout_desc;
+
+  /// No description provided for @error_send_timeout_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send data to the server. Please try again.'**
+  String get error_send_timeout_desc;
+
+  /// No description provided for @error_server_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error'**
+  String get error_server_error;
+
+  /// No description provided for @error_server_error_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'A server error occurred. Please try again later.'**
+  String get error_server_error_desc;
+
+  /// No description provided for @error_internal_server_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal server error'**
+  String get error_internal_server_error;
+
+  /// No description provided for @error_internal_server_error_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The server encountered an internal error. Please try again later.'**
+  String get error_internal_server_error_desc;
+
+  /// No description provided for @error_bad_gateway.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad gateway'**
+  String get error_bad_gateway;
+
+  /// No description provided for @error_bad_gateway_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The server received an invalid response. Please try again later.'**
+  String get error_bad_gateway_desc;
+
+  /// No description provided for @error_service_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Service unavailable'**
+  String get error_service_unavailable;
+
+  /// No description provided for @error_service_unavailable_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The service is temporarily unavailable. Please try again later.'**
+  String get error_service_unavailable_desc;
+
+  /// No description provided for @error_gateway_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Gateway timeout'**
+  String get error_gateway_timeout;
+
+  /// No description provided for @error_gateway_timeout_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The gateway timed out. Please try again later.'**
+  String get error_gateway_timeout_desc;
+
+  /// No description provided for @error_bad_request_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request contains invalid data. Please check your input.'**
+  String get error_bad_request_desc;
+
+  /// No description provided for @error_unauthorized_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not authorized to access this resource. Please sign in again.'**
+  String get error_unauthorized_desc;
+
+  /// No description provided for @error_forbidden_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to access this resource.'**
+  String get error_forbidden_desc;
+
+  /// No description provided for @error_not_found_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested resource could not be found.'**
+  String get error_not_found_desc;
+
+  /// No description provided for @error_method_not_allowed.
+  ///
+  /// In en, this message translates to:
+  /// **'Method not allowed'**
+  String get error_method_not_allowed;
+
+  /// No description provided for @error_method_not_allowed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'This method is not allowed for this resource.'**
+  String get error_method_not_allowed_desc;
+
+  /// No description provided for @error_not_acceptable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not acceptable'**
+  String get error_not_acceptable;
+
+  /// No description provided for @error_not_acceptable_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request is not acceptable.'**
+  String get error_not_acceptable_desc;
+
+  /// No description provided for @error_request_timeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timeout'**
+  String get error_request_timeout;
+
+  /// No description provided for @error_request_timeout_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request timed out. Please try again.'**
+  String get error_request_timeout_desc;
+
+  /// No description provided for @error_conflict_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'There is a conflict with the current state of the resource.'**
+  String get error_conflict_desc;
+
+  /// No description provided for @error_gone.
+  ///
+  /// In en, this message translates to:
+  /// **'Resource unavailable'**
+  String get error_gone;
+
+  /// No description provided for @error_gone_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested resource is no longer available.'**
+  String get error_gone_desc;
+
+  /// No description provided for @error_length_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Length required'**
+  String get error_length_required;
+
+  /// No description provided for @error_length_required_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request must specify a content length.'**
+  String get error_length_required_desc;
+
+  /// No description provided for @error_precondition_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Precondition failed'**
+  String get error_precondition_failed;
+
+  /// No description provided for @error_precondition_failed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'One or more preconditions failed.'**
+  String get error_precondition_failed_desc;
+
+  /// No description provided for @error_payload_too_large.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload too large'**
+  String get error_payload_too_large;
+
+  /// No description provided for @error_payload_too_large_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request payload is too large.'**
+  String get error_payload_too_large_desc;
+
+  /// No description provided for @error_uri_too_long.
+  ///
+  /// In en, this message translates to:
+  /// **'URI too long'**
+  String get error_uri_too_long;
+
+  /// No description provided for @error_uri_too_long_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request URI is too long.'**
+  String get error_uri_too_long_desc;
+
+  /// No description provided for @error_unsupported_media_type.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsupported media type'**
+  String get error_unsupported_media_type;
+
+  /// No description provided for @error_unsupported_media_type_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'This media type is not supported.'**
+  String get error_unsupported_media_type_desc;
+
+  /// No description provided for @error_range_not_satisfiable.
+  ///
+  /// In en, this message translates to:
+  /// **'Range not satisfiable'**
+  String get error_range_not_satisfiable;
+
+  /// No description provided for @error_range_not_satisfiable_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The requested range cannot be satisfied.'**
+  String get error_range_not_satisfiable_desc;
+
+  /// No description provided for @error_expectation_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Expectation failed'**
+  String get error_expectation_failed;
+
+  /// No description provided for @error_expectation_failed_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The expectation in the request headers could not be met.'**
+  String get error_expectation_failed_desc;
+
+  /// No description provided for @error_too_many_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests'**
+  String get error_too_many_requests;
+
+  /// No description provided for @error_too_many_requests_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'You have sent too many requests. Please try again later.'**
+  String get error_too_many_requests_desc;
+
+  /// No description provided for @error_unknown_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred. Please try again.'**
+  String get error_unknown_desc;
+
+  /// No description provided for @error_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancelled'**
+  String get error_cancelled;
+
+  /// No description provided for @error_cancelled_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'The request was cancelled.'**
+  String get error_cancelled_desc;
+
+  /// No description provided for @error_other.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get error_other;
+
+  /// No description provided for @error_other_desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get error_other_desc;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @go_back.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get go_back;
+
+  /// No description provided for @contact_support.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get contact_support;
+
+  /// No description provided for @check_connection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check connection'**
+  String get check_connection;
 
   /// No description provided for @auth_title.
   ///
@@ -1967,8 +2303,32 @@ abstract class AppLocalizations {
   /// No description provided for @driver_profile_vehicle_type_bike.
   ///
   /// In en, this message translates to:
-  /// **'Bike'**
+  /// **'Motorcycle'**
   String get driver_profile_vehicle_type_bike;
+
+  /// No description provided for @driver_profile_vehicle_type_scooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Scooter'**
+  String get driver_profile_vehicle_type_scooter;
+
+  /// No description provided for @driver_profile_vehicle_type_van.
+  ///
+  /// In en, this message translates to:
+  /// **'Van'**
+  String get driver_profile_vehicle_type_van;
+
+  /// No description provided for @driver_profile_vehicle_type_bicycle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bicycle'**
+  String get driver_profile_vehicle_type_bicycle;
+
+  /// No description provided for @driver_profile_vehicle_type_truck.
+  ///
+  /// In en, this message translates to:
+  /// **'Truck'**
+  String get driver_profile_vehicle_type_truck;
 
   /// No description provided for @driver_profile_portrait_title.
   ///
@@ -2348,6 +2708,66 @@ abstract class AppLocalizations {
   /// **'Choose the right vehicle for you, then complete its essential data.'**
   String get driver_profile_vehicle_card_subtitle;
 
+  /// No description provided for @driver_profile_zone_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Working zone'**
+  String get driver_profile_zone_label;
+
+  /// No description provided for @driver_profile_zone_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your main zone'**
+  String get driver_profile_zone_placeholder;
+
+  /// No description provided for @driver_profile_zone_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the zone where you want to start receiving orders.'**
+  String get driver_profile_zone_hint;
+
+  /// No description provided for @driver_profile_zone_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading available zones'**
+  String get driver_profile_zone_loading;
+
+  /// No description provided for @driver_profile_zone_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your zone'**
+  String get driver_profile_zone_sheet_title;
+
+  /// No description provided for @driver_profile_zone_sheet_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This zone will be linked to your driver account during registration.'**
+  String get driver_profile_zone_sheet_subtitle;
+
+  /// No description provided for @driver_profile_zone_required_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a working zone before continuing.'**
+  String get driver_profile_zone_required_error;
+
+  /// No description provided for @driver_profile_vehicle_required_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a vehicle type before continuing.'**
+  String get driver_profile_vehicle_required_error;
+
+  /// No description provided for @driver_profile_zone_radius.
+  ///
+  /// In en, this message translates to:
+  /// **'Coverage {radius} km'**
+  String driver_profile_zone_radius(String radius);
+
+  /// No description provided for @driver_profile_vehicle_selected_message.
+  ///
+  /// In en, this message translates to:
+  /// **'{vehicleType} selected. Make sure the uploaded photo matches this vehicle type.'**
+  String driver_profile_vehicle_selected_message(String vehicleType);
+
   /// No description provided for @driver_profile_vehicle_selected_bike_message.
   ///
   /// In en, this message translates to:
@@ -2437,6 +2857,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Faster in dense city routes'**
   String get driver_vehicle_type_bike_subtitle;
+
+  /// No description provided for @driver_vehicle_type_motorcycle_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced speed and carrying capacity for urban delivery'**
+  String get driver_vehicle_type_motorcycle_subtitle;
+
+  /// No description provided for @driver_vehicle_type_scooter_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Light and efficient for quick neighborhood routes'**
+  String get driver_vehicle_type_scooter_subtitle;
+
+  /// No description provided for @driver_vehicle_type_van_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best for bulk loads and medium-sized shipments'**
+  String get driver_vehicle_type_van_subtitle;
+
+  /// No description provided for @driver_vehicle_type_bicycle_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Best for short eco-friendly trips in tight streets'**
+  String get driver_vehicle_type_bicycle_subtitle;
+
+  /// No description provided for @driver_vehicle_type_truck_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Suitable for heavy loads and large deliveries'**
+  String get driver_vehicle_type_truck_subtitle;
 
   /// No description provided for @auth_section_badge_default.
   ///

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/vehicle_info_controller.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
@@ -20,14 +22,14 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   late final TextEditingController _modelController;
   late final TextEditingController _plateController;
   bool _isSaving = false;
-  String _vehicleType = 'car';
+  String _vehicleType = DriverVehicleType.car;
 
   @override
   void initState() {
     super.initState();
-    _controller = VehicleInfoController();
+    _controller = getIt<VehicleInfoController>();
     final data = _controller.initialData;
-    _vehicleType = data.vehicleType;
+    _vehicleType = DriverVehicleType.normalize(data.vehicleType);
     _brandController = TextEditingController(text: data.vehicleBrand);
     _modelController = TextEditingController(text: data.vehicleModel);
     _plateController = TextEditingController(text: data.plateNumber);

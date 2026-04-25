@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/presentation/controllers/personal_info_controller.dart';
@@ -25,7 +26,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = PersonalInfoController();
+    _controller = getIt<PersonalInfoController>();
     final data = _controller.initialData;
     _nameController = TextEditingController(text: data.fullName);
     _emailController = TextEditingController(text: data.email);

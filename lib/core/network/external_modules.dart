@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zadana_delivery/core/network/api_services.dart';
+import 'package:zadana_delivery/core/services/file_upload_service.dart';
 import 'package:zadana_delivery/core/services/language_interceptor.dart';
+import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
+
 import '../services/token_interceptor.dart';
 import 'network_constants.dart';
 
@@ -47,6 +52,20 @@ abstract class ExternalModules {
     return dio;
   }
 
+  @Named('refreshDio')
+  @lazySingleton
+  Dio provideRefreshDio() {
+    return Dio(
+      BaseOptions(
+        baseUrl: NetworkConstants.baseUrl,
+        headers: const {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      ),
+    );
+  }
+
   @lazySingleton
   PrettyDioLogger providePrettyDioLogger() {
     return PrettyDioLogger(requestHeader: true, requestBody: true);
@@ -60,5 +79,23 @@ abstract class ExternalModules {
   @lazySingleton
   FlutterSecureStorage flutterSecureStorage() {
     return const FlutterSecureStorage();
+  }
+
+  @lazySingleton
+  DriverIdentityService provideDriverIdentityService() =>
+      DriverIdentityService();
+
+  @lazySingleton
+  DriverProfileDraftService provideDriverProfileDraftService() =>
+      DriverProfileDraftService();
+
+  @lazySingleton
+  FileUploadService provideFileUploadService(ApiServices apiServices) {
+    return FileUploadService(apiServices: apiServices);
+  }
+
+  @lazySingleton
+  ImagePicker provideImagePicker() {
+    return ImagePicker();
   }
 }

@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
+import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
+import 'package:zadana_delivery/features/auth/session/domain/usecase/logout_usecase.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 
+@injectable
 class ProfileScreenController extends ChangeNotifier {
-  ProfileScreenController({DriverProfileService? service})
-    : _service = service ?? DriverProfileService();
+  ProfileScreenController(this._identityService, this._logoutUseCase);
 
-  final DriverProfileService _service;
+  final DriverIdentityService _identityService;
+  final LogoutUseCase _logoutUseCase;
 
   bool _isLoggingOut = false;
   bool _notificationsEnabled = true;
@@ -76,7 +80,7 @@ class ProfileScreenController extends ChangeNotifier {
   ];
 
   ProfileHeaderData get headerData {
-    final identity = _service.identity;
+    final identity = _identityService.identity;
 
     return ProfileHeaderData(
       fullName: identity.fullName,
@@ -137,11 +141,14 @@ class ProfileScreenController extends ChangeNotifier {
     _isLoggingOut = true;
     notifyListeners();
 
-    await _service.clearSession();
-    await Future<void>.delayed(const Duration(milliseconds: 250));
+    final result = await _logoutUseCase.call();
 
     _isLoggingOut = false;
     notifyListeners();
+
+    if (result case ApiErrorResult()) {
+      throw Exception(result.failure.errorMessage);
+    }
   }
 
   static String _resolveEmail(String email) {

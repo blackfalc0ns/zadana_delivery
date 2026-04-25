@@ -66,11 +66,207 @@ class AppLocalizationsEn extends AppLocalizations {
   String get location_service_disabled => 'Location service is disabled';
 
   @override
+  String get location_service_disabled_message =>
+      'Please enable location services and try again.';
+
+  @override
   String get location_permission_denied => 'Location permission denied';
+
+  @override
+  String get location_permission_denied_message =>
+      'Please allow location access to continue.';
 
   @override
   String get location_permission_denied_forever =>
       'Location permission permanently denied';
+
+  @override
+  String get location_permission_denied_forever_message =>
+      'Location permission is permanently denied. Please enable it from your device settings.';
+
+  @override
+  String get error_no_internet_connection => 'No internet connection';
+
+  @override
+  String get error_no_internet_connection_desc =>
+      'Please check your internet connection and try again.';
+
+  @override
+  String get error_connection_timeout_desc =>
+      'The connection took too long. Please try again.';
+
+  @override
+  String get error_receive_timeout_desc =>
+      'The server took too long to respond. Please try again.';
+
+  @override
+  String get error_send_timeout_desc =>
+      'Failed to send data to the server. Please try again.';
+
+  @override
+  String get error_server_error => 'Server error';
+
+  @override
+  String get error_server_error_desc =>
+      'A server error occurred. Please try again later.';
+
+  @override
+  String get error_internal_server_error => 'Internal server error';
+
+  @override
+  String get error_internal_server_error_desc =>
+      'The server encountered an internal error. Please try again later.';
+
+  @override
+  String get error_bad_gateway => 'Bad gateway';
+
+  @override
+  String get error_bad_gateway_desc =>
+      'The server received an invalid response. Please try again later.';
+
+  @override
+  String get error_service_unavailable => 'Service unavailable';
+
+  @override
+  String get error_service_unavailable_desc =>
+      'The service is temporarily unavailable. Please try again later.';
+
+  @override
+  String get error_gateway_timeout => 'Gateway timeout';
+
+  @override
+  String get error_gateway_timeout_desc =>
+      'The gateway timed out. Please try again later.';
+
+  @override
+  String get error_bad_request_desc =>
+      'The request contains invalid data. Please check your input.';
+
+  @override
+  String get error_unauthorized_desc =>
+      'You are not authorized to access this resource. Please sign in again.';
+
+  @override
+  String get error_forbidden_desc =>
+      'You do not have permission to access this resource.';
+
+  @override
+  String get error_not_found_desc =>
+      'The requested resource could not be found.';
+
+  @override
+  String get error_method_not_allowed => 'Method not allowed';
+
+  @override
+  String get error_method_not_allowed_desc =>
+      'This method is not allowed for this resource.';
+
+  @override
+  String get error_not_acceptable => 'Not acceptable';
+
+  @override
+  String get error_not_acceptable_desc => 'The request is not acceptable.';
+
+  @override
+  String get error_request_timeout => 'Request timeout';
+
+  @override
+  String get error_request_timeout_desc =>
+      'The request timed out. Please try again.';
+
+  @override
+  String get error_conflict_desc =>
+      'There is a conflict with the current state of the resource.';
+
+  @override
+  String get error_gone => 'Resource unavailable';
+
+  @override
+  String get error_gone_desc =>
+      'The requested resource is no longer available.';
+
+  @override
+  String get error_length_required => 'Length required';
+
+  @override
+  String get error_length_required_desc =>
+      'The request must specify a content length.';
+
+  @override
+  String get error_precondition_failed => 'Precondition failed';
+
+  @override
+  String get error_precondition_failed_desc =>
+      'One or more preconditions failed.';
+
+  @override
+  String get error_payload_too_large => 'Payload too large';
+
+  @override
+  String get error_payload_too_large_desc =>
+      'The request payload is too large.';
+
+  @override
+  String get error_uri_too_long => 'URI too long';
+
+  @override
+  String get error_uri_too_long_desc => 'The request URI is too long.';
+
+  @override
+  String get error_unsupported_media_type => 'Unsupported media type';
+
+  @override
+  String get error_unsupported_media_type_desc =>
+      'This media type is not supported.';
+
+  @override
+  String get error_range_not_satisfiable => 'Range not satisfiable';
+
+  @override
+  String get error_range_not_satisfiable_desc =>
+      'The requested range cannot be satisfied.';
+
+  @override
+  String get error_expectation_failed => 'Expectation failed';
+
+  @override
+  String get error_expectation_failed_desc =>
+      'The expectation in the request headers could not be met.';
+
+  @override
+  String get error_too_many_requests => 'Too many requests';
+
+  @override
+  String get error_too_many_requests_desc =>
+      'You have sent too many requests. Please try again later.';
+
+  @override
+  String get error_unknown_desc =>
+      'An unknown error occurred. Please try again.';
+
+  @override
+  String get error_cancelled => 'Request cancelled';
+
+  @override
+  String get error_cancelled_desc => 'The request was cancelled.';
+
+  @override
+  String get error_other => 'Something went wrong';
+
+  @override
+  String get error_other_desc => 'Something went wrong. Please try again.';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get go_back => 'Go back';
+
+  @override
+  String get contact_support => 'Contact support';
+
+  @override
+  String get check_connection => 'Check connection';
 
   @override
   String get auth_title => 'Get Started Now';
@@ -977,7 +1173,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver_profile_vehicle_type_car => 'Car';
 
   @override
-  String get driver_profile_vehicle_type_bike => 'Bike';
+  String get driver_profile_vehicle_type_bike => 'Motorcycle';
+
+  @override
+  String get driver_profile_vehicle_type_scooter => 'Scooter';
+
+  @override
+  String get driver_profile_vehicle_type_van => 'Van';
+
+  @override
+  String get driver_profile_vehicle_type_bicycle => 'Bicycle';
+
+  @override
+  String get driver_profile_vehicle_type_truck => 'Truck';
 
   @override
   String get driver_profile_portrait_title => 'Driver portrait';
@@ -1191,6 +1399,44 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose the right vehicle for you, then complete its essential data.';
 
   @override
+  String get driver_profile_zone_label => 'Working zone';
+
+  @override
+  String get driver_profile_zone_placeholder => 'Choose your main zone';
+
+  @override
+  String get driver_profile_zone_hint =>
+      'Select the zone where you want to start receiving orders.';
+
+  @override
+  String get driver_profile_zone_loading => 'Loading available zones';
+
+  @override
+  String get driver_profile_zone_sheet_title => 'Choose your zone';
+
+  @override
+  String get driver_profile_zone_sheet_subtitle =>
+      'This zone will be linked to your driver account during registration.';
+
+  @override
+  String get driver_profile_zone_required_error =>
+      'Choose a working zone before continuing.';
+
+  @override
+  String get driver_profile_vehicle_required_error =>
+      'Choose a vehicle type before continuing.';
+
+  @override
+  String driver_profile_zone_radius(String radius) {
+    return 'Coverage $radius km';
+  }
+
+  @override
+  String driver_profile_vehicle_selected_message(String vehicleType) {
+    return '$vehicleType selected. Make sure the uploaded photo matches this vehicle type.';
+  }
+
+  @override
   String get driver_profile_vehicle_selected_bike_message =>
       'Bike selected. This setup emphasizes agility and faster movement in traffic.';
 
@@ -1239,6 +1485,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driver_vehicle_type_bike_subtitle => 'Faster in dense city routes';
+
+  @override
+  String get driver_vehicle_type_motorcycle_subtitle =>
+      'Balanced speed and carrying capacity for urban delivery';
+
+  @override
+  String get driver_vehicle_type_scooter_subtitle =>
+      'Light and efficient for quick neighborhood routes';
+
+  @override
+  String get driver_vehicle_type_van_subtitle =>
+      'Best for bulk loads and medium-sized shipments';
+
+  @override
+  String get driver_vehicle_type_bicycle_subtitle =>
+      'Best for short eco-friendly trips in tight streets';
+
+  @override
+  String get driver_vehicle_type_truck_subtitle =>
+      'Suitable for heavy loads and large deliveries';
 
   @override
   String get auth_section_badge_default => 'Member';
