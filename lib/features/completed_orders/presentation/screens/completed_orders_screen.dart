@@ -6,6 +6,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/manager/completed_orders_state.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/manager/completed_orders_view_model.dart';
@@ -64,8 +65,8 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
           backgroundColor: Theme.of(dialogContext).colorScheme.surface,
           child: Padding(
             padding: const EdgeInsets.all(8),
-            child: ApiErrorWidget.fromFailure(
-              failure,
+            child: ApiErrorWidget(
+              exception: failure.asException,
               onRetry: () {
                 Navigator.of(dialogContext).pop();
                 onRetry();
@@ -120,8 +121,8 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
                   onRetry: _viewModel.retryCurrentRequest,
                   onGoBack: _viewModel.clearError,
                 ),
@@ -138,7 +139,13 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                     title: locale.completed_orders_title,
                     onBackPressed: () => Navigator.of(context).maybePop(),
                   ),
-                  if (state.isRefreshing) const LinearProgressIndicator(),
+                  if (state.isRefreshing)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8),
+                      child: Center(
+                        child: CustomProgressIndicator.compact(size: 22),
+                      ),
+                    ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
                     child: CompletedOrdersFilterBar(
@@ -237,7 +244,9 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                                                       ),
                                                       child: const Center(
                                                         child:
-                                                            CircularProgressIndicator(),
+                                                            CustomProgressIndicator.compact(
+                                                              size: 28,
+                                                            ),
                                                       ),
                                                     ),
                                                   ),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/text_styles.dart';
+import 'package:zadana_delivery/core/errors/api_error_type.dart';
+import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 
@@ -13,7 +15,8 @@ class InlineApiErrorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = _resolveScheme(context, failure.code);
+    final exception = failure.asException;
+    final scheme = _resolveScheme(context, exception.errorType);
 
     return Container(
       width: double.infinity,
@@ -91,7 +94,7 @@ class InlineApiErrorWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            failure.errorMessage,
+            ErrorMessagePresenter.snackBarMessage(context, exception),
             style: AppTextStyles.bodySmall.copyWith(
               color: AppColors.textSecondary,
               height: 1.45,
@@ -102,12 +105,14 @@ class InlineApiErrorWidget extends StatelessWidget {
     );
   }
 
-  _InlineErrorScheme _resolveScheme(BuildContext context, String code) {
+  _InlineErrorScheme _resolveScheme(
+    BuildContext context,
+    ApiErrorType errorType,
+  ) {
     final l10n = context.localization;
 
-    switch (code.trim().toLowerCase()) {
-      case 'error_no_internet':
-      case 'connection_error':
+    switch (errorType) {
+      case ApiErrorType.noInternetConnection:
         return _InlineErrorScheme(
           title: l10n.error_no_internet_connection,
           icon: Icons.wifi_off_rounded,
@@ -115,12 +120,10 @@ class InlineApiErrorWidget extends StatelessWidget {
           softColor: const Color(0xFFFFF7EB),
           borderColor: const Color(0xFFFFE1B5),
         );
-      case 'error_connection_timeout':
-      case 'error_send_timeout':
-      case 'error_receive_timeout':
-      case 'connection_timeout':
-      case 'send_timeout':
-      case 'receive_timeout':
+      case ApiErrorType.connectionTimeout:
+      case ApiErrorType.sendTimeout:
+      case ApiErrorType.receiveTimeout:
+      case ApiErrorType.requestTimeout:
         return _InlineErrorScheme(
           title: l10n.error_connection_timeout,
           icon: Icons.schedule_rounded,

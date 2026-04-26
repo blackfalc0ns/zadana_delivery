@@ -3,12 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_experience_shell.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/domain/entities/forgot_password_request_entity.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/presentation/manager/forgot_password_event.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/presentation/manager/forgot_password_state.dart';
@@ -74,6 +76,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     return BlocProvider.value(
       value: _cubit,
       child: BlocConsumer<ForgotPasswordViewModel, ForgotPasswordState>(
+        listenWhen: (previous, current) =>
+            previous.isSuccess != current.isSuccess ||
+            previous.response != current.response ||
+            previous.failure != current.failure,
         listener: (context, state) {
           if (state.isSuccess && state.response != null) {
             CustomSnackbar.showSuccess(
@@ -83,17 +89,34 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             context.pushNamed(
               AppRoutes.resetPassword,
               arguments: _identifierController.text.trim(),
+              rootNavigator: true,
             );
             return;
           }
+
+          final exception = state.failure?.asException;
+          if (!state.isLoading &&
+              exception != null &&
+              exception.errorType.showSnackBar) {
+            CustomSnackbar.showError(
+              context: context,
+              message: ErrorMessagePresenter.snackBarMessage(
+                context,
+                exception,
+              ),
+            );
+          }
         },
         builder: (context, state) {
-          if (!state.isLoading && state.failure != null) {
+          final exception = state.failure?.asException;
+          if (!state.isLoading &&
+              exception != null &&
+              exception.errorType.showFullScreen) {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: exception,
                   onRetry: _retrySubmit,
                   onGoBack: _cubit.clearError,
                 ),
@@ -101,36 +124,49 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             );
           }
 
-          return AuthExperienceShell(
-            heroBadge: locale.auth_forgot_hero_badge,
-            heroTitle: locale.forget_password_title,
-            heroSubtitle: locale.auth_forgot_hero_subtitle,
-            sectionBadge: locale.auth_forgot_section_badge,
-            showBackButton: true,
-            sectionTitle: locale.forget_password_title,
-            sectionDescription: locale.forget_password_description,
-            sectionIcon: Icons.lock_reset_rounded,
-            body: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  EmailPhoneInputField(
-                    controller: _identifierController,
-                    validator: (value) =>
-                        Validations.validateEmailOrPhone(context, value),
+          return Stack(
+            children: [
+              AuthExperienceShell(
+                heroBadge: locale.auth_forgot_hero_badge,
+                heroTitle: locale.forget_password_title,
+                heroSubtitle: locale.auth_forgot_hero_subtitle,
+                sectionBadge: locale.auth_forgot_section_badge,
+                showBackButton: true,
+                sectionTitle: locale.forget_password_title,
+                sectionDescription: locale.forget_password_description,
+                sectionIcon: Icons.lock_reset_rounded,
+                body: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      EmailPhoneInputField(
+                        controller: _identifierController,
+                        validator: (value) =>
+                            Validations.validateEmailOrPhone(context, value),
+                      ),
+                      const SizedBox(height: 20),
+                      AppButton.filled(
+                        text: locale.btn_send_verification_code,
+                        onPressed: state.isLoading ? null : _submit,
+                        height: 52,
+                        borderRadius: 18,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  AppButton.filled(
-                    text: locale.btn_send_verification_code,
-                    isLoading: state.isLoading,
-                    onPressed: state.isLoading ? null : _submit,
-                    height: 52,
-                    borderRadius: 18,
-                  ),
-                ],
+                ),
               ),
-            ),
+              if (state.isLoading) ...[
+                Positioned.fill(
+                  child: AbsorbPointer(
+                    child: ColoredBox(
+                      color: Colors.black.withValues(alpha: 0.10),
+                    ),
+                  ),
+                ),
+                const Positioned.fill(child: CustomProgressIndicator()),
+              ],
+            ],
           );
         },
       ),

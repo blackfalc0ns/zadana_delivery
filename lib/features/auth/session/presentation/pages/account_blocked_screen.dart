@@ -174,6 +174,7 @@ class AccountBlockedScreen extends StatelessWidget {
                           text: locale.auth_logout_account,
                           onPressed: () => context.pushNamedAndRemoveUntil(
                             AppRoutes.login,
+                            rootNavigator: true,
                             predicate: (route) => false,
                           ),
                           color: color.error,

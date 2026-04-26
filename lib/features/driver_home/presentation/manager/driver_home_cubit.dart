@@ -59,16 +59,15 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
 
     final result = await _refreshDriverHomeUseCase.call();
     switch (result) {
-      case ApiSuccessResult():
-        if (state.home != null) {
-          emit(
-            state.copyWith(
-              isLoading: false,
-              isRefreshing: false,
-              clearFailure: true,
-            ),
-          );
-        }
+      case ApiSuccessResult(data: final home):
+        emit(
+          state.copyWith(
+            isLoading: false,
+            isRefreshing: false,
+            home: home,
+            clearFailure: true,
+          ),
+        );
       case ApiErrorResult():
         emit(
           state.copyWith(
@@ -93,6 +92,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     );
     switch (result) {
       case ApiSuccessResult():
+        _applyAvailabilityOptimistically(isAvailable);
         return _refreshAfterAction(isAvailabilityUpdating: false);
       case ApiErrorResult():
         emit(
@@ -103,6 +103,52 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
         );
         return false;
     }
+  }
+
+  void _applyAvailabilityOptimistically(bool isAvailable) {
+    final currentHome = state.home;
+    if (currentHome == null) return;
+
+    emit(
+      state.copyWith(
+        home: DriverHomeEntity(
+          homeState: _resolveHomeStateAfterAvailabilityChange(
+            currentHome,
+            isAvailable,
+          ),
+          operationalStatus: DriverHomeOperationalStatusEntity(
+            isOperational: currentHome.operationalStatus.isOperational,
+            canReceiveOrders: currentHome.operationalStatus.canReceiveOrders,
+            isAvailable: isAvailable,
+            canGoAvailable: currentHome.operationalStatus.canGoAvailable,
+            verificationStatus:
+                currentHome.operationalStatus.verificationStatus,
+            accountStatus: currentHome.operationalStatus.accountStatus,
+            zoneName: currentHome.operationalStatus.zoneName,
+            commitmentScore: currentHome.operationalStatus.commitmentScore,
+            canReceiveOffers: currentHome.operationalStatus.canReceiveOffers,
+            restrictionMessage:
+                currentHome.operationalStatus.restrictionMessage,
+            message: currentHome.operationalStatus.message,
+          ),
+          currentOffer: currentHome.currentOffer,
+          currentAssignment: currentHome.currentAssignment,
+          earningsSummaryToday: currentHome.earningsSummaryToday,
+          unreadAlerts: currentHome.unreadAlerts,
+        ),
+        clearFailure: true,
+      ),
+    );
+  }
+
+  String _resolveHomeStateAfterAvailabilityChange(
+    DriverHomeEntity currentHome,
+    bool isAvailable,
+  ) {
+    if (currentHome.currentAssignment != null) {
+      return currentHome.homeState;
+    }
+    return isAvailable ? 'WaitingForOffer' : 'Offline';
   }
 
   Future<bool> _acceptOffer(String assignmentId) async {
@@ -176,12 +222,13 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
   }) async {
     final result = await _refreshDriverHomeUseCase.call();
     switch (result) {
-      case ApiSuccessResult():
+      case ApiSuccessResult(data: final home):
         emit(
           state.copyWith(
             isAvailabilityUpdating: isAvailabilityUpdating ?? false,
             isOfferActionLoading: isOfferActionLoading ?? false,
             clearActiveOfferActionId: clearActiveOfferActionId,
+            home: home,
             clearFailure: true,
           ),
         );

@@ -10,17 +10,18 @@ class DriverHomeRepositoryImpl implements DriverHomeRepository {
   const DriverHomeRepositoryImpl(this._remoteDataSource);
 
   final DriverHomeRemoteDataSource _remoteDataSource;
-  
+
   @override
   Stream<DriverHomeEntity> watchHome() {
     return _remoteDataSource.watchHome().map((event) => event.toEntity());
   }
 
   @override
-  Future<ApiResult<void>> refreshHome() {
+  Future<ApiResult<DriverHomeEntity>> refreshHome() {
     return safeApiCall(() async {
       final home = await _remoteDataSource.getHome();
       _remoteDataSource.emitHome(home);
+      return home.toEntity();
     });
   }
 

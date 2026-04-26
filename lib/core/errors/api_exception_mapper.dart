@@ -9,25 +9,22 @@ class ApiExceptionMapper {
   static ApiException fromDioException(DioException exception) {
     switch (exception.type) {
       case DioExceptionType.connectionTimeout:
-        return ApiException(
+        return const ApiException(
           errorType: ApiErrorType.connectionTimeout,
-          message: 'Connection timeout with API server.',
-          response: exception.response?.data,
-          statusCode: exception.response?.statusCode,
+          message: 'error_connection_timeout',
+          isTranslationKey: true,
         );
       case DioExceptionType.sendTimeout:
-        return ApiException(
+        return const ApiException(
           errorType: ApiErrorType.sendTimeout,
-          message: 'Send timeout with API server.',
-          response: exception.response?.data,
-          statusCode: exception.response?.statusCode,
+          message: 'error_send_timeout',
+          isTranslationKey: true,
         );
       case DioExceptionType.receiveTimeout:
-        return ApiException(
+        return const ApiException(
           errorType: ApiErrorType.receiveTimeout,
-          message: 'Receive timeout with API server.',
-          response: exception.response?.data,
-          statusCode: exception.response?.statusCode,
+          message: 'error_receive_timeout',
+          isTranslationKey: true,
         );
       case DioExceptionType.badCertificate:
       case DioExceptionType.badResponse:
@@ -36,23 +33,26 @@ class ApiExceptionMapper {
           response: exception.response?.data,
         );
       case DioExceptionType.cancel:
-        return ApiException(
+        return const ApiException(
           errorType: ApiErrorType.cancelled,
-          message: 'Request to API server was cancelled.',
-          response: exception.response?.data,
-          statusCode: exception.response?.statusCode,
+          message: 'error_cancelled',
+          isTranslationKey: true,
         );
       case DioExceptionType.connectionError:
         return const ApiException(
           errorType: ApiErrorType.noInternetConnection,
-          message: 'No internet connection.',
+          message: 'error_no_internet_connection',
+          isTranslationKey: true,
         );
       case DioExceptionType.unknown:
         return ApiException(
           errorType: ApiErrorType.unknown,
-          message: _extractMessage(exception.response?.data) ?? exception.message ?? 'Unexpected error occurred. Please try again later.',
+          message:
+              _extractMessage(exception.response?.data) ??
+              ApiErrorType.unknown.translationKey,
           response: exception.response?.data,
           statusCode: exception.response?.statusCode,
+          isTranslationKey: _extractMessage(exception.response?.data) == null,
         );
     }
   }
@@ -62,106 +62,83 @@ class ApiExceptionMapper {
     required dynamic response,
   }) {
     final message = _extractMessage(response);
+    ApiException build(
+      ApiErrorType type, {
+      required int? code,
+      required dynamic body,
+    }) {
+      return ApiException(
+        errorType: type,
+        message: message ?? type.translationKey,
+        statusCode: code,
+        response: body,
+        isTranslationKey: message == null,
+      );
+    }
 
     switch (statusCode) {
       case 400:
-        return ApiException(
-          errorType: ApiErrorType.badRequest,
-          message: message ?? 'Bad request.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.badRequest, code: statusCode, body: response);
       case 401:
-        return ApiException(
-          errorType: ApiErrorType.unauthorized,
-          message: message ?? 'Unauthorized.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.unauthorized,
+          code: statusCode,
+          body: response,
         );
       case 403:
-        return ApiException(
-          errorType: ApiErrorType.forbidden,
-          message: message ?? 'Forbidden.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.forbidden, code: statusCode, body: response);
       case 404:
-        return ApiException(
-          errorType: ApiErrorType.notFound,
-          message: message ?? 'Resource not found.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.notFound, code: statusCode, body: response);
       case 408:
-        return ApiException(
-          errorType: ApiErrorType.requestTimeout,
-          message: message ?? 'Request timeout.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.requestTimeout,
+          code: statusCode,
+          body: response,
         );
       case 409:
-        return ApiException(
-          errorType: ApiErrorType.conflict,
-          message: message ?? 'Conflict occurred.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.conflict, code: statusCode, body: response);
+      case 422:
+        return build(ApiErrorType.badRequest, code: statusCode, body: response);
       case 413:
-        return ApiException(
-          errorType: ApiErrorType.payloadTooLarge,
-          message: message ?? 'Payload is too large.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.payloadTooLarge,
+          code: statusCode,
+          body: response,
         );
       case 415:
-        return ApiException(
-          errorType: ApiErrorType.unsupportedMediaType,
-          message: message ?? 'Unsupported media type.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.unsupportedMediaType,
+          code: statusCode,
+          body: response,
         );
       case 429:
-        return ApiException(
-          errorType: ApiErrorType.tooManyRequests,
-          message: message ?? 'Too many requests.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.tooManyRequests,
+          code: statusCode,
+          body: response,
         );
       case 500:
-        return ApiException(
-          errorType: ApiErrorType.internalServerError,
-          message: message ?? 'Server error. Please try again later.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.internalServerError,
+          code: statusCode,
+          body: response,
         );
       case 502:
-        return ApiException(
-          errorType: ApiErrorType.badGateway,
-          message: message ?? 'Bad gateway.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.badGateway, code: statusCode, body: response);
       case 503:
-        return ApiException(
-          errorType: ApiErrorType.serviceUnavailable,
-          message: message ?? 'Service unavailable.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.serviceUnavailable,
+          code: statusCode,
+          body: response,
         );
       case 504:
-        return ApiException(
-          errorType: ApiErrorType.gatewayTimeout,
-          message: message ?? 'Gateway timeout.',
-          statusCode: statusCode,
-          response: response,
+        return build(
+          ApiErrorType.gatewayTimeout,
+          code: statusCode,
+          body: response,
         );
       default:
-        return ApiException(
-          errorType: ApiErrorType.unknown,
-          message: message ?? 'Unexpected server error.',
-          statusCode: statusCode,
-          response: response,
-        );
+        return build(ApiErrorType.unknown, code: statusCode, body: response);
     }
   }
 

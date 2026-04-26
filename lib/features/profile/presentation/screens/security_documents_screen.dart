@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
@@ -28,8 +29,7 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = getIt<ProfileCubit>()
-      ..doIntent(const ProfileFormLoadEvent());
+    _cubit = getIt<ProfileCubit>()..doIntent(const ProfileFormLoadEvent());
   }
 
   @override
@@ -65,7 +65,9 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
         },
         builder: (context, state) {
           final showGlobalError =
-              !state.isLoading && state.profile == null && state.failure != null;
+              !state.isLoading &&
+              state.profile == null &&
+              state.failure != null;
 
           if (state.profile == null && state.isLoading) {
             return ProfileFormLoadingSkeleton(
@@ -78,8 +80,8 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
                   onRetry: () => _cubit.doIntent(const ProfileFormLoadEvent()),
                   onGoBack: () =>
                       _cubit.doIntent(const ProfileFormClearErrorEvent()),

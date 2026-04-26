@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 
 /// ─────────────────────────────────────────────────────────────
 /// Reusable button with loading state, icon, and variants.
@@ -87,11 +88,11 @@ class AppButton extends StatelessWidget {
 
     Widget child = isLoading
         ? SizedBox(
-            height: 22,
-            width: 22,
-            child: CircularProgressIndicator(
-              strokeWidth: 2.5,
-              color: variant == AppButtonVariant.filled
+            height: 30,
+            width: 30,
+            child: CustomProgressIndicator.compact(
+              size: 18,
+              tintColor: variant == AppButtonVariant.filled
                   ? (textColor ?? colors.onPrimary)
                   : effectiveColor,
             ),

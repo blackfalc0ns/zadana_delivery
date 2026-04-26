@@ -106,7 +106,6 @@ class SignUpForm extends StatelessWidget {
           const SizedBox(height: Spacing.lg),
           AppButton.filled(
             text: locale.auth_continue,
-            isLoading: isSubmitting,
             onPressed: isSubmitting ? null : onSubmit,
             height: 52,
             borderRadius: 18,

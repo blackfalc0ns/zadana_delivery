@@ -22,6 +22,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   final ApiServices _apiServices;
   final StreamController<DriverHomeModelDto> _homeController;
+  DriverHomeModelDto? _latestHome;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
   bool _signalRUnavailable = false;
@@ -74,15 +75,20 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   }
 
   @override
-  Stream<DriverHomeModelDto> watchHome() {
+  Stream<DriverHomeModelDto> watchHome() async* {
     _instanceForStreamCallback = this;
     unawaited(_ensureSignalRConnected());
-    return _homeController.stream;
+    final latestHome = _latestHome;
+    if (latestHome != null) {
+      yield latestHome;
+    }
+    yield* _homeController.stream;
   }
 
   @override
   void emitHome(DriverHomeModelDto home) {
     if (_homeController.isClosed) return;
+    _latestHome = home;
     _homeController.add(home);
   }
 

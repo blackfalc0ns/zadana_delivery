@@ -4,7 +4,7 @@ import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home
 abstract class DriverHomeRepository {
   Stream<DriverHomeEntity> watchHome();
 
-  Future<ApiResult<void>> refreshHome();
+  Future<ApiResult<DriverHomeEntity>> refreshHome();
 
   Future<ApiResult<void>> updateAvailability({required bool isAvailable});
 

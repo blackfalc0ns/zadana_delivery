@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
-import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/inline_api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 
 class DriverZoneSelector extends StatelessWidget {
@@ -91,26 +92,8 @@ class DriverZoneSelector extends StatelessWidget {
                 const SizedBox(width: Spacing.base),
                 Expanded(
                   child: isLoading
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              locale.driver_profile_zone_loading,
-                              style: getSemiBoldStyle(
-                                fontFamily: FontConstant.cairo,
-                                color: color.onSurface,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(999),
-                              child: LinearProgressIndicator(
-                                minHeight: 6,
-                                color: color.primary,
-                                backgroundColor: color.surface,
-                              ),
-                            ),
-                          ],
+                      ? _ZoneLoadingState(
+                          title: locale.driver_profile_zone_loading,
                         )
                       : _ZoneSummary(
                           title: selectedTitle.isEmpty
@@ -130,10 +113,7 @@ class DriverZoneSelector extends StatelessWidget {
         ),
         if (failure != null) ...[
           const SizedBox(height: Spacing.sm),
-          ApiErrorWidget.fromFailure(
-            failure!,
-            onRetry: onRetry,
-          ),
+          InlineApiErrorWidget(failure: failure!, onRetry: onRetry),
         ],
       ],
     );
@@ -151,6 +131,46 @@ class DriverZoneSelector extends StatelessWidget {
     if (selected != null) {
       onChanged(selected);
     }
+  }
+}
+
+class _ZoneLoadingState extends StatelessWidget {
+  const _ZoneLoadingState({required this.title});
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: getSemiBoldStyle(
+            fontFamily: FontConstant.cairo,
+            color: color.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            CustomProgressIndicator.compact(size: 18, tintColor: color.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                title,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  color: color.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
   }
 }
 

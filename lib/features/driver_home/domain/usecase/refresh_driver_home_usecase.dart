@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/domain/repo/driver_home_repository.dart';
 
 @injectable
@@ -8,7 +9,7 @@ class RefreshDriverHomeUseCase {
 
   final DriverHomeRepository _repository;
 
-  Future<ApiResult<void>> call() {
+  Future<ApiResult<DriverHomeEntity>> call() {
     return _repository.refreshHome();
   }
 }

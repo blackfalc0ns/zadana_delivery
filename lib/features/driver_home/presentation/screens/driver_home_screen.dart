@@ -9,7 +9,8 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_cubit.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_event.dart';
@@ -203,7 +204,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           if (state.home == null && state.isLoading) {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
-              body: const Center(child: CircularProgressIndicator()),
+              body: const Center(child: CustomProgressIndicator()),
             );
           }
 
@@ -211,8 +212,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
                   onRetry: () => _cubit.doIntent(const DriverHomeLoadEvent()),
                   onGoBack: () =>
                       _cubit.doIntent(const DriverHomeClearErrorEvent()),
@@ -277,7 +278,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       alignment: Alignment.topCenter,
                       child: Padding(
                         padding: EdgeInsets.only(top: 108),
-                        child: LinearProgressIndicator(),
+                        child: CustomProgressIndicator.compact(size: 24),
                       ),
                     ),
                   ),
@@ -314,6 +315,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           home: home,
                           isOnline: isDriverOnline,
                           canReceiveOffers: canReceiveLiveOffers,
+                          onToggleAvailability: () =>
+                              _toggleAvailability(!isDriverOnline),
+                          isToggleEnabled: canToggle,
+                          isToggleLoading: state.isAvailabilityUpdating,
                           onOpenMission: currentAssignment == null
                               ? () {}
                               : _openMissionDetails,

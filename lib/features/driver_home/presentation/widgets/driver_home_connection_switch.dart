@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 
 class DriverHomeConnectionSwitch extends StatelessWidget {
   const DriverHomeConnectionSwitch({
@@ -108,11 +109,10 @@ class DriverHomeConnectionSwitch extends StatelessWidget {
               SizedBox(
                 width: 28,
                 height: 28,
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2.2,
-                    color: color.primary,
+                child: Center(
+                  child: CustomProgressIndicator.compact(
+                    size: 18,
+                    tintColor: color.primary,
                   ),
                 ),
               )

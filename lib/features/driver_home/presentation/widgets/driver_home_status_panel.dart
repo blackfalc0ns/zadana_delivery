@@ -13,12 +13,18 @@ class DriverHomeStatusPanel extends StatelessWidget {
     required this.isOnline,
     required this.canReceiveOffers,
     required this.onOpenMission,
+    required this.onToggleAvailability,
+    this.isToggleEnabled = true,
+    this.isToggleLoading = false,
   });
 
   final DriverHomeEntity home;
   final bool isOnline;
   final bool canReceiveOffers;
   final VoidCallback onOpenMission;
+  final VoidCallback onToggleAvailability;
+  final bool isToggleEnabled;
+  final bool isToggleLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -104,6 +110,21 @@ class DriverHomeStatusPanel extends StatelessWidget {
               borderRadius: 18,
             ),
           ] else ...[
+            AppButton.filled(
+              text: isOnline
+                  ? context.localization.driver_home_connection_offline_title
+                  : context.localization.driver_home_connection_online_title,
+              icon: isOnline
+                  ? Icons.toggle_off_rounded
+                  : Icons.toggle_on_rounded,
+              onPressed: isToggleEnabled ? onToggleAvailability : null,
+              isLoading: isToggleLoading,
+              height: 50,
+              borderRadius: 18,
+              color: isOnline ? color.outline : color.primary,
+              textColor: isOnline ? color.onSurface : color.onPrimary,
+            ),
+            const SizedBox(height: Spacing.base),
             Row(
               children: [
                 Expanded(

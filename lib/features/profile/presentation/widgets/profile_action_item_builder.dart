@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_tile.dart';
@@ -38,9 +39,9 @@ class ProfileActionItemBuilder extends StatelessWidget {
       isDestructive: item.isDestructive,
       trailing: item.isLoading
           ? const SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2.2),
+              width: 28,
+              height: 28,
+              child: Center(child: CustomProgressIndicator.compact(size: 18)),
             )
           : null,
       onTap: item.isLoading ? null : () => onActionTap(item.type),

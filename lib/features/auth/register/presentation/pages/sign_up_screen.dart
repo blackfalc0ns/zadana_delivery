@@ -3,6 +3,7 @@ import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_experience_shell.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 
 import '../models/register_account_draft.dart';
 import '../widget/sign_up_form.dart';
@@ -72,6 +73,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         phone: _phoneController.text.trim(),
         password: _passwordController.text,
       ),
+      rootNavigator: true,
     );
   }
 
@@ -79,29 +81,44 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     final locale = context.localization;
 
-    return AuthExperienceShell(
-      heroBadge: locale.auth_signup_hero_badge,
-      heroTitle: locale.auth_signup_hero_title,
-      heroSubtitle: locale.auth_signup_hero_subtitle,
-      sectionBadge: locale.auth_signup_section_badge,
-      sectionTitle: locale.btn_signup,
-      sectionDescription: locale.auth_signup_description,
-      sectionIcon: Icons.person_add_alt_1_rounded,
-      body: SignUpForm(
-        formKey: _formKey,
-        fullNameController: _fullNameController,
-        phoneController: _phoneController,
-        emailController: _emailController,
-        passwordController: _passwordController,
-        isSubmitting: _isSubmitting,
-        errorMessage: _errorMessage,
-        onSubmit: _submit,
-      ),
-      footer: AuthPromptText(
-        text: locale.footer_have_account,
-        actionLabel: locale.footer_action_login,
-        onTap: () => context.pushReplacementNamed(AppRoutes.login),
-      ),
+    return Stack(
+      children: [
+        AuthExperienceShell(
+          heroBadge: locale.auth_signup_hero_badge,
+          heroTitle: locale.auth_signup_hero_title,
+          heroSubtitle: locale.auth_signup_hero_subtitle,
+          sectionBadge: locale.auth_signup_section_badge,
+          sectionTitle: locale.btn_signup,
+          sectionDescription: locale.auth_signup_description,
+          sectionIcon: Icons.person_add_alt_1_rounded,
+          body: SignUpForm(
+            formKey: _formKey,
+            fullNameController: _fullNameController,
+            phoneController: _phoneController,
+            emailController: _emailController,
+            passwordController: _passwordController,
+            isSubmitting: _isSubmitting,
+            errorMessage: _errorMessage,
+            onSubmit: _submit,
+          ),
+          footer: AuthPromptText(
+            text: locale.footer_have_account,
+            actionLabel: locale.footer_action_login,
+            onTap: () => context.pushReplacementNamed(
+              AppRoutes.login,
+              rootNavigator: true,
+            ),
+          ),
+        ),
+        if (_isSubmitting) ...[
+          Positioned.fill(
+            child: AbsorbPointer(
+              child: ColoredBox(color: Colors.black.withValues(alpha: 0.10)),
+            ),
+          ),
+          const Positioned.fill(child: CustomProgressIndicator()),
+        ],
+      ],
     );
   }
 }

@@ -6,6 +6,8 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
@@ -61,8 +63,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
                   onRetry: _cubit.loadProfile,
                   onGoBack: _cubit.clearError,
                 ),
@@ -72,10 +74,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           return Scaffold(
             backgroundColor: context.colorScheme.surface,
-            body: ProfileScreenContent(
-              state: state,
-              onActionTap: _handleAction,
-              onNotificationsChanged: _cubit.updateNotifications,
+            body: Stack(
+              children: [
+                ProfileScreenContent(
+                  state: state,
+                  onActionTap: _handleAction,
+                  onNotificationsChanged: _cubit.updateNotifications,
+                ),
+                if (state.isLoggingOut) ...[
+                  Positioned.fill(
+                    child: AbsorbPointer(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.10),
+                      ),
+                    ),
+                  ),
+                  const Positioned.fill(child: CustomProgressIndicator()),
+                ],
+              ],
             ),
           );
         },
@@ -130,6 +146,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     context.pushNamedAndRemoveUntil(
       AppRoutes.login,
+      rootNavigator: true,
       predicate: (route) => false,
     );
   }

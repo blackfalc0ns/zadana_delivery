@@ -75,7 +75,6 @@ class LoginForm extends StatelessWidget {
           ),
           AppButton.filled(
             text: context.localization.toggle_login,
-            isLoading: isSubmitting,
             onPressed: isSubmitting ? null : onSubmit,
             height: 52,
             borderRadius: 18,

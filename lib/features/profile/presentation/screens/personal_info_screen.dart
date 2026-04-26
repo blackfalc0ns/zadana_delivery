@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
@@ -32,8 +33,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = getIt<ProfileCubit>()
-      ..doIntent(const ProfileFormLoadEvent());
+    _cubit = getIt<ProfileCubit>()..doIntent(const ProfileFormLoadEvent());
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
@@ -91,7 +91,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         },
         builder: (context, state) {
           final showGlobalError =
-              !state.isLoading && state.profile == null && state.failure != null;
+              !state.isLoading &&
+              state.profile == null &&
+              state.failure != null;
 
           if (state.profile == null && state.isLoading) {
             return ProfileFormLoadingSkeleton(title: locale.personal_info);
@@ -101,8 +103,8 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
                   onRetry: () => _cubit.doIntent(const ProfileFormLoadEvent()),
                   onGoBack: () =>
                       _cubit.doIntent(const ProfileFormClearErrorEvent()),

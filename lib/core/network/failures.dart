@@ -1,28 +1,33 @@
 import 'package:dio/dio.dart';
+import 'package:zadana_delivery/core/errors/api_error_type.dart';
+import 'package:zadana_delivery/core/errors/api_exception.dart';
+import 'package:zadana_delivery/core/errors/failure_exception_mapper.dart';
 
 class Failure {
-  const Failure({required this.errorMessage, this.code = 'unknown'});
+  const Failure({
+    required this.errorMessage,
+    this.code = 'unknown',
+    this.exception,
+  });
   final String errorMessage;
   final String code;
+  final ApiException? exception;
 
   String get normalizedCode => code.trim().toLowerCase();
+  ApiException get asException => FailureExceptionMapper.fromFailure(this);
 
-  bool get isConnectivityIssue =>
-      {
-        'error_no_internet_connection',
-        'error_no_internet',
-        'connection_error',
-        'nointernetconnection',
-        'no_internet_connection',
-        'error_connection_timeout',
-        'connection_timeout',
-        'error_send_timeout',
-        'send_timeout',
-        'error_receive_timeout',
-        'receive_timeout',
-        'error_no_response',
-        'no_response',
-      }.contains(normalizedCode);
+  bool get isConnectivityIssue {
+    switch (asException.errorType) {
+      case ApiErrorType.noInternetConnection:
+      case ApiErrorType.connectionTimeout:
+      case ApiErrorType.sendTimeout:
+      case ApiErrorType.receiveTimeout:
+      case ApiErrorType.requestTimeout:
+        return true;
+      default:
+        return false;
+    }
+  }
 }
 
 class ServerFailure extends Failure {

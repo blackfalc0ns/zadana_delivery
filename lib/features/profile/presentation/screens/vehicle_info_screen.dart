@@ -4,6 +4,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
@@ -87,7 +88,9 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         },
         builder: (context, state) {
           final showGlobalError =
-              !state.isLoading && state.profile == null && state.failure != null;
+              !state.isLoading &&
+              state.profile == null &&
+              state.failure != null;
 
           if (state.profile == null && state.isLoading) {
             return ProfileFormLoadingSkeleton(
@@ -101,10 +104,11 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             return Scaffold(
               backgroundColor: context.colorScheme.surface,
               body: SafeArea(
-                child: ApiErrorWidget.fromFailure(
-                  state.failure!,
-                  onRetry: () =>
-                      _cubit.doIntent(const ProfileFormLoadEvent(includeZones: true)),
+                child: ApiErrorWidget(
+                  exception: state.failure!.asException,
+                  onRetry: () => _cubit.doIntent(
+                    const ProfileFormLoadEvent(includeZones: true),
+                  ),
                   onGoBack: () =>
                       _cubit.doIntent(const ProfileFormClearErrorEvent()),
                 ),

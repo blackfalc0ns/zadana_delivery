@@ -181,8 +181,7 @@ class ProfileScreenContent extends StatelessWidget {
                 icon: item.icon,
                 iconColor: item.colorToken.resolveColor(colorScheme),
                 isDestructive: item.isDestructive,
-                isLoading:
-                    item.type == ProfileActionType.logout && state.isLoggingOut,
+                isLoading: false,
                 isNotificationTile:
                     item.type == ProfileActionType.notifications,
                 notificationsEnabled: state.notificationsEnabled,
