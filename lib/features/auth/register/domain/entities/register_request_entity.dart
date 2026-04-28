@@ -8,8 +8,10 @@ class RegisterRequestEntity {
     required this.nationalId,
     required this.licenseNumber,
     required this.address,
-    required this.primaryZoneId,
-    required this.nationalIdImagePath,
+    required this.region,
+    required this.city,
+    required this.nationalIdFrontImagePath,
+    required this.nationalIdBackImagePath,
     required this.licenseImagePath,
     required this.vehicleImagePath,
     required this.personalPhotoPath,
@@ -23,8 +25,10 @@ class RegisterRequestEntity {
   final String nationalId;
   final String licenseNumber;
   final String address;
-  final String primaryZoneId;
-  final String nationalIdImagePath;
+  final String region;
+  final String city;
+  final String nationalIdFrontImagePath;
+  final String nationalIdBackImagePath;
   final String licenseImagePath;
   final String vehicleImagePath;
   final String personalPhotoPath;

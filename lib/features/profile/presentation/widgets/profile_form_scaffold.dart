@@ -18,6 +18,7 @@ class ProfileFormScaffold extends StatelessWidget {
     required this.isSaving,
     required this.onSave,
     required this.children,
+    this.actionText,
   });
 
   final String title;
@@ -29,6 +30,7 @@ class ProfileFormScaffold extends StatelessWidget {
   final bool isSaving;
   final VoidCallback onSave;
   final List<Widget> children;
+  final String? actionText;
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +55,7 @@ class ProfileFormScaffold extends StatelessWidget {
             ...children,
             const SizedBox(height: Spacing.lg),
             AppButton.filled(
-              text: context.localization.save_amount,
+              text: actionText ?? context.localization.profile_update_action,
               onPressed: isSaving ? null : onSave,
               isLoading: isSaving,
               height: 52,

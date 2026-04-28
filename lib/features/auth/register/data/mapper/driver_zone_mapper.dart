@@ -5,6 +5,7 @@ extension DriverZoneModelDtoMapper on DriverZoneModelDto {
   DriverZoneEntity toEntity() {
     return DriverZoneEntity(
       id: id,
+      regionCode: regionCode,
       city: city,
       name: name,
       centerLat: centerLat,

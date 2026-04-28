@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
           locale: _localeCubit.locale,
           theme: AppTheme.light,
           onGenerateRoute: RouteGenerator.getRoute,
-          initialRoute: AppRoutes.authGate,
+          initialRoute: AppRoutes.mainShell,
         ),
       ),
     );

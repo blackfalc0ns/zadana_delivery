@@ -31,8 +31,11 @@ class RegisterRepositoryImpl implements RegisterRepository {
     RegisterRequestEntity request,
   ) {
     return safeApiCall(() async {
-      final nationalIdImageUrl = await _uploadService.uploadFile(
-        request.nationalIdImagePath,
+      final nationalIdFrontImageUrl = await _uploadService.uploadFile(
+        request.nationalIdFrontImagePath,
+      );
+      final nationalIdBackImageUrl = await _uploadService.uploadFile(
+        request.nationalIdBackImagePath,
       );
       final licenseImageUrl = await _uploadService.uploadFile(
         request.licenseImagePath,
@@ -46,7 +49,8 @@ class RegisterRepositoryImpl implements RegisterRepository {
 
       final response = await _remoteDataSource.register(
         request.toDto(
-          nationalIdImageUrl: nationalIdImageUrl,
+          nationalIdFrontImageUrl: nationalIdFrontImageUrl,
+          nationalIdBackImageUrl: nationalIdBackImageUrl,
           licenseImageUrl: licenseImageUrl,
           vehicleImageUrl: vehicleImageUrl,
           personalPhotoUrl: personalPhotoUrl,
@@ -90,7 +94,8 @@ class RegisterRepositoryImpl implements RegisterRepository {
           plateNumber: '',
           images: {
             'portrait': request.personalPhotoPath,
-            'idFront': request.nationalIdImagePath,
+            'idFront': request.nationalIdFrontImagePath,
+            'idBack': request.nationalIdBackImagePath,
             'license': request.licenseImagePath,
             'vehicle': request.vehicleImagePath,
           },

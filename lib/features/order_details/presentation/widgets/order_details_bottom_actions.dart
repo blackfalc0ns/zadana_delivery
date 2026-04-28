@@ -7,6 +7,8 @@ class OrderDetailsBottomActions extends StatelessWidget {
   const OrderDetailsBottomActions({
     super.key,
     required this.stage,
+    required this.pickupOtpRequired,
+    required this.deliveryOtpRequired,
     required this.onAcceptOrder,
     required this.onShowPickupOtp,
     required this.onStartDelivery,
@@ -15,6 +17,8 @@ class OrderDetailsBottomActions extends StatelessWidget {
   });
 
   final OrderDeliveryStage stage;
+  final bool pickupOtpRequired;
+  final bool deliveryOtpRequired;
   final VoidCallback onAcceptOrder;
   final VoidCallback onShowPickupOtp;
   final VoidCallback onStartDelivery;
@@ -53,7 +57,9 @@ class OrderDetailsBottomActions extends StatelessWidget {
         );
       case OrderDeliveryStage.accepted:
         return _StageActionButton(
-          label: locale.order_details_show_pickup_code,
+          label: pickupOtpRequired
+              ? locale.order_details_show_pickup_code
+              : locale.order_details_confirm_pickup,
           color: scheme.secondary,
           onTap: onShowPickupOtp,
         );
@@ -65,7 +71,9 @@ class OrderDetailsBottomActions extends StatelessWidget {
         );
       case OrderDeliveryStage.onTheWay:
         return _StageActionButton(
-          label: locale.order_details_confirm_delivery_with_code,
+          label: deliveryOtpRequired
+              ? locale.order_details_confirm_delivery_with_code
+              : locale.order_details_confirm_delivery,
           color: scheme.primary,
           onTap: onShowCustomerOtp,
         );

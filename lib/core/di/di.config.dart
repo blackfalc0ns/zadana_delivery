@@ -143,6 +143,36 @@ import '../../features/driver_home/domain/usecase/watch_driver_home_usecase.dart
     as _i802;
 import '../../features/driver_home/presentation/manager/driver_home_cubit.dart'
     as _i569;
+import '../../features/notifications/data/data_source/notifications_remote_data_source.dart'
+    as _i173;
+import '../../features/notifications/data/data_source/notifications_remote_data_source_impl.dart'
+    as _i2;
+import '../../features/notifications/data/repo/notifications_repository_impl.dart'
+    as _i166;
+import '../../features/notifications/domain/repo/notifications_repository.dart'
+    as _i341;
+import '../../features/notifications/domain/usecase/get_driver_notifications_unread_count_usecase.dart'
+    as _i261;
+import '../../features/notifications/domain/usecase/get_driver_notifications_usecase.dart'
+    as _i127;
+import '../../features/notifications/domain/usecase/mark_all_driver_notifications_read_usecase.dart'
+    as _i1063;
+import '../../features/notifications/domain/usecase/mark_driver_notification_read_usecase.dart'
+    as _i430;
+import '../../features/notifications/presentation/manager/notifications_view_model.dart'
+    as _i422;
+import '../../features/order_details/data/data_source/order_details_remote_data_source.dart'
+    as _i437;
+import '../../features/order_details/data/data_source/order_details_remote_data_source_impl.dart'
+    as _i104;
+import '../../features/order_details/data/repo/order_details_repository_impl.dart'
+    as _i565;
+import '../../features/order_details/domain/repo/order_details_repository.dart'
+    as _i656;
+import '../../features/order_details/domain/usecase/get_order_assignment_details_usecase.dart'
+    as _i696;
+import '../../features/order_details/presentation/manager/order_details_cubit.dart'
+    as _i992;
 import '../../features/profile/data/data_source/driver_profile_remote_data_source.dart'
     as _i566;
 import '../../features/profile/data/data_source/driver_profile_remote_data_source_impl.dart'
@@ -248,6 +278,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i247.ForgotPasswordRemoteDataSource>(
       () => _i925.ForgotPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
+    gh.factory<_i437.OrderDetailsRemoteDataSource>(
+      () => _i104.OrderDetailsRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
     gh.factory<_i833.CompletedOrdersRemoteDataSource>(
       () => _i855.CompletedOrdersRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
@@ -257,8 +290,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i454.ResetPasswordRemoteDataSource>(
       () => _i17.ResetPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
-    gh.factory<_i897.DriverZonesRemoteDataSource>(
-      () => _i291.DriverZonesRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    gh.factory<_i173.NotificationsRemoteDataSource>(
+      () => _i2.NotificationsRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
+    gh.factory<_i656.OrderDetailsRepository>(
+      () => _i565.OrderDetailsRepositoryImpl(
+        gh<_i437.OrderDetailsRemoteDataSource>(),
+      ),
     );
     gh.factory<_i893.DriverAccountStatusRemoteDataSource>(
       () => _i913.DriverAccountStatusRemoteDataSourceImpl(
@@ -288,11 +326,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i207.RegisterRemoteDataSource>(
       () => _i895.RegisterRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
-    gh.factory<_i599.DriverZonesRepository>(
-      () => _i772.DriverZonesRepositoryImpl(
-        gh<_i897.DriverZonesRemoteDataSource>(),
-      ),
-    );
     gh.factory<_i661.DriverAccountStatusRepository>(
       () => _i1023.DriverAccountStatusRepositoryImpl(
         gh<_i893.DriverAccountStatusRemoteDataSource>(),
@@ -311,6 +344,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverProfileDraftService>(),
       ),
     );
+    gh.factory<_i897.DriverZonesRemoteDataSource>(
+      () => _i291.DriverZonesRemoteDataSourceImpl(
+        gh<_i804.ApiServices>(),
+        gh<_i819.LanguageService>(),
+      ),
+    );
     gh.factory<_i731.ForgotPasswordUseCase>(
       () => _i731.ForgotPasswordUseCase(gh<_i899.ForgotPasswordRepository>()),
     );
@@ -322,8 +361,10 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverProfileDraftService>(),
       ),
     );
-    gh.factory<_i985.GetDriverZonesUseCase>(
-      () => _i985.GetDriverZonesUseCase(gh<_i599.DriverZonesRepository>()),
+    gh.factory<_i341.NotificationsRepository>(
+      () => _i166.NotificationsRepositoryImpl(
+        gh<_i173.NotificationsRemoteDataSource>(),
+      ),
     );
     gh.factory<_i803.DriverHomeRepository>(
       () => _i720.DriverHomeRepositoryImpl(
@@ -344,6 +385,34 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i78.LogoutUseCase>(
       () => _i78.LogoutUseCase(gh<_i751.LogoutRepository>()),
+    );
+    gh.factory<_i261.GetDriverNotificationsUnreadCountUseCase>(
+      () => _i261.GetDriverNotificationsUnreadCountUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i127.GetDriverNotificationsUseCase>(
+      () => _i127.GetDriverNotificationsUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i1063.MarkAllDriverNotificationsReadUseCase>(
+      () => _i1063.MarkAllDriverNotificationsReadUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i430.MarkDriverNotificationReadUseCase>(
+      () => _i430.MarkDriverNotificationReadUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i422.NotificationsViewModel>(
+      () => _i422.NotificationsViewModel(
+        gh<_i127.GetDriverNotificationsUseCase>(),
+        gh<_i430.MarkDriverNotificationReadUseCase>(),
+        gh<_i1063.MarkAllDriverNotificationsReadUseCase>(),
+        gh<_i261.GetDriverNotificationsUnreadCountUseCase>(),
+      ),
     );
     gh.factory<_i251.RegisterRepository>(
       () => _i794.RegisterRepositoryImpl(
@@ -369,6 +438,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i635.RegisterUseCase>(
       () => _i635.RegisterUseCase(gh<_i251.RegisterRepository>()),
     );
+    gh.factory<_i696.GetOrderAssignmentDetailsUseCase>(
+      () => _i696.GetOrderAssignmentDetailsUseCase(
+        gh<_i656.OrderDetailsRepository>(),
+      ),
+    );
     gh.factory<_i725.AcceptDriverOfferUseCase>(
       () => _i725.AcceptDriverOfferUseCase(gh<_i803.DriverHomeRepository>()),
     );
@@ -385,12 +459,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i802.WatchDriverHomeUseCase>(
       () => _i802.WatchDriverHomeUseCase(gh<_i803.DriverHomeRepository>()),
-    );
-    gh.factory<_i29.AuthGateCubit>(
-      () => _i29.AuthGateCubit(
-        gh<_i227.TokenService>(),
-        gh<_i570.GetDriverAccountStatusUseCase>(),
-      ),
     );
     gh.factory<_i339.GetDriverUnifiedProfileUseCase>(
       () => _i339.GetDriverUnifiedProfileUseCase(
@@ -417,22 +485,27 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i136.RegisterViewModel>(
       () => _i136.RegisterViewModel(gh<_i635.RegisterUseCase>()),
     );
-    gh.factory<_i735.ProfileCubit>(
-      () => _i735.ProfileCubit(
-        gh<_i339.GetDriverUnifiedProfileUseCase>(),
+    gh.factory<_i29.AuthGateCubit>(
+      () => _i29.AuthGateCubit(
+        gh<_i227.TokenService>(),
+        gh<_i570.GetDriverAccountStatusUseCase>(),
         gh<_i78.LogoutUseCase>(),
-        gh<_i1047.UpdateDriverPersonalUseCase>(),
-        gh<_i458.UpdateDriverVehicleUseCase>(),
-        gh<_i373.UpdateDriverDocumentsUseCase>(),
-        gh<_i985.GetDriverZonesUseCase>(),
-        gh<_i183.ImagePicker>(),
       ),
     );
-    gh.factory<_i340.RegisterZonesCubit>(
-      () => _i340.RegisterZonesCubit(gh<_i985.GetDriverZonesUseCase>()),
+    gh.factory<_i599.DriverZonesRepository>(
+      () => _i772.DriverZonesRepositoryImpl(
+        gh<_i897.DriverZonesRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i992.OrderDetailsCubit>(
+      () =>
+          _i992.OrderDetailsCubit(gh<_i696.GetOrderAssignmentDetailsUseCase>()),
     );
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
+    );
+    gh.factory<_i985.GetDriverZonesUseCase>(
+      () => _i985.GetDriverZonesUseCase(gh<_i599.DriverZonesRepository>()),
     );
     gh.factory<_i663.GetCompletedOrderDetailsUseCase>(
       () => _i663.GetCompletedOrderDetailsUseCase(
@@ -474,8 +547,22 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i663.GetCompletedOrderDetailsUseCase>(),
       ),
     );
+    gh.factory<_i735.ProfileCubit>(
+      () => _i735.ProfileCubit(
+        gh<_i339.GetDriverUnifiedProfileUseCase>(),
+        gh<_i78.LogoutUseCase>(),
+        gh<_i1047.UpdateDriverPersonalUseCase>(),
+        gh<_i458.UpdateDriverVehicleUseCase>(),
+        gh<_i373.UpdateDriverDocumentsUseCase>(),
+        gh<_i985.GetDriverZonesUseCase>(),
+        gh<_i183.ImagePicker>(),
+      ),
+    );
     gh.factory<_i808.LoginViewModel>(
       () => _i808.LoginViewModel(gh<_i817.LoginUseCase>()),
+    );
+    gh.factory<_i340.RegisterZonesCubit>(
+      () => _i340.RegisterZonesCubit(gh<_i985.GetDriverZonesUseCase>()),
     );
     return this;
   }

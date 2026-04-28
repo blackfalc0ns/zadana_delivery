@@ -21,7 +21,7 @@ class DriverSectionCard extends StatelessWidget {
     final color = context.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(24),
@@ -46,7 +46,7 @@ class DriverSectionCard extends StatelessWidget {
             ),
           ),
           if ((subtitle ?? '').trim().isNotEmpty) ...[
-            const SizedBox(height: 4),
+          const SizedBox(height: 4),
             Text(
               subtitle!,
               style: getRegularStyle(
@@ -55,7 +55,7 @@ class DriverSectionCard extends StatelessWidget {
               ),
             ),
           ],
-          const SizedBox(height: Spacing.base),
+          const SizedBox(height: Spacing.sm),
           child,
         ],
       ),

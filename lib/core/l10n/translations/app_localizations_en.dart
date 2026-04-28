@@ -542,6 +542,35 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifications => 'Notifications';
 
   @override
+  String get notifications_mark_all_read => 'Read all';
+
+  @override
+  String get notifications_mark_as_read => 'Mark as read';
+
+  @override
+  String get notifications_unread_badge => 'Unread';
+
+  @override
+  String get notifications_all_caught_up => 'You\'re all caught up';
+
+  @override
+  String get notifications_empty_title => 'No notifications yet';
+
+  @override
+  String get notifications_empty_description =>
+      'New alerts and delivery offers will appear here as soon as they arrive.';
+
+  @override
+  String notifications_unread_summary(int count) {
+    return '$count unread notifications';
+  }
+
+  @override
+  String notifications_total_summary(int count) {
+    return '$count total notifications';
+  }
+
+  @override
   String get dark_mode => 'Dark Mode';
 
   @override
@@ -1420,28 +1449,69 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose the right vehicle for you, then complete its essential data.';
 
   @override
-  String get driver_profile_zone_label => 'Working zone';
+  String get driver_profile_zone_label => 'Working area';
 
   @override
-  String get driver_profile_zone_placeholder => 'Choose your main zone';
+  String get driver_profile_zone_region_label => 'Region';
+
+  @override
+  String get driver_profile_zone_city_label => 'City';
+
+  @override
+  String get driver_profile_zone_placeholder => 'Choose region and city';
+
+  @override
+  String get driver_profile_zone_region_placeholder => 'Choose region';
+
+  @override
+  String get driver_profile_zone_city_placeholder => 'Choose city';
 
   @override
   String get driver_profile_zone_hint =>
-      'Select the zone where you want to start receiving orders.';
+      'Select the region and city where you want to start receiving orders.';
 
   @override
-  String get driver_profile_zone_loading => 'Loading available zones';
+  String get driver_profile_zone_loading => 'Loading regions and cities';
 
   @override
-  String get driver_profile_zone_sheet_title => 'Choose your zone';
+  String get driver_profile_zone_sheet_title => 'Choose your working area';
 
   @override
   String get driver_profile_zone_sheet_subtitle =>
-      'This zone will be linked to your driver account during registration.';
+      'Select the region first, then choose the city linked to your driver account.';
+
+  @override
+  String get driver_profile_zone_region_sheet_title => 'Choose region';
+
+  @override
+  String get driver_profile_zone_region_sheet_subtitle =>
+      'Your selected region controls the available cities.';
+
+  @override
+  String get driver_profile_zone_city_sheet_title => 'Choose city';
+
+  @override
+  String get driver_profile_zone_city_sheet_subtitle =>
+      'Select the city where you want to receive orders.';
+
+  @override
+  String get driver_profile_zone_sheet_region_label => '1. Region';
+
+  @override
+  String get driver_profile_zone_sheet_city_label => '2. City';
+
+  @override
+  String get driver_profile_zone_empty =>
+      'No available regions or cities right now.';
+
+  @override
+  String driver_profile_zone_cities_count(String count) {
+    return '$count cities';
+  }
 
   @override
   String get driver_profile_zone_required_error =>
-      'Choose a working zone before continuing.';
+      'Choose your region and city before continuing.';
 
   @override
   String get driver_profile_vehicle_required_error =>
@@ -1892,6 +1962,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profile_change_password_subtitle =>
       'Open security settings to manage your password';
+
+  @override
+  String get profile_update_action => 'Update';
 
   @override
   String get profile_support_subtitle => 'Reach us or browse help resources';

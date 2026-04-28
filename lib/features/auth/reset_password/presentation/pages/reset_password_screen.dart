@@ -13,7 +13,6 @@ import 'package:zadana_delivery/core/widgets/auth/auth_password_field.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_text_field.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/auth/reset_password/domain/entities/reset_password_request_entity.dart';
 import 'package:zadana_delivery/features/auth/reset_password/presentation/manager/reset_password_event.dart';
 import 'package:zadana_delivery/features/auth/reset_password/presentation/manager/reset_password_state.dart';

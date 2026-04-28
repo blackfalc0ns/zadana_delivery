@@ -187,6 +187,28 @@
   "settings": "Settings",
   "language": "Language",
   "notifications": "Notifications",
+  "notifications_mark_all_read": "Read all",
+  "notifications_mark_as_read": "Mark as read",
+  "notifications_unread_badge": "Unread",
+  "notifications_all_caught_up": "You're all caught up",
+  "notifications_empty_title": "No notifications yet",
+  "notifications_empty_description": "New alerts and delivery offers will appear here as soon as they arrive.",
+  "notifications_unread_summary": "{count} unread notifications",
+  "@notifications_unread_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notifications_total_summary": "{count} total notifications",
+  "@notifications_total_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dark_mode": "Dark Mode",
   "account": "Account",
   "change_password": "Change Password",
@@ -486,13 +508,32 @@
   "driver_profile_license_number_hint": "Enter license number",
   "driver_profile_vehicle_card_title": "Vehicle details",
   "driver_profile_vehicle_card_subtitle": "Choose the right vehicle for you, then complete its essential data.",
-  "driver_profile_zone_label": "Working zone",
-  "driver_profile_zone_placeholder": "Choose your main zone",
-  "driver_profile_zone_hint": "Select the zone where you want to start receiving orders.",
-  "driver_profile_zone_loading": "Loading available zones",
-  "driver_profile_zone_sheet_title": "Choose your zone",
-  "driver_profile_zone_sheet_subtitle": "This zone will be linked to your driver account during registration.",
-  "driver_profile_zone_required_error": "Choose a working zone before continuing.",
+  "driver_profile_zone_label": "Working area",
+  "driver_profile_zone_region_label": "Region",
+  "driver_profile_zone_city_label": "City",
+  "driver_profile_zone_placeholder": "Choose region and city",
+  "driver_profile_zone_region_placeholder": "Choose region",
+  "driver_profile_zone_city_placeholder": "Choose city",
+  "driver_profile_zone_hint": "Select the region and city where you want to start receiving orders.",
+  "driver_profile_zone_loading": "Loading regions and cities",
+  "driver_profile_zone_sheet_title": "Choose your working area",
+  "driver_profile_zone_sheet_subtitle": "Select the region first, then choose the city linked to your driver account.",
+  "driver_profile_zone_region_sheet_title": "Choose region",
+  "driver_profile_zone_region_sheet_subtitle": "Your selected region controls the available cities.",
+  "driver_profile_zone_city_sheet_title": "Choose city",
+  "driver_profile_zone_city_sheet_subtitle": "Select the city where you want to receive orders.",
+  "driver_profile_zone_sheet_region_label": "1. Region",
+  "driver_profile_zone_sheet_city_label": "2. City",
+  "driver_profile_zone_empty": "No available regions or cities right now.",
+  "driver_profile_zone_cities_count": "{count} cities",
+  "@driver_profile_zone_cities_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "driver_profile_zone_required_error": "Choose your region and city before continuing.",
   "driver_profile_vehicle_required_error": "Choose a vehicle type before continuing.",
   "driver_profile_zone_radius": "Coverage {radius} km",
   "@driver_profile_zone_radius": {
@@ -654,6 +695,7 @@
   "profile_language_subtitle": "English",
   "profile_notifications_subtitle": "Open notifications and manage alert preferences",
   "profile_change_password_subtitle": "Open security settings to manage your password",
+  "profile_update_action": "Update",
   "profile_support_subtitle": "Reach us or browse help resources",
   "profile_privacy_subtitle": "Learn about data collection, storage, and usage",
   "profile_logout_subtitle": "Sign out from this device securely",

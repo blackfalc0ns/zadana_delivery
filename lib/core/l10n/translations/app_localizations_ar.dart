@@ -311,10 +311,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hint_email => 'example@gmail.com';
 
   @override
-  String get hint_email_or_phone => 'example@email.com أو 5xxxxxxxx';
+  String get hint_email_or_phone => 'example@email.com';
 
   @override
-  String get label_email_or_phone => 'البريد الإلكتروني أو رقم الهاتف';
+  String get label_email_or_phone => 'البريد الالكتروني';
 
   @override
   String get hint_phone => '(+966) 726-0592';
@@ -523,6 +523,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get notifications => 'الإشعارات';
+
+  @override
+  String get notifications_mark_all_read => 'قراءة الكل';
+
+  @override
+  String get notifications_mark_as_read => 'تحديد كمقروء';
+
+  @override
+  String get notifications_unread_badge => 'غير مقروء';
+
+  @override
+  String get notifications_all_caught_up => 'لا توجد إشعارات غير مقروءة';
+
+  @override
+  String get notifications_empty_title => 'لا توجد إشعارات بعد';
+
+  @override
+  String get notifications_empty_description =>
+      'ستظهر هنا التنبيهات والعروض الجديدة فور وصولها إليك.';
+
+  @override
+  String notifications_unread_summary(int count) {
+    return 'لديك $count إشعارات غير مقروءة';
+  }
+
+  @override
+  String notifications_total_summary(int count) {
+    return 'إجمالي الإشعارات $count';
+  }
 
   @override
   String get dark_mode => 'الوضع الداكن';
@@ -1393,25 +1422,65 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_zone_label => 'منطقة العمل';
 
   @override
-  String get driver_profile_zone_placeholder => 'اختر المنطقة الأساسية';
+  String get driver_profile_zone_region_label => 'المنطقة';
+
+  @override
+  String get driver_profile_zone_city_label => 'المدينة';
+
+  @override
+  String get driver_profile_zone_placeholder => 'اختر المنطقة والمدينة';
+
+  @override
+  String get driver_profile_zone_region_placeholder => 'اختر المنطقة';
+
+  @override
+  String get driver_profile_zone_city_placeholder => 'اختر المدينة';
 
   @override
   String get driver_profile_zone_hint =>
-      'حدد المنطقة التي تريد بدء استقبال الطلبات منها.';
+      'حدد المنطقة ثم المدينة التي تريد بدء استقبال الطلبات منها.';
 
   @override
-  String get driver_profile_zone_loading => 'جارٍ تحميل المناطق المتاحة';
+  String get driver_profile_zone_loading => 'جارٍ تحميل المناطق والمدن';
 
   @override
-  String get driver_profile_zone_sheet_title => 'اختر منطقتك';
+  String get driver_profile_zone_sheet_title => 'اختر نطاق عملك';
 
   @override
   String get driver_profile_zone_sheet_subtitle =>
-      'سيتم ربط هذه المنطقة بحساب السائق أثناء التسجيل.';
+      'ابدأ باختيار المنطقة ثم اختر المدينة التي سيتم ربطها بحساب السائق.';
+
+  @override
+  String get driver_profile_zone_region_sheet_title => 'اختر المنطقة';
+
+  @override
+  String get driver_profile_zone_region_sheet_subtitle =>
+      'اختيار المنطقة هيحدد المدن المتاحة لك.';
+
+  @override
+  String get driver_profile_zone_city_sheet_title => 'اختر المدينة';
+
+  @override
+  String get driver_profile_zone_city_sheet_subtitle =>
+      'اختر المدينة التي تريد بدء استقبال الطلبات منها.';
+
+  @override
+  String get driver_profile_zone_sheet_region_label => '1. المنطقة';
+
+  @override
+  String get driver_profile_zone_sheet_city_label => '2. المدينة';
+
+  @override
+  String get driver_profile_zone_empty => 'لا توجد مناطق أو مدن متاحة حاليًا.';
+
+  @override
+  String driver_profile_zone_cities_count(String count) {
+    return '$count مدن';
+  }
 
   @override
   String get driver_profile_zone_required_error =>
-      'لازم تختار منطقة العمل قبل المتابعة.';
+      'لازم تختار المنطقة والمدينة قبل المتابعة.';
 
   @override
   String get driver_profile_vehicle_required_error =>
@@ -1861,6 +1930,9 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get profile_change_password_subtitle =>
       'افتح إعدادات الأمان لإدارة كلمة المرور';
+
+  @override
+  String get profile_update_action => 'تحديث';
 
   @override
   String get profile_support_subtitle => 'تواصل معنا أو تصفح موارد المساعدة';

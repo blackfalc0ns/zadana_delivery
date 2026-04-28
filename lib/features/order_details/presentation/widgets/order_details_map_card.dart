@@ -20,15 +20,16 @@ class MapCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: scheme.surface,
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.35),
+          color: scheme.outlineVariant.withValues(alpha: 0.16),
+          width: 0.55,
         ),
         boxShadow: [
           BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.08),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
+            color: scheme.shadow.withValues(alpha: 0.025),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -118,13 +119,14 @@ class _MapHintBadge extends StatelessWidget {
           color: scheme.surfaceContainerLow.withValues(alpha: 0.94),
           borderRadius: BorderRadius.circular(999),
           border: Border.all(
-            color: scheme.outlineVariant.withValues(alpha: 0.3),
+            color: scheme.outlineVariant.withValues(alpha: 0.14),
+            width: 0.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: scheme.shadow.withValues(alpha: 0.08),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+              color: scheme.shadow.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
             ),
           ],
         ),

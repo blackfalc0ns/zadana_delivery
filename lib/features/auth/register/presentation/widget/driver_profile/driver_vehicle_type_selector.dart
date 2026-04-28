@@ -19,24 +19,30 @@ class DriverVehicleTypeSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     final options = _options(context);
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: options.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: Spacing.sm,
-        crossAxisSpacing: Spacing.sm,
-        childAspectRatio: 1.18,
-      ),
-      itemBuilder: (context, index) {
-        final option = options[index];
-        return _VehicleOptionCard(
-          title: option.title,
-          subtitle: option.subtitle,
-          icon: option.icon,
-          selected: selectedType == option.value,
-          onTap: () => onChanged(option.value),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final crossAxisCount = constraints.maxWidth >= 320 ? 3 : 2;
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: options.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: Spacing.sm,
+            crossAxisSpacing: Spacing.sm,
+            mainAxisExtent: 116,
+          ),
+          itemBuilder: (context, index) {
+            final option = options[index];
+            return _VehicleOptionCard(
+              title: option.title,
+              subtitle: option.subtitle,
+              icon: option.icon,
+              selected: selectedType == option.value,
+              onTap: () => onChanged(option.value),
+            );
+          },
         );
       },
     );
@@ -120,14 +126,14 @@ class _VehicleOptionCard extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(22),
+      borderRadius: BorderRadius.circular(20),
       child: Ink(
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
         decoration: BoxDecoration(
           color: selected
               ? color.primary.withValues(alpha: 0.10)
               : color.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(22),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
                 ? color.primary
@@ -137,59 +143,76 @@ class _VehicleOptionCard extends StatelessWidget {
           boxShadow: selected
               ? [
                   BoxShadow(
-                    color: color.shadow.withValues(alpha: 0.10),
-                    blurRadius: 16,
-                    offset: const Offset(0, 8),
+                    color: color.shadow.withValues(alpha: 0.08),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
                   ),
                 ]
               : null,
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  width: 42,
-                  height: 42,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
                     color: selected
                         ? color.primary
                         : color.primary.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: Icon(
                     icon,
+                    size: 22,
                     color: selected ? color.onPrimary : color.primary,
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(width: 8),
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 180),
                   width: 22,
                   height: 22,
                   decoration: BoxDecoration(
-                    color: selected ? color.primary : Colors.transparent,
+                    color: selected ? color.primary : color.surface,
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: selected
                           ? color.primary
                           : color.outlineVariant.withValues(alpha: 0.9),
+                      width: selected ? 1.4 : 1.1,
                     ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.shadow.withValues(alpha: 0.06),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: selected
-                      ? Icon(Icons.check, size: 14, color: color.onPrimary)
+                      ? Icon(Icons.check, size: 13, color: color.onPrimary)
                       : null,
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: getBoldStyle(
-                fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size14,
-                color: color.onSurface,
+            const SizedBox(height: 10),
+            Expanded(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: getBoldStyle(
+                    fontFamily: FontConstant.cairo,
+                    fontSize: FontSize.size13,
+                    color: color.onSurface,
+                  ),
+                ),
               ),
             ),
           ],

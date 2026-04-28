@@ -100,6 +100,7 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                     zones: zonesState.zones,
                     isLoading: zonesState.isLoading,
                     selectedZoneId: state.draft.zoneId,
+                    selectedRegionCode: state.draft.zoneRegionCode,
                     selectedZoneName: state.draft.zoneName,
                     selectedZoneCity: state.draft.zoneCity,
                     failure: zonesState.failure,
@@ -167,6 +168,14 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               _buildUploadTile(
+                keyName: 'idBack',
+                title: locale.driver_profile_id_back_title,
+                subtitle: locale.driver_profile_id_back_subtitle,
+                icon: Icons.badge_outlined,
+                imagePath: state.draft.images['idBack'],
+              ),
+              const SizedBox(height: 8),
+              _buildUploadTile(
                 keyName: 'license',
                 title: locale.driver_profile_license_title,
                 subtitle: locale.driver_profile_license_subtitle,
@@ -223,6 +232,10 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
               (
                 label: locale.driver_profile_id_front_title,
                 value: state.draft.images['idFront'] ?? '',
+              ),
+              (
+                label: locale.driver_profile_id_back_title,
+                value: state.draft.images['idBack'] ?? '',
               ),
               (
                 label: locale.driver_profile_license_title,

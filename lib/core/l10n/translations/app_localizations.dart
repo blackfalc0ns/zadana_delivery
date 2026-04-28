@@ -1088,6 +1088,54 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get notifications;
 
+  /// No description provided for @notifications_mark_all_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Read all'**
+  String get notifications_mark_all_read;
+
+  /// No description provided for @notifications_mark_as_read.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get notifications_mark_as_read;
+
+  /// No description provided for @notifications_unread_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notifications_unread_badge;
+
+  /// No description provided for @notifications_all_caught_up.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get notifications_all_caught_up;
+
+  /// No description provided for @notifications_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get notifications_empty_title;
+
+  /// No description provided for @notifications_empty_description.
+  ///
+  /// In en, this message translates to:
+  /// **'New alerts and delivery offers will appear here as soon as they arrive.'**
+  String get notifications_empty_description;
+
+  /// No description provided for @notifications_unread_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unread notifications'**
+  String notifications_unread_summary(int count);
+
+  /// No description provided for @notifications_total_summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} total notifications'**
+  String notifications_total_summary(int count);
+
   /// No description provided for @dark_mode.
   ///
   /// In en, this message translates to:
@@ -2753,43 +2801,115 @@ abstract class AppLocalizations {
   /// No description provided for @driver_profile_zone_label.
   ///
   /// In en, this message translates to:
-  /// **'Working zone'**
+  /// **'Working area'**
   String get driver_profile_zone_label;
+
+  /// No description provided for @driver_profile_zone_region_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Region'**
+  String get driver_profile_zone_region_label;
+
+  /// No description provided for @driver_profile_zone_city_label.
+  ///
+  /// In en, this message translates to:
+  /// **'City'**
+  String get driver_profile_zone_city_label;
 
   /// No description provided for @driver_profile_zone_placeholder.
   ///
   /// In en, this message translates to:
-  /// **'Choose your main zone'**
+  /// **'Choose region and city'**
   String get driver_profile_zone_placeholder;
+
+  /// No description provided for @driver_profile_zone_region_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose region'**
+  String get driver_profile_zone_region_placeholder;
+
+  /// No description provided for @driver_profile_zone_city_placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose city'**
+  String get driver_profile_zone_city_placeholder;
 
   /// No description provided for @driver_profile_zone_hint.
   ///
   /// In en, this message translates to:
-  /// **'Select the zone where you want to start receiving orders.'**
+  /// **'Select the region and city where you want to start receiving orders.'**
   String get driver_profile_zone_hint;
 
   /// No description provided for @driver_profile_zone_loading.
   ///
   /// In en, this message translates to:
-  /// **'Loading available zones'**
+  /// **'Loading regions and cities'**
   String get driver_profile_zone_loading;
 
   /// No description provided for @driver_profile_zone_sheet_title.
   ///
   /// In en, this message translates to:
-  /// **'Choose your zone'**
+  /// **'Choose your working area'**
   String get driver_profile_zone_sheet_title;
 
   /// No description provided for @driver_profile_zone_sheet_subtitle.
   ///
   /// In en, this message translates to:
-  /// **'This zone will be linked to your driver account during registration.'**
+  /// **'Select the region first, then choose the city linked to your driver account.'**
   String get driver_profile_zone_sheet_subtitle;
+
+  /// No description provided for @driver_profile_zone_region_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose region'**
+  String get driver_profile_zone_region_sheet_title;
+
+  /// No description provided for @driver_profile_zone_region_sheet_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your selected region controls the available cities.'**
+  String get driver_profile_zone_region_sheet_subtitle;
+
+  /// No description provided for @driver_profile_zone_city_sheet_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose city'**
+  String get driver_profile_zone_city_sheet_title;
+
+  /// No description provided for @driver_profile_zone_city_sheet_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the city where you want to receive orders.'**
+  String get driver_profile_zone_city_sheet_subtitle;
+
+  /// No description provided for @driver_profile_zone_sheet_region_label.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Region'**
+  String get driver_profile_zone_sheet_region_label;
+
+  /// No description provided for @driver_profile_zone_sheet_city_label.
+  ///
+  /// In en, this message translates to:
+  /// **'2. City'**
+  String get driver_profile_zone_sheet_city_label;
+
+  /// No description provided for @driver_profile_zone_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No available regions or cities right now.'**
+  String get driver_profile_zone_empty;
+
+  /// No description provided for @driver_profile_zone_cities_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} cities'**
+  String driver_profile_zone_cities_count(String count);
 
   /// No description provided for @driver_profile_zone_required_error.
   ///
   /// In en, this message translates to:
-  /// **'Choose a working zone before continuing.'**
+  /// **'Choose your region and city before continuing.'**
   String get driver_profile_zone_required_error;
 
   /// No description provided for @driver_profile_vehicle_required_error.
@@ -3610,6 +3730,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open security settings to manage your password'**
   String get profile_change_password_subtitle;
+
+  /// No description provided for @profile_update_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get profile_update_action;
 
   /// No description provided for @profile_support_subtitle.
   ///

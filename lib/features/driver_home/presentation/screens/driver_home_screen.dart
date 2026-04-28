@@ -145,6 +145,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
     await context.pushNamed(
       AppRoutes.orderDetails,
+      rootNavigator: true,
       arguments: {
         'order': _toPreviewFromAssignment(assignment),
         'driverLocation': _resolvedDriverLocation(),
@@ -266,7 +267,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       child: DriverHomeConnectionSwitch(
                         isOnline: isDriverOnline,
                         isEnabled: canToggle,
-                        isLoading: state.isAvailabilityUpdating,
                         onChanged: _toggleAvailability,
                       ),
                     ),
@@ -282,6 +282,18 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                       ),
                     ),
                   ),
+                if (state.isAvailabilityUpdating) ...[
+                  Positioned.fill(
+                    child: AbsorbPointer(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.12),
+                      ),
+                    ),
+                  ),
+                  const Positioned.fill(
+                    child: Center(child: CustomProgressIndicator()),
+                  ),
+                ],
                 _DriverHomeSheet(
                   initiallyExpanded: showIncomingOffer,
                   child: showIncomingOffer
@@ -318,7 +330,6 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
                           onToggleAvailability: () =>
                               _toggleAvailability(!isDriverOnline),
                           isToggleEnabled: canToggle,
-                          isToggleLoading: state.isAvailabilityUpdating,
                           onOpenMission: currentAssignment == null
                               ? () {}
                               : _openMissionDetails,

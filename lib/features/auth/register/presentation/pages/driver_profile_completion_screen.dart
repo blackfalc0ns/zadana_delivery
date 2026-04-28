@@ -7,7 +7,6 @@ import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart'
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/auth/register/domain/usecase/register_usecase.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/manager/driver_profile_completion_cubit.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/manager/driver_profile_completion_state.dart';
@@ -84,6 +83,7 @@ class _DriverProfileCompletionScreenState
     return RegisterProfileDraft(
       vehicleType: currentDraft.vehicleType,
       zoneId: currentDraft.zoneId,
+      zoneRegionCode: currentDraft.zoneRegionCode,
       zoneName: currentDraft.zoneName,
       zoneCity: currentDraft.zoneCity,
       address: _addressController.text.trim(),

@@ -9,7 +9,6 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_experience_shell.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/auth/login/domain/entities/login_request_entity.dart';
 import 'package:zadana_delivery/features/auth/login/domain/entities/login_response_entity.dart';
 import 'package:zadana_delivery/features/auth/login/presentation/manager/login_event.dart';

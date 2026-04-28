@@ -20,11 +20,22 @@ abstract class EndPoints {
   static const String driverHome = '/drivers/home';
   static const String driverAvailability = '/drivers/me/availability';
   static const String driverCompletedOrders = '/drivers/orders/completed';
+  static const String driverAssignmentDetails =
+      '/drivers/assignments/{assignmentId}';
+  static const String driverNotifications = '/drivers/notifications';
+  static const String driverNotificationRead =
+      '/drivers/notifications/{notificationId}/read';
+  static const String driverNotificationsReadAll =
+      '/drivers/notifications/read-all';
+  static const String driverNotificationsUnreadCount =
+      '/drivers/notifications/unread-count';
   static const String driverUnifiedProfile = '/drivers/me/profile';
   static const String driverProfilePersonal = '/drivers/me/profile/personal';
   static const String driverProfileVehicle = '/drivers/me/profile/vehicle';
   static const String driverProfileDocuments = '/drivers/me/profile/documents';
-  static const String driverZones = '/public/delivery-zones';
+  static const String driverZones = '/geography/regions';
+  static const String driverZoneCities =
+      '/geography/regions/{regionCode}/cities';
 
   static const String register = "/customers/auth/register";
   static const String login = '/customers/auth/login';

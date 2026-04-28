@@ -1,6 +1,7 @@
 class DriverZoneEntity {
   const DriverZoneEntity({
     required this.id,
+    required this.regionCode,
     required this.city,
     required this.name,
     required this.centerLat,
@@ -10,6 +11,7 @@ class DriverZoneEntity {
   });
 
   final String id;
+  final String regionCode;
   final String city;
   final String name;
   final double centerLat;

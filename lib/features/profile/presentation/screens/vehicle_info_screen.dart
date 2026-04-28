@@ -5,7 +5,6 @@ import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart'
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
@@ -29,7 +28,9 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   late final TextEditingController _licenseController;
   String _vehicleType = DriverVehicleType.car;
   String _selectedZoneId = '';
+  String _selectedRegionCode = '';
   String _selectedZoneName = '';
+  String _selectedZoneCity = '';
   bool _didSeedControllers = false;
 
   @override
@@ -65,7 +66,9 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             _nationalIdController.text = profile.nationalId;
             _licenseController.text = profile.licenseNumber;
             _selectedZoneId = profile.primaryZoneId;
+            _selectedRegionCode = '';
             _selectedZoneName = profile.zoneName;
+            _selectedZoneCity = '';
           }
 
           if (state.isSuccess) {
@@ -134,14 +137,18 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                 zones: state.zones,
                 isZonesLoading: state.isZonesLoading,
                 selectedZoneId: _selectedZoneId,
+                selectedRegionCode: _selectedRegionCode,
                 selectedZoneName: _selectedZoneName,
+                selectedZoneCity: _selectedZoneCity,
                 zonesFailure: state.zonesFailure,
                 onRetryZones: () =>
                     _cubit.doIntent(const ProfileFormRetryZonesEvent()),
                 onZoneChanged: (zone) {
                   setState(() {
                     _selectedZoneId = zone.id;
+                    _selectedRegionCode = zone.regionCode;
                     _selectedZoneName = zone.name;
+                    _selectedZoneCity = zone.city;
                   });
                   _cubit.clearError();
                 },

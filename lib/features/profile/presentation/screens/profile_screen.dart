@@ -8,7 +8,6 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
@@ -114,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case ProfileActionType.notifications:
         return _open(AppRoutes.notifications);
       case ProfileActionType.security:
-        return _open(AppRoutes.security);
+        return _open(AppRoutes.forgetPassword);
       case ProfileActionType.support:
         return _open(AppRoutes.supportHelp);
       case ProfileActionType.privacy:
@@ -268,7 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _open(String route) async {
-    await context.pushNamed(route);
+    await context.pushNamed(route, rootNavigator: true);
     if (mounted) _cubit.loadProfile();
   }
 

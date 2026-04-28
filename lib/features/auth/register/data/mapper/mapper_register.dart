@@ -8,7 +8,8 @@ import '../models/register_response_model_dto.dart';
 
 extension RegisterRequestEntityMapper on RegisterRequestEntity {
   RegisterRequestModelDto toDto({
-    required String nationalIdImageUrl,
+    required String nationalIdFrontImageUrl,
+    required String nationalIdBackImageUrl,
     required String licenseImageUrl,
     required String vehicleImageUrl,
     required String personalPhotoUrl,
@@ -24,8 +25,10 @@ extension RegisterRequestEntityMapper on RegisterRequestEntity {
       nationalId: nationalId.trim(),
       licenseNumber: licenseNumber.trim(),
       address: address.trim(),
-      primaryZoneId: primaryZoneId.trim(),
-      nationalIdImageUrl: nationalIdImageUrl,
+      region: region.trim(),
+      city: city.trim(),
+      nationalIdFrontImageUrl: nationalIdFrontImageUrl,
+      nationalIdBackImageUrl: nationalIdBackImageUrl,
       licenseImageUrl: licenseImageUrl,
       vehicleImageUrl: vehicleImageUrl,
       personalPhotoUrl: personalPhotoUrl,

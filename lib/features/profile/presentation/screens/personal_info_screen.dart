@@ -4,7 +4,6 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_snackbar.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';

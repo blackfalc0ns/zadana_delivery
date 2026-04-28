@@ -53,11 +53,36 @@ abstract class ApiServices {
     @Path('orderId') String orderId,
   );
 
+  @GET(EndPoints.driverAssignmentDetails)
+  Future<dynamic> getDriverAssignmentDetails(
+    @Path('assignmentId') String assignmentId,
+  );
+
+  @GET(EndPoints.driverNotifications)
+  Future<dynamic> getDriverNotifications({
+    @Query('page') int page = 1,
+    @Query('perPage') int perPage = 20,
+  });
+
+  @POST(EndPoints.driverNotificationRead)
+  Future<dynamic> markDriverNotificationAsRead(
+    @Path('notificationId') String notificationId,
+  );
+
+  @POST(EndPoints.driverNotificationsReadAll)
+  Future<dynamic> markAllDriverNotificationsAsRead();
+
+  @GET(EndPoints.driverNotificationsUnreadCount)
+  Future<dynamic> getDriverNotificationsUnreadCount();
+
   @GET(EndPoints.driverUnifiedProfile)
   Future<dynamic> getDriverUnifiedProfile();
 
   @GET(EndPoints.driverZones)
   Future<dynamic> getDriverZones();
+
+  @GET(EndPoints.driverZoneCities)
+  Future<dynamic> getDriverZoneCities(@Path('regionCode') String regionCode);
 
   @PUT(EndPoints.driverProfile)
   Future<dynamic> updateDriverProfile(@Body() Map<String, dynamic> request);

@@ -27,10 +27,11 @@ class InfoTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         border: Border.all(
-          color: colorScheme.outlineVariant.withValues(alpha: 0.45),
+          width: 0.5,
+          color: colorScheme.outlineVariant.withValues(alpha: 0.18),
         ),
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

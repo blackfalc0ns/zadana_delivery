@@ -98,6 +98,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     updateDraft(
       state.draft.copyWith(
         zoneId: zone.id,
+        zoneRegionCode: zone.regionCode,
         zoneName: zone.name,
         zoneCity: zone.city,
       ),
@@ -198,7 +199,13 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
   }
 
   bool _hasRequiredImages(RegisterProfileDraft draft) {
-    return _normalizedImages(draft).values.every((value) {
+    final requiredImages = _normalizedImages(draft);
+    final requiredKeys = isProfileMode
+        ? const ['portrait', 'idFront', 'license', 'vehicle']
+        : const ['portrait', 'idFront', 'idBack', 'license', 'vehicle'];
+
+    return requiredKeys.every((key) {
+      final value = requiredImages[key] ?? '';
       final path = value.trim();
       return path.isNotEmpty &&
           (path.startsWith('http://') ||
@@ -229,6 +236,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
               RegisterProfileDraft(
                 vehicleType: result.data.vehicleType,
                 zoneId: result.data.primaryZoneId,
+                zoneRegionCode: '',
                 zoneName: result.data.zoneName,
                 zoneCity: '',
                 address: result.data.address,
@@ -237,6 +245,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
                 images: {
                   'portrait': result.data.personalPhotoUrl,
                   'idFront': result.data.nationalIdImageUrl,
+                  'idBack': '',
                   'license': result.data.licenseImageUrl,
                   'vehicle': result.data.vehicleImageUrl,
                 },
@@ -299,8 +308,10 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         nationalId: draft.nationalId,
         licenseNumber: draft.licenseNumber,
         address: draft.address,
-        primaryZoneId: draft.zoneId,
-        nationalIdImagePath: draft.images['idFront'] ?? '',
+        region: draft.zoneRegionCode,
+        city: draft.zoneId,
+        nationalIdFrontImagePath: draft.images['idFront'] ?? '',
+        nationalIdBackImagePath: draft.images['idBack'] ?? '',
         licenseImagePath: draft.images['license'] ?? '',
         vehicleImagePath: draft.images['vehicle'] ?? '',
         personalPhotoPath: draft.images['portrait'] ?? '',
@@ -395,6 +406,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     return {
       'portrait': draft.images['portrait'] ?? '',
       'idFront': draft.images['idFront'] ?? '',
+      'idBack': draft.images['idBack'] ?? '',
       'license': draft.images['license'] ?? '',
       'vehicle': draft.images['vehicle'] ?? '',
     };

@@ -98,17 +98,19 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                         Expanded(
                           flex: 5,
                           child: Center(
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxWidth: 460,
-                                maxHeight: 460,
-                              ),
-                              child: Lottie.asset(
-                                Assets.splash,
-                                fit: BoxFit.contain,
-                                repeat: true,
-                              ),
-                            ),
+                            child: state.isLoading
+                                ? const CustomProgressIndicator()
+                                : ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 460,
+                                      maxHeight: 460,
+                                    ),
+                                    child: Lottie.asset(
+                                      Assets.splash,
+                                      fit: BoxFit.contain,
+                                      repeat: true,
+                                    ),
+                                  ),
                           ),
                         ),
                         Container(
@@ -148,8 +150,6 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                     ),
                   ),
                 ),
-                if (state.isLoading)
-                  const Positioned.fill(child: CustomProgressIndicator()),
               ],
             ),
           );

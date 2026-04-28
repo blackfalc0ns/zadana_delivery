@@ -286,8 +286,8 @@ class _FormCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: color.surfaceContainerLow,
         borderRadius: BorderRadius.circular(30),
-     //   border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
-       
+
+        //   border: Border.all(color: color.outlineVariant.withValues(alpha: 0.45)),
       ),
       child: Column(
         children: [

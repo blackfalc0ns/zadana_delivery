@@ -27,14 +27,15 @@ class OrderItemsSection extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(16),
         child: Ink(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
             color: scheme.surfaceContainerLow,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: scheme.outlineVariant.withValues(alpha: 0.35),
+              color: scheme.outlineVariant.withValues(alpha: 0.16),
+              width: 0.55,
             ),
           ),
           child: Row(

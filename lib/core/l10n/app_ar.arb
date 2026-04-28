@@ -112,8 +112,8 @@
   "label_password": "كلمة المرور",
   "hint_full_name": "محمد أحمد",
   "hint_email": "example@gmail.com",
-  "hint_email_or_phone": "example@email.com أو 5xxxxxxxx",
-  "label_email_or_phone": "البريد الإلكتروني أو رقم الهاتف",
+  "hint_email_or_phone": "example@email.com",
+  "label_email_or_phone": "البريد الالكتروني",
   "hint_phone": "(+966) 726-0592",
   "hint_password": "P@ssw0rd123",
   "btn_login": "تسجيل الدخول",
@@ -183,6 +183,28 @@
   "settings": "الإعدادات",
   "language": "اللغة",
   "notifications": "الإشعارات",
+  "notifications_mark_all_read": "قراءة الكل",
+  "notifications_mark_as_read": "تحديد كمقروء",
+  "notifications_unread_badge": "غير مقروء",
+  "notifications_all_caught_up": "لا توجد إشعارات غير مقروءة",
+  "notifications_empty_title": "لا توجد إشعارات بعد",
+  "notifications_empty_description": "ستظهر هنا التنبيهات والعروض الجديدة فور وصولها إليك.",
+  "notifications_unread_summary": "لديك {count} إشعارات غير مقروءة",
+  "@notifications_unread_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notifications_total_summary": "إجمالي الإشعارات {count}",
+  "@notifications_total_summary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "dark_mode": "الوضع الداكن",
   "account": "الحساب",
   "change_password": "تغيير كلمة المرور",
@@ -471,12 +493,31 @@
   "driver_profile_vehicle_card_title": "بيانات المركبة",
   "driver_profile_vehicle_card_subtitle": "اختر المركبة المناسبة لك ثم أكمل بياناتها الأساسية.",
   "driver_profile_zone_label": "منطقة العمل",
-  "driver_profile_zone_placeholder": "اختر المنطقة الأساسية",
-  "driver_profile_zone_hint": "حدد المنطقة التي تريد بدء استقبال الطلبات منها.",
-  "driver_profile_zone_loading": "جارٍ تحميل المناطق المتاحة",
-  "driver_profile_zone_sheet_title": "اختر منطقتك",
-  "driver_profile_zone_sheet_subtitle": "سيتم ربط هذه المنطقة بحساب السائق أثناء التسجيل.",
-  "driver_profile_zone_required_error": "لازم تختار منطقة العمل قبل المتابعة.",
+  "driver_profile_zone_region_label": "المنطقة",
+  "driver_profile_zone_city_label": "المدينة",
+  "driver_profile_zone_placeholder": "اختر المنطقة والمدينة",
+  "driver_profile_zone_region_placeholder": "اختر المنطقة",
+  "driver_profile_zone_city_placeholder": "اختر المدينة",
+  "driver_profile_zone_hint": "حدد المنطقة ثم المدينة التي تريد بدء استقبال الطلبات منها.",
+  "driver_profile_zone_loading": "جارٍ تحميل المناطق والمدن",
+  "driver_profile_zone_sheet_title": "اختر نطاق عملك",
+  "driver_profile_zone_sheet_subtitle": "ابدأ باختيار المنطقة ثم اختر المدينة التي سيتم ربطها بحساب السائق.",
+  "driver_profile_zone_region_sheet_title": "اختر المنطقة",
+  "driver_profile_zone_region_sheet_subtitle": "اختيار المنطقة هيحدد المدن المتاحة لك.",
+  "driver_profile_zone_city_sheet_title": "اختر المدينة",
+  "driver_profile_zone_city_sheet_subtitle": "اختر المدينة التي تريد بدء استقبال الطلبات منها.",
+  "driver_profile_zone_sheet_region_label": "1. المنطقة",
+  "driver_profile_zone_sheet_city_label": "2. المدينة",
+  "driver_profile_zone_empty": "لا توجد مناطق أو مدن متاحة حاليًا.",
+  "driver_profile_zone_cities_count": "{count} مدن",
+  "@driver_profile_zone_cities_count": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "driver_profile_zone_required_error": "لازم تختار المنطقة والمدينة قبل المتابعة.",
   "driver_profile_vehicle_required_error": "لازم تختار نوع المركبة قبل المتابعة.",
   "driver_profile_zone_radius": "نطاق التغطية {radius} كم",
   "@driver_profile_zone_radius": {
@@ -637,6 +678,7 @@
   "profile_language_subtitle": "الإنجليزية",
   "profile_notifications_subtitle": "افتح الإشعارات وأدر تفضيلات التنبيه",
   "profile_change_password_subtitle": "افتح إعدادات الأمان لإدارة كلمة المرور",
+  "profile_update_action": "تحديث",
   "profile_support_subtitle": "تواصل معنا أو تصفح موارد المساعدة",
   "profile_privacy_subtitle": "اطّلع على كيفية جمع البيانات وتخزينها واستخدامها",
   "profile_logout_subtitle": "سجّل الخروج من هذا الجهاز بأمان",

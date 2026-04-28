@@ -13,8 +13,10 @@ class RegisterRequestModelDto {
     required this.nationalId,
     required this.licenseNumber,
     required this.address,
-    required this.primaryZoneId,
-    required this.nationalIdImageUrl,
+    required this.region,
+    required this.city,
+    required this.nationalIdFrontImageUrl,
+    required this.nationalIdBackImageUrl,
     required this.licenseImageUrl,
     required this.vehicleImageUrl,
     required this.personalPhotoUrl,
@@ -31,8 +33,10 @@ class RegisterRequestModelDto {
   final String nationalId;
   final String licenseNumber;
   final String address;
-  final String primaryZoneId;
-  final String nationalIdImageUrl;
+  final String region;
+  final String city;
+  final String nationalIdFrontImageUrl;
+  final String nationalIdBackImageUrl;
   final String licenseImageUrl;
   final String vehicleImageUrl;
   final String personalPhotoUrl;

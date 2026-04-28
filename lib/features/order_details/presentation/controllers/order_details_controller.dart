@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
+import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 
 class OrderDetailsController extends ChangeNotifier {
   OrderDetailsController({
-    required this.order,
+    required DriverOrderPreview order,
     required this.driverLocation,
     required bool startAccepted,
-  }) : _stage = startAccepted
+  }) : _order = order,
+       _stage = startAccepted
            ? OrderDeliveryStage.accepted
            : OrderDeliveryStage.pending;
 
-  final DriverOrderPreview order;
   final LatLng driverLocation;
+  DriverOrderPreview _order;
+  OrderAssignmentDetailsEntity? _details;
 
   OrderDeliveryStage _stage;
 
+  DriverOrderPreview get order => _order;
   OrderDeliveryStage get stage => _stage;
 
   LatLng get storeLocation =>
@@ -25,10 +29,17 @@ class OrderDetailsController extends ChangeNotifier {
       LatLng(order.deliveryLatitude, order.deliveryLongitude);
 
   bool get isCashPayment =>
-      int.tryParse(order.id) == null ? false : int.parse(order.id).isOdd;
+      _normalizedPaymentMethod == 'cashondelivery' ||
+      _normalizedPaymentMethod == 'cash_on_delivery';
+
+  bool get pickupOtpRequired =>
+      _details?.pickupOtpRequired ?? order.pickupOtpRequired;
+
+  bool get deliveryOtpRequired =>
+      _details?.deliveryOtpRequired ?? order.deliveryOtpRequired;
 
   String get pickupOtp {
-    final orderNumber = int.tryParse(order.id) ?? 1234;
+    final orderNumber = order.id.hashCode.abs();
     return (((orderNumber * 37) % 9000) + 1000).toString();
   }
 
@@ -44,8 +55,10 @@ class OrderDetailsController extends ChangeNotifier {
     ];
   }
 
-  String get storePhone => '01012345678';
-  String get customerPhone => '01098765432';
+  String get storePhone => order.storePhone;
+  String get customerPhone => order.customerPhone;
+
+  String get paymentMethodCode => order.paymentMethod;
 
   bool get showStoreRouteFirst =>
       stage.index < OrderDeliveryStage.onTheWay.index;
@@ -73,10 +86,114 @@ class OrderDetailsController extends ChangeNotifier {
     ),
   };
 
+  void applyAssignmentDetails(OrderAssignmentDetailsEntity details) {
+    _details = details;
+    _order = _order.copyWith(
+      id: details.assignmentId,
+      orderId: details.orderId,
+      title: details.orderNumber,
+      vendorName: details.vendorName,
+      pickupAddress: details.pickupAddress,
+      pickupLatitude: details.pickupLatitude,
+      pickupLongitude: details.pickupLongitude,
+      customerName: details.customerName,
+      deliveryAddress: details.deliveryAddress,
+      deliveryLatitude: details.deliveryLatitude,
+      deliveryLongitude: details.deliveryLongitude,
+      eta: details.assignmentStatus,
+      payout: details.codAmount.toStringAsFixed(2),
+      vendorInitials: _resolveInitials(details.vendorName),
+      customerInitials: _resolveInitials(details.customerName),
+      orderItems: details.orderItems
+          .map(
+            (item) => DriverOrderItemPreview(
+              name: item.name,
+              quantity: item.quantity,
+              note: _resolveItemNote(item),
+              unitPrice: item.unitPrice,
+              lineTotal: item.lineTotal,
+              imageUrl: item.imageUrl,
+            ),
+          )
+          .toList(growable: false),
+      storePhone: details.storePhone,
+      customerPhone: details.customerPhone,
+      paymentMethod: details.paymentMethod,
+      pickupOtpRequired: details.pickupOtpRequired,
+      deliveryOtpRequired: details.deliveryOtpRequired,
+    );
+    _stage = _resolveStageFromDetails(details);
+    notifyListeners();
+  }
+
   void updateStage(OrderDeliveryStage value) {
     if (_stage == value) return;
     _stage = value;
     notifyListeners();
+  }
+
+  String get _normalizedPaymentMethod =>
+      paymentMethodCode.trim().toLowerCase().replaceAll('_', '');
+
+  String _resolveItemNote(OrderAssignmentItemEntity item) {
+    if (item.quantity <= 0) return '';
+
+    final unit = item.unitPrice.toStringAsFixed(2);
+    final total = item.lineTotal.toStringAsFixed(2);
+    return '$unit x ${item.quantity} = $total';
+  }
+
+  String _resolveInitials(String value) {
+    final parts = value
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList(growable: false);
+    if (parts.isEmpty) return '?';
+    if (parts.length == 1) {
+      return parts.first.substring(0, 1).toUpperCase();
+    }
+    return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+        .toUpperCase();
+  }
+
+  OrderDeliveryStage _resolveStageFromDetails(
+    OrderAssignmentDetailsEntity details,
+  ) {
+    final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
+    final pickupOtpStatus = details.pickupOtpStatus.trim().toLowerCase();
+    final deliveryOtpStatus = details.deliveryOtpStatus.trim().toLowerCase();
+    final arrivalState = details.driverArrivalState.trim().toLowerCase();
+    final allowedActions = details.allowedActions
+        .map((action) => action.trim().toLowerCase())
+        .toSet();
+
+    if (assignmentStatus.contains('deliver') ||
+        assignmentStatus.contains('complete')) {
+      return OrderDeliveryStage.delivered;
+    }
+
+    if (allowedActions.contains('confirm_delivery') ||
+        allowedActions.contains('delivery_otp') ||
+        deliveryOtpStatus == 'pending' ||
+        arrivalState.contains('customer')) {
+      return OrderDeliveryStage.onTheWay;
+    }
+
+    if (allowedActions.contains('start_delivery') ||
+        allowedActions.contains('picked_up') ||
+        pickupOtpStatus == 'verified' ||
+        pickupOtpStatus == 'completed') {
+      return OrderDeliveryStage.pickedUp;
+    }
+
+    if (allowedActions.contains('arrived_at_vendor') ||
+        allowedActions.contains('confirm_pickup') ||
+        details.pickupOtpRequired) {
+      return OrderDeliveryStage.accepted;
+    }
+
+    return OrderDeliveryStage.pending;
   }
 }
 
