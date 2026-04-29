@@ -1,5 +1,5 @@
-class DriverRegionCityModelDto {
-  const DriverRegionCityModelDto({
+class DriverRegionCityApiModelDto {
+  const DriverRegionCityApiModelDto({
     required this.regionCode,
     required this.code,
     required this.nameAr,
@@ -10,8 +10,8 @@ class DriverRegionCityModelDto {
     required this.sortOrder,
   });
 
-  factory DriverRegionCityModelDto.fromJson(Map<String, dynamic> json) {
-    return DriverRegionCityModelDto(
+  factory DriverRegionCityApiModelDto.fromJson(Map<String, dynamic> json) {
+    return DriverRegionCityApiModelDto(
       regionCode: json['regionCode']?.toString() ?? '',
       code: json['code']?.toString() ?? '',
       nameAr: json['nameAr']?.toString() ?? '',

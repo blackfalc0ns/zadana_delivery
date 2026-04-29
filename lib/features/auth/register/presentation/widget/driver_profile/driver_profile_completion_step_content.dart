@@ -11,8 +11,8 @@ import 'package:zadana_delivery/features/auth/register/presentation/manager/driv
 import 'package:zadana_delivery/features/auth/register/presentation/manager/register_zones_cubit.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/manager/register_zones_state.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_profile_review_list.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_region_city_selector.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_vehicle_type_selector.dart';
-import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_zone_selector.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_section_card.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_upload_tile.dart';
 
@@ -24,7 +24,7 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
     required this.nationalIdController,
     required this.licenseNumberController,
     required this.onVehicleTypeChanged,
-    required this.onZoneChanged,
+    required this.onRegionCityChanged,
     required this.onPickImage,
   });
 
@@ -33,7 +33,7 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
   final TextEditingController nationalIdController;
   final TextEditingController licenseNumberController;
   final ValueChanged<String> onVehicleTypeChanged;
-  final ValueChanged<DriverZoneEntity> onZoneChanged;
+  final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
   final ValueChanged<String> onPickImage;
 
   @override
@@ -83,8 +83,8 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
           ),
         );
       case 1:
-        return BlocBuilder<RegisterZonesCubit, RegisterZonesState>(
-          builder: (context, zonesState) {
+        return BlocBuilder<RegisterRegionsCubit, RegisterRegionsState>(
+          builder: (context, regionCitiesState) {
             return DriverSectionCard(
               title: locale.driver_profile_vehicle_card_title,
               subtitle: locale.driver_profile_vehicle_card_subtitle,
@@ -96,16 +96,18 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                     onChanged: isSubmitting ? (_) {} : onVehicleTypeChanged,
                   ),
                   const SizedBox(height: 14),
-                  DriverZoneSelector(
-                    zones: zonesState.zones,
-                    isLoading: zonesState.isLoading,
-                    selectedZoneId: state.draft.zoneId,
-                    selectedRegionCode: state.draft.zoneRegionCode,
-                    selectedZoneName: state.draft.zoneName,
-                    selectedZoneCity: state.draft.zoneCity,
-                    failure: zonesState.failure,
-                    onRetry: context.read<RegisterZonesCubit>().loadZones,
-                    onChanged: isSubmitting ? (_) {} : onZoneChanged,
+                  DriverRegionCitySelector(
+                    regionCities: regionCitiesState.regionCities,
+                    isLoading: regionCitiesState.isLoading,
+                    selectedCityId: state.draft.cityId,
+                    selectedRegionCode: state.draft.regionCode,
+                    selectedCityName: state.draft.cityName,
+                    selectedRegionName: state.draft.regionName,
+                    failure: regionCitiesState.failure,
+                    onRetry: context
+                        .read<RegisterRegionsCubit>()
+                        .loadRegionCities,
+                    onChanged: isSubmitting ? (_) {} : onRegionCityChanged,
                   ),
                   if (hasSelectedVehicle) ...[
                     const SizedBox(height: 14),
@@ -219,11 +221,11 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
               ),
               (
                 label: locale.driver_profile_zone_label,
-                value: state.draft.zoneName.isEmpty
+                value: state.draft.cityName.isEmpty
                     ? locale.driver_profile_incomplete
-                    : (state.draft.zoneCity.isEmpty
-                          ? state.draft.zoneName
-                          : '${state.draft.zoneName}, ${state.draft.zoneCity}'),
+                    : (state.draft.regionName.isEmpty
+                          ? state.draft.cityName
+                          : '${state.draft.cityName}, ${state.draft.regionName}'),
               ),
               (
                 label: locale.driver_profile_portrait_title,

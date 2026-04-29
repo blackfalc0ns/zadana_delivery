@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -37,7 +39,6 @@ class OrderDetailsScreen extends StatefulWidget {
 class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   late final OrderDetailsController _controller;
   late final OrderDetailsCubit _cubit;
-  String _lastAppliedAssignmentId = '';
 
   String get _itemsNote =>
       widget.order.packageNote ??
@@ -52,11 +53,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       driverLocation: widget.driverLocation,
       startAccepted: widget.startAccepted,
     );
-    _cubit.doIntent(OrderDetailsLoadAssignmentEvent(widget.order.id));
+    unawaited(
+      _cubit.doIntent(OrderDetailsLoadAssignmentEvent(widget.order.id)),
+    );
+    unawaited(
+      _cubit.doIntent(
+        OrderDetailsActivateRealtimeEvent(
+          assignmentId: widget.order.id,
+          orderId: widget.order.orderId,
+        ),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    unawaited(_cubit.doIntent(const OrderDetailsDeactivateRealtimeEvent()));
     _cubit.close();
     _controller.dispose();
     super.dispose();
@@ -92,15 +104,25 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   void _confirmPickup() async {
     final locale = context.localization;
-    await _showDecision(
+    final confirmed = await OrderDetailsSheets.showConfirmationDialog(
+      context: context,
       title: locale.order_details_pickup_dialog_title,
       message: locale.order_details_pickup_dialog_message(
         widget.order.vendorName,
       ),
       confirmLabel: locale.order_details_pickup_dialog_confirm,
       confirmColor: context.colorScheme.secondary,
-      nextStage: OrderDeliveryStage.pickedUp,
     );
+    if (!confirmed || !mounted) return;
+
+    final orderId = _controller.order.orderId.trim();
+    if (orderId.isEmpty) return;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsMarkPickedUpEvent(orderId),
+    );
+    if (!mounted || !success) return;
+    _controller.updateStage(OrderDeliveryStage.pickedUp);
   }
 
   void _showItems() => OrderDetailsSheets.showOrderItemsSheet(
@@ -111,29 +133,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   void _showPickupOtp() => OrderDetailsSheets.showPickupOtpSheet(
     context: context,
-    otp: _controller.pickupOtp,
-    onConfirm: _confirmPickup,
+    otp: _controller.pickupOtpCode ?? '',
+    onConfirm: _controller.canMarkPickedUp ? _confirmPickup : null,
   );
 
-  void _showCustomerOtp() async {
+  Future<void> _showCustomerOtp() async {
     if (!_controller.deliveryOtpRequired) {
-      _controller.updateStage(OrderDeliveryStage.delivered);
-      Navigator.of(context).pop('accept');
+      await _deliverOrder();
       return;
     }
-    if (!await OrderDetailsSheets.showCustomerOtpSheet(context) || !mounted) {
-      return;
-    }
-    _controller.updateStage(OrderDeliveryStage.delivered);
-    Navigator.of(context).pop('accept');
+    await OrderDetailsSheets.showCustomerOtpSheet(
+      context: context,
+      onSubmit: _verifyDeliveryOtp,
+    );
   }
 
   void _handlePickupAction() {
-    if (!_controller.pickupOtpRequired) {
+    if (_controller.canMarkPickedUp || !_controller.pickupOtpRequired) {
       _confirmPickup();
       return;
     }
-    _showPickupOtp();
+    if (_controller.canShowPickupOtpSheet) {
+      _showPickupOtp();
+    }
   }
 
   void _call(String number) async {
@@ -162,6 +184,75 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     context,
   ).pop(_controller.stage == OrderDeliveryStage.pending ? 'reject' : 'accept');
 
+  Future<void> _arrivedAtVendor() async {
+    final orderId = _controller.order.orderId.trim();
+    if (orderId.isEmpty) return;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsUpdateArrivalStateEvent(
+        orderId,
+        arrivalState: 'arrived_at_vendor',
+      ),
+    );
+    if (!mounted || !success) return;
+    await _cubit.doIntent(
+      OrderDetailsLoadAssignmentEvent(_controller.assignmentId),
+    );
+  }
+
+  Future<void> _startDelivery() async {
+    final orderId = _controller.order.orderId.trim();
+    if (orderId.isEmpty) return;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsMarkOnTheWayEvent(orderId),
+    );
+    if (!mounted || !success) return;
+    _controller.updateStage(OrderDeliveryStage.onTheWay);
+  }
+
+  Future<void> _arrivedAtCustomer() async {
+    final orderId = _controller.order.orderId.trim();
+    if (orderId.isEmpty) return;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsUpdateArrivalStateEvent(
+        orderId,
+        arrivalState: 'arrived_at_customer',
+      ),
+    );
+    if (!mounted || !success) return;
+    await _cubit.doIntent(
+      OrderDetailsLoadAssignmentEvent(_controller.assignmentId),
+    );
+  }
+
+  Future<void> _deliverOrder() async {
+    final orderId = _controller.order.orderId.trim();
+    if (orderId.isEmpty) return;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsMarkDeliveredEvent(orderId),
+    );
+    if (!mounted || !success) return;
+    _controller.updateStage(OrderDeliveryStage.delivered);
+    Navigator.of(context).pop('accept');
+  }
+
+  Future<bool> _verifyDeliveryOtp(String otpCode) async {
+    final assignmentId = _controller.assignmentId.trim();
+    if (assignmentId.isEmpty) return false;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsVerifyDeliveryOtpEvent(assignmentId, otpCode: otpCode),
+    );
+    if (!mounted || !success) return false;
+
+    _controller.updateStage(OrderDeliveryStage.delivered);
+    Navigator.of(context).pop('accept');
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
@@ -169,13 +260,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       child: BlocConsumer<OrderDetailsCubit, OrderDetailsState>(
         listenWhen: (previous, current) =>
             previous.details != current.details ||
-            previous.failure != current.failure,
+            previous.failure != current.failure ||
+            previous.notificationMessage != current.notificationMessage,
         listener: (context, state) {
           final details = state.details;
-          if (details != null &&
-              _lastAppliedAssignmentId != details.assignmentId) {
-            _lastAppliedAssignmentId = details.assignmentId;
+          if (details != null) {
             _controller.applyAssignmentDetails(details);
+          }
+
+          final notificationMessage = state.notificationMessage;
+          if ((notificationMessage ?? '').trim().isNotEmpty) {
+            CustomSnackbar.showInfo(
+              context: context,
+              message: notificationMessage!.trim(),
+            );
+            unawaited(
+              _cubit.doIntent(const OrderDetailsConsumeNotificationEvent()),
+            );
           }
 
           final exception = state.failure?.asException;
@@ -224,8 +325,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             controller: _controller,
             onBack: context.pop,
             onAcceptOrder: _acceptOrder,
+            onArrivedAtVendor: _arrivedAtVendor,
             onShowPickupOtp: _handlePickupAction,
+            onArrivedAtCustomer: _arrivedAtCustomer,
             onShowCustomerOtp: _showCustomerOtp,
+            onStartDelivery: _startDelivery,
             onShowItems: _showItems,
             onCallStore: () => _call(_controller.storePhone),
             onCallCustomer: () => _call(_controller.customerPhone),

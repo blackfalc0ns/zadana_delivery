@@ -6,14 +6,10 @@ import 'package:zadana_delivery/features/order_details/presentation/widgets/orde
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_sheet_components.dart';
 
 class PickupOtpSheetContent extends StatelessWidget {
-  const PickupOtpSheetContent({
-    super.key,
-    required this.otp,
-    required this.onConfirm,
-  });
+  const PickupOtpSheetContent({super.key, required this.otp, this.onConfirm});
 
   final String otp;
-  final VoidCallback onConfirm;
+  final VoidCallback? onConfirm;
 
   @override
   Widget build(BuildContext context) {
@@ -46,11 +42,13 @@ class PickupOtpSheetContent extends StatelessWidget {
           ),
           const SizedBox(height: 18),
           OtpValueCard(otp: otp),
-          const SizedBox(height: 18),
-          SheetConfirmButton(
-            label: locale.order_details_confirm_pickup,
-            onPressed: onConfirm,
-          ),
+          if (onConfirm != null) ...[
+            const SizedBox(height: 18),
+            SheetConfirmButton(
+              label: locale.order_details_confirm_pickup,
+              onPressed: onConfirm!,
+            ),
+          ],
         ],
       ),
     );

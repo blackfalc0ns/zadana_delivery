@@ -22,4 +22,78 @@ class OrderDetailsRepositoryImpl implements OrderDetailsRepository {
       return details.toEntity();
     });
   }
+
+  @override
+  Future<ApiResult<void>> markOrderPickedUp(String orderId) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderPickedUp(orderId);
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> markOrderOnTheWay(String orderId) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderOnTheWay(orderId);
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> markOrderDelivered(
+    String orderId, {
+    Map<String, dynamic>? request,
+  }) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderDelivered(orderId, request: request);
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> markOrderDeliveryFailed(
+    String orderId, {
+    Map<String, dynamic>? request,
+  }) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderDeliveryFailed(
+        orderId,
+        request: request,
+      );
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> updateAssignmentStatus(
+    String assignmentId, {
+    required String newStatus,
+  }) {
+    return safeApiCall(() async {
+      await _remoteDataSource.updateAssignmentStatus(
+        assignmentId,
+        newStatus: newStatus,
+      );
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> verifyDeliveryOtp(
+    String assignmentId, {
+    required String otpCode,
+  }) {
+    return safeApiCall(() async {
+      await _remoteDataSource.verifyDeliveryOtp(assignmentId, otpCode: otpCode);
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> markOrderArrivedAtVendor(String orderId) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderArrivedAtVendor(orderId);
+    });
+  }
+
+  @override
+  Future<ApiResult<void>> markOrderArrivedAtCustomer(String orderId) {
+    return safeApiCall(() async {
+      await _remoteDataSource.markOrderArrivedAtCustomer(orderId);
+    });
+  }
 }

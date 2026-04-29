@@ -15,13 +15,17 @@ class OrderDetailsLauncher {
         : destinationText;
 
     final candidates = <Uri>[
-      Uri.parse('https://www.google.com/maps/search/?api=1&query=$queryText'),
-      Uri.parse('geo:0,0?q=$queryText'),
+      Uri.parse(
+        'https://www.google.com/maps/search/?api=1&query=$destinationText',
+      ),
+      Uri.parse('geo:$destinationText?q=$destinationText'),
       Uri.parse(
         'https://www.google.com/maps/dir/?api=1'
-        '&destination=$queryText&travelmode=driving',
+        '&destination=$destinationText&travelmode=driving',
       ),
       Uri.parse('google.navigation:q=$destinationText&mode=d'),
+      Uri.parse('https://www.google.com/maps/search/?api=1&query=$queryText'),
+      Uri.parse('geo:0,0?q=$queryText'),
     ];
 
     for (final uri in candidates) {

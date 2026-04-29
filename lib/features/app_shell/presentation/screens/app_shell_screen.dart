@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/screens/completed_orders_screen.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_screen.dart';
+import 'package:zadana_delivery/features/driver_tracking/presentation/manager/driver_tracking_cubit.dart';
+import 'package:zadana_delivery/features/driver_tracking/presentation/manager/driver_tracking_event.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/profile_screen.dart';
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_screen.dart';
 
@@ -21,11 +24,20 @@ class AppShellScreen extends StatefulWidget {
 
 class _AppShellScreenState extends State<AppShellScreen> {
   late final PersistentTabController _controller;
+  late final DriverTrackingCubit _driverTrackingCubit;
 
   @override
   void initState() {
     super.initState();
     _controller = PersistentTabController(initialIndex: widget.initialIndex);
+    _driverTrackingCubit = getIt<DriverTrackingCubit>()
+      ..doIntent(const DriverTrackingBootstrapEvent());
+  }
+
+  @override
+  void dispose() {
+    _driverTrackingCubit.close();
+    super.dispose();
   }
 
   void _switchToTab(int index) {

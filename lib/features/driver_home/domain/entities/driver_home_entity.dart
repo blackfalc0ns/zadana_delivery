@@ -120,6 +120,7 @@ class DriverHomeAssignmentEntity {
     required this.plateNumber,
     required this.pickupOtpRequired,
     required this.deliveryOtpRequired,
+    required this.pickupOtpCode,
   });
 
   final String assignmentId;
@@ -140,6 +141,7 @@ class DriverHomeAssignmentEntity {
   final String plateNumber;
   final bool pickupOtpRequired;
   final bool deliveryOtpRequired;
+  final String? pickupOtpCode;
 }
 
 class DriverHomeEarningsEntity {

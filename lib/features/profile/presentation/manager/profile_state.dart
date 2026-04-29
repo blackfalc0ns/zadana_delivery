@@ -6,56 +6,59 @@ class ProfileState {
   const ProfileState({
     this.isLoading = false,
     this.isSaving = false,
-    this.isZonesLoading = false,
+    this.isRegionCitiesLoading = false,
     this.isSuccess = false,
     this.isLoggingOut = false,
     this.notificationsEnabled = true,
     this.profile,
-    this.zones = const <DriverZoneEntity>[],
+    this.regionCities = const <DriverRegionCityEntity>[],
     this.documentPaths = const <String, String>{},
     this.failure,
-    this.zonesFailure,
+    this.regionCitiesFailure,
   });
 
   final bool isLoading;
   final bool isSaving;
-  final bool isZonesLoading;
+  final bool isRegionCitiesLoading;
   final bool isSuccess;
   final bool isLoggingOut;
   final bool notificationsEnabled;
   final DriverUnifiedProfileEntity? profile;
-  final List<DriverZoneEntity> zones;
+  final List<DriverRegionCityEntity> regionCities;
   final Map<String, String> documentPaths;
   final Failure? failure;
-  final Failure? zonesFailure;
+  final Failure? regionCitiesFailure;
 
   ProfileState copyWith({
     bool? isLoading,
     bool? isSaving,
-    bool? isZonesLoading,
+    bool? isRegionCitiesLoading,
     bool? isSuccess,
     bool? isLoggingOut,
     bool? notificationsEnabled,
     DriverUnifiedProfileEntity? profile,
-    List<DriverZoneEntity>? zones,
+    List<DriverRegionCityEntity>? regionCities,
     Map<String, String>? documentPaths,
     Failure? failure,
-    Failure? zonesFailure,
+    Failure? regionCitiesFailure,
     bool clearFailure = false,
-    bool clearZonesFailure = false,
+    bool clearRegionCitiesFailure = false,
   }) {
     return ProfileState(
       isLoading: isLoading ?? this.isLoading,
       isSaving: isSaving ?? this.isSaving,
-      isZonesLoading: isZonesLoading ?? this.isZonesLoading,
+      isRegionCitiesLoading:
+          isRegionCitiesLoading ?? this.isRegionCitiesLoading,
       isSuccess: isSuccess ?? this.isSuccess,
       isLoggingOut: isLoggingOut ?? this.isLoggingOut,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       profile: profile ?? this.profile,
-      zones: zones ?? this.zones,
+      regionCities: regionCities ?? this.regionCities,
       documentPaths: documentPaths ?? this.documentPaths,
       failure: clearFailure ? null : failure ?? this.failure,
-      zonesFailure: clearZonesFailure ? null : zonesFailure ?? this.zonesFailure,
+      regionCitiesFailure: clearRegionCitiesFailure
+          ? null
+          : regionCitiesFailure ?? this.regionCitiesFailure,
     );
   }
 }

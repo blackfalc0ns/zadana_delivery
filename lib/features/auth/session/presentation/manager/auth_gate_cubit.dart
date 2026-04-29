@@ -15,8 +15,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
     this._tokenService,
     this._getDriverAccountStatusUseCase,
     this._logoutUseCase,
-  )
-    : super(const AuthGateState());
+  ) : super(const AuthGateState());
 
   final TokenService _tokenService;
   final GetDriverAccountStatusUseCase _getDriverAccountStatusUseCase;
@@ -77,7 +76,9 @@ class AuthGateCubit extends Cubit<AuthGateState> {
         emit(
           state.copyWith(
             isLoading: false,
-            targetRoute: (status.primaryZoneId ?? '').trim().isNotEmpty
+            targetRoute: status.shouldGoHome
+                ? AppRoutes.mainShell
+                : status.hasCompletedProfile
                 ? AppRoutes.mainShell
                 : AppRoutes.driverProfileCompletion,
           ),

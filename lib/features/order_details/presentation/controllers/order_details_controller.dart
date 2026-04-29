@@ -38,10 +38,46 @@ class OrderDetailsController extends ChangeNotifier {
   bool get deliveryOtpRequired =>
       _details?.deliveryOtpRequired ?? order.deliveryOtpRequired;
 
-  String get pickupOtp {
-    final orderNumber = order.id.hashCode.abs();
-    return (((orderNumber * 37) % 9000) + 1000).toString();
+  String? get pickupOtpCode => _details?.pickupOtpCode ?? order.pickupOtpCode;
+
+  bool get hasPickupOtpCode => (pickupOtpCode ?? '').trim().isNotEmpty;
+
+  bool get isWaitingForMerchantConfirmation {
+    final details = _details;
+    if (details == null) return false;
+
+    final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
+    final allowedActions = _normalizedAllowedActions;
+    final otpStatus = details.pickupOtpStatus.trim().toLowerCase();
+
+    return assignmentStatus.contains('arrivedatvendor') ||
+        assignmentStatus.contains('arrived_at_vendor') ||
+        allowedActions.isEmpty && hasPickupOtpCode ||
+        otpStatus == 'pending' && !canMarkPickedUp;
   }
+
+  bool get canMarkPickedUp =>
+      _normalizedAllowedActions.contains('mark_picked_up');
+
+  bool get canShowPickupOtpSheet => hasPickupOtpCode && !canMarkPickedUp;
+
+  bool get canMarkArrivedAtVendor =>
+      _normalizedAllowedActions.contains('arrived_at_vendor');
+
+  bool get canMarkArrivedAtCustomer =>
+      _normalizedAllowedActions.contains('arrived_at_customer');
+
+  bool get hasArrivedAtVendor =>
+      _normalizedArrivalState.contains('arrived_at_vendor');
+
+  bool get hasArrivedAtCustomer =>
+      _normalizedArrivalState.contains('arrived_at_customer');
+
+  bool get isHeadingToCustomer =>
+      _normalizedArrivalState.contains('en_route_to_customer') ||
+      _normalizedArrivalState.contains('customer');
+
+  String get assignmentId => _details?.assignmentId ?? order.id;
 
   List<DriverOrderItemPreview> get orderItems {
     if (order.orderItems.isNotEmpty) return order.orderItems;
@@ -121,6 +157,7 @@ class OrderDetailsController extends ChangeNotifier {
       paymentMethod: details.paymentMethod,
       pickupOtpRequired: details.pickupOtpRequired,
       deliveryOtpRequired: details.deliveryOtpRequired,
+      pickupOtpCode: details.pickupOtpCode,
     );
     _stage = _resolveStageFromDetails(details);
     notifyListeners();
@@ -134,6 +171,14 @@ class OrderDetailsController extends ChangeNotifier {
 
   String get _normalizedPaymentMethod =>
       paymentMethodCode.trim().toLowerCase().replaceAll('_', '');
+
+  String get _normalizedArrivalState =>
+      (_details?.driverArrivalState ?? '').trim().toLowerCase();
+
+  Set<String> get _normalizedAllowedActions =>
+      (_details?.allowedActions ?? const <String>[])
+          .map((action) => action.trim().toLowerCase())
+          .toSet();
 
   String _resolveItemNote(OrderAssignmentItemEntity item) {
     if (item.quantity <= 0) return '';
@@ -175,20 +220,29 @@ class OrderDetailsController extends ChangeNotifier {
 
     if (allowedActions.contains('confirm_delivery') ||
         allowedActions.contains('delivery_otp') ||
+        allowedActions.contains('verify_delivery_otp') ||
+        allowedActions.contains('mark_delivered') ||
         deliveryOtpStatus == 'pending' ||
         arrivalState.contains('customer')) {
       return OrderDeliveryStage.onTheWay;
     }
 
-    if (allowedActions.contains('start_delivery') ||
+    if (allowedActions.contains('mark_on_the_way') ||
+        allowedActions.contains('start_delivery') ||
         allowedActions.contains('picked_up') ||
+        assignmentStatus.contains('pickedup') ||
+        assignmentStatus.contains('picked_up') ||
+        assignmentStatus.contains('ontheway') ||
+        assignmentStatus.contains('on_the_way') ||
         pickupOtpStatus == 'verified' ||
         pickupOtpStatus == 'completed') {
       return OrderDeliveryStage.pickedUp;
     }
 
     if (allowedActions.contains('arrived_at_vendor') ||
-        allowedActions.contains('confirm_pickup') ||
+        allowedActions.contains('mark_picked_up') ||
+        allowedActions.isEmpty &&
+            (details.pickupOtpCode ?? '').trim().isNotEmpty ||
         details.pickupOtpRequired) {
       return OrderDeliveryStage.accepted;
     }

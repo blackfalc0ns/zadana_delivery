@@ -4,14 +4,26 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class CustomerOtpField extends StatelessWidget {
-  const CustomerOtpField({super.key, required this.onChanged});
+  const CustomerOtpField({
+    super.key,
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+    this.enabled = true,
+  });
 
+  final TextEditingController controller;
+  final FocusNode focusNode;
   final ValueChanged<String> onChanged;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     final scheme = context.colorScheme;
     return TextField(
+      controller: controller,
+      focusNode: focusNode,
+      enabled: enabled,
       keyboardType: TextInputType.number,
       textAlign: TextAlign.center,
       maxLength: 4,

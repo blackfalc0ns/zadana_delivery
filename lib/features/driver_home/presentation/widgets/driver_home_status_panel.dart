@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -14,6 +15,7 @@ class DriverHomeStatusPanel extends StatelessWidget {
     required this.canReceiveOffers,
     required this.onOpenMission,
     required this.onToggleAvailability,
+    this.onDisabledToggleTap,
     this.isToggleEnabled = true,
     this.isToggleLoading = false,
   });
@@ -23,6 +25,7 @@ class DriverHomeStatusPanel extends StatelessWidget {
   final bool canReceiveOffers;
   final VoidCallback onOpenMission;
   final VoidCallback onToggleAvailability;
+  final VoidCallback? onDisabledToggleTap;
   final bool isToggleEnabled;
   final bool isToggleLoading;
 
@@ -30,10 +33,21 @@ class DriverHomeStatusPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final assignment = home.currentAssignment;
-    final earnings = home.earningsSummaryToday;
     final isMissionMode = home.homeState == 'OnMission' && assignment != null;
-    final statusMessage = _statusMessage(context);
     final statusHint = _statusHint(context, isMissionMode);
+    final statusColor = isOnline ? color.primary : AppColors.secondary;
+    final title = _title(context);
+    final subtitle = isOnline
+        ? _localizedText(
+            context,
+            ar: 'أنت جاهز الآن لاستقبال العروض الجديدة فور وصولها.',
+            en: 'You are ready to receive new offers as soon as they arrive.',
+          )
+        : _localizedText(
+            context,
+            ar: 'فعّل حالتك من الأعلى لتبدأ استقبال الطلبات.',
+            en: 'Go online from the top switch to receive new orders.',
+          );
 
     return Container(
       margin: const EdgeInsets.fromLTRB(
@@ -42,15 +56,16 @@ class DriverHomeStatusPanel extends StatelessWidget {
         Spacing.base,
         Spacing.base,
       ),
-      padding: const EdgeInsets.all(Spacing.base),
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       decoration: BoxDecoration(
         color: color.surface,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.12)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
+            color: color.shadow.withValues(alpha: 0.06),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
           ),
         ],
       ),
@@ -58,48 +73,80 @@ class DriverHomeStatusPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            _title(context),
-            style: getBoldStyle(
-              fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size18,
-              color: color.onSurface,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  isOnline ? Icons.bolt_rounded : Icons.pause_circle_filled,
+                  color: statusColor,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: getBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size18,
+                        color: color.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: getRegularStyle(
+                        fontFamily: FontConstant.cairo,
+                        color: color.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            statusMessage,
-            style: getRegularStyle(
-              fontFamily: FontConstant.cairo,
-              color: color.onSurfaceVariant,
-            ),
+          const SizedBox(height: 16),
+          _StatusStrip(
+            isOnline: isOnline,
+            statusColor: statusColor,
+            text: isOnline ? 'Live' : 'Paused',
           ),
           if (statusHint != null) ...[
-            const SizedBox(height: Spacing.sm),
-            _CalloutBanner(
-              icon: isOnline ? Icons.bolt_rounded : Icons.toggle_off_rounded,
+            const SizedBox(height: 12),
+            _SoftMessage(
+              icon: Icons.auto_awesome_rounded,
               text: statusHint,
-              color: isOnline ? color.primary : color.outline,
+              color: statusColor,
             ),
           ],
           if (home.operationalStatus.zoneName.trim().isNotEmpty) ...[
-            const SizedBox(height: Spacing.sm),
-            _InfoChip(
+            const SizedBox(height: 10),
+            _SoftMessage(
               icon: Icons.place_outlined,
               text: home.operationalStatus.zoneName,
+              color: color.primary,
             ),
           ],
           if ((home.operationalStatus.restrictionMessage ?? '')
               .trim()
               .isNotEmpty) ...[
-            const SizedBox(height: Spacing.sm),
-            _InfoChip(
+            const SizedBox(height: 10),
+            _SoftMessage(
               icon: Icons.info_outline_rounded,
               text: home.operationalStatus.restrictionMessage!,
               color: color.error,
             ),
           ],
-          const SizedBox(height: Spacing.base),
+          const SizedBox(height: 8),
           if (isMissionMode) ...[
             _MissionSummary(assignment: assignment),
             const SizedBox(height: Spacing.base),
@@ -110,49 +157,7 @@ class DriverHomeStatusPanel extends StatelessWidget {
               borderRadius: 18,
             ),
           ] else ...[
-            AppButton.filled(
-              text: isOnline
-                  ? context.localization.driver_home_connection_offline_title
-                  : context.localization.driver_home_connection_online_title,
-              icon: isOnline
-                  ? Icons.toggle_off_rounded
-                  : Icons.toggle_on_rounded,
-              onPressed: isToggleEnabled ? onToggleAvailability : null,
-              isLoading: isToggleLoading,
-              height: 50,
-              borderRadius: 18,
-              color: isOnline ? color.outline : color.primary,
-              textColor: isOnline ? color.onSurface : color.onPrimary,
-            ),
-            const SizedBox(height: Spacing.base),
-            Row(
-              children: [
-                Expanded(
-                  child: _MetricCard(
-                    icon: Icons.payments_outlined,
-                    value: earnings == null
-                        ? '--'
-                        : '${earnings.earningsAmount.toStringAsFixed(2)} ${context.localization.currency}',
-                  ),
-                ),
-                const SizedBox(width: Spacing.sm),
-                Expanded(
-                  child: _MetricCard(
-                    icon: Icons.local_shipping_outlined,
-                    value: earnings == null
-                        ? '--'
-                        : '${earnings.completedTrips}',
-                  ),
-                ),
-                const SizedBox(width: Spacing.sm),
-                Expanded(
-                  child: _MetricCard(
-                    icon: Icons.notifications_none_rounded,
-                    value: '${home.unreadAlerts}',
-                  ),
-                ),
-              ],
-            ),
+            const SizedBox(height: 6),
           ],
         ],
       ),
@@ -172,23 +177,36 @@ class DriverHomeStatusPanel extends StatelessWidget {
     }
   }
 
-  String _statusMessage(BuildContext context) {
-    final apiMessage = home.operationalStatus.message.trim();
-    if (apiMessage.isNotEmpty) return apiMessage;
-    if (!isOnline) return 'أنت الآن غير متصل، لذلك لن تظهر لك طلبات جديدة.';
-    if (!canReceiveOffers) {
-      return 'التواجد مفعّل، لكن استقبال الطلبات غير متاح حاليًا.';
-    }
-    return 'أنت متصل الآن، وسيتم عرض الطلبات الجديدة فور وصولها.';
-  }
-
   String? _statusHint(BuildContext context, bool isMissionMode) {
     if (isMissionMode) return null;
-    if (!isOnline) return 'فعّل زر التواجد من الأعلى لبدء استقبال الطلبات.';
-    if (!canReceiveOffers) {
-      return 'راجع سبب التقييد الظاهر بالأسفل أو انتظر حتى تصبح متاحًا.';
+    if (!isOnline) {
+      return _localizedText(
+        context,
+        ar: 'فعّل زر التواجد من الأعلى لبدء استقبال الطلبات.',
+        en: 'Go online to start receiving new orders.',
+      );
     }
-    return 'تابع الخريطة وكارت الطلبات عند وصول أي عرض جديد.';
+    if (!canReceiveOffers) {
+      return _localizedText(
+        context,
+        ar: 'راجع سبب التقييد الظاهر بالأسفل أو انتظر حتى تصبح متاحًا.',
+        en: 'Check the restriction shown below or wait until offers become available again.',
+      );
+    }
+    return _localizedText(
+      context,
+      ar: 'تابع الخريطة وكارت الطلبات عند وصول أي عرض جديد.',
+      en: 'Keep an eye on the map and incoming offers for new assignments.',
+    );
+  }
+
+  String _localizedText(
+    BuildContext context, {
+    required String ar,
+    required String en,
+  }) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    return languageCode.toLowerCase() == 'ar' ? ar : en;
   }
 }
 
@@ -236,39 +254,100 @@ class _MissionSummary extends StatelessWidget {
               ),
             ],
           ),
+          if ((assignment.pickupOtpCode ?? '').trim().isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.secondary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: color.secondary.withValues(alpha: 0.18),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _pickupOtpHint(context),
+                    style: getSemiBoldStyle(
+                      fontFamily: FontConstant.cairo,
+                      color: color.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    assignment.pickupOtpCode!,
+                    style: getBoldStyle(
+                      fontFamily: FontConstant.cairo,
+                      fontSize: FontSize.size24,
+                      color: color.secondary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+
+  String _pickupOtpHint(BuildContext context) {
+    final languageCode = Localizations.localeOf(context).languageCode;
+    if (languageCode.toLowerCase() == 'ar') {
+      return 'أظهر هذا الرمز للتاجر';
+    }
+    return 'Show this code to the merchant';
+  }
 }
 
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.icon, required this.value});
+class _StatusStrip extends StatelessWidget {
+  const _StatusStrip({
+    required this.isOnline,
+    required this.statusColor,
+    required this.text,
+  });
 
-  final IconData icon;
-  final String value;
+  final bool isOnline;
+  final Color statusColor;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: color.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(18),
+        color: color.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.10)),
       ),
-      child: Column(
+      child: Row(
         children: [
-          Icon(icon, color: color.primary, size: 20),
-          const SizedBox(height: 8),
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 8),
           Text(
-            value,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: getBoldStyle(
+            text,
+            style: getSemiBoldStyle(
               fontFamily: FontConstant.cairo,
               color: color.onSurface,
+            ),
+          ),
+          const Spacer(),
+          Text(
+            isOnline ? 'Ready for offers' : 'Offline mode',
+            style: getRegularStyle(
+              fontFamily: FontConstant.cairo,
+              color: color.onSurfaceVariant,
             ),
           ),
         ],
@@ -277,8 +356,8 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-class _CalloutBanner extends StatelessWidget {
-  const _CalloutBanner({
+class _SoftMessage extends StatelessWidget {
+  const _SoftMessage({
     required this.icon,
     required this.text,
     required this.color,
@@ -290,23 +369,33 @@ class _CalloutBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = context.colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(16),
+        color: scheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 8),
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: color.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, size: 16, color: color),
+          ),
+          const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
-              style: getSemiBoldStyle(
+              style: getMediumStyle(
                 fontFamily: FontConstant.cairo,
-                color: color,
-              ),
+                color: scheme.onSurfaceVariant,
+              ).copyWith(height: 1.3),
             ),
           ),
         ],
@@ -316,16 +405,15 @@ class _CalloutBanner extends StatelessWidget {
 }
 
 class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.text, this.color});
+  const _InfoChip({required this.icon, required this.text});
 
   final IconData icon;
   final String text;
-  final Color? color;
 
   @override
   Widget build(BuildContext context) {
     final scheme = context.colorScheme;
-    final resolvedColor = color ?? scheme.primary;
+    final resolvedColor = scheme.primary;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(

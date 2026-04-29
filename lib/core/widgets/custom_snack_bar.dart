@@ -6,6 +6,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/network/failuer_mapper.dart';
+
 enum CustomSnackbarPosition { top, bottom }
 
 class CustomSnackbar {
@@ -22,6 +23,7 @@ class CustomSnackbar {
     required String message,
     Duration duration = _defaultDuration,
     VoidCallback? onTap,
+    CustomSnackbarPosition position = CustomSnackbarPosition.bottom,
   }) {
     _showSnackbar(
       context: context,
@@ -30,6 +32,7 @@ class CustomSnackbar {
       icon: Icons.check_circle_outline,
       duration: duration,
       onTap: onTap,
+      position: position,
     );
   }
 
@@ -38,6 +41,7 @@ class CustomSnackbar {
     required String message,
     Duration duration = _defaultDuration,
     VoidCallback? onTap,
+    CustomSnackbarPosition position = CustomSnackbarPosition.bottom,
   }) {
     _showSnackbar(
       context: context,
@@ -46,6 +50,7 @@ class CustomSnackbar {
       icon: Icons.error_outline,
       duration: duration,
       onTap: onTap,
+      position: position,
     );
   }
 
@@ -54,6 +59,7 @@ class CustomSnackbar {
     required String message,
     Duration duration = _defaultDuration,
     VoidCallback? onTap,
+    CustomSnackbarPosition position = CustomSnackbarPosition.bottom,
   }) {
     _showSnackbar(
       context: context,
@@ -62,6 +68,7 @@ class CustomSnackbar {
       icon: Icons.warning_amber_outlined,
       duration: duration,
       onTap: onTap,
+      position: position,
     );
   }
 

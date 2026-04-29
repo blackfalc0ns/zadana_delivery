@@ -187,7 +187,10 @@ class _LoginScreenState extends State<LoginScreen> {
     if (driverStatus?.isBlocked == true) {
       return AppRoutes.accountBlocked;
     }
-    if ((driverStatus?.primaryZoneId ?? '').trim().isEmpty) {
+    if (driverStatus?.shouldGoHome == true) {
+      return AppRoutes.mainShell;
+    }
+    if (driverStatus?.hasCompletedProfile != true) {
       return AppRoutes.driverProfileCompletion;
     }
     return AppRoutes.mainShell;

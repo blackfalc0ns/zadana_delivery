@@ -1,26 +1,26 @@
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 
-class RegisterZonesState {
-  const RegisterZonesState({
+class RegisterRegionsState {
+  const RegisterRegionsState({
     this.isLoading = false,
-    this.zones = const <DriverZoneEntity>[],
+    this.regionCities = const <DriverRegionCityEntity>[],
     this.failure,
   });
 
   final bool isLoading;
-  final List<DriverZoneEntity> zones;
+  final List<DriverRegionCityEntity> regionCities;
   final Failure? failure;
 
-  RegisterZonesState copyWith({
+  RegisterRegionsState copyWith({
     bool? isLoading,
-    List<DriverZoneEntity>? zones,
+    List<DriverRegionCityEntity>? regionCities,
     Failure? failure,
     bool clearFailure = false,
   }) {
-    return RegisterZonesState(
+    return RegisterRegionsState(
       isLoading: isLoading ?? this.isLoading,
-      zones: zones ?? this.zones,
+      regionCities: regionCities ?? this.regionCities,
       failure: clearFailure ? null : failure ?? this.failure,
     );
   }

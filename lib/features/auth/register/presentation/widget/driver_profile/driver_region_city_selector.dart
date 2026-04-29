@@ -8,37 +8,37 @@ import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 
-class DriverZoneSelector extends StatelessWidget {
-  const DriverZoneSelector({
+class DriverRegionCitySelector extends StatelessWidget {
+  const DriverRegionCitySelector({
     super.key,
-    required this.zones,
+    required this.regionCities,
     required this.isLoading,
-    required this.selectedZoneId,
+    required this.selectedCityId,
     required this.selectedRegionCode,
-    required this.selectedZoneName,
-    required this.selectedZoneCity,
+    required this.selectedCityName,
+    required this.selectedRegionName,
     required this.onChanged,
     required this.onRetry,
     this.failure,
   });
 
-  final List<DriverZoneEntity> zones;
+  final List<DriverRegionCityEntity> regionCities;
   final bool isLoading;
-  final String selectedZoneId;
+  final String selectedCityId;
   final String selectedRegionCode;
-  final String selectedZoneName;
-  final String selectedZoneCity;
+  final String selectedCityName;
+  final String selectedRegionName;
   final Failure? failure;
-  final ValueChanged<DriverZoneEntity> onChanged;
+  final ValueChanged<DriverRegionCityEntity> onChanged;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final locale = context.localization;
-    final selectedZone = _findSelectedZone();
-    final selectedRegion = selectedZone?.city ?? selectedZoneCity;
-    final selectedCity = selectedZone?.name ?? selectedZoneName;
+    final selectedRegionCity = _findSelectedRegionCity();
+    final selectedRegion = selectedRegionCity?.regionName ?? selectedRegionName;
+    final selectedCity = selectedRegionCity?.cityName ?? selectedCityName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,20 +90,22 @@ class DriverZoneSelector extends StatelessWidget {
     );
   }
 
-  DriverZoneEntity? _findSelectedZone() {
-    for (final zone in zones) {
-      if (zone.id == selectedZoneId) {
-        return zone;
+  DriverRegionCityEntity? _findSelectedRegionCity() {
+    for (final regionCity in regionCities) {
+      if (regionCity.id == selectedCityId) {
+        return regionCity;
       }
     }
     return null;
   }
 
   List<_RegionGroup> _buildGroups() {
-    final grouped = <String, List<DriverZoneEntity>>{};
+    final grouped = <String, List<DriverRegionCityEntity>>{};
 
-    for (final zone in zones) {
-      grouped.putIfAbsent(zone.city, () => <DriverZoneEntity>[]).add(zone);
+    for (final regionCity in regionCities) {
+      grouped
+          .putIfAbsent(regionCity.regionName, () => <DriverRegionCityEntity>[])
+          .add(regionCity);
     }
 
     final groups =
@@ -112,8 +114,11 @@ class DriverZoneSelector extends StatelessWidget {
               (entry) => _RegionGroup(
                 code: entry.value.first.regionCode,
                 name: entry.key,
-                cities: List<DriverZoneEntity>.from(entry.value)
-                  ..sort((first, second) => first.name.compareTo(second.name)),
+                cities: List<DriverRegionCityEntity>.from(entry.value)
+                  ..sort(
+                    (first, second) =>
+                        first.cityName.compareTo(second.cityName),
+                  ),
               ),
             )
             .toList(growable: false)
@@ -122,13 +127,13 @@ class DriverZoneSelector extends StatelessWidget {
     return groups;
   }
 
-  List<DriverZoneEntity> _resolveCitiesForRegion(String region) {
+  List<DriverRegionCityEntity> _resolveCitiesForRegion(String region) {
     for (final group in _buildGroups()) {
       if (group.name == region) {
         return group.cities;
       }
     }
-    return const <DriverZoneEntity>[];
+    return const <DriverRegionCityEntity>[];
   }
 
   Future<void> _showRegionPicker(
@@ -160,11 +165,11 @@ class DriverZoneSelector extends StatelessWidget {
     if (selectedRegion == null) return;
 
     onChanged(
-      DriverZoneEntity(
+      DriverRegionCityEntity(
         id: '',
         regionCode: selectedRegion.code,
-        city: selectedRegion.name,
-        name: '',
+        regionName: selectedRegion.name,
+        cityName: '',
         centerLat: 0,
         centerLng: 0,
         radiusKm: 0,
@@ -181,16 +186,16 @@ class DriverZoneSelector extends StatelessWidget {
     final cities = _resolveCitiesForRegion(selectedRegion);
     if (cities.isEmpty) return;
 
-    final selectedCity = await showModalBottomSheet<DriverZoneEntity>(
+    final selectedCity = await showModalBottomSheet<DriverRegionCityEntity>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _SelectionSheet<DriverZoneEntity>(
+      builder: (context) => _SelectionSheet<DriverRegionCityEntity>(
         title: locale.driver_profile_zone_city_sheet_title,
         subtitle: locale.driver_profile_zone_city_sheet_subtitle,
         items: cities,
-        selectedValue: selectedZoneId,
-        itemTitle: (city) => city.name,
+        selectedValue: selectedCityId,
+        itemTitle: (city) => city.cityName,
         itemSubtitle: (_) => selectedRegion,
         itemIcon: Icons.location_city_outlined,
         onSelected: (city) => city,
@@ -548,5 +553,5 @@ class _RegionGroup {
 
   final String code;
   final String name;
-  final List<DriverZoneEntity> cities;
+  final List<DriverRegionCityEntity> cities;
 }

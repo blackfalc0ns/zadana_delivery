@@ -58,6 +58,9 @@ abstract class ApiServices {
     @Path('assignmentId') String assignmentId,
   );
 
+  @GET(EndPoints.driverCurrentAssignment)
+  Future<dynamic> getCurrentDriverAssignment();
+
   @GET(EndPoints.driverNotifications)
   Future<dynamic> getDriverNotifications({
     @Query('page') int page = 1,
@@ -107,12 +110,51 @@ abstract class ApiServices {
     @Body() Map<String, dynamic> request,
   );
 
+  @POST(EndPoints.driverLocation)
+  Future<dynamic> updateDriverLocation(@Body() Map<String, dynamic> request);
+
+  @POST(EndPoints.driverAssignmentStatus)
+  Future<dynamic> updateDriverAssignmentStatus(
+    @Path('assignmentId') String assignmentId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverAssignmentVerifyOtp)
+  Future<dynamic> verifyDriverAssignmentOtp(
+    @Path('assignmentId') String assignmentId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverOrderArrivedAtVendor)
+  Future<dynamic> markOrderArrivedAtVendor(@Path('orderId') String orderId);
+
+  @POST(EndPoints.driverOrderArrivedAtCustomer)
+  Future<dynamic> markOrderArrivedAtCustomer(@Path('orderId') String orderId);
+
   @POST('/drivers/offers/{assignmentId}/accept')
   Future<dynamic> acceptDriverOffer(@Path('assignmentId') String assignmentId);
 
   @POST('/drivers/offers/{assignmentId}/reject')
   Future<dynamic> rejectDriverOffer(
     @Path('assignmentId') String assignmentId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverOrderPickedUp)
+  Future<dynamic> markOrderPickedUp(@Path('orderId') String orderId);
+
+  @POST(EndPoints.driverOrderOnTheWay)
+  Future<dynamic> markOrderOnTheWay(@Path('orderId') String orderId);
+
+  @POST(EndPoints.driverOrderDelivered)
+  Future<dynamic> markOrderDelivered(
+    @Path('orderId') String orderId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverOrderDeliveryFailed)
+  Future<dynamic> markOrderDeliveryFailed(
+    @Path('orderId') String orderId,
     @Body() Map<String, dynamic> request,
   );
 }

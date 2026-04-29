@@ -77,8 +77,6 @@ import '../../features/auth/register/domain/usecase/get_driver_zones_usecase.dar
     as _i985;
 import '../../features/auth/register/domain/usecase/register_usecase.dart'
     as _i635;
-import '../../features/auth/register/presentation/manager/register_view_model.dart'
-    as _i136;
 import '../../features/auth/register/presentation/manager/register_zones_cubit.dart'
     as _i340;
 import '../../features/auth/reset_password/data/data_source/reset_password_remote_data_source.dart'
@@ -344,12 +342,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverProfileDraftService>(),
       ),
     );
-    gh.factory<_i897.DriverZonesRemoteDataSource>(
-      () => _i291.DriverZonesRemoteDataSourceImpl(
-        gh<_i804.ApiServices>(),
-        gh<_i819.LanguageService>(),
-      ),
-    );
     gh.factory<_i731.ForgotPasswordUseCase>(
       () => _i731.ForgotPasswordUseCase(gh<_i899.ForgotPasswordRepository>()),
     );
@@ -359,6 +351,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i227.TokenService>(),
         gh<_i550.DriverIdentityService>(),
         gh<_i550.DriverProfileDraftService>(),
+      ),
+    );
+    gh.factory<_i897.DriverRegionsRemoteDataSource>(
+      () => _i291.DriverRegionsRemoteDataSourceImpl(
+        gh<_i804.ApiServices>(),
+        gh<_i819.LanguageService>(),
       ),
     );
     gh.factory<_i341.NotificationsRepository>(
@@ -430,6 +428,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverIdentityService>(),
       ),
     );
+    gh.factory<_i599.DriverRegionsRepository>(
+      () => _i772.DriverRegionsRepositoryImpl(
+        gh<_i897.DriverRegionsRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i929.CompletedOrdersRepository>(
       () => _i563.CompletedOrdersRepositoryImpl(
         gh<_i833.CompletedOrdersRemoteDataSource>(),
@@ -482,9 +485,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i65.ForgotPasswordViewModel>(
       () => _i65.ForgotPasswordViewModel(gh<_i731.ForgotPasswordUseCase>()),
     );
-    gh.factory<_i136.RegisterViewModel>(
-      () => _i136.RegisterViewModel(gh<_i635.RegisterUseCase>()),
-    );
     gh.factory<_i29.AuthGateCubit>(
       () => _i29.AuthGateCubit(
         gh<_i227.TokenService>(),
@@ -492,20 +492,15 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i78.LogoutUseCase>(),
       ),
     );
-    gh.factory<_i599.DriverZonesRepository>(
-      () => _i772.DriverZonesRepositoryImpl(
-        gh<_i897.DriverZonesRemoteDataSource>(),
-      ),
-    );
     gh.factory<_i992.OrderDetailsCubit>(
       () =>
           _i992.OrderDetailsCubit(gh<_i696.GetOrderAssignmentDetailsUseCase>()),
     );
+    gh.factory<_i985.GetDriverRegionsUseCase>(
+      () => _i985.GetDriverRegionsUseCase(gh<_i599.DriverRegionsRepository>()),
+    );
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
-    );
-    gh.factory<_i985.GetDriverZonesUseCase>(
-      () => _i985.GetDriverZonesUseCase(gh<_i599.DriverZonesRepository>()),
     );
     gh.factory<_i663.GetCompletedOrderDetailsUseCase>(
       () => _i663.GetCompletedOrderDetailsUseCase(
@@ -547,6 +542,9 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i663.GetCompletedOrderDetailsUseCase>(),
       ),
     );
+    gh.factory<_i340.RegisterRegionsCubit>(
+      () => _i340.RegisterRegionsCubit(gh<_i985.GetDriverRegionsUseCase>()),
+    );
     gh.factory<_i735.ProfileCubit>(
       () => _i735.ProfileCubit(
         gh<_i339.GetDriverUnifiedProfileUseCase>(),
@@ -554,15 +552,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1047.UpdateDriverPersonalUseCase>(),
         gh<_i458.UpdateDriverVehicleUseCase>(),
         gh<_i373.UpdateDriverDocumentsUseCase>(),
-        gh<_i985.GetDriverZonesUseCase>(),
+        gh<_i985.GetDriverRegionsUseCase>(),
         gh<_i183.ImagePicker>(),
       ),
     );
     gh.factory<_i808.LoginViewModel>(
       () => _i808.LoginViewModel(gh<_i817.LoginUseCase>()),
-    );
-    gh.factory<_i340.RegisterZonesCubit>(
-      () => _i340.RegisterZonesCubit(gh<_i985.GetDriverZonesUseCase>()),
     );
     return this;
   }

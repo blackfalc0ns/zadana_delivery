@@ -598,7 +598,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get select_language => 'Select Language';
 
   @override
-  String get arabic => 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©';
+  String get arabic => 'Arabic';
 
   @override
   String get english => 'English';
@@ -2097,7 +2097,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show this code to the store so the order can be handed to you';
 
   @override
+  String get order_details_pickup_code_copied => 'Pickup code copied';
+
+  @override
+  String get order_details_waiting_for_merchant_confirmation =>
+      'Waiting for merchant confirmation...';
+
+  @override
   String get order_details_confirm_pickup => 'Confirm pickup from store';
+
+  @override
+  String get order_details_arrived_at_vendor => 'Arrived at vendor';
+
+  @override
+  String get order_details_arrived_at_customer => 'Arrived at customer';
 
   @override
   String get order_details_order_items_title => 'Order items';

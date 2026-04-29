@@ -1,9 +1,9 @@
-class DriverZoneEntity {
-  const DriverZoneEntity({
+class DriverRegionCityEntity {
+  const DriverRegionCityEntity({
     required this.id,
     required this.regionCode,
-    required this.city,
-    required this.name,
+    required this.regionName,
+    required this.cityName,
     required this.centerLat,
     required this.centerLng,
     required this.radiusKm,
@@ -12,8 +12,8 @@ class DriverZoneEntity {
 
   final String id;
   final String regionCode;
-  final String city;
-  final String name;
+  final String regionName;
+  final String cityName;
   final double centerLat;
   final double centerLng;
   final double radiusKm;

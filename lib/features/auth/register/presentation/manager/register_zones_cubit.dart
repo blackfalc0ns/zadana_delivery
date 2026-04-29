@@ -6,22 +6,22 @@ import '../../domain/usecase/get_driver_zones_usecase.dart';
 import 'register_zones_state.dart';
 
 @injectable
-class RegisterZonesCubit extends Cubit<RegisterZonesState> {
-  RegisterZonesCubit(this._getDriverZonesUseCase)
-    : super(const RegisterZonesState());
+class RegisterRegionsCubit extends Cubit<RegisterRegionsState> {
+  RegisterRegionsCubit(this._getDriverRegionsUseCase)
+    : super(const RegisterRegionsState());
 
-  final GetDriverZonesUseCase _getDriverZonesUseCase;
+  final GetDriverRegionsUseCase _getDriverRegionsUseCase;
 
-  Future<void> loadZones() async {
+  Future<void> loadRegionCities() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
-    final result = await _getDriverZonesUseCase.call();
+    final result = await _getDriverRegionsUseCase.call();
 
     switch (result) {
       case ApiSuccessResult():
         emit(
           state.copyWith(
             isLoading: false,
-            zones: result.data,
+            regionCities: result.data,
             clearFailure: true,
           ),
         );

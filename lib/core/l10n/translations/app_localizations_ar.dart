@@ -2062,7 +2062,20 @@ class AppLocalizationsAr extends AppLocalizations {
       'اعرض هذا الكود للمتجر حتى يتم تسليم الطلب لك';
 
   @override
+  String get order_details_pickup_code_copied => 'تم نسخ كود الاستلام';
+
+  @override
+  String get order_details_waiting_for_merchant_confirmation =>
+      'في انتظار تأكيد التاجر...';
+
+  @override
   String get order_details_confirm_pickup => 'تأكيد الاستلام من المتجر';
+
+  @override
+  String get order_details_arrived_at_vendor => 'وصلت إلى المتجر';
+
+  @override
+  String get order_details_arrived_at_customer => 'وصلت إلى العميل';
 
   @override
   String get order_details_order_items_title => 'أصناف الطلب';

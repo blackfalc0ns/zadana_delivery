@@ -23,6 +23,7 @@ class AppButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.fontWeight,
+    this.onDisabledPressed,
   });
 
   /// Named factories for convenience.
@@ -38,6 +39,7 @@ class AppButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.fontWeight,
+    this.onDisabledPressed,
   }) : variant = AppButtonVariant.filled;
 
   const AppButton.outlined({
@@ -52,6 +54,7 @@ class AppButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.fontWeight,
+    this.onDisabledPressed,
   }) : variant = AppButtonVariant.outlined;
 
   const AppButton.text({
@@ -66,6 +69,7 @@ class AppButton extends StatelessWidget {
     this.color,
     this.textColor,
     this.fontWeight,
+    this.onDisabledPressed,
   }) : variant = AppButtonVariant.text;
   final String text;
   final VoidCallback? onPressed;
@@ -78,6 +82,7 @@ class AppButton extends StatelessWidget {
   final Color? color;
   final Color? textColor;
   final FontWeight? fontWeight;
+  final VoidCallback? onDisabledPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -141,7 +146,17 @@ class AppButton extends StatelessWidget {
         );
         break;
     }
-    return button;
+    final isDisabled =
+        !isLoading && onPressed == null && onDisabledPressed != null;
+    if (!isDisabled) {
+      return button;
+    }
+
+    return GestureDetector(
+      onTap: onDisabledPressed,
+      behavior: HitTestBehavior.opaque,
+      child: button,
+    );
   }
 
   Widget _buildContent(BuildContext context, Color effectiveColor) {

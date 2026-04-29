@@ -24,6 +24,7 @@ class DriverOrderPreview {
     this.paymentMethod = '',
     this.pickupOtpRequired = false,
     this.deliveryOtpRequired = false,
+    this.pickupOtpCode,
   });
 
   final String id;
@@ -50,6 +51,7 @@ class DriverOrderPreview {
   final String paymentMethod;
   final bool pickupOtpRequired;
   final bool deliveryOtpRequired;
+  final String? pickupOtpCode;
 
   DriverOrderPreview copyWith({
     String? id,
@@ -76,6 +78,7 @@ class DriverOrderPreview {
     String? paymentMethod,
     bool? pickupOtpRequired,
     bool? deliveryOtpRequired,
+    String? pickupOtpCode,
   }) {
     return DriverOrderPreview(
       id: id ?? this.id,
@@ -102,6 +105,7 @@ class DriverOrderPreview {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       pickupOtpRequired: pickupOtpRequired ?? this.pickupOtpRequired,
       deliveryOtpRequired: deliveryOtpRequired ?? this.deliveryOtpRequired,
+      pickupOtpCode: pickupOtpCode ?? this.pickupOtpCode,
     );
   }
 }

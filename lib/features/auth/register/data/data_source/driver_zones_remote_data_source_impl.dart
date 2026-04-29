@@ -9,9 +9,10 @@ import '../models/driver_region_model_dto.dart';
 import '../models/driver_zone_model_dto.dart';
 import 'driver_zones_remote_data_source.dart';
 
-@Injectable(as: DriverZonesRemoteDataSource)
-class DriverZonesRemoteDataSourceImpl implements DriverZonesRemoteDataSource {
-  const DriverZonesRemoteDataSourceImpl(
+@Injectable(as: DriverRegionsRemoteDataSource)
+class DriverRegionsRemoteDataSourceImpl
+    implements DriverRegionsRemoteDataSource {
+  const DriverRegionsRemoteDataSourceImpl(
     this._apiServices,
     this._languageService,
   );
@@ -20,7 +21,7 @@ class DriverZonesRemoteDataSourceImpl implements DriverZonesRemoteDataSource {
   final LanguageService _languageService;
 
   @override
-  Future<List<DriverZoneModelDto>> getZones() async {
+  Future<List<DriverRegionCityModelDto>> getRegionCities() async {
     try {
       final regionsResponse = await _apiServices.getDriverZones();
       final regions =
@@ -36,9 +37,9 @@ class DriverZonesRemoteDataSourceImpl implements DriverZonesRemoteDataSource {
             region.code,
           );
           final cities =
-              _normalizeList(
-                  citiesResponse,
-                ).map(DriverRegionCityModelDto.fromJson).toList(growable: false)
+              _normalizeList(citiesResponse)
+                  .map(DriverRegionCityApiModelDto.fromJson)
+                  .toList(growable: false)
                 ..sort(
                   (first, second) =>
                       first.sortOrder.compareTo(second.sortOrder),
@@ -46,14 +47,14 @@ class DriverZonesRemoteDataSourceImpl implements DriverZonesRemoteDataSource {
 
           return cities
               .map(
-                (city) => DriverZoneModelDto.localized(
+                (city) => DriverRegionCityModelDto.localized(
                   id: city.code,
                   regionCode: region.code,
-                  city: _localizedName(
+                  regionName: _localizedName(
                     nameAr: region.nameAr,
                     nameEn: region.nameEn,
                   ),
-                  name: _localizedName(
+                  cityName: _localizedName(
                     nameAr: city.nameAr,
                     nameEn: city.nameEn,
                   ),
@@ -93,7 +94,8 @@ class DriverZonesRemoteDataSourceImpl implements DriverZonesRemoteDataSource {
     }
 
     if (response is Map<String, dynamic>) {
-      final items = response['data'] ?? response['items'] ?? response['zones'];
+      final items =
+          response['data'] ?? response['items'] ?? response['regions'];
       if (items is List) {
         return items
             .whereType<Map>()

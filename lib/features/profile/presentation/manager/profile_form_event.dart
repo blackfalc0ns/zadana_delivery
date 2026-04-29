@@ -7,13 +7,13 @@ sealed class ProfileFormEvent {
 }
 
 class ProfileFormLoadEvent extends ProfileFormEvent {
-  const ProfileFormLoadEvent({this.includeZones = false});
+  const ProfileFormLoadEvent({this.includeRegionCities = false});
 
-  final bool includeZones;
+  final bool includeRegionCities;
 }
 
-class ProfileFormRetryZonesEvent extends ProfileFormEvent {
-  const ProfileFormRetryZonesEvent();
+class ProfileFormRetryRegionCitiesEvent extends ProfileFormEvent {
+  const ProfileFormRetryRegionCitiesEvent();
 }
 
 class ProfileFormSavePersonalEvent extends ProfileFormEvent {

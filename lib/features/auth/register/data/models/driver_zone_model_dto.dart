@@ -1,30 +1,30 @@
-class DriverZoneModelDto {
-  const DriverZoneModelDto({
+class DriverRegionCityModelDto {
+  const DriverRegionCityModelDto({
     required this.id,
     required this.regionCode,
-    required this.city,
-    required this.name,
+    required this.regionName,
+    required this.cityName,
     required this.centerLat,
     required this.centerLng,
     required this.radiusKm,
     required this.isActive,
   });
 
-  factory DriverZoneModelDto.localized({
+  factory DriverRegionCityModelDto.localized({
     required String id,
     required String regionCode,
-    required String city,
-    required String name,
+    required String regionName,
+    required String cityName,
     required double centerLat,
     required double centerLng,
     required double radiusKm,
     bool isActive = true,
   }) {
-    return DriverZoneModelDto(
+    return DriverRegionCityModelDto(
       id: id,
       regionCode: regionCode,
-      city: city,
-      name: name,
+      regionName: regionName,
+      cityName: cityName,
       centerLat: centerLat,
       centerLng: centerLng,
       radiusKm: radiusKm,
@@ -32,12 +32,12 @@ class DriverZoneModelDto {
     );
   }
 
-  factory DriverZoneModelDto.fromJson(Map<String, dynamic> json) {
-    return DriverZoneModelDto(
+  factory DriverRegionCityModelDto.fromJson(Map<String, dynamic> json) {
+    return DriverRegionCityModelDto(
       id: json['id']?.toString() ?? '',
       regionCode: json['regionCode']?.toString() ?? '',
-      city: json['city']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      regionName: json['regionName']?.toString() ?? json['city']?.toString() ?? '',
+      cityName: json['cityName']?.toString() ?? json['name']?.toString() ?? '',
       centerLat: (json['centerLat'] as num?)?.toDouble() ?? 0,
       centerLng: (json['centerLng'] as num?)?.toDouble() ?? 0,
       radiusKm: (json['radiusKm'] as num?)?.toDouble() ?? 0,
@@ -47,8 +47,8 @@ class DriverZoneModelDto {
 
   final String id;
   final String regionCode;
-  final String city;
-  final String name;
+  final String regionName;
+  final String cityName;
   final double centerLat;
   final double centerLng;
   final double radiusKm;

@@ -3,8 +3,8 @@ import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_region_city_selector.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_vehicle_type_selector.dart';
-import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_zone_selector.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_section_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_field.dart';
 
@@ -15,30 +15,30 @@ class VehicleInfoFields extends StatelessWidget {
     required this.onTypeChanged,
     required this.nationalIdController,
     required this.licenseController,
-    required this.zones,
-    required this.isZonesLoading,
-    required this.selectedZoneId,
+    required this.regionCities,
+    required this.isRegionCitiesLoading,
+    required this.selectedCityId,
     required this.selectedRegionCode,
-    required this.selectedZoneName,
-    required this.selectedZoneCity,
-    required this.zonesFailure,
-    required this.onRetryZones,
-    required this.onZoneChanged,
+    required this.selectedCityName,
+    required this.selectedRegionName,
+    required this.regionCitiesFailure,
+    required this.onRetryRegionCities,
+    required this.onRegionCityChanged,
   });
 
   final String groupValue;
   final ValueChanged<String> onTypeChanged;
   final TextEditingController nationalIdController;
   final TextEditingController licenseController;
-  final List<DriverZoneEntity> zones;
-  final bool isZonesLoading;
-  final String selectedZoneId;
+  final List<DriverRegionCityEntity> regionCities;
+  final bool isRegionCitiesLoading;
+  final String selectedCityId;
   final String selectedRegionCode;
-  final String selectedZoneName;
-  final String selectedZoneCity;
-  final Failure? zonesFailure;
-  final VoidCallback onRetryZones;
-  final ValueChanged<DriverZoneEntity> onZoneChanged;
+  final String selectedCityName;
+  final String selectedRegionName;
+  final Failure? regionCitiesFailure;
+  final VoidCallback onRetryRegionCities;
+  final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -57,16 +57,16 @@ class VehicleInfoFields extends StatelessWidget {
                 onChanged: onTypeChanged,
               ),
               const SizedBox(height: Spacing.md),
-              DriverZoneSelector(
-                zones: zones,
-                isLoading: isZonesLoading,
-                selectedZoneId: selectedZoneId,
+              DriverRegionCitySelector(
+                regionCities: regionCities,
+                isLoading: isRegionCitiesLoading,
+                selectedCityId: selectedCityId,
                 selectedRegionCode: selectedRegionCode,
-                selectedZoneName: selectedZoneName,
-                selectedZoneCity: selectedZoneCity,
-                failure: zonesFailure,
-                onRetry: onRetryZones,
-                onChanged: onZoneChanged,
+                selectedCityName: selectedCityName,
+                selectedRegionName: selectedRegionName,
+                failure: regionCitiesFailure,
+                onRetry: onRetryRegionCities,
+                onChanged: onRegionCityChanged,
               ),
             ],
           ),

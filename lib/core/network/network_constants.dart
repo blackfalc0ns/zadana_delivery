@@ -3,7 +3,12 @@ abstract class NetworkConstants {
   static const String authorization = 'Authorization';
   static const String bearer = "Bearer";
   static const String notificationsHub = '/hubs/notifications';
+  static const String driverDeliveryOfferEvent = 'ReceiveDeliveryOffer';
   static const String driverNotificationEvent = 'ReceiveNotification';
+  static const String driverOrderStatusChangedEvent =
+      'ReceiveOrderStatusChanged';
+  static const String driverArrivalStateChangedEvent =
+      'ReceiveDriverArrivalStateChanged';
   static const String driverOfferNotificationType = 'driver-offer';
 }
 
@@ -19,9 +24,27 @@ abstract class EndPoints {
   static const String driverStatus = '/drivers/me/status';
   static const String driverHome = '/drivers/home';
   static const String driverAvailability = '/drivers/me/availability';
+  static const String driverLocation = '/drivers/location';
   static const String driverCompletedOrders = '/drivers/orders/completed';
   static const String driverAssignmentDetails =
       '/drivers/assignments/{assignmentId}';
+  static const String driverCurrentAssignment = '/drivers/assignments/current';
+  static const String driverAssignmentStatus =
+      '/drivers/assignments/{assignmentId}/status';
+  static const String driverAssignmentVerifyOtp =
+      '/drivers/assignments/{assignmentId}/verify-otp';
+  static const String driverOrderArrivedAtVendor =
+      '/drivers/orders/{orderId}/arrived-at-vendor';
+  static const String driverOrderArrivedAtCustomer =
+      '/drivers/orders/{orderId}/arrived-at-customer';
+  static const String driverOrderPickedUp =
+      '/drivers/orders/{orderId}/picked-up';
+  static const String driverOrderOnTheWay =
+      '/drivers/orders/{orderId}/on-the-way';
+  static const String driverOrderDelivered =
+      '/drivers/orders/{orderId}/delivered';
+  static const String driverOrderDeliveryFailed =
+      '/drivers/orders/{orderId}/delivery-failed';
   static const String driverNotifications = '/drivers/notifications';
   static const String driverNotificationRead =
       '/drivers/notifications/{notificationId}/read';

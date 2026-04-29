@@ -5,12 +5,12 @@ import '../entities/driver_zone_entity.dart';
 import '../repo/driver_zones_repository.dart';
 
 @injectable
-class GetDriverZonesUseCase {
-  const GetDriverZonesUseCase(this._repository);
+class GetDriverRegionsUseCase {
+  const GetDriverRegionsUseCase(this._repository);
 
-  final DriverZonesRepository _repository;
+  final DriverRegionsRepository _repository;
 
-  Future<ApiResult<List<DriverZoneEntity>>> call() {
-    return _repository.getZones();
+  Future<ApiResult<List<DriverRegionCityEntity>>> call() {
+    return _repository.getRegionCities();
   }
 }

@@ -1,10 +1,10 @@
 class RegisterProfileDraft {
   const RegisterProfileDraft({
     required this.vehicleType,
-    required this.zoneId,
-    required this.zoneRegionCode,
-    required this.zoneName,
-    required this.zoneCity,
+    required this.cityId,
+    required this.regionCode,
+    required this.cityName,
+    required this.regionName,
     required this.address,
     required this.nationalId,
     required this.licenseNumber,
@@ -12,10 +12,10 @@ class RegisterProfileDraft {
   });
 
   final String vehicleType;
-  final String zoneId;
-  final String zoneRegionCode;
-  final String zoneName;
-  final String zoneCity;
+  final String cityId;
+  final String regionCode;
+  final String cityName;
+  final String regionName;
   final String address;
   final String nationalId;
   final String licenseNumber;
@@ -23,10 +23,10 @@ class RegisterProfileDraft {
 
   RegisterProfileDraft copyWith({
     String? vehicleType,
-    String? zoneId,
-    String? zoneRegionCode,
-    String? zoneName,
-    String? zoneCity,
+    String? cityId,
+    String? regionCode,
+    String? cityName,
+    String? regionName,
     String? address,
     String? nationalId,
     String? licenseNumber,
@@ -34,10 +34,10 @@ class RegisterProfileDraft {
   }) {
     return RegisterProfileDraft(
       vehicleType: vehicleType ?? this.vehicleType,
-      zoneId: zoneId ?? this.zoneId,
-      zoneRegionCode: zoneRegionCode ?? this.zoneRegionCode,
-      zoneName: zoneName ?? this.zoneName,
-      zoneCity: zoneCity ?? this.zoneCity,
+      cityId: cityId ?? this.cityId,
+      regionCode: regionCode ?? this.regionCode,
+      cityName: cityName ?? this.cityName,
+      regionName: regionName ?? this.regionName,
       address: address ?? this.address,
       nationalId: nationalId ?? this.nationalId,
       licenseNumber: licenseNumber ?? this.licenseNumber,
@@ -47,10 +47,10 @@ class RegisterProfileDraft {
 
   static const empty = RegisterProfileDraft(
     vehicleType: '',
-    zoneId: '',
-    zoneRegionCode: '',
-    zoneName: '',
-    zoneCity: '',
+    cityId: '',
+    regionCode: '',
+    cityName: '',
+    regionName: '',
     address: '',
     nationalId: '',
     licenseNumber: '',

@@ -2,6 +2,10 @@ sealed class DriverHomeEvent {
   const DriverHomeEvent();
 }
 
+class DriverHomeInitializeEvent extends DriverHomeEvent {
+  const DriverHomeInitializeEvent();
+}
+
 class DriverHomeLoadEvent extends DriverHomeEvent {
   const DriverHomeLoadEvent({this.refresh = false});
 

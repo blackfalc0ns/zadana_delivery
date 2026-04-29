@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -20,15 +21,25 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         onListen: _connectSignalRIfNeeded,
       );
 
+  static const Duration _delayedOfferRefresh = Duration(milliseconds: 1200);
+  static const Duration _signalRRetryCooldown = Duration(seconds: 30);
+  static const Duration _signalRRetryDelay = Duration(seconds: 5);
+  static const Duration _missingTokenRetryDelay = Duration(seconds: 2);
+  static const String _logTag = '[DriverHomeRealtime]';
+
   final ApiServices _apiServices;
   final StreamController<DriverHomeModelDto> _homeController;
   DriverHomeModelDto? _latestHome;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
-  bool _signalRUnavailable = false;
+  DateTime? _retryAfter;
+  Timer? _reconnectTimer;
   static DriverHomeRemoteDataSourceImpl? _instanceForStreamCallback;
 
   static void _connectSignalRIfNeeded() {
+    debugPrint(
+      '$_logTag watchHome listener attached; ensuring SignalR connection',
+    );
     unawaited(_instanceForStreamCallback?._ensureSignalRConnected());
   }
 
@@ -77,9 +88,14 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   @override
   Stream<DriverHomeModelDto> watchHome() async* {
     _instanceForStreamCallback = this;
+    _log('watchHome subscribed');
     unawaited(_ensureSignalRConnected());
     final latestHome = _latestHome;
     if (latestHome != null) {
+      _log(
+        'watchHome emitting cached home: state=${latestHome.homeState}, '
+        'hasOffer=${latestHome.currentOffer != null}, unreadAlerts=${latestHome.unreadAlerts}',
+      );
       yield latestHome;
     }
     yield* _homeController.stream;
@@ -89,6 +105,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   void emitHome(DriverHomeModelDto home) {
     if (_homeController.isClosed) return;
     _latestHome = home;
+    _log(
+      'emitHome: state=${home.homeState}, hasOffer=${home.currentOffer != null}, '
+      'offerId=${home.currentOffer?.assignmentId ?? 'n/a'}, unreadAlerts=${home.unreadAlerts}',
+    );
     _homeController.add(home);
   }
 
@@ -99,28 +119,62 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   }
 
   Future<void> _ensureSignalRConnected() async {
-    if (_signalRUnavailable) return;
-    if (_isConnecting) return;
+    if (_isConnecting) {
+      _logConnectionStatus(
+        'CONNECTING',
+        details: 'connect skipped: already connecting',
+      );
+      return;
+    }
+    final retryAfter = _retryAfter;
+    if (retryAfter != null && DateTime.now().isBefore(retryAfter)) {
+      _logConnectionStatus(
+        'WAITING',
+        details: 'connect skipped: cooldown active until $retryAfter',
+      );
+      final remainingDelay = retryAfter.difference(DateTime.now());
+      _scheduleReconnect(
+        remainingDelay.isNegative ? _signalRRetryDelay : remainingDelay,
+      );
+      return;
+    }
     final existingConnection = _hubConnection;
     if (existingConnection?.state == HubConnectionState.Connected ||
         existingConnection?.state == HubConnectionState.Connecting ||
         existingConnection?.state == HubConnectionState.Reconnecting) {
+      _logConnectionStatus(
+        _connectionStateLabel(existingConnection?.state),
+        details:
+            'connect skipped: existing state is ${existingConnection?.state}',
+      );
       return;
     }
 
     _isConnecting = true;
     try {
-      await _connectToNotificationsHub();
+      final token = (await getIt<TokenService>().getToken())?.trim() ?? '';
+      if (token.isEmpty) {
+        _logConnectionStatus(
+          'WAITING',
+          details: 'connect skipped: auth token is empty',
+        );
+        _scheduleReconnect(_missingTokenRetryDelay);
+        return;
+      }
+      await _connectToNotificationsHub(token);
     } finally {
       _isConnecting = false;
     }
   }
 
-  Future<void> _connectToNotificationsHub() async {
+  Future<void> _connectToNotificationsHub(String token) async {
     const hubPath = NetworkConstants.notificationsHub;
+    await _ensureHostReachable();
+    final hubUrl = _resolveHubUrl(hubPath, accessToken: token);
+    _logConnectionStatus('CONNECTING', hubPath: hubPath, details: hubUrl);
     final connection = HubConnectionBuilder()
         .withUrl(
-          _resolveHubUrl(hubPath),
+          hubUrl,
           options: HttpConnectionOptions(
             transport: HttpTransportType.WebSockets,
             accessTokenFactory: () async =>
@@ -133,59 +187,246 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         )
         .build();
 
+    connection.on(NetworkConstants.driverDeliveryOfferEvent, (arguments) {
+      final payload = (arguments?.isNotEmpty ?? false)
+          ? arguments!.first
+          : null;
+      final offerEvent = _normalizeMap(payload);
+      _log(
+        'Delivery offer event received: '
+        'assignmentId=${offerEvent['assignmentId'] ?? 'n/a'}, '
+        'orderId=${offerEvent['orderId'] ?? 'n/a'}, '
+        'countdown=${offerEvent['countdownSeconds'] ?? 'n/a'}',
+      );
+      final emitted = _emitOfferFromDeliveryOfferEvent(offerEvent);
+      if (!emitted) {
+        _log(
+          'Delivery offer event could not fully update home; syncing fallback',
+        );
+      }
+      unawaited(_refreshHomeFromApi());
+    });
+
     connection.on(NetworkConstants.driverNotificationEvent, (arguments) {
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
+      _log('Raw notification event received from SignalR');
       unawaited(_handleNotificationPayload(payload));
     });
 
+    connection.on(NetworkConstants.driverOrderStatusChangedEvent, (arguments) {
+      final payload = (arguments?.isNotEmpty ?? false)
+          ? arguments!.first
+          : null;
+      final event = _normalizeMap(payload);
+      _log(
+        'Order status refresh signal received: '
+        'orderId=${event['orderId'] ?? 'n/a'}, status=${event['status'] ?? event['newStatus'] ?? 'unknown'}',
+      );
+      unawaited(_refreshHomeFromApi());
+    });
+
+    connection.on(NetworkConstants.driverArrivalStateChangedEvent, (arguments) {
+      final payload = (arguments?.isNotEmpty ?? false)
+          ? arguments!.first
+          : null;
+      final event = _normalizeMap(payload);
+      _log(
+        'Arrival state refresh signal received: '
+        'orderId=${event['orderId'] ?? 'n/a'}, arrivalState=${event['arrivalState'] ?? event['state'] ?? 'unknown'}',
+      );
+      unawaited(_refreshHomeFromApi());
+    });
+
     connection.onreconnected(({String? connectionId}) {
-      debugPrint('DriverHome SignalR reconnected: $connectionId');
+      _logConnectionStatus(
+        'RECONNECTED',
+        hubPath: hubPath,
+        details: 'connectionId=$connectionId',
+      );
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
       unawaited(_refreshHomeFromApi());
     });
 
     connection.onclose(({Exception? error}) {
-      debugPrint('DriverHome SignalR closed: $error');
+      _logConnectionStatus(
+        'DISCONNECTED',
+        hubPath: hubPath,
+        details: 'error=$error',
+      );
       if (identical(_hubConnection, connection)) {
         _hubConnection = null;
       }
+      _scheduleReconnect();
     });
 
     try {
       await connection.start();
       _hubConnection = connection;
-      debugPrint('DriverHome SignalR connected on $hubPath');
+      _retryAfter = null;
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+      _logConnectionStatus('CONNECTED', hubPath: hubPath);
+      unawaited(_refreshHomeAfterInitialConnect());
     } catch (error) {
-      debugPrint('DriverHome SignalR failed on $hubPath: $error');
-      _signalRUnavailable = true;
+      _logConnectionStatus(
+        'FAILED',
+        hubPath: hubPath,
+        details: error.toString(),
+      );
+      _retryAfter = DateTime.now().add(_signalRRetryCooldown);
+      _scheduleReconnect();
       try {
         await connection.stop();
       } catch (_) {}
     }
   }
 
+  Future<void> _refreshHomeAfterInitialConnect() async {
+    _log('Refreshing /drivers/home after initial SignalR connect');
+    await _refreshHomeFromApi();
+    Future<void>.delayed(_delayedOfferRefresh, () {
+      _log('Running delayed home refresh after initial SignalR connect');
+      return _refreshHomeFromApi();
+    });
+  }
+
+  void _scheduleReconnect([Duration delay = _signalRRetryDelay]) {
+    if (!_homeController.hasListener) {
+      _log('Reconnect skipped: no active home listeners');
+      return;
+    }
+    final existingConnection = _hubConnection;
+    if (existingConnection?.state == HubConnectionState.Connected ||
+        existingConnection?.state == HubConnectionState.Connecting ||
+        existingConnection?.state == HubConnectionState.Reconnecting) {
+      return;
+    }
+    if (_reconnectTimer?.isActive == true) {
+      return;
+    }
+    _log('Scheduling home realtime reconnect in ${delay.inSeconds}s');
+    _reconnectTimer = Timer(delay, () {
+      _reconnectTimer = null;
+      unawaited(_ensureSignalRConnected());
+    });
+  }
+
+  Future<void> _ensureHostReachable() async {
+    final host = Uri.parse(NetworkConstants.baseUrl).host;
+    if (host.isEmpty) {
+      throw const SocketException('Missing API host');
+    }
+
+    final lookup = await InternetAddress.lookup(host);
+    if (lookup.isEmpty) {
+      throw SocketException('Failed host lookup: $host');
+    }
+  }
+
   Future<void> _handleNotificationPayload(dynamic payload) async {
     final notification = _normalizeNotification(payload);
-    if (notification.isEmpty) return;
-
-    final type = notification['type']?.toString().trim().toLowerCase() ?? '';
-    if (type == NetworkConstants.driverOfferNotificationType) {
-      await _refreshHomeFromApi();
+    if (notification.isEmpty) {
+      _log('Notification ignored: payload could not be normalized');
       return;
     }
 
-    debugPrint(
-      'DriverHome notification received: ${notification['type']} / ${notification['titleAr'] ?? notification['titleEn']}',
+    _log(
+      'Notification parsed: type=${notification['type'] ?? 'unknown'}, '
+      'referenceId=${notification['referenceId'] ?? notification['assignmentId'] ?? 'n/a'}',
     );
+
+    if (_shouldRefreshHomeForNotification(notification)) {
+      _log('Notification matched home refresh rules; refreshing home now');
+      await _refreshHomeFromApi();
+      Future<void>.delayed(_delayedOfferRefresh, () {
+        _log('Running delayed home refresh after notification');
+        return _refreshHomeFromApi();
+      });
+      return;
+    }
+
+    _log(
+      'Notification received without home refresh trigger: '
+      '${notification['type']} / ${notification['titleAr'] ?? notification['titleEn']}',
+    );
+  }
+
+  bool _emitOfferFromDeliveryOfferEvent(Map<String, dynamic> payload) {
+    if (payload.isEmpty) {
+      return false;
+    }
+
+    final assignmentId = _firstNonEmptyString([
+      payload['assignmentId'],
+      payload['assignment_id'],
+    ]);
+    if (assignmentId == null) {
+      _log('Delivery offer event missing assignmentId; skipping direct emit');
+      return false;
+    }
+
+    final latestHome = _latestHome;
+    if (latestHome == null) {
+      _log(
+        'Realtime offer arrived before initial home cache; waiting for sync',
+      );
+      return false;
+    }
+
+    final offer = DriverHomeOfferModelDto.fromJson(<String, dynamic>{
+      ...payload,
+      'assignmentId': assignmentId,
+      'pickupAddress':
+          payload['pickupAddress'] ?? payload['vendorAddress'] ?? '',
+      'deliveryAddress':
+          payload['deliveryAddress'] ?? payload['customerAddress'] ?? '',
+      'pickupLatitude':
+          payload['pickupLatitude'] ?? payload['vendorLatitude'] ?? 0,
+      'pickupLongitude':
+          payload['pickupLongitude'] ?? payload['vendorLongitude'] ?? 0,
+      'deliveryLatitude':
+          payload['deliveryLatitude'] ?? payload['customerLatitude'] ?? 0,
+      'deliveryLongitude':
+          payload['deliveryLongitude'] ?? payload['customerLongitude'] ?? 0,
+      'estimatedDistanceKm':
+          payload['estimatedDistanceKm'] ?? payload['distanceKm'] ?? 0,
+      'estimatedEta': payload['estimatedEta'] ?? payload['eta'] ?? '',
+      'payout': payload['payout'] ?? payload['deliveryFee'] ?? 0,
+      'orderItems': payload['orderItems'] ?? payload['items'] ?? const [],
+    });
+
+    emitHome(
+      DriverHomeModelDto(
+        homeState: _firstNonEmptyString([
+          payload['homeState'],
+          'IncomingOffer',
+          latestHome.homeState,
+        ])!,
+        operationalStatus: latestHome.operationalStatus,
+        currentOffer: offer,
+        currentAssignment: latestHome.currentAssignment,
+        earningsSummaryToday: latestHome.earningsSummaryToday,
+        unreadAlerts: latestHome.unreadAlerts,
+      ),
+    );
+    return true;
   }
 
   Future<void> _refreshHomeFromApi() async {
     try {
+      _log('Refreshing /drivers/home after realtime event');
       final home = await getHome();
+      _log(
+        'Home refresh result: state=${home.homeState}, '
+        'hasOffer=${home.currentOffer != null}, '
+        'offerId=${home.currentOffer?.assignmentId ?? 'n/a'}',
+      );
       emitHome(home);
     } catch (error) {
-      debugPrint('DriverHome refresh after notification failed: $error');
+      _log('Home refresh after notification failed: $error');
     }
   }
 
@@ -214,7 +455,67 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     return const <String, dynamic>{};
   }
 
-  String _resolveHubUrl(String hubPath) {
+  bool _shouldRefreshHomeForNotification(Map<String, dynamic> notification) {
+    final type = notification['type']?.toString().trim().toLowerCase() ?? '';
+    if (type == NetworkConstants.driverOfferNotificationType) {
+      return true;
+    }
+
+    final referenceId = notification['referenceId']?.toString().trim() ?? '';
+    final dataObject = _normalizeMap(notification['dataObject']);
+    final dataMap = _normalizeMap(notification['data']);
+    final nestedPayload = dataObject.isNotEmpty ? dataObject : dataMap;
+    final orderId = _firstNonEmptyString([
+      notification['orderId'],
+      notification['order_id'],
+      nestedPayload['orderId'],
+      nestedPayload['order_id'],
+    ]);
+    final assignmentId = _firstNonEmptyString([
+      notification['assignmentId'],
+      notification['assignment_id'],
+      nestedPayload['assignmentId'],
+      nestedPayload['assignment_id'],
+      referenceId,
+    ]);
+    final title = _firstNonEmptyString([
+      notification['titleAr'],
+      notification['titleEn'],
+      nestedPayload['titleAr'],
+      nestedPayload['titleEn'],
+    ]);
+    final body = _firstNonEmptyString([
+      notification['bodyAr'],
+      notification['bodyEn'],
+      nestedPayload['bodyAr'],
+      nestedPayload['bodyEn'],
+      notification['data'],
+    ]);
+    final searchableText = '$type ${title ?? ''} ${body ?? ''}'
+        .trim()
+        .toLowerCase();
+
+    if (assignmentId != null || orderId != null) {
+      return true;
+    }
+
+    return searchableText.contains('offer') ||
+        searchableText.contains('order') ||
+        searchableText.contains('طلب') ||
+        searchableText.contains('عرض');
+  }
+
+  String? _firstNonEmptyString(Iterable<dynamic> values) {
+    for (final value in values) {
+      final normalized = value?.toString().trim();
+      if (normalized != null && normalized.isNotEmpty) {
+        return normalized;
+      }
+    }
+    return null;
+  }
+
+  String _resolveHubUrl(String hubPath, {String? accessToken}) {
     final apiUri = Uri.parse(NetworkConstants.baseUrl);
     final baseSegments = List<String>.from(apiUri.pathSegments);
     if (baseSegments.isNotEmpty && baseSegments.last == 'api') {
@@ -232,6 +533,47 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         ? pathSegments
         : <String>[...baseSegments, ...pathSegments];
 
-    return apiUri.replace(pathSegments: resolvedSegments).toString();
+    final queryParameters = <String, String>{
+      ...apiUri.queryParameters,
+      if ((accessToken ?? '').trim().isNotEmpty)
+        'access_token': accessToken!.trim(),
+    };
+
+    return apiUri
+        .replace(
+          pathSegments: resolvedSegments,
+          queryParameters: queryParameters.isEmpty ? null : queryParameters,
+        )
+        .toString();
+  }
+
+  void _log(String message) {
+    debugPrint('$_logTag $message');
+  }
+
+  void _logConnectionStatus(String status, {String? hubPath, String? details}) {
+    final activeHubPath = (hubPath ?? NetworkConstants.notificationsHub).trim();
+    final suffix = (details ?? '').trim();
+    _log(
+      'SignalR[$status] hub=$activeHubPath state=${_connectionStateLabel(_hubConnection?.state)}'
+      '${suffix.isEmpty ? '' : ' | $suffix'}',
+    );
+  }
+
+  String _connectionStateLabel(HubConnectionState? state) {
+    switch (state) {
+      case HubConnectionState.Connected:
+        return 'CONNECTED';
+      case HubConnectionState.Connecting:
+        return 'CONNECTING';
+      case HubConnectionState.Reconnecting:
+        return 'RECONNECTING';
+      case HubConnectionState.Disconnecting:
+        return 'DISCONNECTING';
+      case HubConnectionState.Disconnected:
+        return 'DISCONNECTED';
+      case null:
+        return 'NULL';
+    }
   }
 }

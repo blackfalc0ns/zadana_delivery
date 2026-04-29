@@ -26,7 +26,7 @@ class ProfileCubit extends Cubit<ProfileState> {
     this._updatePersonalUseCase,
     this._updateVehicleUseCase,
     this._updateDocumentsUseCase,
-    this._getDriverZonesUseCase,
+    this._getDriverRegionsUseCase,
     this._picker,
   ) : super(const ProfileState());
 
@@ -35,7 +35,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   final UpdateDriverPersonalUseCase _updatePersonalUseCase;
   final UpdateDriverVehicleUseCase _updateVehicleUseCase;
   final UpdateDriverDocumentsUseCase _updateDocumentsUseCase;
-  final GetDriverZonesUseCase _getDriverZonesUseCase;
+  final GetDriverRegionsUseCase _getDriverRegionsUseCase;
   final ImagePicker _picker;
 
   Future<void> loadProfile() async {
@@ -70,9 +70,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> doIntent(ProfileFormEvent event) async {
     switch (event) {
       case ProfileFormLoadEvent():
-        await _loadForm(includeZones: event.includeZones);
-      case ProfileFormRetryZonesEvent():
-        await _retryZones();
+        await _loadForm(includeRegionCities: event.includeRegionCities);
+      case ProfileFormRetryRegionCitiesEvent():
+        await _retryRegionCities();
       case ProfileFormSavePersonalEvent():
         await _savePersonal(event.request);
       case ProfileFormSaveVehicleEvent():
@@ -87,8 +87,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   void clearError() {
-    if (state.failure == null && state.zonesFailure == null) return;
-    emit(state.copyWith(clearFailure: true, clearZonesFailure: true));
+    if (state.failure == null && state.regionCitiesFailure == null) return;
+    emit(state.copyWith(clearFailure: true, clearRegionCitiesFailure: true));
   }
 
   Future<bool> logout() async {
@@ -105,21 +105,21 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
-  Future<void> _loadForm({required bool includeZones}) async {
+  Future<void> _loadForm({required bool includeRegionCities}) async {
     emit(
       state.copyWith(
         isLoading: true,
-        isZonesLoading: includeZones,
+        isRegionCitiesLoading: includeRegionCities,
         isSuccess: false,
         clearFailure: true,
-        clearZonesFailure: true,
+        clearRegionCitiesFailure: true,
       ),
     );
 
     final profileResult = await _getProfileUseCase.call();
-    ApiResult<List<DriverZoneEntity>>? zonesResult;
-    if (includeZones) {
-      zonesResult = await _getDriverZonesUseCase.call();
+    ApiResult<List<DriverRegionCityEntity>>? regionCitiesResult;
+    if (includeRegionCities) {
+      regionCitiesResult = await _getDriverRegionsUseCase.call();
     }
 
     final profile = switch (profileResult) {
@@ -130,24 +130,24 @@ class ProfileCubit extends Cubit<ProfileState> {
       ApiSuccessResult() => null,
       ApiErrorResult() => profileResult.failure,
     };
-    final zones = switch (zonesResult) {
-      ApiSuccessResult() => zonesResult.data,
-      ApiErrorResult() => const <DriverZoneEntity>[],
-      null => state.zones,
+    final regionCities = switch (regionCitiesResult) {
+      ApiSuccessResult() => regionCitiesResult.data,
+      ApiErrorResult() => const <DriverRegionCityEntity>[],
+      null => state.regionCities,
     };
-    final zonesFailure = switch (zonesResult) {
+    final regionCitiesFailure = switch (regionCitiesResult) {
       ApiSuccessResult() => null,
-      ApiErrorResult() => zonesResult.failure,
-      null => state.zonesFailure,
+      ApiErrorResult() => regionCitiesResult.failure,
+      null => state.regionCitiesFailure,
     };
 
     emit(
       state.copyWith(
         isLoading: false,
-        isZonesLoading: false,
+        isRegionCitiesLoading: false,
         profile: profile,
-        zones: zones,
-        zonesFailure: zonesFailure,
+        regionCities: regionCities,
+        regionCitiesFailure: regionCitiesFailure,
         failure: failure,
         documentPaths: profile == null
             ? state.documentPaths
@@ -161,22 +161,30 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
-  Future<void> _retryZones() async {
-    emit(state.copyWith(isZonesLoading: true, clearZonesFailure: true));
-    final result = await _getDriverZonesUseCase.call();
+  Future<void> _retryRegionCities() async {
+    emit(
+      state.copyWith(
+        isRegionCitiesLoading: true,
+        clearRegionCitiesFailure: true,
+      ),
+    );
+    final result = await _getDriverRegionsUseCase.call();
 
     switch (result) {
       case ApiSuccessResult():
         emit(
           state.copyWith(
-            isZonesLoading: false,
-            zones: result.data,
-            clearZonesFailure: true,
+            isRegionCitiesLoading: false,
+            regionCities: result.data,
+            clearRegionCitiesFailure: true,
           ),
         );
       case ApiErrorResult():
         emit(
-          state.copyWith(isZonesLoading: false, zonesFailure: result.failure),
+          state.copyWith(
+            isRegionCitiesLoading: false,
+            regionCitiesFailure: result.failure,
+          ),
         );
     }
   }

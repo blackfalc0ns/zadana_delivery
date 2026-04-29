@@ -1,4 +1,5 @@
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_generator.dart';
@@ -11,7 +12,13 @@ import 'package:zadana_delivery/core/services/language_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-  runApp(DevicePreview(builder: (context) => const MyApp()));
+  runApp(
+    DevicePreview(
+      // ignore: avoid_redundant_argument_values
+      enabled: !kReleaseMode,
+      builder: (context) => const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -49,7 +56,7 @@ class _MyAppState extends State<MyApp> {
           locale: _localeCubit.locale,
           theme: AppTheme.light,
           onGenerateRoute: RouteGenerator.getRoute,
-          initialRoute: AppRoutes.mainShell,
+          initialRoute: AppRoutes.authGate,
         ),
       ),
     );

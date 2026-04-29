@@ -22,6 +22,7 @@ class OrderAssignmentDetailsModelDto {
     required this.pickupOtpStatus,
     required this.deliveryOtpRequired,
     required this.deliveryOtpStatus,
+    required this.pickupOtpCode,
     required this.driverArrivalState,
     required this.orderItems,
   });
@@ -52,6 +53,7 @@ class OrderAssignmentDetailsModelDto {
       pickupOtpStatus: json['pickupOtpStatus']?.toString() ?? '',
       deliveryOtpRequired: _asBool(json['deliveryOtpRequired']),
       deliveryOtpStatus: json['deliveryOtpStatus']?.toString() ?? '',
+      pickupOtpCode: json['pickupOtpCode']?.toString(),
       driverArrivalState: json['driverArrivalState']?.toString() ?? '',
       orderItems: _asList(json['orderItems'])
           .map((item) => OrderAssignmentItemModelDto.fromJson(_asMap(item)))
@@ -81,6 +83,7 @@ class OrderAssignmentDetailsModelDto {
   final String pickupOtpStatus;
   final bool deliveryOtpRequired;
   final String deliveryOtpStatus;
+  final String? pickupOtpCode;
   final String driverArrivalState;
   final List<OrderAssignmentItemModelDto> orderItems;
 }

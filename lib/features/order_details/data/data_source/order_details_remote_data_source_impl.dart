@@ -25,6 +25,95 @@ class OrderDetailsRemoteDataSourceImpl implements OrderDetailsRemoteDataSource {
     }
   }
 
+  @override
+  Future<void> markOrderPickedUp(String orderId) async {
+    try {
+      await _apiServices.markOrderPickedUp(orderId);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> markOrderOnTheWay(String orderId) async {
+    try {
+      await _apiServices.markOrderOnTheWay(orderId);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> markOrderDelivered(
+    String orderId, {
+    Map<String, dynamic>? request,
+  }) async {
+    try {
+      await _apiServices.markOrderDelivered(orderId, request ?? const {});
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> markOrderDeliveryFailed(
+    String orderId, {
+    Map<String, dynamic>? request,
+  }) async {
+    try {
+      await _apiServices.markOrderDeliveryFailed(orderId, request ?? const {});
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> updateAssignmentStatus(
+    String assignmentId, {
+    required String newStatus,
+  }) async {
+    try {
+      await _apiServices.updateDriverAssignmentStatus(assignmentId, {
+        'newStatus': newStatus,
+      });
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> verifyDeliveryOtp(
+    String assignmentId, {
+    required String otpCode,
+  }) async {
+    try {
+      await _apiServices.verifyDriverAssignmentOtp(assignmentId, {
+        'otpType': 'delivery',
+        'otpCode': otpCode,
+      });
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> markOrderArrivedAtVendor(String orderId) async {
+    try {
+      await _apiServices.markOrderArrivedAtVendor(orderId);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> markOrderArrivedAtCustomer(String orderId) async {
+    try {
+      await _apiServices.markOrderArrivedAtCustomer(orderId);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
   Map<String, dynamic> _normalizeMap(dynamic value) {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);

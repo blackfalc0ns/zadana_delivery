@@ -11,12 +11,14 @@ class DriverHomeConnectionSwitch extends StatelessWidget {
     required this.onChanged,
     this.isEnabled = true,
     this.isLoading = false,
+    this.onDisabledTap,
   });
 
   final bool isOnline;
   final ValueChanged<bool> onChanged;
   final bool isEnabled;
   final bool isLoading;
+  final VoidCallback? onDisabledTap;
 
   @override
   Widget build(BuildContext context) {
@@ -25,111 +27,115 @@ class DriverHomeConnectionSwitch extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final accent = isOnline ? color.primary : color.onSurface;
     final indicatorColor = isOnline ? const Color(0xFF20B45B) : color.outline;
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            isDark
-                ? color.surfaceContainerHigh
-                : color.surface.withValues(alpha: 0.98),
-            isDark
-                ? color.surfaceContainer
-                : color.surfaceContainerLowest.withValues(alpha: 0.93),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(
-          color: isDark
-              ? color.outlineVariant.withValues(alpha: 0.38)
-              : Colors.white.withValues(alpha: 0.72),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: color.shadow.withValues(alpha: isDark ? 0.20 : 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
+    return GestureDetector(
+      onTap: !isEnabled && !isLoading ? onDisabledTap : null,
+      behavior: HitTestBehavior.opaque,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              isDark
+                  ? color.surfaceContainerHigh
+                  : color.surface.withValues(alpha: 0.98),
+              isDark
+                  ? color.surfaceContainer
+                  : color.surfaceContainerLowest.withValues(alpha: 0.93),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.only(
-          start: 16,
-          end: 8,
-          top: 7,
-          bottom: 7,
+          borderRadius: BorderRadius.circular(999),
+          border: Border.all(
+            color: isDark
+                ? color.outlineVariant.withValues(alpha: 0.38)
+                : Colors.white.withValues(alpha: 0.72),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: color.shadow.withValues(alpha: isDark ? 0.20 : 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 220),
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: indicatorColor,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: indicatorColor.withValues(alpha: 0.35),
-                    blurRadius: 10,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.only(
+            start: 16,
+            end: 8,
+            top: 7,
+            bottom: 7,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AnimatedContainer(
+                duration: const Duration(milliseconds: 220),
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: indicatorColor,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: indicatorColor.withValues(alpha: 0.35),
+                      blurRadius: 10,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isOnline
+                        ? locale.driver_home_connection_online_title
+                        : locale.driver_home_connection_offline_title,
+                    style: getBoldStyle(
+                      fontFamily: FontConstant.cairo,
+                      color: accent,
+                    ),
+                  ),
+                  Text(
+                    isOnline
+                        ? locale.driver_home_connection_online_subtitle
+                        : locale.driver_home_connection_offline_subtitle,
+                    style: getRegularStyle(
+                      fontFamily: FontConstant.cairo,
+                      fontSize: FontSize.size10,
+                      color: color.onSurface.withValues(alpha: 0.58),
+                    ),
                   ),
                 ],
               ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isOnline
-                      ? locale.driver_home_connection_online_title
-                      : locale.driver_home_connection_offline_title,
-                  style: getBoldStyle(
-                    fontFamily: FontConstant.cairo,
-                    color: accent,
+              const SizedBox(width: 10),
+              if (isLoading)
+                SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: Center(
+                    child: CustomProgressIndicator.compact(
+                      size: 18,
+                      tintColor: color.primary,
+                    ),
+                  ),
+                )
+              else
+                Transform.scale(
+                  scale: 0.78,
+                  child: Switch(
+                    value: isOnline,
+                    onChanged: isEnabled ? onChanged : null,
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    activeThumbColor: color.primary,
+                    activeTrackColor: color.primary.withValues(alpha: 0.32),
+                    inactiveThumbColor: color.surface,
+                    inactiveTrackColor: color.outline.withValues(alpha: 0.28),
                   ),
                 ),
-                Text(
-                  isOnline
-                      ? locale.driver_home_connection_online_subtitle
-                      : locale.driver_home_connection_offline_subtitle,
-                  style: getRegularStyle(
-                    fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size10,
-                    color: color.onSurface.withValues(alpha: 0.58),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(width: 10),
-            if (isLoading)
-              SizedBox(
-                width: 28,
-                height: 28,
-                child: Center(
-                  child: CustomProgressIndicator.compact(
-                    size: 18,
-                    tintColor: color.primary,
-                  ),
-                ),
-              )
-            else
-              Transform.scale(
-                scale: 0.78,
-                child: Switch(
-                  value: isOnline,
-                  onChanged: isEnabled ? onChanged : null,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  activeThumbColor: color.primary,
-                  activeTrackColor: color.primary.withValues(alpha: 0.32),
-                  inactiveThumbColor: color.surface,
-                  inactiveTrackColor: color.outline.withValues(alpha: 0.28),
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -9,24 +9,26 @@ class DriverHomeModelDto {
   });
 
   factory DriverHomeModelDto.fromJson(Map<String, dynamic> json) {
+    final currentOfferJson = _asMap(json['currentOffer']);
+    final earningsJson = _asMap(
+      json['earningsSummaryToday'] ?? json['earnings'],
+    );
     return DriverHomeModelDto(
       homeState: json['homeState']?.toString() ?? '',
       operationalStatus: DriverHomeOperationalStatusModelDto.fromJson(
         _asMap(json['operationalStatus']),
       ),
-      currentOffer: json['currentOffer'] == null
+      currentOffer: currentOfferJson.isEmpty
           ? null
-          : DriverHomeOfferModelDto.fromJson(_asMap(json['currentOffer'])),
+          : DriverHomeOfferModelDto.fromJson(currentOfferJson),
       currentAssignment: json['currentAssignment'] == null
           ? null
           : DriverHomeAssignmentModelDto.fromJson(
               _asMap(json['currentAssignment']),
             ),
-      earningsSummaryToday: json['earningsSummaryToday'] == null
+      earningsSummaryToday: earningsJson.isEmpty
           ? null
-          : DriverHomeEarningsModelDto.fromJson(
-              _asMap(json['earningsSummaryToday']),
-            ),
+          : DriverHomeEarningsModelDto.fromJson(earningsJson),
       unreadAlerts: _asInt(json['unreadAlerts']),
     );
   }
@@ -111,28 +113,45 @@ class DriverHomeOfferModelDto {
   });
 
   factory DriverHomeOfferModelDto.fromJson(Map<String, dynamic> json) {
+    final orderItems = _asList(json['orderItems'] ?? json['items']);
     return DriverHomeOfferModelDto(
       assignmentId: json['assignmentId']?.toString() ?? '',
       orderId: json['orderId']?.toString() ?? '',
       orderNumber: json['orderNumber']?.toString() ?? '',
       vendorName: json['vendorName']?.toString() ?? '',
-      pickupAddress: json['pickupAddress']?.toString() ?? '',
-      pickupLatitude: _asDouble(json['pickupLatitude']),
-      pickupLongitude: _asDouble(json['pickupLongitude']),
+      pickupAddress:
+          json['pickupAddress']?.toString() ??
+          json['vendorAddress']?.toString() ??
+          '',
+      pickupLatitude: _asDouble(
+        json['pickupLatitude'] ?? json['vendorLatitude'],
+      ),
+      pickupLongitude: _asDouble(
+        json['pickupLongitude'] ?? json['vendorLongitude'],
+      ),
       customerName: json['customerName']?.toString() ?? '',
-      deliveryAddress: json['deliveryAddress']?.toString() ?? '',
-      deliveryLatitude: _asDouble(json['deliveryLatitude']),
-      deliveryLongitude: _asDouble(json['deliveryLongitude']),
-      estimatedDistanceKm: _asDouble(json['estimatedDistanceKm']),
+      deliveryAddress:
+          json['deliveryAddress']?.toString() ??
+          json['customerAddress']?.toString() ??
+          '',
+      deliveryLatitude: _asDouble(
+        json['deliveryLatitude'] ?? json['customerLatitude'],
+      ),
+      deliveryLongitude: _asDouble(
+        json['deliveryLongitude'] ?? json['customerLongitude'],
+      ),
+      estimatedDistanceKm: _asDouble(
+        json['estimatedDistanceKm'] ?? json['distanceKm'],
+      ),
       estimatedEta: json['estimatedEta']?.toString() ?? '',
-      payout: _asDouble(json['payout']),
+      payout: _asDouble(json['payout'] ?? json['deliveryFee']),
       countdownSeconds: _asInt(json['countdownSeconds']),
-      orderItems: _asList(json['orderItems'])
+      orderItems: orderItems
           .map((item) => DriverHomeOfferItemModelDto.fromJson(_asMap(item)))
           .toList(),
       vendorInitials: json['vendorInitials']?.toString(),
       customerInitials: json['customerInitials']?.toString(),
-      packageNote: json['packageNote']?.toString(),
+      packageNote: json['packageNote']?.toString() ?? json['notes']?.toString(),
     );
   }
 
@@ -166,9 +185,9 @@ class DriverHomeOfferItemModelDto {
 
   factory DriverHomeOfferItemModelDto.fromJson(Map<String, dynamic> json) {
     return DriverHomeOfferItemModelDto(
-      name: json['name']?.toString() ?? '',
+      name: json['name']?.toString() ?? json['productName']?.toString() ?? '',
       quantity: _asInt(json['quantity']),
-      note: json['note']?.toString(),
+      note: json['note']?.toString() ?? json['notes']?.toString(),
     );
   }
 
@@ -197,6 +216,7 @@ class DriverHomeAssignmentModelDto {
     required this.plateNumber,
     required this.pickupOtpRequired,
     required this.deliveryOtpRequired,
+    required this.pickupOtpCode,
   });
 
   factory DriverHomeAssignmentModelDto.fromJson(Map<String, dynamic> json) {
@@ -219,6 +239,7 @@ class DriverHomeAssignmentModelDto {
       plateNumber: json['plateNumber']?.toString() ?? '',
       pickupOtpRequired: _asBool(json['pickupOtpRequired']),
       deliveryOtpRequired: _asBool(json['deliveryOtpRequired']),
+      pickupOtpCode: json['pickupOtpCode']?.toString(),
     );
   }
 
@@ -240,6 +261,7 @@ class DriverHomeAssignmentModelDto {
   final String plateNumber;
   final bool pickupOtpRequired;
   final bool deliveryOtpRequired;
+  final String? pickupOtpCode;
 }
 
 class DriverHomeEarningsModelDto {
@@ -250,7 +272,9 @@ class DriverHomeEarningsModelDto {
 
   factory DriverHomeEarningsModelDto.fromJson(Map<String, dynamic> json) {
     return DriverHomeEarningsModelDto(
-      earningsAmount: _asDouble(json['earningsAmount']),
+      earningsAmount: _asDouble(
+        json['earningsAmount'] ?? json['earningsToday'],
+      ),
       completedTrips: _asInt(json['completedTrips']),
     );
   }

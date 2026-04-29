@@ -90,6 +90,7 @@ extension DriverHomeAssignmentModelMapper on DriverHomeAssignmentModelDto {
       plateNumber: plateNumber,
       pickupOtpRequired: pickupOtpRequired,
       deliveryOtpRequired: deliveryOtpRequired,
+      pickupOtpCode: pickupOtpCode,
     );
   }
 }

@@ -1193,7 +1193,7 @@ abstract class AppLocalizations {
   /// No description provided for @arabic.
   ///
   /// In en, this message translates to:
-  /// **'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©'**
+  /// **'Arabic'**
   String get arabic;
 
   /// No description provided for @english.
@@ -3971,11 +3971,35 @@ abstract class AppLocalizations {
   /// **'Show this code to the store so the order can be handed to you'**
   String get order_details_pickup_code_subtitle;
 
+  /// No description provided for @order_details_pickup_code_copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup code copied'**
+  String get order_details_pickup_code_copied;
+
+  /// No description provided for @order_details_waiting_for_merchant_confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for merchant confirmation...'**
+  String get order_details_waiting_for_merchant_confirmation;
+
   /// No description provided for @order_details_confirm_pickup.
   ///
   /// In en, this message translates to:
   /// **'Confirm pickup from store'**
   String get order_details_confirm_pickup;
+
+  /// No description provided for @order_details_arrived_at_vendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at vendor'**
+  String get order_details_arrived_at_vendor;
+
+  /// No description provided for @order_details_arrived_at_customer.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at customer'**
+  String get order_details_arrived_at_customer;
 
   /// No description provided for @order_details_order_items_title.
   ///

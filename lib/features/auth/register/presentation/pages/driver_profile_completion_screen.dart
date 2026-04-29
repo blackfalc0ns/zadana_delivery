@@ -38,7 +38,7 @@ class _DriverProfileCompletionScreenState
   bool _didSeedControllers = false;
 
   late final DriverProfileCompletionCubit _cubit;
-  late final RegisterZonesCubit _zonesCubit;
+  late final RegisterRegionsCubit _regionsCubit;
 
   @override
   void initState() {
@@ -51,7 +51,7 @@ class _DriverProfileCompletionScreenState
       updateDocumentsUseCase: getIt<UpdateDriverDocumentsUseCase>(),
       imagePicker: getIt(),
     )..initialize(registrationDraft: widget.registrationDraft);
-    _zonesCubit = getIt<RegisterZonesCubit>()..loadZones();
+    _regionsCubit = getIt<RegisterRegionsCubit>()..loadRegionCities();
 
     for (final controller in [
       _addressController,
@@ -65,7 +65,7 @@ class _DriverProfileCompletionScreenState
   @override
   void dispose() {
     _cubit.close();
-    _zonesCubit.close();
+    _regionsCubit.close();
     _addressController.dispose();
     _nationalIdController.dispose();
     _licenseNumberController.dispose();
@@ -82,10 +82,10 @@ class _DriverProfileCompletionScreenState
     final currentDraft = _cubit.state.draft;
     return RegisterProfileDraft(
       vehicleType: currentDraft.vehicleType,
-      zoneId: currentDraft.zoneId,
-      zoneRegionCode: currentDraft.zoneRegionCode,
-      zoneName: currentDraft.zoneName,
-      zoneCity: currentDraft.zoneCity,
+      cityId: currentDraft.cityId,
+      regionCode: currentDraft.regionCode,
+      cityName: currentDraft.cityName,
+      regionName: currentDraft.regionName,
       address: _addressController.text.trim(),
       nationalId: _nationalIdController.text.trim(),
       licenseNumber: _licenseNumberController.text.trim(),
@@ -116,7 +116,7 @@ class _DriverProfileCompletionScreenState
           !needsFormValidation || (_formKey.currentState?.validate() ?? false),
       vehicleRequiredMessage:
           context.localization.driver_profile_vehicle_required_error,
-      zoneRequiredMessage:
+      cityRequiredMessage:
           context.localization.driver_profile_zone_required_error,
       imagesRequiredMessage:
           context.localization.driver_profile_images_required_error,
@@ -151,7 +151,7 @@ class _DriverProfileCompletionScreenState
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _cubit),
-        BlocProvider.value(value: _zonesCubit),
+        BlocProvider.value(value: _regionsCubit),
       ],
       child:
           BlocConsumer<
@@ -166,8 +166,10 @@ class _DriverProfileCompletionScreenState
             listener: (context, state) {
               _seedControllersOnce(state);
 
-              if ((state.successMessage ?? '').trim().isEmpty ||
-                  (state.targetRoute ?? '').trim().isEmpty) {
+              final successMessage = (state.successMessage ?? '').trim();
+              final targetRoute = (state.targetRoute ?? '').trim();
+
+              if (targetRoute.isEmpty) {
                 final exception = state.failure?.asException;
                 if (!state.isLoading &&
                     exception != null &&
@@ -183,12 +185,14 @@ class _DriverProfileCompletionScreenState
                 return;
               }
 
-              CustomSnackbar.showSuccess(
-                context: context,
-                message: state.successMessage!,
-              );
+              if (successMessage.isNotEmpty) {
+                CustomSnackbar.showSuccess(
+                  context: context,
+                  message: successMessage,
+                );
+              }
               context.pushNamedAndRemoveUntil(
-                state.targetRoute!,
+                targetRoute,
                 rootNavigator: true,
                 predicate: (route) => false,
               );
@@ -225,7 +229,7 @@ class _DriverProfileCompletionScreenState
                         onBack: _goBack,
                         onNext: _goNext,
                         onVehicleTypeChanged: _cubit.updateVehicleType,
-                        onZoneChanged: _cubit.updateZone,
+                        onRegionCityChanged: _cubit.updateRegionCity,
                         onPickImage: _pickImage,
                       ),
                     ),

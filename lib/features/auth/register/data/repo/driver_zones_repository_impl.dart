@@ -6,19 +6,19 @@ import '../../domain/repo/driver_zones_repository.dart';
 import '../data_source/driver_zones_remote_data_source.dart';
 import '../mapper/driver_zone_mapper.dart';
 
-@Injectable(as: DriverZonesRepository)
-class DriverZonesRepositoryImpl implements DriverZonesRepository {
-  const DriverZonesRepositoryImpl(this._remoteDataSource);
+@Injectable(as: DriverRegionsRepository)
+class DriverRegionsRepositoryImpl implements DriverRegionsRepository {
+  const DriverRegionsRepositoryImpl(this._remoteDataSource);
 
-  final DriverZonesRemoteDataSource _remoteDataSource;
+  final DriverRegionsRemoteDataSource _remoteDataSource;
 
   @override
-  Future<ApiResult<List<DriverZoneEntity>>> getZones() {
+  Future<ApiResult<List<DriverRegionCityEntity>>> getRegionCities() {
     return safeApiCall(() async {
-      final zones = await _remoteDataSource.getZones();
-      return zones
-          .map((zone) => zone.toEntity())
-          .where((zone) => zone.isActive)
+      final regionCities = await _remoteDataSource.getRegionCities();
+      return regionCities
+          .map((item) => item.toEntity())
+          .where((item) => item.isActive)
           .toList(growable: false);
     });
   }

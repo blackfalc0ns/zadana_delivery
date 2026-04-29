@@ -22,6 +22,7 @@ class OrderAssignmentDetailsEntity {
     required this.pickupOtpStatus,
     required this.deliveryOtpRequired,
     required this.deliveryOtpStatus,
+    required this.pickupOtpCode,
     required this.driverArrivalState,
     required this.orderItems,
   });
@@ -48,6 +49,7 @@ class OrderAssignmentDetailsEntity {
   final String pickupOtpStatus;
   final bool deliveryOtpRequired;
   final String deliveryOtpStatus;
+  final String? pickupOtpCode;
   final String driverArrivalState;
   final List<OrderAssignmentItemEntity> orderItems;
 }

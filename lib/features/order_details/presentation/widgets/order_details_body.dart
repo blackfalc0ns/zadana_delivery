@@ -5,6 +5,7 @@ import 'package:zadana_delivery/features/order_details/presentation/widgets/orde
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_hero_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_items_details_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_map_card.dart';
+import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_pickup_otp_banner.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_route_buttons.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_status_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_store_details_card.dart';
@@ -16,6 +17,8 @@ class OrderDetailsBody extends StatelessWidget {
     required this.order,
     required this.paymentMethod,
     required this.isCashPayment,
+    required this.pickupOtpCode,
+    required this.isWaitingForMerchantConfirmation,
     required this.items,
     required this.markers,
     required this.showStoreRouteFirst,
@@ -32,6 +35,8 @@ class OrderDetailsBody extends StatelessWidget {
   final DriverOrderPreview order;
   final String paymentMethod;
   final bool isCashPayment;
+  final String? pickupOtpCode;
+  final bool isWaitingForMerchantConfirmation;
   final List<DriverOrderItemPreview> items;
   final Set<Marker> markers;
   final bool showStoreRouteFirst;
@@ -64,7 +69,14 @@ class OrderDetailsBody extends StatelessWidget {
                     isCashPayment: isCashPayment,
                   ),
                   const SizedBox(height: 10),
-                 
+                  if ((pickupOtpCode ?? '').trim().isNotEmpty) ...[
+                    OrderDetailsPickupOtpBanner(
+                      otpCode: pickupOtpCode!.trim(),
+                      isWaitingForMerchantConfirmation:
+                          isWaitingForMerchantConfirmation,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                   ItemsDetailsCard(items: items, onTap: onShowItems),
                   const SizedBox(height: 10),
                   StoreDetailsCard(order: order, onCall: onCallStore),

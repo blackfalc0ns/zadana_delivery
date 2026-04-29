@@ -20,7 +20,7 @@ class DriverProfileCompletionContent extends StatelessWidget {
     required this.onBack,
     required this.onNext,
     required this.onVehicleTypeChanged,
-    required this.onZoneChanged,
+    required this.onRegionCityChanged,
     required this.onPickImage,
   });
 
@@ -32,7 +32,7 @@ class DriverProfileCompletionContent extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onNext;
   final ValueChanged<String> onVehicleTypeChanged;
-  final ValueChanged<DriverZoneEntity> onZoneChanged;
+  final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
   final ValueChanged<String> onPickImage;
 
   @override
@@ -91,7 +91,7 @@ class DriverProfileCompletionContent extends StatelessWidget {
                   nationalIdController: nationalIdController,
                   licenseNumberController: licenseNumberController,
                   onVehicleTypeChanged: onVehicleTypeChanged,
-                  onZoneChanged: onZoneChanged,
+                  onRegionCityChanged: onRegionCityChanged,
                   onPickImage: onPickImage,
                 ),
               ),

@@ -27,17 +27,17 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   late final TextEditingController _nationalIdController;
   late final TextEditingController _licenseController;
   String _vehicleType = DriverVehicleType.car;
-  String _selectedZoneId = '';
+  String _selectedCityId = '';
   String _selectedRegionCode = '';
-  String _selectedZoneName = '';
-  String _selectedZoneCity = '';
+  String _selectedCityName = '';
+  String _selectedRegionName = '';
   bool _didSeedControllers = false;
 
   @override
   void initState() {
     super.initState();
     _cubit = getIt<ProfileCubit>()
-      ..doIntent(const ProfileFormLoadEvent(includeZones: true));
+      ..doIntent(const ProfileFormLoadEvent(includeRegionCities: true));
     _nationalIdController = TextEditingController();
     _licenseController = TextEditingController();
     _nationalIdController.addListener(_cubit.clearError);
@@ -65,10 +65,10 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             _vehicleType = DriverVehicleType.normalize(profile.vehicleType);
             _nationalIdController.text = profile.nationalId;
             _licenseController.text = profile.licenseNumber;
-            _selectedZoneId = profile.primaryZoneId;
+            _selectedCityId = profile.primaryZoneId;
             _selectedRegionCode = '';
-            _selectedZoneName = profile.zoneName;
-            _selectedZoneCity = '';
+            _selectedCityName = profile.zoneName;
+            _selectedRegionName = '';
           }
 
           if (state.isSuccess) {
@@ -110,7 +110,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                 child: ApiErrorWidget(
                   exception: state.failure!.asException,
                   onRetry: () => _cubit.doIntent(
-                    const ProfileFormLoadEvent(includeZones: true),
+                    const ProfileFormLoadEvent(includeRegionCities: true),
                   ),
                   onGoBack: () =>
                       _cubit.doIntent(const ProfileFormClearErrorEvent()),
@@ -134,21 +134,21 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                 onTypeChanged: _selectType,
                 nationalIdController: _nationalIdController,
                 licenseController: _licenseController,
-                zones: state.zones,
-                isZonesLoading: state.isZonesLoading,
-                selectedZoneId: _selectedZoneId,
+                regionCities: state.regionCities,
+                isRegionCitiesLoading: state.isRegionCitiesLoading,
+                selectedCityId: _selectedCityId,
                 selectedRegionCode: _selectedRegionCode,
-                selectedZoneName: _selectedZoneName,
-                selectedZoneCity: _selectedZoneCity,
-                zonesFailure: state.zonesFailure,
-                onRetryZones: () =>
-                    _cubit.doIntent(const ProfileFormRetryZonesEvent()),
-                onZoneChanged: (zone) {
+                selectedCityName: _selectedCityName,
+                selectedRegionName: _selectedRegionName,
+                regionCitiesFailure: state.regionCitiesFailure,
+                onRetryRegionCities: () =>
+                    _cubit.doIntent(const ProfileFormRetryRegionCitiesEvent()),
+                onRegionCityChanged: (regionCity) {
                   setState(() {
-                    _selectedZoneId = zone.id;
-                    _selectedRegionCode = zone.regionCode;
-                    _selectedZoneName = zone.name;
-                    _selectedZoneCity = zone.city;
+                    _selectedCityId = regionCity.id;
+                    _selectedRegionCode = regionCity.regionCode;
+                    _selectedCityName = regionCity.cityName;
+                    _selectedRegionName = regionCity.regionName;
                   });
                   _cubit.clearError();
                 },
@@ -167,7 +167,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    if (_selectedZoneId.trim().isEmpty) {
+    if (_selectedCityId.trim().isEmpty) {
       CustomSnackbar.showError(
         context: context,
         message: context.localization.driver_profile_zone_required_error,
@@ -181,7 +181,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
           vehicleType: _vehicleType,
           nationalId: _nationalIdController.text,
           licenseNumber: _licenseController.text,
-          primaryZoneId: _selectedZoneId,
+          primaryZoneId: _selectedCityId,
         ),
       ),
     );

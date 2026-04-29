@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_confirmation_dialog.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_customer_otp_sheet_content.dart';
@@ -65,46 +67,47 @@ class OrderDetailsSheets {
   static Future<void> showPickupOtpSheet({
     required BuildContext context,
     required String otp,
-    required VoidCallback onConfirm,
+    VoidCallback? onConfirm,
   }) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => PickupOtpSheetContent(
-        otp: otp,
-        onConfirm: () {
-          Navigator.of(sheetContext).pop();
-          onConfirm();
+      builder: (sheetContext) => GestureDetector(
+        onTap: () async {
+          await Clipboard.setData(ClipboardData(text: otp));
+          if (!sheetContext.mounted) return;
+          CustomSnackbar.showInfo(
+            context: sheetContext,
+            message:
+                sheetContext.localization.order_details_pickup_code_copied,
+          );
         },
+        child: PickupOtpSheetContent(
+          otp: otp,
+          onConfirm: onConfirm == null
+              ? null
+              : () {
+                  Navigator.of(sheetContext).pop();
+                  onConfirm();
+                },
+        ),
       ),
     );
   }
 
-  static Future<bool> showCustomerOtpSheet(BuildContext context) async {
-    var enteredOtp = '';
-    final isConfirmed = await showModalBottomSheet<bool>(
+  static Future<void> showCustomerOtpSheet({
+    required BuildContext context,
+    required Future<bool> Function(String otpCode) onSubmit,
+  }) async {
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => CustomerOtpSheetContent(
         sheetContext: sheetContext,
-        onChanged: (value) => enteredOtp = value,
-        onConfirm: () {
-          if (enteredOtp.trim().isEmpty) {
-            ScaffoldMessenger.of(sheetContext).showSnackBar(
-              SnackBar(
-                content: Text(
-                  sheetContext.localization.order_details_enter_otp_snackbar,
-                ),
-              ),
-            );
-            return;
-          }
-          Navigator.of(sheetContext).pop(true);
-        },
+        onSubmit: onSubmit,
       ),
     );
-    return isConfirmed == true;
   }
 }

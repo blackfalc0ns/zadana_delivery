@@ -8,7 +8,6 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/constants/assets.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_cubit.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
@@ -98,19 +97,20 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
                         Expanded(
                           flex: 5,
                           child: Center(
-                            child: state.isLoading
-                                ? const CustomProgressIndicator()
-                                : ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 460,
-                                      maxHeight: 460,
-                                    ),
-                                    child: Lottie.asset(
-                                      Assets.splash,
-                                      fit: BoxFit.contain,
-                                      repeat: true,
-                                    ),
-                                  ),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxWidth: 460,
+                                maxHeight: 460,
+                              ),
+                              child: Opacity(
+                                opacity: state.isLoading ? 1 : 0.94,
+                                child: Lottie.asset(
+                                  Assets.splash,
+                                  fit: BoxFit.contain,
+                                  repeat: true,
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                         Container(

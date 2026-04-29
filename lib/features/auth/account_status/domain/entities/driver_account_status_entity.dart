@@ -44,4 +44,14 @@ class DriverAccountStatusEntity {
       normalizedAccountStatus == 'inactive' ||
       normalizedAccountStatus == 'rejected' ||
       normalizedVerificationStatus == 'rejected';
+
+  bool get isApproved =>
+      normalizedAccountStatus == 'active' ||
+      normalizedAccountStatus == 'approved' ||
+      normalizedVerificationStatus == 'approved' ||
+      normalizedVerificationStatus == 'verified';
+
+  bool get hasCompletedProfile => (primaryZoneId ?? '').trim().isNotEmpty;
+
+  bool get shouldGoHome => isApproved && !isPendingReview && !isBlocked;
 }

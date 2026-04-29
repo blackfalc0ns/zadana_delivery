@@ -26,6 +26,7 @@ extension OrderAssignmentDetailsModelMapper on OrderAssignmentDetailsModelDto {
       pickupOtpStatus: pickupOtpStatus,
       deliveryOtpRequired: deliveryOtpRequired,
       deliveryOtpStatus: deliveryOtpStatus,
+      pickupOtpCode: pickupOtpCode,
       driverArrivalState: driverArrivalState,
       orderItems: orderItems
           .map((item) => item.toEntity())

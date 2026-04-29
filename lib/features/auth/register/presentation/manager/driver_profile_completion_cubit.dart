@@ -94,13 +94,13 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     updateDraft(state.draft.copyWith(vehicleType: normalized));
   }
 
-  void updateZone(DriverZoneEntity zone) {
+  void updateRegionCity(DriverRegionCityEntity regionCity) {
     updateDraft(
       state.draft.copyWith(
-        zoneId: zone.id,
-        zoneRegionCode: zone.regionCode,
-        zoneName: zone.name,
-        zoneCity: zone.city,
+        cityId: regionCity.id,
+        regionCode: regionCity.regionCode,
+        cityName: regionCity.cityName,
+        regionName: regionCity.regionName,
       ),
     );
   }
@@ -137,14 +137,14 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
   Future<String?> goNext({
     required bool isFormValid,
     required String vehicleRequiredMessage,
-    required String zoneRequiredMessage,
+    required String cityRequiredMessage,
     required String imagesRequiredMessage,
     required String profileSuccessMessage,
   }) async {
     final validationMessage = _validateCurrentStep(
       isFormValid: isFormValid,
       vehicleRequiredMessage: vehicleRequiredMessage,
-      zoneRequiredMessage: zoneRequiredMessage,
+      cityRequiredMessage: cityRequiredMessage,
       imagesRequiredMessage: imagesRequiredMessage,
     );
 
@@ -173,7 +173,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
   String? _validateCurrentStep({
     required bool isFormValid,
     required String vehicleRequiredMessage,
-    required String zoneRequiredMessage,
+    required String cityRequiredMessage,
     required String imagesRequiredMessage,
   }) {
     final draft = _normalizeDraft(state.draft);
@@ -182,8 +182,8 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
       return vehicleRequiredMessage;
     }
 
-    if (state.currentStep == 1 && draft.zoneId.trim().isEmpty) {
-      return zoneRequiredMessage;
+    if (state.currentStep == 1 && draft.cityId.trim().isEmpty) {
+      return cityRequiredMessage;
     }
 
     if (state.currentStep == 2 || state.currentStep == 3) {
@@ -235,10 +235,10 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
             draft: _normalizeDraft(
               RegisterProfileDraft(
                 vehicleType: result.data.vehicleType,
-                zoneId: result.data.primaryZoneId,
-                zoneRegionCode: '',
-                zoneName: result.data.zoneName,
-                zoneCity: '',
+                cityId: result.data.primaryZoneId,
+                regionCode: '',
+                cityName: result.data.zoneName,
+                regionName: '',
                 address: result.data.address,
                 nationalId: result.data.nationalId,
                 licenseNumber: result.data.licenseNumber,
@@ -308,8 +308,8 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         nationalId: draft.nationalId,
         licenseNumber: draft.licenseNumber,
         address: draft.address,
-        region: draft.zoneRegionCode,
-        city: draft.zoneId,
+        region: draft.regionCode,
+        city: draft.cityId,
         nationalIdFrontImagePath: draft.images['idFront'] ?? '',
         nationalIdBackImagePath: draft.images['idBack'] ?? '',
         licenseImagePath: draft.images['license'] ?? '',
@@ -356,7 +356,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         vehicleType: draft.vehicleType,
         nationalId: draft.nationalId,
         licenseNumber: draft.licenseNumber,
-        primaryZoneId: draft.zoneId,
+        primaryZoneId: draft.cityId,
       ),
     );
 
@@ -380,9 +380,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
           state.copyWith(
             isLoading: false,
             successMessage: profileSuccessMessage,
-            targetRoute: documentsResult.data.isPendingReview
-                ? AppRoutes.accountPendingApproval
-                : AppRoutes.mainShell,
+            targetRoute: AppRoutes.accountPendingApproval,
             clearFailure: true,
           ),
         );

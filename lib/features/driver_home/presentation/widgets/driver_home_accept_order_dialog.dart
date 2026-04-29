@@ -20,6 +20,45 @@ class DriverHomeAcceptOrderDialog extends StatelessWidget {
     final locale = context.localization;
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isCompact = screenWidth < 360;
+    final useVerticalActions = screenWidth < 340;
+
+    final cancelButton = OutlinedButton(
+      onPressed: () => Navigator.of(dialogContext).pop(false),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(46),
+        side: BorderSide(color: color.outline.withValues(alpha: 0.32)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      child: Text(
+        locale.cancel,
+        textAlign: TextAlign.center,
+        style: getSemiBoldStyle(
+          fontFamily: FontConstant.cairo,
+          fontSize: FontSize.size13,
+          color: color.onSurface.withValues(alpha: 0.72),
+        ),
+      ),
+    );
+
+    final confirmButton = FilledButton(
+      onPressed: () => Navigator.of(dialogContext).pop(true),
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(46),
+        backgroundColor: color.primary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      child: Text(
+        locale.driver_home_accept_order_dialog_confirm,
+        textAlign: TextAlign.center,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: getBoldStyle(
+          fontFamily: FontConstant.cairo,
+          fontSize: FontSize.size13,
+          color: Colors.white,
+        ),
+      ),
+    );
 
     return AlertDialog(
       insetPadding: EdgeInsets.symmetric(
@@ -74,86 +113,22 @@ class DriverHomeAcceptOrderDialog extends StatelessWidget {
                 color: color.onSurface.withValues(alpha: 0.74),
               ),
             ),
+            const SizedBox(height: 18),
+            if (useVerticalActions) ...[
+              SizedBox(width: double.infinity, child: confirmButton),
+              const SizedBox(height: 8),
+              SizedBox(width: double.infinity, child: cancelButton),
+            ] else
+              Row(
+                children: [
+                  Expanded(child: cancelButton),
+                  const SizedBox(width: 10),
+                  Expanded(child: confirmButton),
+                ],
+              ),
           ],
         ),
       ),
-      actionsPadding: EdgeInsets.fromLTRB(
-        isCompact ? 12 : 16,
-        0,
-        isCompact ? 12 : 16,
-        16,
-      ),
-      actions: [
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final useVerticalActions = constraints.maxWidth < 290;
-
-            final cancelButton = OutlinedButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(46),
-                side: BorderSide(
-                  color: color.outline.withValues(alpha: 0.32),
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                locale.cancel,
-                textAlign: TextAlign.center,
-                style: getSemiBoldStyle(
-                  fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size13,
-                  color: color.onSurface.withValues(alpha: 0.72),
-                ),
-              ),
-            );
-
-            final confirmButton = FilledButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(46),
-                backgroundColor: color.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-              ),
-              child: Text(
-                locale.driver_home_accept_order_dialog_confirm,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: getBoldStyle(
-                  fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size13,
-                  color: Colors.white,
-                ),
-              ),
-            );
-
-            if (useVerticalActions) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  confirmButton,
-                  const SizedBox(height: 8),
-                  cancelButton,
-                ],
-              );
-            }
-
-            return Row(
-              children: [
-                Expanded(child: cancelButton),
-                const SizedBox(width: 10),
-                Expanded(child: confirmButton),
-              ],
-            );
-          },
-        ),
-      ],
     );
   }
 }
