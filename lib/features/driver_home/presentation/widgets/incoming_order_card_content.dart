@@ -2,54 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/order_collection_helper.dart';
 
 class IncomingOrderCardMeta extends StatelessWidget {
   const IncomingOrderCardMeta({
     super.key,
-    required this.payout,
+    required this.codAmount,
+    required this.paymentMethod,
     required this.distance,
   });
 
-  final String payout;
+  final double codAmount;
+  final String paymentMethod;
   final String distance;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final localizations = context.localization;
+    final requiresCollection = OrderCollectionHelper.requiresCollection(
+      codAmount,
+    );
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 76, maxWidth: 92),
       child: Column(
         textDirection: TextDirection.ltr,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: payout,
-                  style: getBoldStyle(
-                    fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size16,
-                    color: color.primary,
+          Text(
+            requiresCollection
+                ? OrderCollectionHelper.collectionAmountText(
+                    context,
+                    codAmount: codAmount,
+                  )
+                : OrderCollectionHelper.collectionStatusText(
+                    context,
+                    codAmount: codAmount,
+                    paymentMethod: paymentMethod,
                   ),
-                ),
-                TextSpan(
-                  text: ' ${localizations.currency}',
-                  style: getSemiBoldStyle(
-                    fontFamily: FontConstant.cairo,
-                    color: color.primary,
-                  ),
-                ),
-              ],
-            ),
             textAlign: TextAlign.start,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-          ),
-          Text(
-            '$distance ${localizations.driver_home_distance_unit}',
             style: getBoldStyle(
+              fontFamily: FontConstant.cairo,
+              fontSize: FontSize.size16,
+              color: color.primary,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            requiresCollection
+                ? OrderCollectionHelper.collectionLabel(context)
+                : '$distance ${localizations.driver_home_distance_unit}',
+            style: getSemiBoldStyle(
               fontFamily: FontConstant.cairo,
               color: color.onSurface.withValues(alpha: 0.72),
             ),

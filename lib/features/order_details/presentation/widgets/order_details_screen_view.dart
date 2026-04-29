@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 import 'package:zadana_delivery/features/order_details/presentation/controllers/order_details_controller.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_body.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_bottom_actions.dart';
@@ -42,7 +40,6 @@ class OrderDetailsScreenView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.localization;
     return AnimatedBuilder(
       animation: controller,
       builder: (_, _) => OrderDetailsScaffold(
@@ -70,7 +67,6 @@ class OrderDetailsScreenView extends StatelessWidget {
         child: OrderDetailsBody(
           activeStatusIndex: controller.activeStatusIndex,
           order: controller.order,
-          paymentMethod: _resolvePaymentMethodLabel(locale),
           isCashPayment: controller.isCashPayment,
           pickupOtpCode: controller.pickupOtpCode,
           isWaitingForMerchantConfirmation:
@@ -88,23 +84,5 @@ class OrderDetailsScreenView extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _resolvePaymentMethodLabel(AppLocalizations locale) {
-    final method = controller.paymentMethodCode.trim().toLowerCase();
-    if (method == 'cashondelivery' || method == 'cash_on_delivery') {
-      return locale.cash_on_delivery;
-    }
-    if (method == 'creditcard' ||
-        method == 'credit_card' ||
-        method == 'creditdebitcard') {
-      return locale.credit_debit_card;
-    }
-    if (method.isEmpty) {
-      return controller.isCashPayment
-          ? locale.cash_on_delivery
-          : locale.credit_debit_card;
-    }
-    return locale.credit_debit_card;
   }
 }

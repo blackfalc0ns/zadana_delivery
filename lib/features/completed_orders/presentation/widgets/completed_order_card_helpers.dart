@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/order_collection_helper.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 
 Color completedOrderAccentColor(
@@ -116,6 +117,50 @@ String completedOrderPaymentMethodLabel(
       return locale.apple_pay;
     case CompletedOrderPaymentMethod.bankTransfer:
       return locale.bank_transfer;
+  }
+}
+
+String completedOrderCollectionValue(
+  BuildContext context, {
+  required double codAmount,
+  required CompletedOrderPaymentMethod paymentMethod,
+}) {
+  if (OrderCollectionHelper.requiresCollection(codAmount)) {
+    return OrderCollectionHelper.collectionAmountText(
+      context,
+      codAmount: codAmount,
+    );
+  }
+
+  return OrderCollectionHelper.collectionStatusText(
+    context,
+    codAmount: codAmount,
+    paymentMethod: _paymentMethodCode(paymentMethod),
+  );
+}
+
+String completedOrderCollectionLabel(
+  BuildContext context, {
+  required double codAmount,
+}) {
+  if (OrderCollectionHelper.requiresCollection(codAmount)) {
+    return OrderCollectionHelper.collectionLabel(context);
+  }
+
+  final languageCode = Localizations.localeOf(context).languageCode;
+  return languageCode.toLowerCase() == 'ar' ? 'حالة التحصيل' : 'Collection status';
+}
+
+String _paymentMethodCode(CompletedOrderPaymentMethod method) {
+  switch (method) {
+    case CompletedOrderPaymentMethod.cashOnDelivery:
+      return 'CashOnDelivery';
+    case CompletedOrderPaymentMethod.card:
+      return 'Card';
+    case CompletedOrderPaymentMethod.applePay:
+      return 'ApplePay';
+    case CompletedOrderPaymentMethod.bankTransfer:
+      return 'BankTransfer';
   }
 }
 

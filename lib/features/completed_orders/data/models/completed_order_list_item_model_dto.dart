@@ -11,6 +11,8 @@ class CompletedOrderListItemModelDto {
     this.amount = 0,
     this.distanceKm = 0,
     this.paymentMethod = '',
+    this.totalAmount = 0,
+    this.codAmount = 0,
     this.deliveryAddress = '',
     this.items = const <CompletedOrderItemModelDto>[],
   });
@@ -34,6 +36,10 @@ class CompletedOrderListItemModelDto {
   final double distanceKm;
   @JsonKey(fromJson: _stringFromJson)
   final String paymentMethod;
+  @JsonKey(fromJson: _doubleFromJson)
+  final double totalAmount;
+  @JsonKey(fromJson: _doubleFromJson)
+  final double codAmount;
   @JsonKey(fromJson: _stringFromJson)
   final String deliveryAddress;
   @JsonKey(fromJson: _orderItemsFromJson)

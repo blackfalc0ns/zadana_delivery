@@ -36,18 +36,6 @@ class DriverHomeStatusPanel extends StatelessWidget {
     final isMissionMode = home.homeState == 'OnMission' && assignment != null;
     final statusHint = _statusHint(context, isMissionMode);
     final statusColor = isOnline ? color.primary : AppColors.secondary;
-    final title = _title(context);
-    final subtitle = isOnline
-        ? _localizedText(
-            context,
-            ar: 'أنت جاهز الآن لاستقبال العروض الجديدة فور وصولها.',
-            en: 'You are ready to receive new offers as soon as they arrive.',
-          )
-        : _localizedText(
-            context,
-            ar: 'فعّل حالتك من الأعلى لتبدأ استقبال الطلبات.',
-            en: 'Go online from the top switch to receive new orders.',
-          );
 
     return Container(
       margin: const EdgeInsets.fromLTRB(
@@ -83,7 +71,11 @@ class DriverHomeStatusPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(
-                  isOnline ? Icons.bolt_rounded : Icons.pause_circle_filled,
+                  isMissionMode
+                      ? Icons.local_shipping_rounded
+                      : isOnline
+                      ? Icons.bolt_rounded
+                      : Icons.pause_circle_filled,
                   color: statusColor,
                   size: 24,
                 ),
@@ -94,7 +86,7 @@ class DriverHomeStatusPanel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      _title(context, isMissionMode),
                       style: getBoldStyle(
                         fontFamily: FontConstant.cairo,
                         fontSize: FontSize.size18,
@@ -103,7 +95,7 @@ class DriverHomeStatusPanel extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      subtitle,
+                      _subtitle(context, isMissionMode),
                       style: getRegularStyle(
                         fontFamily: FontConstant.cairo,
                         color: color.onSurfaceVariant,
@@ -116,9 +108,16 @@ class DriverHomeStatusPanel extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _StatusStrip(
-            isOnline: isOnline,
             statusColor: statusColor,
-            text: isOnline ? 'Live' : 'Paused',
+            leadingText: _statusStripLeadingText(
+              context,
+              isMissionMode: isMissionMode,
+              assignment: assignment,
+            ),
+            trailingText: _statusStripTrailingText(
+              context,
+              isMissionMode: isMissionMode,
+            ),
           ),
           if (statusHint != null) ...[
             const SizedBox(height: 12),
@@ -164,17 +163,43 @@ class DriverHomeStatusPanel extends StatelessWidget {
     );
   }
 
-  String _title(BuildContext context) {
+  String _title(BuildContext context, bool isMissionMode) {
+    if (isMissionMode) {
+      return home.currentAssignment?.orderNumber ?? context.localization.order_details_title;
+    }
+
     switch (home.homeState) {
       case 'WaitingForOffer':
         return context.localization.driver_home_connection_online_title;
       case 'Offline':
         return context.localization.driver_home_connection_offline_title;
-      case 'OnMission':
-        return home.currentAssignment?.orderNumber ?? home.homeState;
       default:
         return home.homeState;
     }
+  }
+
+  String _subtitle(BuildContext context, bool isMissionMode) {
+    if (isMissionMode) {
+      return _localizedText(
+        context,
+        ar: 'لديك طلب جارٍ توصيله الآن. افتح التفاصيل لمتابعة المهمة وإكمالها.',
+        en: 'You have an active delivery in progress. Open the details to continue the mission.',
+      );
+    }
+
+    if (isOnline) {
+      return _localizedText(
+        context,
+        ar: 'أنت جاهز الآن لاستقبال العروض الجديدة فور وصولها.',
+        en: 'You are ready to receive new offers as soon as they arrive.',
+      );
+    }
+
+    return _localizedText(
+      context,
+      ar: 'فعّل حالتك من الأعلى لتبدأ استقبال الطلبات.',
+      en: 'Go online from the top switch to receive new orders.',
+    );
   }
 
   String? _statusHint(BuildContext context, bool isMissionMode) {
@@ -200,6 +225,64 @@ class DriverHomeStatusPanel extends StatelessWidget {
     );
   }
 
+  String _statusStripLeadingText(
+    BuildContext context, {
+    required bool isMissionMode,
+    required DriverHomeAssignmentEntity? assignment,
+  }) {
+    if (isMissionMode && assignment != null) {
+      return _assignmentStatusLabel(context, assignment.status);
+    }
+
+    if (isOnline) {
+      return _localizedText(context, ar: 'متصل الآن', en: 'Online now');
+    }
+
+    return _localizedText(context, ar: 'متوقف مؤقتًا', en: 'Paused');
+  }
+
+  String _statusStripTrailingText(
+    BuildContext context, {
+    required bool isMissionMode,
+  }) {
+    if (isMissionMode) {
+      return _localizedText(context, ar: 'مهمة جارية', en: 'Active mission');
+    }
+
+    if (isOnline) {
+      return _localizedText(context, ar: 'جاهز للعروض', en: 'Ready for offers');
+    }
+
+    return _localizedText(context, ar: 'غير متصل', en: 'Offline mode');
+  }
+
+  String _assignmentStatusLabel(BuildContext context, String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('_', '');
+    final locale = context.localization;
+
+    switch (normalized) {
+      case 'accepted':
+      case 'orderaccepted':
+        return locale.order_details_status_accepted;
+      case 'arrivedatvendor':
+        return locale.order_details_arrived_at_vendor;
+      case 'pickedup':
+      case 'pickedupfromstore':
+        return locale.order_details_status_picked_up;
+      case 'ontheway':
+      case 'onthewaytocustomer':
+      case 'startdelivery':
+        return locale.order_details_status_on_the_way;
+      case 'arrivedatcustomer':
+        return locale.order_details_arrived_at_customer;
+      case 'delivered':
+      case 'completed':
+        return locale.order_details_status_delivered;
+      default:
+        return status;
+    }
+  }
+
   String _localizedText(
     BuildContext context, {
     required String ar,
@@ -219,41 +302,20 @@ class _MissionSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     return Container(
-      padding: const EdgeInsets.all(Spacing.base),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.primary.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(18),
+        color: color.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: color.outlineVariant.withValues(alpha: 0.12)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            assignment.vendorName,
-            style: getBoldStyle(
-              fontFamily: FontConstant.cairo,
-              color: color.onSurface,
-            ),
+          _MissionHeader(
+            title: assignment.vendorName,
+            subtitle: assignment.deliveryAddress,
           ),
-          const SizedBox(height: 6),
-          Text(
-            assignment.deliveryAddress,
-            style: getRegularStyle(
-              fontFamily: FontConstant.cairo,
-              color: color.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              _InfoChip(icon: Icons.flag_outlined, text: assignment.status),
-              const SizedBox(width: Spacing.sm),
-              _InfoChip(
-                icon: Icons.payments_outlined,
-                text:
-                    '${assignment.codAmount.toStringAsFixed(2)} ${context.localization.currency}',
-              ),
-            ],
-          ),
+          const SizedBox(height: 12),
           if ((assignment.pickupOtpCode ?? '').trim().isNotEmpty) ...[
             const SizedBox(height: 10),
             Container(
@@ -305,49 +367,67 @@ class _MissionSummary extends StatelessWidget {
 
 class _StatusStrip extends StatelessWidget {
   const _StatusStrip({
-    required this.isOnline,
     required this.statusColor,
-    required this.text,
+    required this.leadingText,
+    required this.trailingText,
   });
 
-  final bool isOnline;
   final Color statusColor;
-  final String text;
+  final String leadingText;
+  final String trailingText;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: color.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
         border: Border.all(color: color.outlineVariant.withValues(alpha: 0.10)),
       ),
       child: Row(
         children: [
-          Container(
-            width: 10,
-            height: 10,
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
+          Expanded(
+            child: Text(
+              leadingText,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: getBoldStyle(
+                fontFamily: FontConstant.cairo,
+                color: color.onSurface,
+                fontSize: FontSize.size14,
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            text,
-            style: getSemiBoldStyle(
-              fontFamily: FontConstant.cairo,
-              color: color.onSurface,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: statusColor.withValues(alpha: 0.10),
+              borderRadius: BorderRadius.circular(999),
             ),
-          ),
-          const Spacer(),
-          Text(
-            isOnline ? 'Ready for offers' : 'Offline mode',
-            style: getRegularStyle(
-              fontFamily: FontConstant.cairo,
-              color: color.onSurfaceVariant,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: statusColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  trailingText,
+                  style: getSemiBoldStyle(
+                    fontFamily: FontConstant.cairo,
+                    color: statusColor,
+                    fontSize: FontSize.size11,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -355,6 +435,61 @@ class _StatusStrip extends StatelessWidget {
     );
   }
 }
+
+class _MissionHeader extends StatelessWidget {
+  const _MissionHeader({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = context.colorScheme;
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  color: scheme.onSurface,
+                  fontSize: FontSize.size17,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            color: scheme.primary.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Icon(
+            Icons.storefront_rounded,
+            color: scheme.primary,
+            size: 22,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 
 class _SoftMessage extends StatelessWidget {
   const _SoftMessage({
@@ -396,45 +531,6 @@ class _SoftMessage extends StatelessWidget {
                 fontFamily: FontConstant.cairo,
                 color: scheme.onSurfaceVariant,
               ).copyWith(height: 1.3),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _InfoChip extends StatelessWidget {
-  const _InfoChip({required this.icon, required this.text});
-
-  final IconData icon;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = context.colorScheme;
-    final resolvedColor = scheme.primary;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: resolvedColor.withValues(alpha: 0.09),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 16, color: resolvedColor),
-          const SizedBox(width: 6),
-          Flexible(
-            child: Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: getSemiBoldStyle(
-                fontFamily: FontConstant.cairo,
-                color: resolvedColor,
-                fontSize: FontSize.size11,
-              ),
             ),
           ),
         ],

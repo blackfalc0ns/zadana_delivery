@@ -8,10 +8,12 @@ class SecurityDocumentsList extends StatelessWidget {
     super.key,
     required this.items,
     required this.onSelect,
+    required this.onPreview,
   });
 
   final List<ProfileDocumentItemData> items;
   final ValueChanged<ProfileDocumentType> onSelect;
+  final ValueChanged<ProfileDocumentItemData> onPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +23,7 @@ class SecurityDocumentsList extends StatelessWidget {
           SecurityDocumentTile(
             item: items[index],
             onTap: () => onSelect(items[index].type),
+            onPreview: () => onPreview(items[index]),
           ),
           if (index < items.length - 1) const SizedBox(height: Spacing.sm),
         ],

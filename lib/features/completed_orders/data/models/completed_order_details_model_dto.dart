@@ -15,6 +15,8 @@ class CompletedOrderDetailsModelDto {
     this.status = '',
     this.paymentMethod = '',
     this.amount = 0,
+    this.totalAmount = 0,
+    this.codAmount = 0,
     this.deliveryFee = 0,
     this.distanceKm = 0,
     this.completedAtUtc = '',
@@ -48,6 +50,10 @@ class CompletedOrderDetailsModelDto {
   final String paymentMethod;
   @JsonKey(fromJson: _doubleFromJson)
   final double amount;
+  @JsonKey(fromJson: _doubleFromJson)
+  final double totalAmount;
+  @JsonKey(fromJson: _doubleFromJson)
+  final double codAmount;
   @JsonKey(fromJson: _doubleFromJson)
   final double deliveryFee;
   @JsonKey(fromJson: _doubleFromJson)

@@ -13,6 +13,8 @@ class DriverOrderPreview {
     required this.distance,
     required this.eta,
     required this.payout,
+    required this.totalAmount,
+    required this.codAmount,
     required this.vendorInitials,
     required this.customerInitials,
     this.orderItems = const [],
@@ -40,6 +42,8 @@ class DriverOrderPreview {
   final String distance;
   final String eta;
   final String payout;
+  final double totalAmount;
+  final double codAmount;
   final String vendorInitials;
   final String customerInitials;
   final List<DriverOrderItemPreview> orderItems;
@@ -67,6 +71,8 @@ class DriverOrderPreview {
     String? distance,
     String? eta,
     String? payout,
+    double? totalAmount,
+    double? codAmount,
     String? vendorInitials,
     String? customerInitials,
     List<DriverOrderItemPreview>? orderItems,
@@ -94,6 +100,8 @@ class DriverOrderPreview {
       distance: distance ?? this.distance,
       eta: eta ?? this.eta,
       payout: payout ?? this.payout,
+      totalAmount: totalAmount ?? this.totalAmount,
+      codAmount: codAmount ?? this.codAmount,
       vendorInitials: vendorInitials ?? this.vendorInitials,
       customerInitials: customerInitials ?? this.customerInitials,
       orderItems: orderItems ?? this.orderItems,

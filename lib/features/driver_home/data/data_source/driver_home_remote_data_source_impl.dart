@@ -14,7 +14,7 @@ import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_home/data/models/driver_home_model_dto.dart';
 
-@Injectable(as: DriverHomeRemoteDataSource)
+@LazySingleton(as: DriverHomeRemoteDataSource)
 class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   DriverHomeRemoteDataSourceImpl(this._apiServices)
     : _homeController = StreamController<DriverHomeModelDto>.broadcast(
@@ -22,6 +22,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       );
 
   static const Duration _delayedOfferRefresh = Duration(milliseconds: 1200);
+  static const Duration _initialHomeRefreshDebounce = Duration(seconds: 3);
   static const Duration _signalRRetryCooldown = Duration(seconds: 30);
   static const Duration _signalRRetryDelay = Duration(seconds: 5);
   static const Duration _missingTokenRetryDelay = Duration(seconds: 2);
@@ -30,6 +31,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   final ApiServices _apiServices;
   final StreamController<DriverHomeModelDto> _homeController;
   DriverHomeModelDto? _latestHome;
+  DateTime? _lastHomeFetchedAt;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
   DateTime? _retryAfter;
@@ -47,7 +49,9 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   Future<DriverHomeModelDto> getHome() async {
     try {
       final response = await _apiServices.getDriverHome();
-      return DriverHomeModelDto.fromJson(_normalizeMap(response));
+      final home = DriverHomeModelDto.fromJson(_normalizeMap(response));
+      _cacheHome(home);
+      return home;
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
@@ -89,7 +93,6 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   Stream<DriverHomeModelDto> watchHome() async* {
     _instanceForStreamCallback = this;
     _log('watchHome subscribed');
-    unawaited(_ensureSignalRConnected());
     final latestHome = _latestHome;
     if (latestHome != null) {
       _log(
@@ -104,12 +107,17 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   @override
   void emitHome(DriverHomeModelDto home) {
     if (_homeController.isClosed) return;
-    _latestHome = home;
+    _cacheHome(home);
     _log(
       'emitHome: state=${home.homeState}, hasOffer=${home.currentOffer != null}, '
       'offerId=${home.currentOffer?.assignmentId ?? 'n/a'}, unreadAlerts=${home.unreadAlerts}',
     );
     _homeController.add(home);
+  }
+
+  void _cacheHome(DriverHomeModelDto home) {
+    _latestHome = home;
+    _lastHomeFetchedAt = DateTime.now();
   }
 
   Map<String, dynamic> _normalizeMap(dynamic value) {
@@ -285,6 +293,19 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   }
 
   Future<void> _refreshHomeAfterInitialConnect() async {
+    final lastHomeFetchedAt = _lastHomeFetchedAt;
+    final hasFreshHome =
+        _latestHome != null &&
+        lastHomeFetchedAt != null &&
+        DateTime.now().difference(lastHomeFetchedAt) <
+            _initialHomeRefreshDebounce;
+    if (hasFreshHome) {
+      _log(
+        'Skipping initial SignalR home refresh because a recent home snapshot is already available',
+      );
+      return;
+    }
+
     _log('Refreshing /drivers/home after initial SignalR connect');
     await _refreshHomeFromApi();
     Future<void>.delayed(_delayedOfferRefresh, () {
@@ -394,6 +415,9 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       'estimatedDistanceKm':
           payload['estimatedDistanceKm'] ?? payload['distanceKm'] ?? 0,
       'estimatedEta': payload['estimatedEta'] ?? payload['eta'] ?? '',
+      'paymentMethod': payload['paymentMethod'] ?? '',
+      'totalAmount': payload['totalAmount'] ?? 0,
+      'codAmount': payload['codAmount'] ?? 0,
       'payout': payload['payout'] ?? payload['deliveryFee'] ?? 0,
       'orderItems': payload['orderItems'] ?? payload['items'] ?? const [],
     });

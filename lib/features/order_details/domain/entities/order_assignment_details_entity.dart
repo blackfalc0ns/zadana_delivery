@@ -17,6 +17,7 @@ class OrderAssignmentDetailsEntity {
     required this.deliveryLongitude,
     required this.customerPhone,
     required this.paymentMethod,
+    required this.totalAmount,
     required this.codAmount,
     required this.pickupOtpRequired,
     required this.pickupOtpStatus,
@@ -44,6 +45,7 @@ class OrderAssignmentDetailsEntity {
   final double deliveryLongitude;
   final String customerPhone;
   final String paymentMethod;
+  final double totalAmount;
   final double codAmount;
   final bool pickupOtpRequired;
   final String pickupOtpStatus;

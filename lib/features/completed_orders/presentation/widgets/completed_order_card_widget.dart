@@ -123,9 +123,15 @@ class CompletedOrderCard extends StatelessWidget {
                   ),
                   Expanded(
                     child: CompletedOrderMetricColumn(
-                      label: locale.completed_orders_order_total_label,
-                      value:
-                          '${order.amount.toStringAsFixed(0)} ${locale.currency}',
+                      label: completedOrderCollectionLabel(
+                        context,
+                        codAmount: order.codAmount,
+                      ),
+                      value: completedOrderCollectionValue(
+                        context,
+                        codAmount: order.codAmount,
+                        paymentMethod: order.paymentMethod,
+                      ),
                       valueColor: const Color(0xFF2E7D32),
                     ),
                   ),

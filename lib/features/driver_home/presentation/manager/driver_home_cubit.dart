@@ -63,6 +63,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
 
   Future<void> _initialize() async {
     await Future.wait<void>([_loadHome(), _loadDriverMarker()]);
+    unawaited(_bootstrapActiveSession());
   }
 
   Future<void> _loadHome({bool refresh = false}) async {
@@ -110,34 +111,20 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       ),
     );
 
-    if (isAvailable) {
-      try {
-        await _locationPermissionService.ensureForegroundPermission();
-        await _driverRuntimeServicesController
-            .initializeDriverRuntimeServices();
-        await _loadCurrentLocation();
-      } on LocationServiceException catch (error) {
-        await _handleLocationPermissionError(error);
-        return false;
-      } catch (error) {
-        emit(
-          state.copyWith(
-            isAvailabilityUpdating: false,
-            noticeMessage: _resolveRuntimeInitializationMessage(error),
-            clearFailure: true,
-          ),
-        );
-        return false;
-      }
-    }
-
     final result = await _updateDriverAvailabilityUseCase.call(
       isAvailable: isAvailable,
     );
     switch (result) {
       case ApiSuccessResult():
         _applyAvailabilityOptimistically(isAvailable);
-        return _refreshAfterAction(isAvailabilityUpdating: false);
+        emit(
+          state.copyWith(isAvailabilityUpdating: false, clearFailure: true),
+        );
+        unawaited(_refreshHomeAfterAvailabilityChange());
+        if (isAvailable) {
+          unawaited(_startOnlineRuntimeServices());
+        }
+        return true;
       case ApiErrorResult():
         emit(
           state.copyWith(
@@ -297,53 +284,48 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     }
   }
 
-  Future<void> _handleLocationPermissionError(
-    LocationServiceException error,
-  ) async {
-    if (error.type == LocationErrorType.serviceDisabled) {
-      await _locationPermissionService.openLocationSettings();
-    } else if (error.type == LocationErrorType.permissionDeniedForever) {
-      await _locationPermissionService.openAppSettings();
+  Future<void> _startOnlineRuntimeServices() async {
+    try {
+      await _locationPermissionService.ensureForegroundPermission();
+      await _driverRuntimeServicesController.initializeDriverRuntimeServices();
+      await _loadCurrentLocation();
+    } on LocationServiceException catch (_) {
+      return;
+    } catch (_) {
+      return;
+    }
+  }
+
+  Future<void> _bootstrapActiveSession() async {
+    final home = state.home;
+    if (home == null) return;
+
+    final shouldBootstrapRuntime =
+        home.operationalStatus.isAvailable ||
+        home.currentAssignment != null ||
+        home.currentOffer != null;
+    if (!shouldBootstrapRuntime) return;
+
+    try {
+      await _driverRuntimeServicesController.initializeDriverRuntimeServices();
+      if (home.operationalStatus.isAvailable) {
+        await _loadCurrentLocation();
+      }
+    } catch (_) {
+      // Keep the screen usable even if runtime services fail to start.
     }
 
     if (isClosed) return;
-    emit(
-      state.copyWith(
-        isAvailabilityUpdating: false,
-        noticeMessage: error.message,
-        clearFailure: true,
-      ),
-    );
-  }
-
-  String _resolveRuntimeInitializationMessage(Object error) {
-    final message = error.toString().trim();
-    if (message.isEmpty) {
-      return 'Unable to start driver runtime services. Please try again.';
-    }
-
-    const prefixes = <String>[
-      'Exception: ',
-      'Error: ',
-    ];
-
-    var resolvedMessage = message;
-    for (final prefix in prefixes) {
-      if (resolvedMessage.startsWith(prefix)) {
-        resolvedMessage = resolvedMessage.substring(prefix.length).trim();
-      }
-    }
-
-    if (resolvedMessage.isEmpty) {
-      return 'Unable to start driver runtime services. Please try again.';
-    }
-
-    return resolvedMessage;
+    await _loadHome(refresh: true);
   }
 
   void clearNotice() {
     if (state.noticeMessage == null) return;
     emit(state.copyWith(clearNoticeMessage: true));
+  }
+
+  Future<void> _refreshHomeAfterAvailabilityChange() async {
+    await _refreshAfterAction(isAvailabilityUpdating: false);
   }
 
   Future<bool> _refreshAfterAction({

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
@@ -128,6 +130,7 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
                 documents: documents,
                 onSelect: (type) =>
                     _cubit.doIntent(ProfileFormPickDocumentEvent(type)),
+                onPreview: _showDocumentPreview,
               ),
             ],
           );
@@ -138,5 +141,107 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
 
   Future<void> _save() async {
     await _cubit.doIntent(const ProfileFormSaveDocumentsEvent());
+  }
+
+  Future<void> _showDocumentPreview(ProfileDocumentItemData item) async {
+    if (!item.hasFile) return;
+
+    final locale = context.localization;
+    final normalizedPath = item.path.trim();
+    final isRemote =
+        normalizedPath.startsWith('http://') ||
+        normalizedPath.startsWith('https://');
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final colorScheme = dialogContext.colorScheme;
+        return Dialog(
+          insetPadding: const EdgeInsets.all(20),
+          backgroundColor: colorScheme.surface,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 8, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        item.type.localizedTitle(locale),
+                        style: Theme.of(dialogContext).textTheme.titleMedium,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                      icon: const Icon(Icons.close_rounded),
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    bottom: Radius.circular(28),
+                  ),
+                  child: InteractiveViewer(
+                    maxScale: 4,
+                    child: isRemote
+                        ? Image.network(
+                            normalizedPath,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => _PreviewError(
+                              message: locale.profile_not_uploaded_yet,
+                            ),
+                          )
+                        : Image.file(
+                            File(normalizedPath),
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => _PreviewError(
+                              message: locale.profile_not_uploaded_yet,
+                            ),
+                          ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PreviewError extends StatelessWidget {
+  const _PreviewError({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    return Container(
+      constraints: const BoxConstraints(minHeight: 260),
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.broken_image_outlined,
+            size: 42,
+            color: colorScheme.error,
+          ),
+          const SizedBox(height: 12),
+          Text(
+            message,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -21,6 +21,7 @@ extension OrderAssignmentDetailsModelMapper on OrderAssignmentDetailsModelDto {
       deliveryLongitude: deliveryLongitude,
       customerPhone: customerPhone,
       paymentMethod: paymentMethod,
+      totalAmount: totalAmount,
       codAmount: codAmount,
       pickupOtpRequired: pickupOtpRequired,
       pickupOtpStatus: pickupOtpStatus,

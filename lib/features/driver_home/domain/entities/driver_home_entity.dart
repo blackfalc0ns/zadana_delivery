@@ -59,6 +59,9 @@ class DriverHomeOfferEntity {
     required this.deliveryLongitude,
     required this.estimatedDistanceKm,
     required this.estimatedEta,
+    required this.paymentMethod,
+    required this.totalAmount,
+    required this.codAmount,
     required this.payout,
     required this.countdownSeconds,
     required this.orderItems,
@@ -80,6 +83,9 @@ class DriverHomeOfferEntity {
   final double deliveryLongitude;
   final double estimatedDistanceKm;
   final String estimatedEta;
+  final String paymentMethod;
+  final double totalAmount;
+  final double codAmount;
   final double payout;
   final int countdownSeconds;
   final List<DriverHomeOfferItemEntity> orderItems;
@@ -113,6 +119,8 @@ class DriverHomeAssignmentEntity {
     required this.pickupLongitude,
     required this.deliveryLatitude,
     required this.deliveryLongitude,
+    required this.paymentMethod,
+    required this.totalAmount,
     required this.codAmount,
     required this.createdAtUtc,
     required this.merchantContact,
@@ -134,6 +142,8 @@ class DriverHomeAssignmentEntity {
   final double pickupLongitude;
   final double deliveryLatitude;
   final double deliveryLongitude;
+  final String paymentMethod;
+  final double totalAmount;
   final double codAmount;
   final String createdAtUtc;
   final String merchantContact;

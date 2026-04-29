@@ -29,8 +29,7 @@ class OrderDetailsController extends ChangeNotifier {
       LatLng(order.deliveryLatitude, order.deliveryLongitude);
 
   bool get isCashPayment =>
-      _normalizedPaymentMethod == 'cashondelivery' ||
-      _normalizedPaymentMethod == 'cash_on_delivery';
+      (order.codAmount > 0);
 
   bool get pickupOtpRequired =>
       _details?.pickupOtpRequired ?? order.pickupOtpRequired;
@@ -138,6 +137,8 @@ class OrderDetailsController extends ChangeNotifier {
       deliveryLongitude: details.deliveryLongitude,
       eta: details.assignmentStatus,
       payout: details.codAmount.toStringAsFixed(2),
+      totalAmount: details.totalAmount,
+      codAmount: details.codAmount,
       vendorInitials: _resolveInitials(details.vendorName),
       customerInitials: _resolveInitials(details.customerName),
       orderItems: details.orderItems
@@ -168,9 +169,6 @@ class OrderDetailsController extends ChangeNotifier {
     _stage = value;
     notifyListeners();
   }
-
-  String get _normalizedPaymentMethod =>
-      paymentMethodCode.trim().toLowerCase().replaceAll('_', '');
 
   String get _normalizedArrivalState =>
       (_details?.driverArrivalState ?? '').trim().toLowerCase();

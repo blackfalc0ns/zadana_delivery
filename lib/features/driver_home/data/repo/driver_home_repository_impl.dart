@@ -5,7 +5,7 @@ import 'package:zadana_delivery/features/driver_home/data/mapper/driver_home_map
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/domain/repo/driver_home_repository.dart';
 
-@Injectable(as: DriverHomeRepository)
+@LazySingleton(as: DriverHomeRepository)
 class DriverHomeRepositoryImpl implements DriverHomeRepository {
   const DriverHomeRepositoryImpl(this._remoteDataSource);
 

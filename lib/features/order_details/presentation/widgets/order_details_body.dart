@@ -15,7 +15,6 @@ class OrderDetailsBody extends StatelessWidget {
     super.key,
     required this.activeStatusIndex,
     required this.order,
-    required this.paymentMethod,
     required this.isCashPayment,
     required this.pickupOtpCode,
     required this.isWaitingForMerchantConfirmation,
@@ -33,7 +32,6 @@ class OrderDetailsBody extends StatelessWidget {
 
   final int activeStatusIndex;
   final DriverOrderPreview order;
-  final String paymentMethod;
   final bool isCashPayment;
   final String? pickupOtpCode;
   final bool isWaitingForMerchantConfirmation;
@@ -65,7 +63,6 @@ class OrderDetailsBody extends StatelessWidget {
                 children: [
                   HeroCard(
                     order: order,
-                    paymentMethod: paymentMethod,
                     isCashPayment: isCashPayment,
                   ),
                   const SizedBox(height: 10),

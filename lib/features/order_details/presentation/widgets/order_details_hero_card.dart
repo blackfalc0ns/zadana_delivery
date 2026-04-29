@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
-import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/order_collection_helper.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 
 class HeroCard extends StatelessWidget {
   const HeroCard({
     super.key,
     required this.order,
-    required this.paymentMethod,
     required this.isCashPayment,
   });
 
   final DriverOrderPreview order;
-  final String paymentMethod;
   final bool isCashPayment;
 
   @override
@@ -42,12 +40,13 @@ class HeroCard extends StatelessWidget {
           Row(
             children: [
               Expanded(child: HeroCardText(order: order)),
-              HeroCardPayout(payout: order.payout),
+              HeroCardPayout(order: order),
             ],
           ),
           const SizedBox(height: 8),
           HeroCardPaymentRow(
-            paymentMethod: paymentMethod,
+            codAmount: order.codAmount,
+            paymentMethod: order.paymentMethod,
             isCashPayment: isCashPayment,
           ),
         ],
@@ -88,12 +87,15 @@ class HeroCardText extends StatelessWidget {
 }
 
 class HeroCardPayout extends StatelessWidget {
-  const HeroCardPayout({super.key, required this.payout});
+  const HeroCardPayout({super.key, required this.order});
 
-  final String payout;
+  final DriverOrderPreview order;
 
   @override
   Widget build(BuildContext context) {
+    final requiresCollection = OrderCollectionHelper.requiresCollection(
+      order.codAmount,
+    );
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
@@ -102,7 +104,17 @@ class HeroCardPayout extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
       ),
       child: Text(
-        payout,
+        requiresCollection
+            ? OrderCollectionHelper.collectionAmountText(
+                context,
+                codAmount: order.codAmount,
+              )
+            : OrderCollectionHelper.collectionStatusText(
+                context,
+                codAmount: order.codAmount,
+                paymentMethod: order.paymentMethod,
+              ),
+        textAlign: TextAlign.center,
         style: getBoldStyle(
           fontFamily: FontConstant.cairo,
           fontSize: FontSize.size13,
@@ -116,16 +128,17 @@ class HeroCardPayout extends StatelessWidget {
 class HeroCardPaymentRow extends StatelessWidget {
   const HeroCardPaymentRow({
     super.key,
+    required this.codAmount,
     required this.paymentMethod,
     required this.isCashPayment,
   });
 
+  final double codAmount;
   final String paymentMethod;
   final bool isCashPayment;
 
   @override
   Widget build(BuildContext context) {
-    final locale = context.localization;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
@@ -141,7 +154,11 @@ class HeroCardPaymentRow extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              '${locale.payment_method}: $paymentMethod',
+              OrderCollectionHelper.collectionSummaryText(
+                context,
+                codAmount: codAmount,
+                paymentMethod: paymentMethod,
+              ),
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size13,

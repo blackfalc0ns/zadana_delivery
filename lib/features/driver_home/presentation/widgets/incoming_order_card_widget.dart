@@ -92,9 +92,6 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final locale = context.localization;
-    final payoutValue = widget.order.payout
-        .replaceAll(RegExp(r'[^\d.]'), '')
-        .trim();
     final compact = MediaQuery.sizeOf(context).width < 360;
 
     return AnimatedBuilder(
@@ -131,9 +128,6 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
                 children: [
                   _IncomingOrderHeader(
                     order: widget.order,
-                    payoutValue: payoutValue.isEmpty
-                        ? widget.order.payout
-                        : payoutValue,
                     onLocationTap: widget.onLocationTap,
                     compact: compact,
                   ),
@@ -174,13 +168,11 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
 class _IncomingOrderHeader extends StatelessWidget {
   const _IncomingOrderHeader({
     required this.order,
-    required this.payoutValue,
     required this.onLocationTap,
     required this.compact,
   });
 
   final DriverOrderPreview order;
-  final String payoutValue;
   final VoidCallback? onLocationTap;
   final bool compact;
 
@@ -192,7 +184,11 @@ class _IncomingOrderHeader extends StatelessWidget {
       textDirection: TextDirection.ltr,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IncomingOrderCardMeta(payout: payoutValue, distance: order.distance),
+        IncomingOrderCardMeta(
+          codAmount: order.codAmount,
+          paymentMethod: order.paymentMethod,
+          distance: order.distance,
+        ),
         if (onLocationTap != null) ...[
           SizedBox(width: compact ? 4 : 8),
           Padding(

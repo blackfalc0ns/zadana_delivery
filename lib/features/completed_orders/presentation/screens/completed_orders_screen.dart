@@ -197,6 +197,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                                               .completed_orders_empty_title,
                                           subtitle: locale
                                               .completed_orders_empty_subtitle,
+                                          status: state.selectedStatus,
                                         ),
                                       )
                                     : RefreshIndicator(

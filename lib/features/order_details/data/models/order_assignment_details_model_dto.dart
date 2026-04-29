@@ -17,6 +17,7 @@ class OrderAssignmentDetailsModelDto {
     required this.deliveryLongitude,
     required this.customerPhone,
     required this.paymentMethod,
+    required this.totalAmount,
     required this.codAmount,
     required this.pickupOtpRequired,
     required this.pickupOtpStatus,
@@ -48,6 +49,7 @@ class OrderAssignmentDetailsModelDto {
       deliveryLongitude: _asDouble(json['deliveryLongitude']),
       customerPhone: json['customerPhone']?.toString() ?? '',
       paymentMethod: json['paymentMethod']?.toString() ?? '',
+      totalAmount: _asDouble(json['totalAmount']),
       codAmount: _asDouble(json['codAmount']),
       pickupOtpRequired: _asBool(json['pickupOtpRequired']),
       pickupOtpStatus: json['pickupOtpStatus']?.toString() ?? '',
@@ -78,6 +80,7 @@ class OrderAssignmentDetailsModelDto {
   final double deliveryLongitude;
   final String customerPhone;
   final String paymentMethod;
+  final double totalAmount;
   final double codAmount;
   final bool pickupOtpRequired;
   final String pickupOtpStatus;

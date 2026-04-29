@@ -141,9 +141,15 @@ Future<void> showCompletedOrderDetailsSheet(
                         ),
                         const SizedBox(height: 10),
                         CompletedOrderSheetRow(
-                          label: locale.completed_orders_order_total_label,
-                          value:
-                              '${order.amount.toStringAsFixed(0)} ${locale.currency}',
+                          label: completedOrderCollectionLabel(
+                            context,
+                            codAmount: order.codAmount,
+                          ),
+                          value: completedOrderCollectionValue(
+                            context,
+                            codAmount: order.codAmount,
+                            paymentMethod: order.paymentMethod,
+                          ),
                           highlight: true,
                         ),
                       ],

@@ -104,6 +104,9 @@ class DriverHomeOfferModelDto {
     required this.deliveryLongitude,
     required this.estimatedDistanceKm,
     required this.estimatedEta,
+    required this.paymentMethod,
+    required this.totalAmount,
+    required this.codAmount,
     required this.payout,
     required this.countdownSeconds,
     required this.orderItems,
@@ -144,6 +147,9 @@ class DriverHomeOfferModelDto {
         json['estimatedDistanceKm'] ?? json['distanceKm'],
       ),
       estimatedEta: json['estimatedEta']?.toString() ?? '',
+      paymentMethod: json['paymentMethod']?.toString() ?? '',
+      totalAmount: _asDouble(json['totalAmount']),
+      codAmount: _asDouble(json['codAmount']),
       payout: _asDouble(json['payout'] ?? json['deliveryFee']),
       countdownSeconds: _asInt(json['countdownSeconds']),
       orderItems: orderItems
@@ -168,6 +174,9 @@ class DriverHomeOfferModelDto {
   final double deliveryLongitude;
   final double estimatedDistanceKm;
   final String estimatedEta;
+  final String paymentMethod;
+  final double totalAmount;
+  final double codAmount;
   final double payout;
   final int countdownSeconds;
   final List<DriverHomeOfferItemModelDto> orderItems;
@@ -209,6 +218,8 @@ class DriverHomeAssignmentModelDto {
     required this.pickupLongitude,
     required this.deliveryLatitude,
     required this.deliveryLongitude,
+    required this.paymentMethod,
+    required this.totalAmount,
     required this.codAmount,
     required this.createdAtUtc,
     required this.merchantContact,
@@ -232,6 +243,8 @@ class DriverHomeAssignmentModelDto {
       pickupLongitude: _asDouble(json['pickupLongitude']),
       deliveryLatitude: _asDouble(json['deliveryLatitude']),
       deliveryLongitude: _asDouble(json['deliveryLongitude']),
+      paymentMethod: json['paymentMethod']?.toString() ?? '',
+      totalAmount: _asDouble(json['totalAmount']),
       codAmount: _asDouble(json['codAmount']),
       createdAtUtc: json['createdAtUtc']?.toString() ?? '',
       merchantContact: json['merchantContact']?.toString() ?? '',
@@ -254,6 +267,8 @@ class DriverHomeAssignmentModelDto {
   final double pickupLongitude;
   final double deliveryLatitude;
   final double deliveryLongitude;
+  final String paymentMethod;
+  final double totalAmount;
   final double codAmount;
   final String createdAtUtc;
   final String merchantContact;

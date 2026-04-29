@@ -307,7 +307,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i566.DriverProfileRemoteDataSource>(
       () => _i546.DriverProfileRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
-    gh.factory<_i458.DriverHomeRemoteDataSource>(
+    gh.lazySingleton<_i458.DriverHomeRemoteDataSource>(
       () => _i682.DriverHomeRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
     gh.factory<_i430.AuthSessionRemoteDataSource>(
@@ -364,7 +364,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i173.NotificationsRemoteDataSource>(),
       ),
     );
-    gh.factory<_i803.DriverHomeRepository>(
+    gh.lazySingleton<_i803.DriverHomeRepository>(
       () => _i720.DriverHomeRepositoryImpl(
         gh<_i458.DriverHomeRemoteDataSource>(),
       ),

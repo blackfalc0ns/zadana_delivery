@@ -11,10 +11,12 @@ class SecurityDocumentsFields extends StatelessWidget {
     super.key,
     required this.documents,
     required this.onSelect,
+    required this.onPreview,
   });
 
   final List<ProfileDocumentItemData> documents;
   final ValueChanged<ProfileDocumentType> onSelect;
+  final ValueChanged<ProfileDocumentItemData> onPreview;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,11 @@ class SecurityDocumentsFields extends StatelessWidget {
           ),
         ),
         const SizedBox(height: Spacing.sm),
-        SecurityDocumentsList(items: documents, onSelect: onSelect),
+        SecurityDocumentsList(
+          items: documents,
+          onSelect: onSelect,
+          onPreview: onPreview,
+        ),
       ],
     );
   }

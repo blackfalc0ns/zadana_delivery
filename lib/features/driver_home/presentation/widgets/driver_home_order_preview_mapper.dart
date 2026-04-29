@@ -18,7 +18,9 @@ class DriverHomeOrderPreviewMapper {
       deliveryLongitude: offer.deliveryLongitude,
       distance: offer.estimatedDistanceKm.toStringAsFixed(1),
       eta: offer.estimatedEta,
-      payout: offer.payout.toStringAsFixed(2),
+      payout: offer.codAmount.toStringAsFixed(2),
+      totalAmount: offer.totalAmount,
+      codAmount: offer.codAmount,
       vendorInitials: _resolveInitials(offer.vendorName, offer.vendorInitials),
       customerInitials: _resolveInitials(
         offer.customerName,
@@ -26,6 +28,7 @@ class DriverHomeOrderPreviewMapper {
       ),
       packageNote: offer.packageNote,
       countdownSeconds: offer.countdownSeconds,
+      paymentMethod: offer.paymentMethod,
       orderItems: offer.orderItems
           .map(
             (item) => DriverOrderItemPreview(
@@ -55,10 +58,13 @@ class DriverHomeOrderPreviewMapper {
       distance: '0.0',
       eta: assignment.status,
       payout: assignment.codAmount.toStringAsFixed(2),
+      totalAmount: assignment.totalAmount,
+      codAmount: assignment.codAmount,
       vendorInitials: _resolveInitials(assignment.vendorName, null),
       customerInitials: _resolveInitials(assignment.orderNumber, null),
       countdownSeconds: 3600,
       storePhone: assignment.merchantContact,
+      paymentMethod: assignment.paymentMethod,
       pickupOtpRequired: assignment.pickupOtpRequired,
       deliveryOtpRequired: assignment.deliveryOtpRequired,
       pickupOtpCode: assignment.pickupOtpCode,

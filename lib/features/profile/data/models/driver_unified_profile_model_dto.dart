@@ -33,7 +33,10 @@ class DriverUnifiedProfileModelDto {
       licenseNumber: json['licenseNumber']?.toString() ?? '',
       nationalId: json['nationalId']?.toString() ?? '',
       personalPhotoUrl: json['personalPhotoUrl']?.toString() ?? '',
-      nationalIdImageUrl: json['nationalIdImageUrl']?.toString() ?? '',
+      nationalIdImageUrl:
+          json['nationalIdImageUrl']?.toString() ??
+          json['nationalIdFrontImageUrl']?.toString() ??
+          '',
       licenseImageUrl: json['licenseImageUrl']?.toString() ?? '',
       vehicleImageUrl: json['vehicleImageUrl']?.toString() ?? '',
       primaryZoneId: json['primaryZoneId']?.toString() ?? '',
