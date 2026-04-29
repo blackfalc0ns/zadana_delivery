@@ -132,7 +132,9 @@ class DriverTrackingRemoteDataSourceImpl
   }
 
   Future<void> _initializeForegroundNotification() async {
-    const androidSettings = AndroidInitializationSettings('ic_launcher');
+    const androidSettings = AndroidInitializationSettings(
+      'ic_bg_service_small',
+    );
     const initializationSettings = InitializationSettings(
       android: androidSettings,
     );

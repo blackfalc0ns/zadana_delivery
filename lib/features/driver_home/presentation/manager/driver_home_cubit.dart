@@ -112,19 +112,18 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
 
     if (isAvailable) {
       try {
+        await _locationPermissionService.ensureForegroundPermission();
         await _driverRuntimeServicesController
             .initializeDriverRuntimeServices();
-        await _locationPermissionService.ensureForegroundPermission();
         await _loadCurrentLocation();
       } on LocationServiceException catch (error) {
         await _handleLocationPermissionError(error);
         return false;
-      } catch (_) {
+      } catch (error) {
         emit(
           state.copyWith(
             isAvailabilityUpdating: false,
-            noticeMessage:
-                'Unable to start driver runtime services. Please try again.',
+            noticeMessage: _resolveRuntimeInitializationMessage(error),
             clearFailure: true,
           ),
         );
@@ -315,6 +314,31 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
         clearFailure: true,
       ),
     );
+  }
+
+  String _resolveRuntimeInitializationMessage(Object error) {
+    final message = error.toString().trim();
+    if (message.isEmpty) {
+      return 'Unable to start driver runtime services. Please try again.';
+    }
+
+    const prefixes = <String>[
+      'Exception: ',
+      'Error: ',
+    ];
+
+    var resolvedMessage = message;
+    for (final prefix in prefixes) {
+      if (resolvedMessage.startsWith(prefix)) {
+        resolvedMessage = resolvedMessage.substring(prefix.length).trim();
+      }
+    }
+
+    if (resolvedMessage.isEmpty) {
+      return 'Unable to start driver runtime services. Please try again.';
+    }
+
+    return resolvedMessage;
   }
 
   void clearNotice() {
