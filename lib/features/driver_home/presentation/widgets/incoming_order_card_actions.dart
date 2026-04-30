@@ -64,7 +64,6 @@ class IncomingOrderLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
-    final compact = MediaQuery.sizeOf(context).width < 360;
 
     return Material(
       color: color.primary.withValues(alpha: 0.09),
@@ -73,10 +72,7 @@ class IncomingOrderLocationButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Ink(
-          padding: EdgeInsets.symmetric(
-            horizontal: compact ? 6 : 8,
-            vertical: 4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: color.primary.withValues(alpha: 0.15)),
@@ -84,22 +80,16 @@ class IncomingOrderLocationButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.my_location_rounded,
-                size: compact ? 13 : 14,
-                color: color.primary,
-              ),
-              if (!compact) ...[
-                const SizedBox(width: 4),
-                Text(
-                  'عرض الموقع',
-                  style: getSemiBoldStyle(
-                    fontFamily: FontConstant.cairo,
-                    fontSize: FontSize.size10,
-                    color: color.primary,
-                  ),
+              Icon(Icons.my_location_rounded, size: 13, color: color.primary),
+              const SizedBox(width: 3),
+              Text(
+                'عرض الموقع',
+                style: getSemiBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size10,
+                  color: color.primary,
                 ),
-              ],
+              ),
             ],
           ),
         ),

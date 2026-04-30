@@ -113,7 +113,6 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
         },
         builder: (context, state) {
           final showGlobalError = _viewModel.showGlobalError;
-          final showSkeleton = _viewModel.showSkeleton;
           final orders = state.orders;
           final totalDistance = _viewModel.totalDistance;
 
@@ -133,133 +132,124 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
           return Scaffold(
             body: SafeArea(
               top: false,
-              child: Column(
+              child: Stack(
                 children: [
-                  CustomAppBar.modern(
-                    title: locale.completed_orders_title,
-                    onBackPressed: () => Navigator.of(context).maybePop(),
-                  ),
-                  if (state.isRefreshing)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Center(
-                        child: CustomProgressIndicator.compact(size: 22),
+                  Column(
+                    children: [
+                      CustomAppBar.modern(
+                        title: locale.completed_orders_title,
+                        onBackPressed: () => Navigator.of(context).maybePop(),
                       ),
-                    ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
-                    child: CompletedOrdersFilterBar(
-                      selectedStatus: state.selectedStatus,
-                      onStatusChanged: _viewModel.selectStatus,
-                    ),
-                  ),
-                  Expanded(
-                    child: showSkeleton
-                        ? const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 16),
-                            child: CompletedOrdersLoadingSkeleton(),
-                          )
-                        : Column(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                  16,
-                                  0,
-                                  16,
-                                  10,
-                                ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: _SummaryCard(
-                                        value: '${state.totalCount}',
-                                        label: locale
-                                            .completed_orders_summary_orders,
-                                      ),
+                      if (state.isRefreshing)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Center(
+                            child: CustomProgressIndicator.compact(size: 22),
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 6, 16, 10),
+                        child: CompletedOrdersFilterBar(
+                          selectedStatus: state.selectedStatus,
+                          onStatusChanged: _viewModel.selectStatus,
+                        ),
+                      ),
+                      Expanded(
+                        child: state.isLoading
+                            ? const Center(child: CustomProgressIndicator())
+                            : state.isFilterLoading
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: CompletedOrdersLoadingSkeleton(),
+                              )
+                            : Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                      16,
+                                      0,
+                                      16,
+                                      10,
                                     ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                      child: _SummaryCard(
-                                        value: totalDistance.toStringAsFixed(1),
-                                        label: locale
-                                            .completed_orders_summary_distance,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Expanded(
-                                child: orders.isEmpty
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(16),
-                                        child: CompletedOrdersEmptyState(
-                                          title: locale
-                                              .completed_orders_empty_title,
-                                          subtitle: locale
-                                              .completed_orders_empty_subtitle,
-                                          status: state.selectedStatus,
-                                        ),
-                                      )
-                                    : RefreshIndicator(
-                                        onRefresh: _viewModel.refreshOrders,
-                                        child: ListView.separated(
-                                          padding: const EdgeInsets.fromLTRB(
-                                            16,
-                                            0,
-                                            16,
-                                            28,
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: _SummaryCard(
+                                            value: '${state.totalCount}',
+                                            label: locale
+                                                .completed_orders_summary_orders,
                                           ),
-                                          physics:
-                                              const AlwaysScrollableScrollPhysics(
-                                                parent: BouncingScrollPhysics(),
-                                              ),
-                                          itemCount: orders.length,
-                                          separatorBuilder: (_, _) =>
-                                              const SizedBox(height: 12),
-                                          itemBuilder: (context, index) {
-                                            final order = orders[index];
-                                            final isLoadingDetails = _viewModel
-                                                .isDetailsLoadingFor(order.id);
-                                            return Stack(
-                                              children: [
-                                                CompletedOrderCard(
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: _SummaryCard(
+                                            value: totalDistance
+                                                .toStringAsFixed(1),
+                                            label: locale
+                                                .completed_orders_summary_distance,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: orders.isEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(16),
+                                            child: CompletedOrdersEmptyState(
+                                              title: locale
+                                                  .completed_orders_empty_title,
+                                              subtitle: locale
+                                                  .completed_orders_empty_subtitle,
+                                              status: state.selectedStatus,
+                                            ),
+                                          )
+                                        : RefreshIndicator(
+                                            onRefresh: _viewModel.refreshOrders,
+                                            child: ListView.separated(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    16,
+                                                    0,
+                                                    16,
+                                                    28,
+                                                  ),
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(
+                                                    parent:
+                                                        BouncingScrollPhysics(),
+                                                  ),
+                                              itemCount: orders.length,
+                                              separatorBuilder: (_, _) =>
+                                                  const SizedBox(height: 12),
+                                              itemBuilder: (context, index) {
+                                                final order = orders[index];
+                                                return CompletedOrderCard(
                                                   order: order,
-                                                  onTap: isLoadingDetails
+                                                  onTap: state.isDetailsLoading
                                                       ? null
                                                       : () => _openOrderDetails(
                                                           order,
                                                         ),
-                                                ),
-                                                if (isLoadingDetails)
-                                                  Positioned.fill(
-                                                    child: Container(
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.black
-                                                            .withValues(
-                                                              alpha: 0.08,
-                                                            ),
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              20,
-                                                            ),
-                                                      ),
-                                                      child: const Center(
-                                                        child:
-                                                            CustomProgressIndicator.compact(
-                                                              size: 28,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                              ],
-                                            );
-                                          },
-                                        ),
-                                      ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                      ),
+                    ],
                   ),
+                  if (state.isDetailsLoading)
+                    Positioned.fill(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.08),
+                        child: const Center(
+                          child: CustomProgressIndicator(size: 84),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

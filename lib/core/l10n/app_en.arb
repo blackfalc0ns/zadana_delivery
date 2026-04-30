@@ -776,6 +776,25 @@
     }
   },
   "order_details_pickup_dialog_confirm": "Confirm pickup",
+  "order_details_arrived_vendor_dialog_title": "Confirm arrival at store",
+  "order_details_arrived_vendor_dialog_message": "Do you confirm that you have arrived at {vendorName}?",
+  "@order_details_arrived_vendor_dialog_message": {
+    "placeholders": {
+      "vendorName": {
+        "type": "String"
+      }
+    }
+  },
+  "order_details_arrived_vendor_dialog_confirm": "Confirm arrival",
+  "order_details_start_delivery_dialog_title": "Start delivery confirmation",
+  "order_details_start_delivery_dialog_message": "Do you want to start heading to the customer now?",
+  "order_details_start_delivery_dialog_confirm": "Start delivery",
+  "order_details_arrived_customer_dialog_title": "Confirm arrival at customer",
+  "order_details_arrived_customer_dialog_message": "Do you confirm that you have arrived at the customer's location?",
+  "order_details_arrived_customer_dialog_confirm": "Confirm arrival",
+  "order_details_delivered_dialog_title": "Confirm order delivery",
+  "order_details_delivered_dialog_message": "Do you confirm that the order has been delivered successfully?",
+  "order_details_delivered_dialog_confirm": "Confirm delivery",
   "order_details_call_failure": "Could not open the calling app on this device",
   "order_details_maps_failure": "Could not open the maps app on this device"
 }

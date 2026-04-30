@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/core/helpers/order_collection_helper.dart';
 import 'package:zadana_delivery/features/completed_orders/domain/entities/completed_order.dart';
 
 Color completedOrderAccentColor(
@@ -125,43 +124,30 @@ String completedOrderCollectionValue(
   required double codAmount,
   required CompletedOrderPaymentMethod paymentMethod,
 }) {
-  if (OrderCollectionHelper.requiresCollection(codAmount)) {
-    return OrderCollectionHelper.collectionAmountText(
-      context,
-      codAmount: codAmount,
-    );
-  }
-
-  return OrderCollectionHelper.collectionStatusText(
+  final languageCode = Localizations.localeOf(
     context,
-    codAmount: codAmount,
-    paymentMethod: _paymentMethodCode(paymentMethod),
-  );
+  ).languageCode.toLowerCase();
+
+  switch (paymentMethod) {
+    case CompletedOrderPaymentMethod.cashOnDelivery:
+      return languageCode == 'ar' ? 'كاش' : 'Cash';
+    case CompletedOrderPaymentMethod.card:
+      return languageCode == 'ar' ? 'فيزا' : 'Visa';
+    case CompletedOrderPaymentMethod.applePay:
+      return context.localization.apple_pay;
+    case CompletedOrderPaymentMethod.bankTransfer:
+      return context.localization.bank_transfer;
+  }
 }
 
 String completedOrderCollectionLabel(
   BuildContext context, {
   required double codAmount,
 }) {
-  if (OrderCollectionHelper.requiresCollection(codAmount)) {
-    return OrderCollectionHelper.collectionLabel(context);
-  }
-
-  final languageCode = Localizations.localeOf(context).languageCode;
-  return languageCode.toLowerCase() == 'ar' ? 'حالة التحصيل' : 'Collection status';
-}
-
-String _paymentMethodCode(CompletedOrderPaymentMethod method) {
-  switch (method) {
-    case CompletedOrderPaymentMethod.cashOnDelivery:
-      return 'CashOnDelivery';
-    case CompletedOrderPaymentMethod.card:
-      return 'Card';
-    case CompletedOrderPaymentMethod.applePay:
-      return 'ApplePay';
-    case CompletedOrderPaymentMethod.bankTransfer:
-      return 'BankTransfer';
-  }
+  final languageCode = Localizations.localeOf(
+    context,
+  ).languageCode.toLowerCase();
+  return languageCode == 'ar' ? 'طريقة الدفع' : 'Payment method';
 }
 
 bool _containsAny(String value, List<String> candidates) {

@@ -45,14 +45,17 @@ class ApiExceptionMapper {
           isTranslationKey: true,
         );
       case DioExceptionType.unknown:
+        final response = exception.response?.data;
         return ApiException(
           errorType: ApiErrorType.unknown,
-          message:
-              _extractMessage(exception.response?.data) ??
-              ApiErrorType.unknown.translationKey,
-          response: exception.response?.data,
+          message: _extractMessage(response) ?? ApiErrorType.unknown.translationKey,
+          response: response,
           statusCode: exception.response?.statusCode,
-          isTranslationKey: _extractMessage(exception.response?.data) == null,
+          isTranslationKey: _extractMessage(response) == null,
+          errorCode: _extractErrorCode(response),
+          title: _extractString(response, 'title'),
+          detail: _extractString(response, 'detail'),
+          traceId: _extractString(response, 'traceId'),
         );
     }
   }
@@ -67,12 +70,17 @@ class ApiExceptionMapper {
       required int? code,
       required dynamic body,
     }) {
+      final resolvedMessage = message ?? type.translationKey;
       return ApiException(
         errorType: type,
-        message: message ?? type.translationKey,
+        message: resolvedMessage,
         statusCode: code,
         response: body,
         isTranslationKey: message == null,
+        errorCode: _extractErrorCode(body),
+        title: _extractString(body, 'title'),
+        detail: _extractString(body, 'detail'),
+        traceId: _extractString(body, 'traceId'),
       );
     }
 
@@ -156,6 +164,24 @@ class ApiExceptionMapper {
       return _extractMessage(Map<String, dynamic>.from(data));
     }
 
+    return null;
+  }
+
+  static String? _extractErrorCode(dynamic data) {
+    return _extractString(data, 'errorCode');
+  }
+
+  static String? _extractString(dynamic data, String key) {
+    if (data is Map<String, dynamic>) {
+      final value = data[key];
+      if (value is String && value.trim().isNotEmpty) {
+        return value.trim();
+      }
+      return null;
+    }
+    if (data is Map) {
+      return _extractString(Map<String, dynamic>.from(data), key);
+    }
     return null;
   }
 }

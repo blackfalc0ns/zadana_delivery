@@ -23,6 +23,9 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   static const Duration _delayedOfferRefresh = Duration(milliseconds: 1200);
   static const Duration _initialHomeRefreshDebounce = Duration(seconds: 3);
+  static const Duration _homeRefreshThrottleWindow = Duration(
+    milliseconds: 900,
+  );
   static const Duration _signalRRetryCooldown = Duration(seconds: 30);
   static const Duration _signalRRetryDelay = Duration(seconds: 5);
   static const Duration _missingTokenRetryDelay = Duration(seconds: 2);
@@ -34,8 +37,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   DateTime? _lastHomeFetchedAt;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
+  bool _isHomeRefreshInFlight = false;
   DateTime? _retryAfter;
   Timer? _reconnectTimer;
+  DateTime? _lastHomeRefreshStartedAt;
   static DriverHomeRemoteDataSourceImpl? _instanceForStreamCallback;
 
   static void _connectSignalRIfNeeded() {
@@ -195,7 +200,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         )
         .build();
 
-    connection.on(NetworkConstants.driverDeliveryOfferEvent, (arguments) {
+    void handleOfferEvent(List<Object?>? arguments) {
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -212,8 +217,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
           'Delivery offer event could not fully update home; syncing fallback',
         );
       }
-      unawaited(_refreshHomeFromApi());
-    });
+      unawaited(_refreshHomeFromApi(reason: 'delivery offer event'));
+    }
+
+    connection.on(NetworkConstants.driverDeliveryOfferEvent, handleOfferEvent);
 
     connection.on(NetworkConstants.driverNotificationEvent, (arguments) {
       final payload = (arguments?.isNotEmpty ?? false)
@@ -232,7 +239,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         'Order status refresh signal received: '
         'orderId=${event['orderId'] ?? 'n/a'}, status=${event['status'] ?? event['newStatus'] ?? 'unknown'}',
       );
-      unawaited(_refreshHomeFromApi());
+      unawaited(_refreshHomeFromApi(reason: 'order status event'));
     });
 
     connection.on(NetworkConstants.driverArrivalStateChangedEvent, (arguments) {
@@ -244,7 +251,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         'Arrival state refresh signal received: '
         'orderId=${event['orderId'] ?? 'n/a'}, arrivalState=${event['arrivalState'] ?? event['state'] ?? 'unknown'}',
       );
-      unawaited(_refreshHomeFromApi());
+      unawaited(_refreshHomeFromApi(reason: 'arrival state event'));
     });
 
     connection.onreconnected(({String? connectionId}) {
@@ -255,7 +262,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       );
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
-      unawaited(_refreshHomeFromApi());
+      unawaited(_refreshHomeFromApi(reason: 'signalr reconnected'));
     });
 
     connection.onclose(({Exception? error}) {
@@ -307,10 +314,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     }
 
     _log('Refreshing /drivers/home after initial SignalR connect');
-    await _refreshHomeFromApi();
+    await _refreshHomeFromApi(reason: 'initial SignalR connect');
     Future<void>.delayed(_delayedOfferRefresh, () {
       _log('Running delayed home refresh after initial SignalR connect');
-      return _refreshHomeFromApi();
+      return _refreshHomeFromApi(reason: 'delayed initial SignalR sync');
     });
   }
 
@@ -361,10 +368,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
     if (_shouldRefreshHomeForNotification(notification)) {
       _log('Notification matched home refresh rules; refreshing home now');
-      await _refreshHomeFromApi();
+      await _refreshHomeFromApi(reason: 'notification event');
       Future<void>.delayed(_delayedOfferRefresh, () {
         _log('Running delayed home refresh after notification');
-        return _refreshHomeFromApi();
+        return _refreshHomeFromApi(reason: 'delayed notification sync');
       });
       return;
     }
@@ -426,7 +433,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       DriverHomeModelDto(
         homeState: _firstNonEmptyString([
           payload['homeState'],
-          'IncomingOffer',
+          'HasOffer',
           latestHome.homeState,
         ])!,
         operationalStatus: latestHome.operationalStatus,
@@ -434,14 +441,35 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         currentAssignment: latestHome.currentAssignment,
         earningsSummaryToday: latestHome.earningsSummaryToday,
         unreadAlerts: latestHome.unreadAlerts,
+        commitment: latestHome.commitment,
+        profileReadiness: latestHome.profileReadiness,
       ),
     );
     return true;
   }
 
-  Future<void> _refreshHomeFromApi() async {
+  Future<void> _refreshHomeFromApi({required String reason}) async {
+    final lastRefreshStartedAt = _lastHomeRefreshStartedAt;
+    if (_isHomeRefreshInFlight) {
+      _log(
+        'Skipping /drivers/home refresh for $reason: refresh already in flight',
+      );
+      return;
+    }
+    if (lastRefreshStartedAt != null &&
+        DateTime.now().difference(lastRefreshStartedAt) <
+            _homeRefreshThrottleWindow) {
+      _log(
+        'Skipping /drivers/home refresh for $reason: '
+        'throttled within ${_homeRefreshThrottleWindow.inMilliseconds}ms window',
+      );
+      return;
+    }
+
+    _isHomeRefreshInFlight = true;
+    _lastHomeRefreshStartedAt = DateTime.now();
     try {
-      _log('Refreshing /drivers/home after realtime event');
+      _log('Refreshing /drivers/home after $reason');
       final home = await getHome();
       _log(
         'Home refresh result: state=${home.homeState}, '
@@ -451,6 +479,8 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       emitHome(home);
     } catch (error) {
       _log('Home refresh after notification failed: $error');
+    } finally {
+      _isHomeRefreshInFlight = false;
     }
   }
 

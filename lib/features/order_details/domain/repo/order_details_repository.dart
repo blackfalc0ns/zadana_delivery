@@ -6,31 +6,44 @@ abstract class OrderDetailsRepository {
     String assignmentId,
   );
 
-  Future<ApiResult<void>> markOrderPickedUp(String orderId);
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderPickedUp(
+    String orderId,
+  );
 
-  Future<ApiResult<void>> markOrderOnTheWay(String orderId);
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderOnTheWay(
+    String orderId,
+  );
 
-  Future<ApiResult<void>> markOrderDelivered(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderDelivered(
     String orderId, {
     Map<String, dynamic>? request,
   });
 
-  Future<ApiResult<void>> markOrderDeliveryFailed(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderDeliveryFailed(
     String orderId, {
     Map<String, dynamic>? request,
   });
 
-  Future<ApiResult<void>> updateAssignmentStatus(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> updateAssignmentStatus(
     String assignmentId, {
     required String newStatus,
   });
 
-  Future<ApiResult<void>> verifyDeliveryOtp(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> verifyDeliveryOtp(
     String assignmentId, {
     required String otpCode,
   });
 
-  Future<ApiResult<void>> markOrderArrivedAtVendor(String orderId);
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> verifyPickupOtp(
+    String assignmentId, {
+    required String otpCode,
+  });
 
-  Future<ApiResult<void>> markOrderArrivedAtCustomer(String orderId);
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderArrivedAtVendor(
+    String orderId,
+  );
+
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderArrivedAtCustomer(
+    String orderId,
+  );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/order_details/presentation/controllers/order_details_controller.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_body.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_bottom_actions.dart';
@@ -21,6 +22,8 @@ class OrderDetailsScreenView extends StatelessWidget {
     required this.onOpenStoreRoute,
     required this.onOpenCustomerRoute,
     required this.onFinish,
+    required this.onRefresh,
+    this.isActionLoading = false,
   });
 
   final OrderDetailsController controller;
@@ -37,6 +40,8 @@ class OrderDetailsScreenView extends StatelessWidget {
   final VoidCallback onOpenStoreRoute;
   final VoidCallback onOpenCustomerRoute;
   final VoidCallback onFinish;
+  final Future<void> Function() onRefresh;
+  final bool isActionLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +49,12 @@ class OrderDetailsScreenView extends StatelessWidget {
       animation: controller,
       builder: (_, _) => OrderDetailsScaffold(
         onBack: onBack,
+        actions: [
+          IconButton(
+            onPressed: isActionLoading ? null : () => onRefresh(),
+            icon: const Icon(Icons.refresh_rounded),
+          ),
+        ],
         bottomActions: OrderDetailsBottomActions(
           stage: controller.stage,
           pickupOtpRequired: controller.pickupOtpRequired,
@@ -64,23 +75,32 @@ class OrderDetailsScreenView extends StatelessWidget {
           onShowCustomerOtp: onShowCustomerOtp,
           onFinish: onFinish,
         ),
-        child: OrderDetailsBody(
-          activeStatusIndex: controller.activeStatusIndex,
-          order: controller.order,
-          isCashPayment: controller.isCashPayment,
-          pickupOtpCode: controller.pickupOtpCode,
-          isWaitingForMerchantConfirmation:
-              controller.isWaitingForMerchantConfirmation,
-          items: controller.orderItems,
-          markers: controller.markers,
-          showStoreRouteFirst: controller.showStoreRouteFirst,
-          storeLocation: controller.storeLocation,
-          customerLocation: controller.customerLocation,
-          onCallStore: onCallStore,
-          onCallCustomer: onCallCustomer,
-          onShowItems: onShowItems,
-          onOpenCustomerRoute: onOpenCustomerRoute,
-          onOpenStoreRoute: onOpenStoreRoute,
+        child: Stack(
+          children: [
+            OrderDetailsBody(
+              activeStatusIndex: controller.activeStatusIndex,
+              order: controller.order,
+              isCashPayment: controller.isCashPayment,
+              pickupOtpCode: controller.pickupOtpCode,
+              isWaitingForMerchantConfirmation:
+                  controller.isWaitingForMerchantConfirmation,
+              items: controller.orderItems,
+              markers: controller.markers,
+              showStoreRouteFirst: controller.showStoreRouteFirst,
+              storeLocation: controller.storeLocation,
+              customerLocation: controller.customerLocation,
+              onCallStore: onCallStore,
+              onCallCustomer: onCallCustomer,
+              onShowItems: onShowItems,
+              onOpenCustomerRoute: onOpenCustomerRoute,
+              onOpenStoreRoute: onOpenStoreRoute,
+              onRefresh: onRefresh,
+            ),
+            if (isActionLoading) ...[
+              const ModalBarrier(dismissible: false, color: Colors.black26),
+              const Center(child: CustomProgressIndicator()),
+            ],
+          ],
         ),
       ),
     );

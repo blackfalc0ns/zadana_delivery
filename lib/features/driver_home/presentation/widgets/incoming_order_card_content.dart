@@ -23,6 +23,21 @@ class IncomingOrderCardMeta extends StatelessWidget {
     final requiresCollection = OrderCollectionHelper.requiresCollection(
       codAmount,
     );
+    final isPaidOnline = OrderCollectionHelper.isPaidOnline(
+      codAmount: codAmount,
+      paymentMethod: paymentMethod,
+    );
+    final statusText = requiresCollection
+        ? OrderCollectionHelper.collectionAmountText(
+            context,
+            codAmount: codAmount,
+          )
+        : OrderCollectionHelper.collectionStatusText(
+            context,
+            codAmount: codAmount,
+            paymentMethod: paymentMethod,
+          );
+
     return ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 76, maxWidth: 92),
       child: Column(
@@ -30,22 +45,17 @@ class IncomingOrderCardMeta extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            requiresCollection
-                ? OrderCollectionHelper.collectionAmountText(
-                    context,
-                    codAmount: codAmount,
-                  )
-                : OrderCollectionHelper.collectionStatusText(
-                    context,
-                    codAmount: codAmount,
-                    paymentMethod: paymentMethod,
-                  ),
+            statusText,
             textAlign: TextAlign.start,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: getBoldStyle(
+            style: (requiresCollection ? getBoldStyle : getSemiBoldStyle)(
               fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size16,
+              fontSize: requiresCollection
+                  ? FontSize.size16
+                  : isPaidOnline
+                  ? FontSize.size12
+                  : FontSize.size13,
               color: color.primary,
             ),
           ),
@@ -54,6 +64,8 @@ class IncomingOrderCardMeta extends StatelessWidget {
             requiresCollection
                 ? OrderCollectionHelper.collectionLabel(context)
                 : '$distance ${localizations.driver_home_distance_unit}',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: getSemiBoldStyle(
               fontFamily: FontConstant.cairo,
               color: color.onSurface.withValues(alpha: 0.72),

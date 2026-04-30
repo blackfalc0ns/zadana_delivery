@@ -24,76 +24,116 @@ class OrderDetailsRepositoryImpl implements OrderDetailsRepository {
   }
 
   @override
-  Future<ApiResult<void>> markOrderPickedUp(String orderId) {
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderPickedUp(
+    String orderId,
+  ) {
     return safeApiCall(() async {
-      await _remoteDataSource.markOrderPickedUp(orderId);
+      final response = await _remoteDataSource.markOrderPickedUp(orderId);
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> markOrderOnTheWay(String orderId) {
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderOnTheWay(
+    String orderId,
+  ) {
     return safeApiCall(() async {
-      await _remoteDataSource.markOrderOnTheWay(orderId);
+      final response = await _remoteDataSource.markOrderOnTheWay(orderId);
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> markOrderDelivered(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderDelivered(
     String orderId, {
     Map<String, dynamic>? request,
   }) {
     return safeApiCall(() async {
-      await _remoteDataSource.markOrderDelivered(orderId, request: request);
-    });
-  }
-
-  @override
-  Future<ApiResult<void>> markOrderDeliveryFailed(
-    String orderId, {
-    Map<String, dynamic>? request,
-  }) {
-    return safeApiCall(() async {
-      await _remoteDataSource.markOrderDeliveryFailed(
+      final response = await _remoteDataSource.markOrderDelivered(
         orderId,
         request: request,
       );
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> updateAssignmentStatus(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderDeliveryFailed(
+    String orderId, {
+    Map<String, dynamic>? request,
+  }) {
+    return safeApiCall(() async {
+      final response = await _remoteDataSource.markOrderDeliveryFailed(
+        orderId,
+        request: request,
+      );
+      return response.updatedAssignment?.toEntity();
+    });
+  }
+
+  @override
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> updateAssignmentStatus(
     String assignmentId, {
     required String newStatus,
   }) {
     return safeApiCall(() async {
-      await _remoteDataSource.updateAssignmentStatus(
+      final response = await _remoteDataSource.updateAssignmentStatus(
         assignmentId,
         newStatus: newStatus,
       );
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> verifyDeliveryOtp(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> verifyDeliveryOtp(
     String assignmentId, {
     required String otpCode,
   }) {
     return safeApiCall(() async {
-      await _remoteDataSource.verifyDeliveryOtp(assignmentId, otpCode: otpCode);
+      final response = await _remoteDataSource.verifyDeliveryOtp(
+        assignmentId,
+        otpCode: otpCode,
+      );
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> markOrderArrivedAtVendor(String orderId) {
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> verifyPickupOtp(
+    String assignmentId, {
+    required String otpCode,
+  }) {
     return safeApiCall(() async {
-      await _remoteDataSource.markOrderArrivedAtVendor(orderId);
+      final response = await _remoteDataSource.verifyPickupOtp(
+        assignmentId,
+        otpCode: otpCode,
+      );
+      return response.updatedAssignment?.toEntity();
     });
   }
 
   @override
-  Future<ApiResult<void>> markOrderArrivedAtCustomer(String orderId) {
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderArrivedAtVendor(
+    String orderId,
+  ) {
     return safeApiCall(() async {
-      await _remoteDataSource.markOrderArrivedAtCustomer(orderId);
+      final response = await _remoteDataSource.markOrderArrivedAtVendor(
+        orderId,
+      );
+      return response.updatedAssignment?.toEntity();
+    });
+  }
+
+  @override
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> markOrderArrivedAtCustomer(
+    String orderId,
+  ) {
+    return safeApiCall(() async {
+      final response = await _remoteDataSource.markOrderArrivedAtCustomer(
+        orderId,
+      );
+      return response.updatedAssignment?.toEntity();
     });
   }
 }

@@ -4,6 +4,7 @@ import 'package:zadana_delivery/core/errors/api_exception_mapper.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/features/order_details/data/data_source/order_details_remote_data_source.dart';
 import 'package:zadana_delivery/features/order_details/data/models/order_assignment_details_model_dto.dart';
+import 'package:zadana_delivery/features/order_details/data/models/order_details_action_response_dto.dart';
 
 @Injectable(as: OrderDetailsRemoteDataSource)
 class OrderDetailsRemoteDataSourceImpl implements OrderDetailsRemoteDataSource {
@@ -26,89 +27,128 @@ class OrderDetailsRemoteDataSourceImpl implements OrderDetailsRemoteDataSource {
   }
 
   @override
-  Future<void> markOrderPickedUp(String orderId) async {
+  Future<OrderDetailsActionResponseDto> markOrderPickedUp(
+    String orderId,
+  ) async {
     try {
-      await _apiServices.markOrderPickedUp(orderId);
+      final response = await _apiServices.markOrderPickedUp(orderId);
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> markOrderOnTheWay(String orderId) async {
+  Future<OrderDetailsActionResponseDto> markOrderOnTheWay(
+    String orderId,
+  ) async {
     try {
-      await _apiServices.markOrderOnTheWay(orderId);
+      final response = await _apiServices.markOrderOnTheWay(orderId);
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> markOrderDelivered(
+  Future<OrderDetailsActionResponseDto> markOrderDelivered(
     String orderId, {
     Map<String, dynamic>? request,
   }) async {
     try {
-      await _apiServices.markOrderDelivered(orderId, request ?? const {});
+      final response = await _apiServices.markOrderDelivered(
+        orderId,
+        request ?? const {},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> markOrderDeliveryFailed(
+  Future<OrderDetailsActionResponseDto> markOrderDeliveryFailed(
     String orderId, {
     Map<String, dynamic>? request,
   }) async {
     try {
-      await _apiServices.markOrderDeliveryFailed(orderId, request ?? const {});
+      final response = await _apiServices.markOrderDeliveryFailed(
+        orderId,
+        request ?? const {},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> updateAssignmentStatus(
+  Future<OrderDetailsActionResponseDto> updateAssignmentStatus(
     String assignmentId, {
     required String newStatus,
   }) async {
     try {
-      await _apiServices.updateDriverAssignmentStatus(assignmentId, {
-        'newStatus': newStatus,
-      });
+      final response = await _apiServices.updateDriverAssignmentStatus(
+        assignmentId,
+        {'newStatus': newStatus},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> verifyDeliveryOtp(
+  Future<OrderDetailsActionResponseDto> verifyDeliveryOtp(
     String assignmentId, {
     required String otpCode,
   }) async {
     try {
-      await _apiServices.verifyDriverAssignmentOtp(assignmentId, {
-        'otpType': 'delivery',
-        'otpCode': otpCode,
-      });
+      final response = await _apiServices.verifyDriverAssignmentOtp(
+        assignmentId,
+        {'otpType': 'delivery', 'otpCode': otpCode},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> markOrderArrivedAtVendor(String orderId) async {
+  Future<OrderDetailsActionResponseDto> verifyPickupOtp(
+    String assignmentId, {
+    required String otpCode,
+  }) async {
     try {
-      await _apiServices.markOrderArrivedAtVendor(orderId);
+      final response = await _apiServices.verifyDriverAssignmentOtp(
+        assignmentId,
+        {'otpType': 'pickup', 'otpCode': otpCode},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> markOrderArrivedAtCustomer(String orderId) async {
+  Future<OrderDetailsActionResponseDto> markOrderArrivedAtVendor(
+    String orderId,
+  ) async {
     try {
-      await _apiServices.markOrderArrivedAtCustomer(orderId);
+      final response = await _apiServices.markOrderArrivedAtVendor(orderId);
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<OrderDetailsActionResponseDto> markOrderArrivedAtCustomer(
+    String orderId,
+  ) async {
+    try {
+      final response = await _apiServices.markOrderArrivedAtCustomer(orderId);
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }

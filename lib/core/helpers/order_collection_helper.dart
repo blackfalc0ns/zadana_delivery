@@ -41,7 +41,7 @@ class OrderCollectionHelper {
     }
 
     if (isPaidOnline(codAmount: codAmount, paymentMethod: paymentMethod)) {
-      return _localized(context, ar: 'مدفوع أونلاين', en: 'Paid online');
+      return _localized(context, ar: 'مدفوع', en: 'Paid');
     }
 
     return _localized(context, ar: 'لا يوجد تحصيل', en: 'No collection');

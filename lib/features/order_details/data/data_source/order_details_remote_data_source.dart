@@ -1,35 +1,45 @@
 import 'package:zadana_delivery/features/order_details/data/models/order_assignment_details_model_dto.dart';
+import 'package:zadana_delivery/features/order_details/data/models/order_details_action_response_dto.dart';
 
 abstract class OrderDetailsRemoteDataSource {
   Future<OrderAssignmentDetailsModelDto> getAssignmentDetails(
     String assignmentId,
   );
 
-  Future<void> markOrderPickedUp(String orderId);
+  Future<OrderDetailsActionResponseDto> markOrderPickedUp(String orderId);
 
-  Future<void> markOrderOnTheWay(String orderId);
+  Future<OrderDetailsActionResponseDto> markOrderOnTheWay(String orderId);
 
-  Future<void> markOrderDelivered(
+  Future<OrderDetailsActionResponseDto> markOrderDelivered(
     String orderId, {
     Map<String, dynamic>? request,
   });
 
-  Future<void> markOrderDeliveryFailed(
+  Future<OrderDetailsActionResponseDto> markOrderDeliveryFailed(
     String orderId, {
     Map<String, dynamic>? request,
   });
 
-  Future<void> updateAssignmentStatus(
+  Future<OrderDetailsActionResponseDto> updateAssignmentStatus(
     String assignmentId, {
     required String newStatus,
   });
 
-  Future<void> verifyDeliveryOtp(
+  Future<OrderDetailsActionResponseDto> verifyDeliveryOtp(
     String assignmentId, {
     required String otpCode,
   });
 
-  Future<void> markOrderArrivedAtVendor(String orderId);
+  Future<OrderDetailsActionResponseDto> verifyPickupOtp(
+    String assignmentId, {
+    required String otpCode,
+  });
 
-  Future<void> markOrderArrivedAtCustomer(String orderId);
+  Future<OrderDetailsActionResponseDto> markOrderArrivedAtVendor(
+    String orderId,
+  );
+
+  Future<OrderDetailsActionResponseDto> markOrderArrivedAtCustomer(
+    String orderId,
+  );
 }

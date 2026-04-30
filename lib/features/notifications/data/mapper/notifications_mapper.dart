@@ -42,7 +42,11 @@ extension DriverNotificationsResponseMapper
 extension NotificationActionResponseMapper
     on NotificationActionResponseModelDto {
   NotificationActionResponseEntity toEntity() {
-    return NotificationActionResponseEntity(message: message, count: count);
+    return NotificationActionResponseEntity(
+      messageAr: messageAr,
+      messageEn: messageEn,
+      count: count,
+    );
   }
 }
 

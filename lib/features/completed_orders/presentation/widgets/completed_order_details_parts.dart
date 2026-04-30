@@ -20,19 +20,11 @@ class CompletedOrderSheetSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHighest.withValues(alpha: 0.18),
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.35),
+          color: scheme.outlineVariant.withValues(alpha: 0.28),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.08),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-            spreadRadius: -8,
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,7 +34,7 @@ class CompletedOrderSheetSection extends StatelessWidget {
             style: getBoldStyle(
               fontFamily: FontConstant.cairo,
               fontSize: FontSize.size13,
-              color: accentColor,
+              color: accentColor.withValues(alpha: 0.92),
             ),
           ),
           const SizedBox(height: 10),

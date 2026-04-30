@@ -64,7 +64,7 @@ abstract class ApiServices {
   @GET(EndPoints.driverNotifications)
   Future<dynamic> getDriverNotifications({
     @Query('page') int page = 1,
-    @Query('perPage') int perPage = 20,
+    @Query('per_page') int perPage = 20,
   });
 
   @POST(EndPoints.driverNotificationRead)

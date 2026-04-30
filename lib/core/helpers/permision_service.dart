@@ -3,6 +3,9 @@ import 'package:injectable/injectable.dart';
 
 @injectable
 class LocationPermissionService {
+  Future<void>? _foregroundPermissionRequest;
+  Future<void>? _backgroundPermissionRequest;
+
   Future<LocationPermissionSnapshot> getPermissionSnapshot() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -18,6 +21,23 @@ class LocationPermissionService {
   }
 
   Future<void> ensureForegroundPermission() async {
+    final pendingRequest = _foregroundPermissionRequest;
+    if (pendingRequest != null) {
+      return pendingRequest;
+    }
+
+    final request = _ensureForegroundPermissionInternal();
+    _foregroundPermissionRequest = request;
+    try {
+      await request;
+    } finally {
+      if (identical(_foregroundPermissionRequest, request)) {
+        _foregroundPermissionRequest = null;
+      }
+    }
+  }
+
+  Future<void> _ensureForegroundPermissionInternal() async {
     final snapshot = await getPermissionSnapshot();
     if (snapshot.status == LocationPermissionStatus.serviceDisabled) {
       throw const LocationServiceException(
@@ -47,6 +67,23 @@ class LocationPermissionService {
   }
 
   Future<void> ensureBackgroundPermission() async {
+    final pendingRequest = _backgroundPermissionRequest;
+    if (pendingRequest != null) {
+      return pendingRequest;
+    }
+
+    final request = _ensureBackgroundPermissionInternal();
+    _backgroundPermissionRequest = request;
+    try {
+      await request;
+    } finally {
+      if (identical(_backgroundPermissionRequest, request)) {
+        _backgroundPermissionRequest = null;
+      }
+    }
+  }
+
+  Future<void> _ensureBackgroundPermissionInternal() async {
     await ensureForegroundPermission();
 
     var permission = await Geolocator.checkPermission();

@@ -23,6 +23,8 @@ class DriverRealtimeService {
       StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _arrivalStateController =
       StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _assignmentUpdatedController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   HubConnection? _hubConnection;
   bool _isInitialized = false;
@@ -36,6 +38,8 @@ class DriverRealtimeService {
       _orderStatusController.stream;
   Stream<Map<String, dynamic>> get arrivalStateChanged =>
       _arrivalStateController.stream;
+  Stream<Map<String, dynamic>> get assignmentUpdated =>
+      _assignmentUpdatedController.stream;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -156,6 +160,23 @@ class DriverRealtimeService {
           'arrivalState=${payload['arrivalState'] ?? payload['state'] ?? 'unknown'}',
         );
         _arrivalStateController.add(payload);
+      });
+
+      connection.on(NetworkConstants.driverAssignmentUpdatedEvent, (
+        arguments,
+      ) {
+        final payload = _normalizeMap(_extractFirstArgument(arguments));
+        if (payload.isEmpty) {
+          _log('Assignment updated stream event ignored: payload is empty');
+          return;
+        }
+        _log(
+          'Assignment updated stream event received: '
+          'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
+          'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}, '
+          'orderId=${payload['orderId'] ?? 'n/a'}',
+        );
+        _assignmentUpdatedController.add(payload);
       });
 
       connection.onreconnected(({String? connectionId}) {

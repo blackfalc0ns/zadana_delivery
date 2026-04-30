@@ -85,6 +85,7 @@ class DriverOrderPreview {
     bool? pickupOtpRequired,
     bool? deliveryOtpRequired,
     String? pickupOtpCode,
+    bool clearPickupOtpCode = false,
   }) {
     return DriverOrderPreview(
       id: id ?? this.id,
@@ -113,7 +114,9 @@ class DriverOrderPreview {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       pickupOtpRequired: pickupOtpRequired ?? this.pickupOtpRequired,
       deliveryOtpRequired: deliveryOtpRequired ?? this.deliveryOtpRequired,
-      pickupOtpCode: pickupOtpCode ?? this.pickupOtpCode,
+      pickupOtpCode: clearPickupOtpCode
+          ? null
+          : pickupOtpCode ?? this.pickupOtpCode,
     );
   }
 }

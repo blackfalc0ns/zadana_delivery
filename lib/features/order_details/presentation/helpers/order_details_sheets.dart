@@ -67,32 +67,40 @@ class OrderDetailsSheets {
   static Future<void> showPickupOtpSheet({
     required BuildContext context,
     required String otp,
+    Future<bool> Function(String otpCode)? onSubmit,
     VoidCallback? onConfirm,
+    ValueChanged<BuildContext>? onSheetContextReady,
   }) async {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetContext) => GestureDetector(
-        onTap: () async {
-          await Clipboard.setData(ClipboardData(text: otp));
-          if (!sheetContext.mounted) return;
-          CustomSnackbar.showInfo(
-            context: sheetContext,
-            message:
-                sheetContext.localization.order_details_pickup_code_copied,
-          );
-        },
-        child: PickupOtpSheetContent(
+      builder: (sheetContext) {
+        onSheetContextReady?.call(sheetContext);
+        return PickupOtpSheetContent(
           otp: otp,
+          sheetContext: sheetContext,
+          onSubmit: onSubmit,
           onConfirm: onConfirm == null
               ? null
               : () {
                   Navigator.of(sheetContext).pop();
                   onConfirm();
                 },
-        ),
-      ),
+          onCopyTap: otp.trim().isEmpty
+              ? null
+              : () async {
+                  await Clipboard.setData(ClipboardData(text: otp));
+                  if (!sheetContext.mounted) return;
+                  CustomSnackbar.showInfo(
+                    context: sheetContext,
+                    message: sheetContext
+                        .localization
+                        .order_details_pickup_code_copied,
+                  );
+                },
+        );
+      },
     );
   }
 

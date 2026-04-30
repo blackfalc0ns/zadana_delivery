@@ -8,6 +8,9 @@ import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
+import 'package:zadana_delivery/features/order_details/data/mapper/order_assignment_details_mapper.dart';
+import 'package:zadana_delivery/features/order_details/data/models/order_assignment_details_model_dto.dart';
+import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/get_order_assignment_details_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_arrived_at_customer_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_arrived_at_vendor_usecase.dart';
@@ -16,6 +19,7 @@ import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_on_the_way_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_picked_up_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/verify_delivery_otp_usecase.dart';
+import 'package:zadana_delivery/features/order_details/domain/usecase/verify_pickup_otp_usecase.dart';
 import 'package:zadana_delivery/features/order_details/presentation/manager/order_details_event.dart';
 import 'package:zadana_delivery/features/order_details/presentation/manager/order_details_state.dart';
 
@@ -41,6 +45,8 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       getIt<MarkOrderDeliveryFailedUseCase>();
   final VerifyDeliveryOtpUseCase _verifyDeliveryOtpUseCase =
       getIt<VerifyDeliveryOtpUseCase>();
+  final VerifyPickupOtpUseCase _verifyPickupOtpUseCase =
+      getIt<VerifyPickupOtpUseCase>();
   final RefreshDriverHomeUseCase _refreshDriverHomeUseCase =
       getIt<RefreshDriverHomeUseCase>();
   final DriverRealtimeService _driverRealtimeService =
@@ -51,6 +57,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
   StreamSubscription<Map<String, dynamic>>? _notificationSubscription;
   StreamSubscription<Map<String, dynamic>>? _orderStatusSubscription;
   StreamSubscription<Map<String, dynamic>>? _arrivalStateSubscription;
+  StreamSubscription<Map<String, dynamic>>? _assignmentUpdatedSubscription;
   Timer? _assignmentPollingTimer;
   String? _activeAssignmentId;
   String? _activeOrderId;
@@ -111,6 +118,14 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
           ),
           onSuccessRefreshAssignment: true,
         );
+      case OrderDetailsVerifyPickupOtpEvent():
+        return _runAction(
+          () => _verifyPickupOtpUseCase.call(
+            event.assignmentId,
+            otpCode: event.otpCode,
+          ),
+          onSuccessRefreshAssignment: true,
+        );
     }
   }
 
@@ -150,19 +165,33 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     emit(state.copyWith(clearFailure: true));
   }
 
-  Future<bool> _runAction(
-    Future<ApiResult<void>> Function() action, {
+  Future<bool> _runAction<T>(
+    Future<ApiResult<T>> Function() action, {
     bool onSuccessRefreshAssignment = false,
   }) async {
     emit(state.copyWith(isActionLoading: true, clearFailure: true));
     final result = await action();
     switch (result) {
-      case ApiSuccessResult():
+      case ApiSuccessResult(data: final data):
+        if (data is OrderAssignmentDetailsEntity) {
+          final resolvedOrderId = data.orderId.trim();
+          if (resolvedOrderId.isNotEmpty) {
+            _activeOrderId = resolvedOrderId;
+          }
+          emit(
+            state.copyWith(
+              details: data,
+              isActionLoading: false,
+              clearFailure: true,
+            ),
+          );
+        } else {
+          emit(state.copyWith(isActionLoading: false, clearFailure: true));
+        }
         await _refreshDriverHomeUseCase.call();
         if (onSuccessRefreshAssignment && _activeAssignmentId != null) {
-          await _loadAssignmentDetails(_activeAssignmentId!);
+          await _loadAssignmentDetails(_activeAssignmentId!, silent: true);
         }
-        emit(state.copyWith(isActionLoading: false, clearFailure: true));
         return true;
       case ApiErrorResult():
         emit(state.copyWith(isActionLoading: false, failure: result.failure));
@@ -170,7 +199,10 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     }
   }
 
-  Future<ApiResult<void>> _markArrivalState(String orderId, String arrivalState) {
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> _markArrivalState(
+    String orderId,
+    String arrivalState,
+  ) {
     final normalizedState = arrivalState.trim().toLowerCase();
     if (normalizedState == 'arrived_at_vendor') {
       return _markOrderArrivedAtVendorUseCase.call(orderId);
@@ -258,6 +290,35 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
       unawaited(_refreshDriverHomeUseCase.call());
     });
+
+    // ⭐ PRIMARY: ReceiveAssignmentUpdated — full DTO directly from backend
+    _assignmentUpdatedSubscription = _driverRealtimeService.assignmentUpdated.listen((
+      payload,
+    ) {
+      _log(
+        'Assignment updated stream event received: '
+        'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
+        'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}',
+      );
+      final assignmentIdValue = payload['assignmentId']?.toString().trim() ?? '';
+      if (assignmentIdValue.isEmpty || assignmentIdValue != _activeAssignmentId) {
+        _log('Assignment updated event ignored: does not match active assignment');
+        return;
+      }
+      try {
+        final dto = OrderAssignmentDetailsModelDto.fromJson(payload);
+        final entity = dto.toEntity();
+        _log(
+          'Assignment updated: applying realtime state update '
+          '(status=${entity.assignmentStatus}, actions=${entity.allowedActions})',
+        );
+        emit(state.copyWith(details: entity, isLoading: false));
+        unawaited(_refreshDriverHomeUseCase.call());
+      } catch (error) {
+        _log('Failed to parse assignment updated payload: $error. Falling back to GET.');
+        unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
+      }
+    });
   }
 
   Future<void> _deactivateRealtime() async {
@@ -269,9 +330,11 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     await _notificationSubscription?.cancel();
     await _orderStatusSubscription?.cancel();
     await _arrivalStateSubscription?.cancel();
+    await _assignmentUpdatedSubscription?.cancel();
     _notificationSubscription = null;
     _orderStatusSubscription = null;
     _arrivalStateSubscription = null;
+    _assignmentUpdatedSubscription = null;
     emit(state.copyWith(clearNotificationMessage: true));
   }
 

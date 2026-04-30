@@ -14,6 +14,10 @@ class DeliveryStatusCard extends StatelessWidget {
     final locale = context.localization;
     final steps = [
       (locale.order_details_status_accepted, Icons.check_circle_rounded),
+      (
+        locale.order_details_arrived_at_vendor,
+        Icons.store_mall_directory_rounded,
+      ),
       (locale.order_details_status_picked_up, Icons.storefront_rounded),
       (locale.order_details_status_on_the_way, Icons.delivery_dining_rounded),
       (locale.order_details_status_delivered, Icons.home_rounded),
@@ -38,7 +42,7 @@ class DeliveryStatusCard extends StatelessWidget {
         ],
       ),
       child: SizedBox(
-        height: 78,
+        height: 104,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: List.generate(steps.length * 2 - 1, (index) {
@@ -102,8 +106,7 @@ class _StatusStep extends StatelessWidget {
         ? AppColors.secondary
         : colorScheme.outlineVariant;
 
-    return SizedBox(
-      width: 64,
+    return Expanded(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -127,15 +130,21 @@ class _StatusStep extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          Text(
-            step.$1,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: getSemiBoldStyle(
-              fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size11,
-              color: isDone ? AppColors.secondary : colorScheme.onSurfaceVariant,
+          Expanded(
+            child: Center(
+              child: Text(
+                step.$1,
+                textAlign: TextAlign.center,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: getSemiBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size10,
+                  color: isDone
+                      ? AppColors.secondary
+                      : colorScheme.onSurfaceVariant,
+                ).copyWith(height: 1.25),
+              ),
             ),
           ),
         ],

@@ -9,6 +9,8 @@ abstract class NetworkConstants {
       'ReceiveOrderStatusChanged';
   static const String driverArrivalStateChangedEvent =
       'ReceiveDriverArrivalStateChanged';
+  static const String driverAssignmentUpdatedEvent =
+      'ReceiveAssignmentUpdated';
   static const String driverOfferNotificationType = 'driver-offer';
 }
 

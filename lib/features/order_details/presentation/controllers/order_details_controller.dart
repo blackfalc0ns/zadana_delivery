@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_marker_factory.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 
@@ -8,14 +9,26 @@ class OrderDetailsController extends ChangeNotifier {
     required DriverOrderPreview order,
     required this.driverLocation,
     required bool startAccepted,
+    required this.storeMarkerLabel,
+    required this.customerMarkerLabel,
   }) : _order = order,
        _stage = startAccepted
            ? OrderDeliveryStage.accepted
-           : OrderDeliveryStage.pending;
+           : OrderDeliveryStage.pending {
+    _loadMarkerIcons();
+  }
 
   final LatLng driverLocation;
+  final String storeMarkerLabel;
+  final String customerMarkerLabel;
   DriverOrderPreview _order;
   OrderAssignmentDetailsEntity? _details;
+  BitmapDescriptor? _storeMarkerIcon;
+  BitmapDescriptor? _customerMarkerIcon;
+  bool _isDisposed = false;
+  int _markerLoadVersion = 0;
+  String? _lastStoreMarkerKey;
+  String? _lastCustomerMarkerKey;
 
   OrderDeliveryStage _stage;
 
@@ -28,8 +41,7 @@ class OrderDetailsController extends ChangeNotifier {
   LatLng get customerLocation =>
       LatLng(order.deliveryLatitude, order.deliveryLongitude);
 
-  bool get isCashPayment =>
-      (order.codAmount > 0);
+  bool get isCashPayment => (order.codAmount > 0);
 
   bool get pickupOtpRequired =>
       _details?.pickupOtpRequired ?? order.pickupOtpRequired;
@@ -37,28 +49,40 @@ class OrderDetailsController extends ChangeNotifier {
   bool get deliveryOtpRequired =>
       _details?.deliveryOtpRequired ?? order.deliveryOtpRequired;
 
-  String? get pickupOtpCode => _details?.pickupOtpCode ?? order.pickupOtpCode;
+  String? get pickupOtpCode =>
+      _details != null ? _details!.pickupOtpCode : order.pickupOtpCode;
 
   bool get hasPickupOtpCode => (pickupOtpCode ?? '').trim().isNotEmpty;
 
   bool get isWaitingForMerchantConfirmation {
     final details = _details;
     if (details == null) return false;
+    if (_isPastMerchantPickupStep) return false;
 
     final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
-    final allowedActions = _normalizedAllowedActions;
     final otpStatus = details.pickupOtpStatus.trim().toLowerCase();
+    final arrivedAtVendor =
+        hasArrivedAtVendor ||
+        assignmentStatus.contains('arrivedatvendor') ||
+        assignmentStatus.contains('arrived_at_vendor');
 
-    return assignmentStatus.contains('arrivedatvendor') ||
-        assignmentStatus.contains('arrived_at_vendor') ||
-        allowedActions.isEmpty && hasPickupOtpCode ||
-        otpStatus == 'pending' && !canMarkPickedUp;
+    if (!arrivedAtVendor) {
+      return false;
+    }
+
+    return otpStatus == 'pending' || (!canMarkPickedUp && hasPickupOtpCode);
   }
 
   bool get canMarkPickedUp =>
       _normalizedAllowedActions.contains('mark_picked_up');
 
-  bool get canShowPickupOtpSheet => hasPickupOtpCode && !canMarkPickedUp;
+  bool get canShowPickupOtpSheet =>
+      !_isPastMerchantPickupStep && hasPickupOtpCode && !canMarkPickedUp;
+
+  bool get canVerifyPickupOtp =>
+      !_isPastMerchantPickupStep &&
+      pickupOtpRequired &&
+      _normalizedAllowedActions.contains('verify_pickup_otp');
 
   bool get canMarkArrivedAtVendor =>
       _normalizedAllowedActions.contains('arrived_at_vendor');
@@ -67,7 +91,15 @@ class OrderDetailsController extends ChangeNotifier {
       _normalizedAllowedActions.contains('arrived_at_customer');
 
   bool get hasArrivedAtVendor =>
-      _normalizedArrivalState.contains('arrived_at_vendor');
+      _normalizedArrivalState.contains('arrived_at_vendor') ||
+      (_details?.assignmentStatus.trim().toLowerCase().contains(
+            'arrived_at_vendor',
+          ) ??
+          false) ||
+      (_details?.assignmentStatus.trim().toLowerCase().contains(
+            'arrivedatvendor',
+          ) ??
+          false);
 
   bool get hasArrivedAtCustomer =>
       _normalizedArrivalState.contains('arrived_at_customer');
@@ -101,25 +133,62 @@ class OrderDetailsController extends ChangeNotifier {
   int get activeStatusIndex => switch (stage) {
     OrderDeliveryStage.pending => -1,
     OrderDeliveryStage.accepted => 0,
-    OrderDeliveryStage.pickedUp => 1,
-    OrderDeliveryStage.onTheWay => 2,
-    OrderDeliveryStage.delivered => 3,
+    OrderDeliveryStage.arrivedAtVendor => 1,
+    OrderDeliveryStage.pickedUp => 2,
+    OrderDeliveryStage.onTheWay => 3,
+    OrderDeliveryStage.delivered => 4,
   };
 
   Set<Marker> get markers => {
     Marker(
       markerId: const MarkerId('store'),
       position: storeLocation,
-      infoWindow: InfoWindow(title: order.vendorName),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+      infoWindow: InfoWindow(title: order.vendorName, snippet: 'Store'),
+      icon:
+          _storeMarkerIcon ??
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
     ),
     Marker(
       markerId: const MarkerId('customer'),
       position: customerLocation,
-      infoWindow: InfoWindow(title: order.customerName),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      infoWindow: InfoWindow(title: order.customerName, snippet: 'Customer'),
+      icon:
+          _customerMarkerIcon ??
+          BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
     ),
   };
+
+  Future<void> _loadMarkerIcons() async {
+    final storeKey = '${order.vendorName}|$storeMarkerLabel';
+    final customerKey = '${order.customerName}|$customerMarkerLabel';
+    final shouldReuseExistingIcons =
+        _storeMarkerIcon != null &&
+        _customerMarkerIcon != null &&
+        storeKey == _lastStoreMarkerKey &&
+        customerKey == _lastCustomerMarkerKey;
+    if (shouldReuseExistingIcons) {
+      return;
+    }
+
+    final requestVersion = ++_markerLoadVersion;
+    final storeIcon = await DriverHomeMarkerFactory.buildStoreMarker(
+      storeName: order.vendorName,
+      markerLabel: storeMarkerLabel,
+    );
+    final customerIcon = await DriverHomeMarkerFactory.buildCustomerMarker(
+      customerName: order.customerName,
+      markerLabel: customerMarkerLabel,
+    );
+
+    if (_isDisposed || requestVersion != _markerLoadVersion) {
+      return;
+    }
+    _storeMarkerIcon = storeIcon;
+    _customerMarkerIcon = customerIcon;
+    _lastStoreMarkerKey = storeKey;
+    _lastCustomerMarkerKey = customerKey;
+    notifyListeners();
+  }
 
   void applyAssignmentDetails(OrderAssignmentDetailsEntity details) {
     _details = details;
@@ -159,8 +228,10 @@ class OrderDetailsController extends ChangeNotifier {
       pickupOtpRequired: details.pickupOtpRequired,
       deliveryOtpRequired: details.deliveryOtpRequired,
       pickupOtpCode: details.pickupOtpCode,
+      clearPickupOtpCode: details.pickupOtpCode == null,
     );
     _stage = _resolveStageFromDetails(details);
+    _loadMarkerIcons();
     notifyListeners();
   }
 
@@ -170,6 +241,12 @@ class OrderDetailsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  @override
+  void dispose() {
+    _isDisposed = true;
+    super.dispose();
+  }
+
   String get _normalizedArrivalState =>
       (_details?.driverArrivalState ?? '').trim().toLowerCase();
 
@@ -177,6 +254,10 @@ class OrderDetailsController extends ChangeNotifier {
       (_details?.allowedActions ?? const <String>[])
           .map((action) => action.trim().toLowerCase())
           .toSet();
+
+  bool get _isPastMerchantPickupStep {
+    return stage.index >= OrderDeliveryStage.pickedUp.index;
+  }
 
   String _resolveItemNote(OrderAssignmentItemEntity item) {
     if (item.quantity <= 0) return '';
@@ -204,30 +285,40 @@ class OrderDetailsController extends ChangeNotifier {
     OrderAssignmentDetailsEntity details,
   ) {
     final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
+    final homeState = details.homeState.trim().toLowerCase();
     final pickupOtpStatus = details.pickupOtpStatus.trim().toLowerCase();
     final deliveryOtpStatus = details.deliveryOtpStatus.trim().toLowerCase();
     final arrivalState = details.driverArrivalState.trim().toLowerCase();
     final allowedActions = details.allowedActions
         .map((action) => action.trim().toLowerCase())
         .toSet();
+    final isOnMission =
+        homeState.contains('onmission') || assignmentStatus.contains('onmission');
+    final hasOfferDecision =
+        allowedActions.contains('accept_offer') ||
+        allowedActions.contains('reject_offer') ||
+        assignmentStatus.contains('offersent') ||
+        assignmentStatus.contains('offer_sent');
 
     if (assignmentStatus.contains('deliver') ||
+        assignmentStatus.contains('fail') ||
+        assignmentStatus.contains('cancel') ||
         assignmentStatus.contains('complete')) {
       return OrderDeliveryStage.delivered;
     }
 
-    if (allowedActions.contains('confirm_delivery') ||
-        allowedActions.contains('delivery_otp') ||
+    if (allowedActions.contains('arrived_at_customer') ||
         allowedActions.contains('verify_delivery_otp') ||
-        allowedActions.contains('mark_delivered') ||
+        allowedActions.contains('confirm_delivery') ||
+        allowedActions.contains('delivery_otp') ||
         deliveryOtpStatus == 'pending' ||
+        assignmentStatus.contains('arrivedatcustomer') ||
+        assignmentStatus.contains('arrived_at_customer') ||
         arrivalState.contains('customer')) {
       return OrderDeliveryStage.onTheWay;
     }
 
     if (allowedActions.contains('mark_on_the_way') ||
-        allowedActions.contains('start_delivery') ||
-        allowedActions.contains('picked_up') ||
         assignmentStatus.contains('pickedup') ||
         assignmentStatus.contains('picked_up') ||
         assignmentStatus.contains('ontheway') ||
@@ -237,10 +328,21 @@ class OrderDetailsController extends ChangeNotifier {
       return OrderDeliveryStage.pickedUp;
     }
 
+    if (arrivalState.contains('arrived_at_vendor') ||
+        assignmentStatus.contains('arrived_at_vendor') ||
+        (isOnMission &&
+            (pickupOtpStatus == 'pending' || details.pickupOtpRequired)) ||
+        assignmentStatus.contains('arrivedatvendor')) {
+      return OrderDeliveryStage.arrivedAtVendor;
+    }
+
+    if (hasOfferDecision) {
+      return OrderDeliveryStage.pending;
+    }
+
     if (allowedActions.contains('arrived_at_vendor') ||
-        allowedActions.contains('mark_picked_up') ||
-        allowedActions.isEmpty &&
-            (details.pickupOtpCode ?? '').trim().isNotEmpty ||
+        assignmentStatus.contains('accepted') ||
+        isOnMission ||
         details.pickupOtpRequired) {
       return OrderDeliveryStage.accepted;
     }
@@ -249,4 +351,11 @@ class OrderDetailsController extends ChangeNotifier {
   }
 }
 
-enum OrderDeliveryStage { pending, accepted, pickedUp, onTheWay, delivered }
+enum OrderDeliveryStage {
+  pending,
+  accepted,
+  arrivedAtVendor,
+  pickedUp,
+  onTheWay,
+  delivered,
+}

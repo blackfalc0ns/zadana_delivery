@@ -1,6 +1,11 @@
 class NotificationActionResponseEntity {
-  const NotificationActionResponseEntity({required this.message, this.count});
+  const NotificationActionResponseEntity({
+    required this.messageAr,
+    required this.messageEn,
+    this.count,
+  });
 
-  final String message;
+  final String messageAr;
+  final String messageEn;
   final int? count;
 }

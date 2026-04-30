@@ -68,14 +68,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
 
           return Scaffold(
-            backgroundColor: const Color(0xFFF7FAFC),
+            backgroundColor: const Color(0xFFF6F8FA),
             appBar: CustomAppBar.modern(
               title: locale.notifications,
-              backgroundColor: const Color(0xFFF7FAFC),
+              backgroundColor: const Color(0xFFF6F8FA),
               actions: [
                 if (state.unreadCount > 0)
                   Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 8),
+                    padding: const EdgeInsetsDirectional.only(end: 12),
                     child: Center(
                       child: TextButton(
                         onPressed: state.isMarkingAllRead
@@ -83,6 +83,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             : () async {
                                 await _viewModel.markAllAsRead();
                               },
+                        style: TextButton.styleFrom(
+                          foregroundColor: const Color(0xFF0A7A92),
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(999),
+                            side: const BorderSide(color: Color(0x140A7A92)),
+                          ),
+                        ),
                         child: state.isMarkingAllRead
                             ? const SizedBox(
                                 width: 18,
@@ -119,7 +131,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                               ),
                               padding: const EdgeInsets.fromLTRB(
                                 Spacing.base,
-                                Spacing.base,
+                                Spacing.md,
                                 Spacing.base,
                                 Spacing.xl,
                               ),
@@ -128,7 +140,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   unreadCount: state.unreadCount,
                                   totalCount: state.notifications?.total ?? 0,
                                 ),
-                                const SizedBox(height: Spacing.lg),
+                                const SizedBox(height: Spacing.base),
                                 if (_viewModel.items.isEmpty)
                                   SizedBox(
                                     height: 360,
@@ -145,7 +157,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   ..._viewModel.items.map(
                                     (item) => Padding(
                                       padding: const EdgeInsets.only(
-                                        bottom: Spacing.md,
+                                        bottom: Spacing.sm,
                                       ),
                                       child: NotificationCard(
                                         item: item,

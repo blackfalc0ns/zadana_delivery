@@ -2186,6 +2186,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get order_details_pickup_dialog_confirm => 'Confirm pickup';
 
   @override
+  String get order_details_arrived_vendor_dialog_title =>
+      'Confirm arrival at store';
+
+  @override
+  String order_details_arrived_vendor_dialog_message(String vendorName) {
+    return 'Do you confirm that you have arrived at $vendorName?';
+  }
+
+  @override
+  String get order_details_arrived_vendor_dialog_confirm => 'Confirm arrival';
+
+  @override
+  String get order_details_start_delivery_dialog_title =>
+      'Start delivery confirmation';
+
+  @override
+  String get order_details_start_delivery_dialog_message =>
+      'Do you want to start heading to the customer now?';
+
+  @override
+  String get order_details_start_delivery_dialog_confirm => 'Start delivery';
+
+  @override
+  String get order_details_arrived_customer_dialog_title =>
+      'Confirm arrival at customer';
+
+  @override
+  String get order_details_arrived_customer_dialog_message =>
+      'Do you confirm that you have arrived at the customer\'s location?';
+
+  @override
+  String get order_details_arrived_customer_dialog_confirm => 'Confirm arrival';
+
+  @override
+  String get order_details_delivered_dialog_title => 'Confirm order delivery';
+
+  @override
+  String get order_details_delivered_dialog_message =>
+      'Do you confirm that the order has been delivered successfully?';
+
+  @override
+  String get order_details_delivered_dialog_confirm => 'Confirm delivery';
+
+  @override
   String get order_details_call_failure =>
       'Could not open the calling app on this device';
 

@@ -2,18 +2,15 @@ import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 import 'package:zadana_delivery/features/order_details/domain/repo/order_details_repository.dart';
 
-class UpdateAssignmentStatusUseCase {
-  const UpdateAssignmentStatusUseCase(this._repository);
+class VerifyPickupOtpUseCase {
+  const VerifyPickupOtpUseCase(this._repository);
 
   final OrderDetailsRepository _repository;
 
   Future<ApiResult<OrderAssignmentDetailsEntity?>> call(
     String assignmentId, {
-    required String newStatus,
+    required String otpCode,
   }) {
-    return _repository.updateAssignmentStatus(
-      assignmentId,
-      newStatus: newStatus,
-    );
+    return _repository.verifyPickupOtp(assignmentId, otpCode: otpCode);
   }
 }

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
-import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/entities/driver_tracking_state_entity.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/repo/driver_tracking_repository.dart';
@@ -18,7 +17,6 @@ import 'package:zadana_delivery/features/driver_tracking/presentation/manager/dr
 class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   DriverTrackingCubit(
     this._watchDriverHomeUseCase,
-    this._refreshDriverHomeUseCase,
     this._startDriverTrackingUseCase,
     this._stopDriverTrackingUseCase,
     this._syncDriverTrackingStatusUseCase,
@@ -36,7 +34,6 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   }
 
   final WatchDriverHomeUseCase _watchDriverHomeUseCase;
-  final RefreshDriverHomeUseCase _refreshDriverHomeUseCase;
   final StartDriverTrackingUseCase _startDriverTrackingUseCase;
   final StopDriverTrackingUseCase _stopDriverTrackingUseCase;
   final SyncDriverTrackingStatusUseCase _syncDriverTrackingStatusUseCase;
@@ -89,7 +86,6 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
 
   Future<void> _bootstrap() async {
     emit(state.copyWith(isStarting: true, clearFailure: true));
-    await _refreshDriverHomeUseCase.call();
     emit(state.copyWith(isStarting: false));
   }
 

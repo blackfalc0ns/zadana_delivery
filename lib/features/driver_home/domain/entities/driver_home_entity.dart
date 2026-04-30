@@ -6,6 +6,8 @@ class DriverHomeEntity {
     required this.currentAssignment,
     required this.earningsSummaryToday,
     required this.unreadAlerts,
+    required this.commitment,
+    required this.profileReadiness,
   });
 
   final String homeState;
@@ -14,10 +16,14 @@ class DriverHomeEntity {
   final DriverHomeAssignmentEntity? currentAssignment;
   final DriverHomeEarningsEntity? earningsSummaryToday;
   final int unreadAlerts;
+  final DriverHomeCommitmentEntity commitment;
+  final DriverProfileReadinessEntity profileReadiness;
 }
 
 class DriverHomeOperationalStatusEntity {
   const DriverHomeOperationalStatusEntity({
+    required this.driverId,
+    required this.gateStatus,
     required this.isOperational,
     required this.canReceiveOrders,
     required this.isAvailable,
@@ -25,12 +31,20 @@ class DriverHomeOperationalStatusEntity {
     required this.accountStatus,
     required this.zoneName,
     required this.commitmentScore,
+    required this.dailyRejections,
+    required this.weeklyRejections,
+    required this.enforcementLevel,
     required this.canReceiveOffers,
     required this.restrictionMessage,
+    required this.reviewedAtUtc,
+    required this.reviewNote,
+    required this.suspensionReason,
     required this.message,
     this.canGoAvailable,
   });
 
+  final String driverId;
+  final String gateStatus;
   final bool isOperational;
   final bool canReceiveOrders;
   final bool isAvailable;
@@ -39,8 +53,14 @@ class DriverHomeOperationalStatusEntity {
   final String accountStatus;
   final String zoneName;
   final double? commitmentScore;
+  final int dailyRejections;
+  final int weeklyRejections;
+  final String enforcementLevel;
   final bool canReceiveOffers;
   final String? restrictionMessage;
+  final String? reviewedAtUtc;
+  final String? reviewNote;
+  final String? suspensionReason;
   final String message;
 }
 
@@ -162,4 +182,60 @@ class DriverHomeEarningsEntity {
 
   final double earningsAmount;
   final int completedTrips;
+}
+
+class DriverHomeCommitmentEntity {
+  const DriverHomeCommitmentEntity({
+    required this.acceptedOffers,
+    required this.rejectedOffers,
+    required this.timedOutOffers,
+    required this.dailyRejections,
+    required this.weeklyRejections,
+    required this.commitmentScore,
+    required this.enforcementLevel,
+    required this.canReceiveOffers,
+    required this.restrictionMessage,
+    required this.lastOfferResponseAtUtc,
+  });
+
+  final int acceptedOffers;
+  final int rejectedOffers;
+  final int timedOutOffers;
+  final int dailyRejections;
+  final int weeklyRejections;
+  final double? commitmentScore;
+  final String enforcementLevel;
+  final bool canReceiveOffers;
+  final String? restrictionMessage;
+  final String? lastOfferResponseAtUtc;
+}
+
+class DriverProfileReadinessEntity {
+  const DriverProfileReadinessEntity({
+    required this.isProfileComplete,
+    required this.completionPercent,
+    required this.missingRequirements,
+    required this.canSubmitForReview,
+    required this.checklist,
+  });
+
+  final bool isProfileComplete;
+  final int completionPercent;
+  final List<String> missingRequirements;
+  final bool canSubmitForReview;
+  final List<DriverProfileChecklistItemEntity> checklist;
+}
+
+class DriverProfileChecklistItemEntity {
+  const DriverProfileChecklistItemEntity({
+    required this.code,
+    required this.completed,
+    required this.note,
+    required this.critical,
+  });
+
+  final String code;
+  final bool completed;
+  final String? note;
+  final bool critical;
 }

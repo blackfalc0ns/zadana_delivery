@@ -17,18 +17,11 @@ class CompletedOrderProductCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerLow,
+        color: scheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.35),
+          color: scheme.outlineVariant.withValues(alpha: 0.28),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: scheme.shadow.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -37,7 +30,7 @@ class CompletedOrderProductCard extends StatelessWidget {
             height: 42,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: scheme.primaryContainer.withValues(alpha: 0.45),
+              color: scheme.primaryContainer.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Text(
@@ -71,7 +64,7 @@ class CompletedOrderProductCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: scheme.secondaryContainer.withValues(alpha: 0.5),
+                        color: scheme.secondaryContainer.withValues(alpha: 0.78),
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(

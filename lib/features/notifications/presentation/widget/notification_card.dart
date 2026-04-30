@@ -5,8 +5,6 @@ import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/core/widgets/app_button.dart';
-import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/notifications/domain/entities/driver_notification_entity.dart';
 
 class NotificationCard extends StatelessWidget {
@@ -26,135 +24,156 @@ class NotificationCard extends StatelessWidget {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final title = isArabic ? item.titleAr : item.titleEn;
     final body = isArabic ? item.bodyAr : item.bodyEn;
+    final isUnread = !item.isRead;
+    final iconColor = _iconColor(item.type);
+    final iconBackground = _iconBackgroundColor(item.type);
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(26),
         onTap: isLoading ? null : onTap,
         child: Container(
           padding: const EdgeInsets.all(Spacing.base),
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(22),
             boxShadow: const [
               BoxShadow(
-                color: Color(0x0F000000),
-                blurRadius: 18,
-                offset: Offset(0, 8),
+                color: Color(0x0A000000),
+                blurRadius: 14,
+                offset: Offset(0, 6),
               ),
             ],
             border: Border.all(
-              color: item.isRead
-                  ? AppColors.border
-                  : AppColors.primary.withValues(alpha: 0.22),
+              color: isUnread
+                  ? AppColors.primary.withValues(alpha: 0.16)
+                  : const Color(0xFFE5EDF2),
             ),
           ),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 52,
-                height: 52,
-                decoration: BoxDecoration(
-                  color: _iconBackgroundColor(item.type),
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Icon(
-                  _iconForType(item.type),
-                  color: _iconColor(item.type),
-                ),
-              ),
-              const SizedBox(width: Spacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: iconBackground,
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Icon(_iconForType(item.type), color: iconColor),
+                  ),
+                  const SizedBox(width: Spacing.md),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Text(
-                            title.trim().isEmpty ? item.type : title,
-                            style: getSemiBoldStyle(
-                              fontFamily: FontConstant.cairo,
-                              fontSize: FontSize.size15,
-                              color: AppColors.textPrimary,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                title.trim().isEmpty ? item.type : title,
+                                style: getSemiBoldStyle(
+                                  fontFamily: FontConstant.cairo,
+                                  fontSize: FontSize.size15,
+                                  color: AppColors.textPrimary,
+                                ),
+                              ),
                             ),
+                            const SizedBox(width: Spacing.sm),
+                            if (isUnread)
+                              Container(
+                                width: 11,
+                                height: 11,
+                                margin: const EdgeInsets.only(top: 6),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.primary.withValues(
+                                        alpha: 0.28,
+                                      ),
+                                      blurRadius: 10,
+                                      spreadRadius: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: Spacing.xs),
+                        Text(
+                          body.trim().isEmpty ? item.data : body,
+                          style: getRegularStyle(
+                            fontFamily: FontConstant.cairo,
+                            fontSize: FontSize.size13,
+                            color: AppColors.textSecondary,
                           ),
                         ),
-                        const SizedBox(width: Spacing.sm),
-                        if (isLoading)
-                          const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CustomProgressIndicator.compact(size: 18),
-                          )
-                        else if (!item.isRead)
-                          Container(
-                            width: 10,
-                            height: 10,
-                            margin: const EdgeInsets.only(top: 4),
-                            decoration: const BoxDecoration(
-                              color: AppColors.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
                       ],
                     ),
-                    const SizedBox(height: Spacing.xs),
-                    Text(
-                      body.trim().isEmpty ? item.data : body,
-                      style: getRegularStyle(
-                        fontFamily: FontConstant.cairo,
-                        fontSize: FontSize.size13,
-                        color: AppColors.textSecondary,
-                      ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: Spacing.sm),
+              Wrap(
+                spacing: Spacing.sm,
+                runSpacing: Spacing.sm,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 7,
                     ),
-                    const SizedBox(height: Spacing.sm),
-                    Row(
+                    decoration: BoxDecoration(
+                      color: iconBackground,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
+                        Icon(
+                          Icons.schedule_rounded,
+                          size: 14,
+                          color: iconColor,
+                        ),
+                        const SizedBox(width: Spacing.xs),
                         Text(
                           _formatDate(item.createdAt, context),
                           style: getMediumStyle(
                             fontFamily: FontConstant.cairo,
-                            color: AppColors.primary,
+                            color: iconColor,
                           ),
                         ),
-                        if (!item.isRead) ...[
-                          const SizedBox(width: Spacing.sm),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primary.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                            child: Text(
-                              context.localization.notifications_unread_badge,
-                              style: getSemiBoldStyle(
-                                fontFamily: FontConstant.cairo,
-                                fontSize: FontSize.size11,
-                                color: AppColors.primary,
-                              ),
-                            ),
-                          ),
-                        ],
                       ],
                     ),
-                    if (!item.isRead) ...[
-                      const SizedBox(height: Spacing.sm),
-                      AppButton.text(
-                        text: context.localization.notifications_mark_as_read,
-                        onPressed: isLoading ? null : onTap,
-                        height: 36,
-                        icon: Icons.done_rounded,
+                  ),
+                  if (isUnread)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
                       ),
-                    ],
-                  ],
-                ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.10),
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                      child: Text(
+                        context.localization.notifications_unread_badge,
+                        style: getSemiBoldStyle(
+                          fontFamily: FontConstant.cairo,
+                          fontSize: FontSize.size11,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ],
           ),

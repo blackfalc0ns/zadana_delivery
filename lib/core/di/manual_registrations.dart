@@ -3,7 +3,6 @@ import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
-import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source_impl.dart';
@@ -23,6 +22,7 @@ import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_picked_up_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/update_assignment_status_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/verify_delivery_otp_usecase.dart';
+import 'package:zadana_delivery/features/order_details/domain/usecase/verify_pickup_otp_usecase.dart';
 
 void registerManualDependencies(GetIt getIt) {
   if (!getIt.isRegistered<DriverRealtimeService>()) {
@@ -83,7 +83,6 @@ void registerManualDependencies(GetIt getIt) {
     getIt.registerFactory<DriverTrackingCubit>(
       () => DriverTrackingCubit(
         getIt<WatchDriverHomeUseCase>(),
-        getIt<RefreshDriverHomeUseCase>(),
         getIt<StartDriverTrackingUseCase>(),
         getIt<StopDriverTrackingUseCase>(),
         getIt<SyncDriverTrackingStatusUseCase>(),
@@ -138,6 +137,12 @@ void registerManualDependencies(GetIt getIt) {
   if (!getIt.isRegistered<VerifyDeliveryOtpUseCase>()) {
     getIt.registerFactory<VerifyDeliveryOtpUseCase>(
       () => VerifyDeliveryOtpUseCase(getIt<OrderDetailsRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<VerifyPickupOtpUseCase>()) {
+    getIt.registerFactory<VerifyPickupOtpUseCase>(
+      () => VerifyPickupOtpUseCase(getIt<OrderDetailsRepository>()),
     );
   }
 

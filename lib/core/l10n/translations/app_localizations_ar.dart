@@ -2150,6 +2150,49 @@ class AppLocalizationsAr extends AppLocalizations {
   String get order_details_pickup_dialog_confirm => 'تأكيد الاستلام';
 
   @override
+  String get order_details_arrived_vendor_dialog_title =>
+      'تأكيد الوصول إلى المتجر';
+
+  @override
+  String order_details_arrived_vendor_dialog_message(String vendorName) {
+    return 'هل تؤكد أنك وصلت إلى $vendorName؟';
+  }
+
+  @override
+  String get order_details_arrived_vendor_dialog_confirm => 'تأكيد الوصول';
+
+  @override
+  String get order_details_start_delivery_dialog_title => 'تأكيد بدء التوصيل';
+
+  @override
+  String get order_details_start_delivery_dialog_message =>
+      'هل تريد بدء التوجه إلى العميل الآن؟';
+
+  @override
+  String get order_details_start_delivery_dialog_confirm => 'بدء التوصيل';
+
+  @override
+  String get order_details_arrived_customer_dialog_title =>
+      'تأكيد الوصول إلى العميل';
+
+  @override
+  String get order_details_arrived_customer_dialog_message =>
+      'هل تؤكد أنك وصلت إلى موقع العميل؟';
+
+  @override
+  String get order_details_arrived_customer_dialog_confirm => 'تأكيد الوصول';
+
+  @override
+  String get order_details_delivered_dialog_title => 'تأكيد تسليم الطلب';
+
+  @override
+  String get order_details_delivered_dialog_message =>
+      'هل تؤكد أن الطلب تم تسليمه بنجاح؟';
+
+  @override
+  String get order_details_delivered_dialog_confirm => 'تأكيد التسليم';
+
+  @override
   String get order_details_call_failure =>
       'تعذر فتح تطبيق الاتصال على هذا الجهاز';
 

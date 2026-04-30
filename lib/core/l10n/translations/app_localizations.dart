@@ -4133,6 +4133,78 @@ abstract class AppLocalizations {
   /// **'Confirm pickup'**
   String get order_details_pickup_dialog_confirm;
 
+  /// No description provided for @order_details_arrived_vendor_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm arrival at store'**
+  String get order_details_arrived_vendor_dialog_title;
+
+  /// No description provided for @order_details_arrived_vendor_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you confirm that you have arrived at {vendorName}?'**
+  String order_details_arrived_vendor_dialog_message(String vendorName);
+
+  /// No description provided for @order_details_arrived_vendor_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm arrival'**
+  String get order_details_arrived_vendor_dialog_confirm;
+
+  /// No description provided for @order_details_start_delivery_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start delivery confirmation'**
+  String get order_details_start_delivery_dialog_title;
+
+  /// No description provided for @order_details_start_delivery_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to start heading to the customer now?'**
+  String get order_details_start_delivery_dialog_message;
+
+  /// No description provided for @order_details_start_delivery_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Start delivery'**
+  String get order_details_start_delivery_dialog_confirm;
+
+  /// No description provided for @order_details_arrived_customer_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm arrival at customer'**
+  String get order_details_arrived_customer_dialog_title;
+
+  /// No description provided for @order_details_arrived_customer_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you confirm that you have arrived at the customer\'s location?'**
+  String get order_details_arrived_customer_dialog_message;
+
+  /// No description provided for @order_details_arrived_customer_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm arrival'**
+  String get order_details_arrived_customer_dialog_confirm;
+
+  /// No description provided for @order_details_delivered_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm order delivery'**
+  String get order_details_delivered_dialog_title;
+
+  /// No description provided for @order_details_delivered_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you confirm that the order has been delivered successfully?'**
+  String get order_details_delivered_dialog_message;
+
+  /// No description provided for @order_details_delivered_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm delivery'**
+  String get order_details_delivered_dialog_confirm;
+
   /// No description provided for @order_details_call_failure.
   ///
   /// In en, this message translates to:

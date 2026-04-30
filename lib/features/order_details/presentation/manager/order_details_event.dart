@@ -79,3 +79,13 @@ class OrderDetailsVerifyDeliveryOtpEvent extends OrderDetailsEvent {
   final String assignmentId;
   final String otpCode;
 }
+
+class OrderDetailsVerifyPickupOtpEvent extends OrderDetailsEvent {
+  const OrderDetailsVerifyPickupOtpEvent(
+    this.assignmentId, {
+    required this.otpCode,
+  });
+
+  final String assignmentId;
+  final String otpCode;
+}

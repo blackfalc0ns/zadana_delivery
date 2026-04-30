@@ -54,6 +54,67 @@ class OrderAssignmentDetailsEntity {
   final String? pickupOtpCode;
   final String driverArrivalState;
   final List<OrderAssignmentItemEntity> orderItems;
+
+  OrderAssignmentDetailsEntity copyWith({
+    String? assignmentId,
+    String? orderId,
+    String? orderNumber,
+    String? assignmentStatus,
+    String? homeState,
+    List<String>? allowedActions,
+    String? vendorName,
+    String? pickupAddress,
+    double? pickupLatitude,
+    double? pickupLongitude,
+    String? storePhone,
+    String? customerName,
+    String? deliveryAddress,
+    double? deliveryLatitude,
+    double? deliveryLongitude,
+    String? customerPhone,
+    String? paymentMethod,
+    double? totalAmount,
+    double? codAmount,
+    bool? pickupOtpRequired,
+    String? pickupOtpStatus,
+    bool? deliveryOtpRequired,
+    String? deliveryOtpStatus,
+    String? pickupOtpCode,
+    bool clearPickupOtpCode = false,
+    String? driverArrivalState,
+    List<OrderAssignmentItemEntity>? orderItems,
+  }) {
+    return OrderAssignmentDetailsEntity(
+      assignmentId: assignmentId ?? this.assignmentId,
+      orderId: orderId ?? this.orderId,
+      orderNumber: orderNumber ?? this.orderNumber,
+      assignmentStatus: assignmentStatus ?? this.assignmentStatus,
+      homeState: homeState ?? this.homeState,
+      allowedActions: allowedActions ?? this.allowedActions,
+      vendorName: vendorName ?? this.vendorName,
+      pickupAddress: pickupAddress ?? this.pickupAddress,
+      pickupLatitude: pickupLatitude ?? this.pickupLatitude,
+      pickupLongitude: pickupLongitude ?? this.pickupLongitude,
+      storePhone: storePhone ?? this.storePhone,
+      customerName: customerName ?? this.customerName,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      deliveryLatitude: deliveryLatitude ?? this.deliveryLatitude,
+      deliveryLongitude: deliveryLongitude ?? this.deliveryLongitude,
+      customerPhone: customerPhone ?? this.customerPhone,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      totalAmount: totalAmount ?? this.totalAmount,
+      codAmount: codAmount ?? this.codAmount,
+      pickupOtpRequired: pickupOtpRequired ?? this.pickupOtpRequired,
+      pickupOtpStatus: pickupOtpStatus ?? this.pickupOtpStatus,
+      deliveryOtpRequired: deliveryOtpRequired ?? this.deliveryOtpRequired,
+      deliveryOtpStatus: deliveryOtpStatus ?? this.deliveryOtpStatus,
+      pickupOtpCode: clearPickupOtpCode
+          ? null
+          : pickupOtpCode ?? this.pickupOtpCode,
+      driverArrivalState: driverArrivalState ?? this.driverArrivalState,
+      orderItems: orderItems ?? this.orderItems,
+    );
+  }
 }
 
 class OrderAssignmentItemEntity {

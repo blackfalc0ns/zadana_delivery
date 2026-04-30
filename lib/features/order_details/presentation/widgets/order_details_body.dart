@@ -28,6 +28,7 @@ class OrderDetailsBody extends StatelessWidget {
     required this.onShowItems,
     required this.onOpenCustomerRoute,
     required this.onOpenStoreRoute,
+    required this.onRefresh,
   });
 
   final int activeStatusIndex;
@@ -45,9 +46,12 @@ class OrderDetailsBody extends StatelessWidget {
   final VoidCallback onShowItems;
   final VoidCallback onOpenCustomerRoute;
   final VoidCallback onOpenStoreRoute;
+  final Future<void> Function() onRefresh;
 
   @override
   Widget build(BuildContext context) {
+    final hasPickupOtpCode = pickupOtpCode?.trim().isNotEmpty == true;
+
     return SafeArea(
       child: Column(
         children: [
@@ -56,43 +60,47 @@ class OrderDetailsBody extends StatelessWidget {
             child: DeliveryStatusCard(activeIndex: activeStatusIndex),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(14, 0, 14, 90),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  HeroCard(
-                    order: order,
-                    isCashPayment: isCashPayment,
-                  ),
-                  const SizedBox(height: 10),
-                  if ((pickupOtpCode ?? '').trim().isNotEmpty) ...[
-                    OrderDetailsPickupOtpBanner(
-                      otpCode: pickupOtpCode!.trim(),
-                      isWaitingForMerchantConfirmation:
-                          isWaitingForMerchantConfirmation,
+            child: RefreshIndicator(
+              onRefresh: onRefresh,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 90),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    HeroCard(
+                      order: order,
+                      isCashPayment: isCashPayment,
                     ),
                     const SizedBox(height: 10),
+                    if (hasPickupOtpCode) ...[
+                      OrderDetailsPickupOtpBanner(
+                        otpCode: pickupOtpCode!.trim(),
+                        isWaitingForMerchantConfirmation:
+                            isWaitingForMerchantConfirmation,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                    ItemsDetailsCard(items: items, onTap: onShowItems),
+                    const SizedBox(height: 10),
+                    StoreDetailsCard(order: order, onCall: onCallStore),
+                    const SizedBox(height: 10),
+                    CustomerDetailsCard(order: order, onCall: onCallCustomer),
+                    const SizedBox(height: 10),
+                    MapCard(
+                      markers: markers,
+                      target: showStoreRouteFirst
+                          ? storeLocation
+                          : customerLocation,
+                    ),
+                    const SizedBox(height: 12),
+                    RouteButtons(
+                      showStoreRouteFirst: showStoreRouteFirst,
+                      onOpenCustomerRoute: onOpenCustomerRoute,
+                      onOpenStoreRoute: onOpenStoreRoute,
+                    ),
                   ],
-                  ItemsDetailsCard(items: items, onTap: onShowItems),
-                  const SizedBox(height: 10),
-                  StoreDetailsCard(order: order, onCall: onCallStore),
-                  const SizedBox(height: 10),
-                  CustomerDetailsCard(order: order, onCall: onCallCustomer),
-                  const SizedBox(height: 10),
-                  MapCard(
-                    markers: markers,
-                    target: showStoreRouteFirst
-                        ? storeLocation
-                        : customerLocation,
-                  ),
-                  const SizedBox(height: 12),
-                  RouteButtons(
-                    showStoreRouteFirst: showStoreRouteFirst,
-                    onOpenCustomerRoute: onOpenCustomerRoute,
-                    onOpenStoreRoute: onOpenStoreRoute,
-                  ),
-                ],
+                ),
               ),
             ),
           ),

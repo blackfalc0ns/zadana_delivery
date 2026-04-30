@@ -34,7 +34,9 @@ Future<ApiResult<T>> safeApiCall<T>(Future<T> Function() apiCall) async {
     return ApiErrorResult<T>(
       failure: Failure(
         errorMessage: _resolveApiErrorMessage(exception),
-        code: exception.errorType.name,
+        code: exception.errorCode?.trim().isNotEmpty == true
+            ? exception.errorCode!
+            : exception.errorType.name,
         exception: exception,
       ),
     );
@@ -43,7 +45,9 @@ Future<ApiResult<T>> safeApiCall<T>(Future<T> Function() apiCall) async {
     return ApiErrorResult<T>(
       failure: Failure(
         errorMessage: _resolveApiErrorMessage(exception),
-        code: exception.errorType.name,
+        code: exception.errorCode?.trim().isNotEmpty == true
+            ? exception.errorCode!
+            : exception.errorType.name,
         exception: exception,
       ),
     );

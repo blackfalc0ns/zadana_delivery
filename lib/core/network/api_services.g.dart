@@ -340,7 +340,7 @@ class _ApiServices implements ApiServices {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'page': page,
-      r'perPage': perPage,
+      r'per_page': perPage,
     };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

@@ -2,14 +2,85 @@ import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_customer_otp_field.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_otp_value_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_sheet_components.dart';
 
-class PickupOtpSheetContent extends StatelessWidget {
-  const PickupOtpSheetContent({super.key, required this.otp, this.onConfirm});
+class PickupOtpSheetContent extends StatefulWidget {
+  const PickupOtpSheetContent({
+    super.key,
+    required this.otp,
+    required this.sheetContext,
+    this.onConfirm,
+    this.onSubmit,
+    this.onCopyTap,
+  });
 
   final String otp;
+  final BuildContext sheetContext;
   final VoidCallback? onConfirm;
+  final Future<bool> Function(String otpCode)? onSubmit;
+  final VoidCallback? onCopyTap;
+
+  @override
+  State<PickupOtpSheetContent> createState() => _PickupOtpSheetContentState();
+}
+
+class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
+  late final TextEditingController _controller;
+  late final FocusNode _focusNode;
+  bool _isSubmitting = false;
+
+  bool get _isEntryMode => widget.otp.trim().isEmpty && widget.onSubmit != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _focusNode = FocusNode();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_isEntryMode && mounted) {
+        _focusNode.requestFocus();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submitIfPossible() async {
+    final onSubmit = widget.onSubmit;
+    if (onSubmit == null || _isSubmitting) return;
+
+    final otpCode = _controller.text.trim();
+    if (otpCode.length != 4) {
+      ScaffoldMessenger.of(widget.sheetContext).showSnackBar(
+        SnackBar(
+          content: Text(
+            widget.sheetContext.localization.order_details_enter_otp_snackbar,
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
+    final success = await onSubmit(otpCode);
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop();
+      return;
+    }
+
+    _controller.clear();
+    _focusNode.requestFocus();
+    setState(() => _isSubmitting = false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,12 +112,33 @@ class PickupOtpSheetContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 18),
-          OtpValueCard(otp: otp),
-          if (onConfirm != null) ...[
+          if (_isEntryMode)
+            CustomerOtpField(
+              controller: _controller,
+              focusNode: _focusNode,
+              enabled: !_isSubmitting,
+              onChanged: (value) {
+                if (value.trim().length == 4) {
+                  _submitIfPossible();
+                }
+              },
+            )
+          else
+            GestureDetector(
+              onTap: widget.onCopyTap,
+              child: OtpValueCard(otp: widget.otp),
+            ),
+          if (widget.onConfirm != null) ...[
             const SizedBox(height: 18),
             SheetConfirmButton(
               label: locale.order_details_confirm_pickup,
-              onPressed: onConfirm!,
+              onPressed: widget.onConfirm!,
+            ),
+          ] else if (_isEntryMode) ...[
+            const SizedBox(height: 18),
+            SheetConfirmButton(
+              label: locale.order_details_confirm_pickup,
+              onPressed: _submitIfPossible,
             ),
           ],
         ],

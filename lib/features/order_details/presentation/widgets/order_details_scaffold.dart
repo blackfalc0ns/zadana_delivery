@@ -8,11 +8,13 @@ class OrderDetailsScaffold extends StatelessWidget {
     required this.onBack,
     required this.bottomActions,
     required this.child,
+    this.actions,
   });
 
   final VoidCallback onBack;
   final Widget bottomActions;
   final Widget child;
+  final List<Widget>? actions;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class OrderDetailsScaffold extends StatelessWidget {
         title: locale.order_details_title,
         backgroundColor: color.surface,
         onBackPressed: onBack,
+        actions: actions,
       ),
       bottomNavigationBar: SafeArea(
         top: false,

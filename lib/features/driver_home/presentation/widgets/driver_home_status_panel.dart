@@ -169,12 +169,14 @@ class DriverHomeStatusPanel extends StatelessWidget {
     }
 
     switch (home.homeState) {
-      case 'WaitingForOffer':
+      case 'Idle':
         return context.localization.driver_home_connection_online_title;
-      case 'Offline':
-        return context.localization.driver_home_connection_offline_title;
+      case 'HasOffer':
+        return home.currentOffer?.orderNumber ?? context.localization.driver_home_connection_online_title;
       default:
-        return home.homeState;
+        return isOnline
+            ? context.localization.driver_home_connection_online_title
+            : context.localization.driver_home_connection_offline_title;
     }
   }
 

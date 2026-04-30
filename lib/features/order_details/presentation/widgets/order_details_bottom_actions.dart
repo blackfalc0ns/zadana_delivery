@@ -81,17 +81,24 @@ class OrderDetailsBottomActions extends StatelessWidget {
             onTap: onArrivedAtVendor,
           );
         }
+        return _WaitingForMerchantIndicator(
+          text: locale.order_details_waiting_for_merchant_confirmation,
+        );
+      case OrderDeliveryStage.arrivedAtVendor:
+        if (canMarkArrivedAtVendor && !hasArrivedAtVendor) {
+          return _StageActionButton(
+            label: locale.order_details_arrived_at_vendor,
+            color: scheme.secondary,
+            onTap: onArrivedAtVendor,
+          );
+        }
         if (isWaitingForMerchantConfirmation) {
           return _WaitingForMerchantIndicator(
             text: locale.order_details_waiting_for_merchant_confirmation,
           );
         }
         return _StageActionButton(
-          label: canMarkPickedUp
-              ? locale.order_details_confirm_pickup
-              : hasPickupOtpCode || pickupOtpRequired
-                  ? locale.order_details_show_pickup_code
-                  : locale.order_details_confirm_pickup,
+          label: locale.order_details_confirm_pickup,
           color: scheme.secondary,
           onTap: onShowPickupOtp,
         );

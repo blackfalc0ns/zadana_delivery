@@ -10,6 +10,8 @@ extension DriverHomeModelMapper on DriverHomeModelDto {
       currentAssignment: currentAssignment?.toEntity(),
       earningsSummaryToday: earningsSummaryToday?.toEntity(),
       unreadAlerts: unreadAlerts,
+      commitment: commitment.toEntity(),
+      profileReadiness: profileReadiness.toEntity(),
     );
   }
 }
@@ -18,6 +20,8 @@ extension DriverHomeOperationalStatusModelMapper
     on DriverHomeOperationalStatusModelDto {
   DriverHomeOperationalStatusEntity toEntity() {
     return DriverHomeOperationalStatusEntity(
+      driverId: driverId,
+      gateStatus: gateStatus,
       isOperational: isOperational,
       canReceiveOrders: canReceiveOrders,
       isAvailable: isAvailable,
@@ -26,8 +30,14 @@ extension DriverHomeOperationalStatusModelMapper
       accountStatus: accountStatus,
       zoneName: zoneName,
       commitmentScore: commitmentScore,
+      dailyRejections: dailyRejections,
+      weeklyRejections: weeklyRejections,
+      enforcementLevel: enforcementLevel,
       canReceiveOffers: canReceiveOffers,
       restrictionMessage: restrictionMessage,
+      reviewedAtUtc: reviewedAtUtc,
+      reviewNote: reviewNote,
+      suspensionReason: suspensionReason,
       message: message,
     );
   }
@@ -105,6 +115,47 @@ extension DriverHomeEarningsModelMapper on DriverHomeEarningsModelDto {
     return DriverHomeEarningsEntity(
       earningsAmount: earningsAmount,
       completedTrips: completedTrips,
+    );
+  }
+}
+
+extension DriverHomeCommitmentModelMapper on DriverHomeCommitmentModelDto {
+  DriverHomeCommitmentEntity toEntity() {
+    return DriverHomeCommitmentEntity(
+      acceptedOffers: acceptedOffers,
+      rejectedOffers: rejectedOffers,
+      timedOutOffers: timedOutOffers,
+      dailyRejections: dailyRejections,
+      weeklyRejections: weeklyRejections,
+      commitmentScore: commitmentScore,
+      enforcementLevel: enforcementLevel,
+      canReceiveOffers: canReceiveOffers,
+      restrictionMessage: restrictionMessage,
+      lastOfferResponseAtUtc: lastOfferResponseAtUtc,
+    );
+  }
+}
+
+extension DriverProfileReadinessModelMapper on DriverProfileReadinessModelDto {
+  DriverProfileReadinessEntity toEntity() {
+    return DriverProfileReadinessEntity(
+      isProfileComplete: isProfileComplete,
+      completionPercent: completionPercent,
+      missingRequirements: missingRequirements,
+      canSubmitForReview: canSubmitForReview,
+      checklist: checklist.map((item) => item.toEntity()).toList(growable: false),
+    );
+  }
+}
+
+extension DriverProfileChecklistItemModelMapper
+    on DriverProfileChecklistItemModelDto {
+  DriverProfileChecklistItemEntity toEntity() {
+    return DriverProfileChecklistItemEntity(
+      code: code,
+      completed: completed,
+      note: note,
+      critical: critical,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 import 'package:zadana_delivery/features/order_details/domain/repo/order_details_repository.dart';
 
 class MarkOrderDeliveryFailedUseCase {
@@ -6,7 +7,7 @@ class MarkOrderDeliveryFailedUseCase {
 
   final OrderDetailsRepository _repository;
 
-  Future<ApiResult<void>> call(
+  Future<ApiResult<OrderAssignmentDetailsEntity?>> call(
     String orderId, {
     Map<String, dynamic>? request,
   }) {

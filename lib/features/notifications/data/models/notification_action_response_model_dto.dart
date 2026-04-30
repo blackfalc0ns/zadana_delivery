@@ -1,21 +1,23 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'notification_action_response_model_dto.g.dart';
-
-@JsonSerializable()
 class NotificationActionResponseModelDto {
-  const NotificationActionResponseModelDto({this.message = '', this.count});
+  const NotificationActionResponseModelDto({
+    this.messageAr = '',
+    this.messageEn = '',
+    this.count,
+  });
 
   factory NotificationActionResponseModelDto.fromJson(
     Map<String, dynamic> json,
-  ) => _$NotificationActionResponseModelDtoFromJson(json);
+  ) {
+    return NotificationActionResponseModelDto(
+      messageAr: json['message_ar']?.toString() ?? '',
+      messageEn: json['message_en']?.toString() ?? '',
+      count: _nullableIntFromJson(json['count']),
+    );
+  }
 
-  final String message;
-  @JsonKey(fromJson: _nullableIntFromJson)
+  final String messageAr;
+  final String messageEn;
   final int? count;
-
-  Map<String, dynamic> toJson() =>
-      _$NotificationActionResponseModelDtoToJson(this);
 
   static int? _nullableIntFromJson(dynamic value) {
     if (value == null) return null;
