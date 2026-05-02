@@ -5,6 +5,10 @@ class OrderDetailsActionResponseDto {
     this.updatedAssignment,
     this.messageAr,
     this.messageEn,
+    this.status,
+    this.oldStatus,
+    this.newStatus,
+    this.arrivalState,
   });
 
   factory OrderDetailsActionResponseDto.fromJson(Map<String, dynamic> json) {
@@ -12,12 +16,20 @@ class OrderDetailsActionResponseDto {
       updatedAssignment: _extractUpdatedAssignment(json),
       messageAr: json['messageAr']?.toString(),
       messageEn: json['messageEn']?.toString(),
+      status: json['status']?.toString(),
+      oldStatus: json['oldStatus']?.toString(),
+      newStatus: json['newStatus']?.toString(),
+      arrivalState: json['arrivalState']?.toString(),
     );
   }
 
   final OrderAssignmentDetailsModelDto? updatedAssignment;
   final String? messageAr;
   final String? messageEn;
+  final String? status;
+  final String? oldStatus;
+  final String? newStatus;
+  final String? arrivalState;
 
   static OrderAssignmentDetailsModelDto? _extractUpdatedAssignment(
     Map<String, dynamic> json,

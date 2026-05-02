@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 
 class SheetContainer extends StatelessWidget {
   const SheetContainer({super.key, required this.child});
@@ -45,10 +46,14 @@ class SheetConfirmButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
+    this.isLoading = false,
+    this.isEnabled = true,
   });
 
   final String label;
   final VoidCallback onPressed;
+  final bool isLoading;
+  final bool isEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -56,21 +61,27 @@ class SheetConfirmButton extends StatelessWidget {
     return SizedBox(
       height: 54,
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isLoading || !isEnabled ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: scheme.secondary,
+          disabledBackgroundColor: scheme.secondary.withValues(alpha: 0.55),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
         ),
-        child: Text(
-          label,
-          style: getBoldStyle(
-            fontFamily: FontConstant.cairo,
-            fontSize: FontSize.size14,
-            color: Colors.white,
-          ),
-        ),
+        child: isLoading
+            ? const CustomProgressIndicator.compact(
+                size: 22,
+                tintColor: Colors.white,
+              )
+            : Text(
+                label,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size14,
+                  color: Colors.white,
+                ),
+              ),
       ),
     );
   }

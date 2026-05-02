@@ -64,6 +64,7 @@ class IncomingOrderLocationButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
+    final locale = context.localization;
 
     return Material(
       color: color.primary.withValues(alpha: 0.09),
@@ -72,7 +73,7 @@ class IncomingOrderLocationButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(999),
         child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             border: Border.all(color: color.primary.withValues(alpha: 0.15)),
@@ -80,13 +81,15 @@ class IncomingOrderLocationButton extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.my_location_rounded, size: 13, color: color.primary),
-              const SizedBox(width: 3),
+              Icon(Icons.my_location_rounded, size: 12, color: color.primary),
+              const SizedBox(width: 2),
               Text(
-                'عرض الموقع',
+                locale.order_details_open_store_location,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: getSemiBoldStyle(
                   fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size10,
+                  fontSize: FontSize.size9,
                   color: color.primary,
                 ),
               ),

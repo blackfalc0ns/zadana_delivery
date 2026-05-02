@@ -9,8 +9,7 @@ abstract class NetworkConstants {
       'ReceiveOrderStatusChanged';
   static const String driverArrivalStateChangedEvent =
       'ReceiveDriverArrivalStateChanged';
-  static const String driverAssignmentUpdatedEvent =
-      'ReceiveAssignmentUpdated';
+  static const String driverAssignmentUpdatedEvent = 'ReceiveAssignmentUpdated';
   static const String driverOfferNotificationType = 'driver-offer';
 }
 
@@ -54,6 +53,15 @@ abstract class EndPoints {
       '/drivers/notifications/read-all';
   static const String driverNotificationsUnreadCount =
       '/drivers/notifications/unread-count';
+  static const String driverSupportCases = '/drivers/support/cases';
+  static const String driverSupportCaseDetails =
+      '/drivers/support/cases/{caseId}';
+  static const String driverOrderReportIssue =
+      '/drivers/support/orders/{orderId}/report-issue';
+  static const String driverOrderDispute =
+      '/drivers/support/orders/{orderId}/dispute';
+  static const String driverSupportCaseMessages =
+      '/drivers/support/orders/{orderId}/cases/{caseId}/messages';
   static const String driverUnifiedProfile = '/drivers/me/profile';
   static const String driverProfilePersonal = '/drivers/me/profile/personal';
   static const String driverProfileVehicle = '/drivers/me/profile/vehicle';

@@ -10,6 +10,9 @@ import 'package:zadana_delivery/features/auth/reset_password/presentation/pages/
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_blocked_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_pending_approval_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_details_screen.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_cases_screen.dart';
 import 'package:zadana_delivery/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_details_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/edit_profile_screen.dart';
@@ -65,6 +68,17 @@ class RouteGenerator {
         return _pageRoute(settings, const NotificationsScreen());
       case AppRoutes.supportHelp:
         return _pageRoute(settings, const SupportHelpScreen());
+      case AppRoutes.driverSupportCases:
+        return _pageRoute(settings, const DriverSupportCasesScreen());
+      case AppRoutes.driverSupportCaseDetails:
+        final args = settings.arguments;
+        if (args is! DriverSupportCaseEntity) {
+          return unDefinedRoute(settings.name);
+        }
+        return _pageRoute(
+          settings,
+          DriverSupportCaseDetailsScreen(initialCase: args),
+        );
       case AppRoutes.privacy:
         return _pageRoute(settings, const PrivacyScreen());
       case AppRoutes.security:
@@ -91,6 +105,7 @@ class RouteGenerator {
             order: args['order'],
             driverLocation: args['driverLocation'],
             startAccepted: args['startAccepted'] as bool? ?? false,
+            initialSuccessMessage: args['initialSuccessMessage'] as String?,
           ),
         );
       default:

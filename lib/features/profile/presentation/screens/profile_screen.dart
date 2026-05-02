@@ -115,7 +115,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case ProfileActionType.security:
         return _open(AppRoutes.forgetPassword);
       case ProfileActionType.support:
-        return _open(AppRoutes.supportHelp);
+        return _open(AppRoutes.driverSupportCases);
       case ProfileActionType.privacy:
         return _open(AppRoutes.privacy);
       case ProfileActionType.logout:

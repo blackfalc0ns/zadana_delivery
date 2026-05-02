@@ -5,6 +5,7 @@ extension DriverAccountStatusMapper on DriverAccountStatusModelDto {
   DriverAccountStatusEntity toEntity() {
     return DriverAccountStatusEntity(
       driverId: driverId.trim(),
+      gateStatus: gateStatus.trim(),
       isOperational: isOperational,
       canReceiveOrders: canReceiveOrders,
       canGoAvailable: canGoAvailable,
@@ -14,6 +15,7 @@ extension DriverAccountStatusMapper on DriverAccountStatusModelDto {
       reviewedAtUtc: reviewedAtUtc,
       reviewNote: reviewNote,
       suspensionReason: suspensionReason,
+      restrictionMessage: restrictionMessage,
       primaryZoneId: primaryZoneId,
       zoneName: zoneName,
       message: message.trim(),

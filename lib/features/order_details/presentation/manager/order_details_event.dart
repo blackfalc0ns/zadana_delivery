@@ -1,3 +1,5 @@
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
+
 sealed class OrderDetailsEvent {
   const OrderDetailsEvent();
 }
@@ -32,6 +34,19 @@ class OrderDetailsDeactivateRealtimeEvent extends OrderDetailsEvent {
 
 class OrderDetailsConsumeNotificationEvent extends OrderDetailsEvent {
   const OrderDetailsConsumeNotificationEvent();
+}
+
+class OrderDetailsAcceptOfferEvent extends OrderDetailsEvent {
+  const OrderDetailsAcceptOfferEvent(this.assignmentId);
+
+  final String assignmentId;
+}
+
+class OrderDetailsRejectOfferEvent extends OrderDetailsEvent {
+  const OrderDetailsRejectOfferEvent(this.assignmentId, {this.reason});
+
+  final String assignmentId;
+  final String? reason;
 }
 
 class OrderDetailsMarkPickedUpEvent extends OrderDetailsEvent {
@@ -80,6 +95,15 @@ class OrderDetailsVerifyDeliveryOtpEvent extends OrderDetailsEvent {
   final String otpCode;
 }
 
+// class OrderDetailsVerifyPickupOtpEvent extends OrderDetailsEvent {
+//   const OrderDetailsVerifyPickupOtpEvent(
+//     this.assignmentId, {
+//     required this.otpCode,
+//   });
+
+//   final String assignmentId;
+//   final String otpCode;
+// }
 class OrderDetailsVerifyPickupOtpEvent extends OrderDetailsEvent {
   const OrderDetailsVerifyPickupOtpEvent(
     this.assignmentId, {
@@ -88,4 +112,18 @@ class OrderDetailsVerifyPickupOtpEvent extends OrderDetailsEvent {
 
   final String assignmentId;
   final String otpCode;
+}
+
+class OrderDetailsReportIssueEvent extends OrderDetailsEvent {
+  const OrderDetailsReportIssueEvent(this.orderId, {required this.request});
+
+  final String orderId;
+  final DriverSupportCaseMessageRequestEntity request;
+}
+
+class OrderDetailsCreateDisputeEvent extends OrderDetailsEvent {
+  const OrderDetailsCreateDisputeEvent(this.orderId, {required this.request});
+
+  final String orderId;
+  final DriverSupportCaseMessageRequestEntity request;
 }

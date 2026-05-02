@@ -125,8 +125,7 @@ class _OrderItemDetails extends StatelessWidget {
             _ItemQuantityBadge(quantity: item.quantity),
           ],
         ),
-    
-       ],
+      ],
     );
   }
 }

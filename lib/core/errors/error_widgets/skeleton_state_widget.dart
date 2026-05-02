@@ -33,12 +33,12 @@ class _SkeletonStateWidgetState extends State<SkeletonStateWidget>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = widget.baseColor ??
+    final baseColor =
+        widget.baseColor ??
         (isDark ? AppColors.shimmerBaseDark : AppColors.shimmerBase);
-    final highlightColor = widget.highlightColor ??
-        (isDark
-            ? AppColors.shimmerHighlightDark
-            : AppColors.shimmerHighlight);
+    final highlightColor =
+        widget.highlightColor ??
+        (isDark ? AppColors.shimmerHighlightDark : AppColors.shimmerHighlight);
 
     return AnimatedBuilder(
       animation: _controller,

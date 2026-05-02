@@ -1674,6 +1674,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver_home_accept_order_dialog_confirm => 'Confirm acceptance';
 
   @override
+  String get driver_home_reject_order_dialog_title =>
+      'Reject order confirmation';
+
+  @override
+  String driver_home_reject_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  ) {
+    return 'Do you want to reject $orderTitle from $vendorName and wait for the next offer?';
+  }
+
+  @override
+  String get driver_home_reject_order_dialog_confirm => 'Confirm rejection';
+
+  @override
   String get driver_home_connection_online_title => 'Online now';
 
   @override

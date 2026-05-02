@@ -1,4 +1,5 @@
 import 'package:zadana_delivery/core/network/failures.dart';
+import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 
 class AuthGateState {
   const AuthGateState({
@@ -7,6 +8,7 @@ class AuthGateState {
     this.logoutSucceeded = false,
     this.targetRoute,
     this.failure,
+    this.accountStatus,
   });
 
   final bool isLoading;
@@ -14,6 +16,7 @@ class AuthGateState {
   final bool logoutSucceeded;
   final String? targetRoute;
   final Failure? failure;
+  final DriverAccountStatusEntity? accountStatus;
 
   AuthGateState copyWith({
     bool? isLoading,
@@ -21,8 +24,10 @@ class AuthGateState {
     bool? logoutSucceeded,
     String? targetRoute,
     Failure? failure,
+    DriverAccountStatusEntity? accountStatus,
     bool clearTargetRoute = false,
     bool clearFailure = false,
+    bool clearAccountStatus = false,
     bool resetLogoutSucceeded = false,
   }) {
     return AuthGateState(
@@ -33,6 +38,9 @@ class AuthGateState {
           : logoutSucceeded ?? this.logoutSucceeded,
       targetRoute: clearTargetRoute ? null : targetRoute ?? this.targetRoute,
       failure: clearFailure ? null : failure ?? this.failure,
+      accountStatus: clearAccountStatus
+          ? null
+          : accountStatus ?? this.accountStatus,
     );
   }
 }

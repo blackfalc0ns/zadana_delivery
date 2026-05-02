@@ -95,22 +95,29 @@ class IncomingOrderMiniRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = context.colorScheme;
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, size: 16, color: color),
         const SizedBox(width: 4),
-        Text(
-          '$label:',
-          style: getSemiBoldStyle(fontFamily: FontConstant.cairo),
-        ),
-        const SizedBox(width: 4),
         Expanded(
-          child: Text(
-            value,
-            maxLines: 1,
+          child: RichText(
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: getBoldStyle(
-              fontFamily: FontConstant.cairo,
-              color: scheme.onSurface,
+            text: TextSpan(
+              style: getSemiBoldStyle(
+                fontFamily: FontConstant.cairo,
+                color: scheme.onSurface,
+              ),
+              children: [
+                TextSpan(text: '$label: '),
+                TextSpan(
+                  text: value,
+                  style: getBoldStyle(
+                    fontFamily: FontConstant.cairo,
+                    color: scheme.onSurface,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

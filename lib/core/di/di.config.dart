@@ -141,6 +141,14 @@ import '../../features/driver_home/domain/usecase/watch_driver_home_usecase.dart
     as _i802;
 import '../../features/driver_home/presentation/manager/driver_home_cubit.dart'
     as _i569;
+import '../../features/driver_support/data/data_source/driver_support_remote_data_source.dart'
+    as _i889;
+import '../../features/driver_support/data/data_source/driver_support_remote_data_source_impl.dart'
+    as _i933;
+import '../../features/driver_support/data/repo/driver_support_repository_impl.dart'
+    as _i369;
+import '../../features/driver_support/domain/repo/driver_support_repository.dart'
+    as _i755;
 import '../../features/notifications/data/data_source/notifications_remote_data_source.dart'
     as _i173;
 import '../../features/notifications/data/data_source/notifications_remote_data_source_impl.dart'
@@ -303,6 +311,14 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i513.LogoutRemoteDataSource>(
       () => _i19.LogoutRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
+    gh.factory<_i889.DriverSupportRemoteDataSource>(
+      () => _i933.DriverSupportRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
+    gh.factory<_i755.DriverSupportRepository>(
+      () => _i369.DriverSupportRepositoryImpl(
+        gh<_i889.DriverSupportRemoteDataSource>(),
+      ),
     );
     gh.factory<_i566.DriverProfileRemoteDataSource>(
       () => _i546.DriverProfileRemoteDataSourceImpl(gh<_i804.ApiServices>()),

@@ -26,7 +26,9 @@ extension DriverUnifiedProfileDtoMapper on DriverUnifiedProfileModelDto {
       zoneName: zoneName.trim(),
       verificationStatus: verificationStatus.trim(),
       accountStatus: accountStatus.trim(),
-      reviewNote: reviewNote?.trim().isEmpty == true ? null : reviewNote?.trim(),
+      reviewNote: reviewNote?.trim().isEmpty == true
+          ? null
+          : reviewNote?.trim(),
       suspensionReason: suspensionReason?.trim().isEmpty == true
           ? null
           : suspensionReason?.trim(),
@@ -41,7 +43,8 @@ extension DriverUnifiedProfileDtoMapper on DriverUnifiedProfileModelDto {
   }
 }
 
-extension UpdateDriverPersonalRequestMapper on UpdateDriverPersonalRequestEntity {
+extension UpdateDriverPersonalRequestMapper
+    on UpdateDriverPersonalRequestEntity {
   UpdateDriverPersonalRequestModelDto toDto() {
     return UpdateDriverPersonalRequestModelDto(
       fullName: fullName.trim(),

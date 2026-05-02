@@ -10,7 +10,8 @@ import '../models/update_driver_vehicle_request_model_dto.dart';
 import 'driver_profile_remote_data_source.dart';
 
 @Injectable(as: DriverProfileRemoteDataSource)
-class DriverProfileRemoteDataSourceImpl implements DriverProfileRemoteDataSource {
+class DriverProfileRemoteDataSourceImpl
+    implements DriverProfileRemoteDataSource {
   const DriverProfileRemoteDataSourceImpl(this._apiServices);
 
   final ApiServices _apiServices;

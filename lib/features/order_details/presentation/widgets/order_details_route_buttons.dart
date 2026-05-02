@@ -91,7 +91,9 @@ class _RouteActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: background,
             borderRadius: BorderRadius.circular(22),
-            border: borderColor != null ? Border.all(color: borderColor!) : null,
+            border: borderColor != null
+                ? Border.all(color: borderColor!)
+                : null,
             boxShadow: hasFilledForeground
                 ? [
                     BoxShadow(

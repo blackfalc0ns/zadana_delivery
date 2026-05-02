@@ -2,6 +2,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 
+enum DriverHomeNoticeType { success, warning, info }
+
 class DriverHomeState {
   const DriverHomeState({
     this.isLoading = false,
@@ -12,6 +14,7 @@ class DriverHomeState {
     this.home,
     this.failure,
     this.noticeMessage,
+    this.noticeType = DriverHomeNoticeType.warning,
     this.isMyLocationEnabled = false,
     this.driverLocation,
     this.driverMarkerIcon,
@@ -27,6 +30,7 @@ class DriverHomeState {
   final DriverHomeEntity? home;
   final Failure? failure;
   final String? noticeMessage;
+  final DriverHomeNoticeType noticeType;
   final bool isMyLocationEnabled;
   final LatLng? driverLocation;
   final BitmapDescriptor? driverMarkerIcon;
@@ -42,6 +46,7 @@ class DriverHomeState {
     DriverHomeEntity? home,
     Failure? failure,
     String? noticeMessage,
+    DriverHomeNoticeType? noticeType,
     bool? isMyLocationEnabled,
     LatLng? driverLocation,
     BitmapDescriptor? driverMarkerIcon,
@@ -68,6 +73,9 @@ class DriverHomeState {
       noticeMessage: clearNoticeMessage
           ? null
           : noticeMessage ?? this.noticeMessage,
+      noticeType: clearNoticeMessage
+          ? DriverHomeNoticeType.warning
+          : noticeType ?? this.noticeType,
       isMyLocationEnabled: isMyLocationEnabled ?? this.isMyLocationEnabled,
       driverLocation: clearDriverLocation
           ? null

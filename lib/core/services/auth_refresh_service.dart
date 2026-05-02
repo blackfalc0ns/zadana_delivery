@@ -7,10 +7,8 @@ import 'token_service.dart';
 
 @injectable
 class AuthRefreshService {
-  AuthRefreshService(
-    @Named('refreshDio') Dio dio,
-    TokenService tokenService,
-  ) : _dio = dio,
+  AuthRefreshService(@Named('refreshDio') Dio dio, TokenService tokenService)
+    : _dio = dio,
       _tokenService = tokenService;
 
   final Dio _dio;

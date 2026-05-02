@@ -40,12 +40,14 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
     UpdateDriverDocumentsRequestEntity request,
   ) {
     return safeApiCall(() async {
-      final dto = request.copyWithResolvedUrls(
-        personalPhotoUrl: await _resolveUrl(request.personalPhotoUrl),
-        nationalIdImageUrl: await _resolveUrl(request.nationalIdImageUrl),
-        licenseImageUrl: await _resolveUrl(request.licenseImageUrl),
-        vehicleImageUrl: await _resolveUrl(request.vehicleImageUrl),
-      ).toDto();
+      final dto = request
+          .copyWithResolvedUrls(
+            personalPhotoUrl: await _resolveUrl(request.personalPhotoUrl),
+            nationalIdImageUrl: await _resolveUrl(request.nationalIdImageUrl),
+            licenseImageUrl: await _resolveUrl(request.licenseImageUrl),
+            vehicleImageUrl: await _resolveUrl(request.vehicleImageUrl),
+          )
+          .toDto();
       final profile = (await _remoteDataSource.updateDocuments(dto)).toEntity();
       await _syncLocalServices(profile);
       return profile;
@@ -97,7 +99,9 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
         fullName: profile.fullName,
         email: profile.email,
         phone: profile.phone,
-        lastIdentifier: profile.email.isNotEmpty ? profile.email : profile.phone,
+        lastIdentifier: profile.email.isNotEmpty
+            ? profile.email
+            : profile.phone,
       ),
     );
 

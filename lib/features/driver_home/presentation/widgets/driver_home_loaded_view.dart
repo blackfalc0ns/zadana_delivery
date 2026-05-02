@@ -29,6 +29,7 @@ class DriverHomeLoadedView extends StatelessWidget {
     required this.onRejectOffer,
     required this.onOfferExpired,
     required this.onAnimateToLocation,
+    required this.onOpenOfferDetails,
     required this.onOpenMission,
     required this.toPreviewFromOffer,
   });
@@ -49,6 +50,7 @@ class DriverHomeLoadedView extends StatelessWidget {
   final VoidCallback onRejectOffer;
   final VoidCallback onOfferExpired;
   final ValueChanged<LatLng> onAnimateToLocation;
+  final VoidCallback onOpenOfferDetails;
   final VoidCallback onOpenMission;
   final DriverOrderPreview Function(DriverHomeOfferEntity offer)
   toPreviewFromOffer;
@@ -150,12 +152,12 @@ class DriverHomeLoadedView extends StatelessWidget {
                             'incoming_order_${currentOffer.assignmentId}_${currentOffer.countdownSeconds}',
                           ),
                           order: toPreviewFromOffer(currentOffer),
-                          onTap: () => _animateToOfferLocation(currentOffer),
+                          onTap: onOpenOfferDetails,
                           onAccept: onAcceptOffer,
                           onReject: onRejectOffer,
                           onExpired: onOfferExpired,
                           onLocationTap: () =>
-                              _animateToOfferLocation(currentOffer),
+                              _animateToPickupLocation(currentOffer),
                         ),
                       ),
                     )
@@ -179,8 +181,8 @@ class DriverHomeLoadedView extends StatelessWidget {
     );
   }
 
-  void _animateToOfferLocation(DriverHomeOfferEntity offer) {
-    final location = _resolveOfferLocation(offer);
+  void _animateToPickupLocation(DriverHomeOfferEntity offer) {
+    final location = _resolvePickupLocation(offer);
     if (location == null) return;
     onAnimateToLocation(location);
   }
@@ -193,6 +195,13 @@ class DriverHomeLoadedView extends StatelessWidget {
       return LatLng(offer.pickupLatitude, offer.pickupLongitude);
     }
     return null;
+  }
+
+  LatLng? _resolvePickupLocation(DriverHomeOfferEntity offer) {
+    if (_hasValidCoordinates(offer.pickupLatitude, offer.pickupLongitude)) {
+      return LatLng(offer.pickupLatitude, offer.pickupLongitude);
+    }
+    return _resolveOfferLocation(offer);
   }
 
   bool _hasValidCoordinates(double latitude, double longitude) {

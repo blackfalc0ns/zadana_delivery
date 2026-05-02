@@ -36,7 +36,8 @@ class DriverRegionCityModelDto {
     return DriverRegionCityModelDto(
       id: json['id']?.toString() ?? '',
       regionCode: json['regionCode']?.toString() ?? '',
-      regionName: json['regionName']?.toString() ?? json['city']?.toString() ?? '',
+      regionName:
+          json['regionName']?.toString() ?? json['city']?.toString() ?? '',
       cityName: json['cityName']?.toString() ?? json['name']?.toString() ?? '',
       centerLat: (json['centerLat'] as num?)?.toDouble() ?? 0,
       centerLng: (json['centerLng'] as num?)?.toDouble() ?? 0,

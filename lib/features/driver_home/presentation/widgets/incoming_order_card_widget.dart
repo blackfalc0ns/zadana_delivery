@@ -30,6 +30,7 @@ class IncomingOrderCard extends StatefulWidget {
 class _IncomingOrderCardState extends State<IncomingOrderCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  VoidCallback? _progressListener;
   bool _expiredNotified = false;
 
   @override
@@ -46,9 +47,8 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
       return;
     }
 
-    _controller
-      ..removeListener(_handleProgress)
-      ..dispose();
+    _detachControllerListener();
+    _controller.dispose();
     _expiredNotified = false;
     _controller = _buildController();
   }
@@ -57,13 +57,16 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
     final controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: widget.order.countdownSeconds),
-    )..addListener(_handleProgress);
+    );
+    final progressListener = _createProgressListener(controller);
+    _progressListener = progressListener;
+    controller.addListener(progressListener);
 
     if (widget.order.countdownSeconds <= 0) {
       controller.value = 1;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || _expiredNotified) return;
-        _handleProgress();
+        _handleProgress(controller);
       });
     } else {
       controller.forward();
@@ -72,19 +75,29 @@ class _IncomingOrderCardState extends State<IncomingOrderCard>
     return controller;
   }
 
-  void _handleProgress() {
-    if (_expiredNotified || _controller.status != AnimationStatus.completed) {
+  VoidCallback _createProgressListener(AnimationController controller) {
+    return () => _handleProgress(controller);
+  }
+
+  void _handleProgress(AnimationController controller) {
+    if (_expiredNotified || controller.status != AnimationStatus.completed) {
       return;
     }
     _expiredNotified = true;
     widget.onExpired();
   }
 
+  void _detachControllerListener() {
+    final progressListener = _progressListener;
+    if (progressListener == null) return;
+    _controller.removeListener(progressListener);
+    _progressListener = null;
+  }
+
   @override
   void dispose() {
-    _controller
-      ..removeListener(_handleProgress)
-      ..dispose();
+    _detachControllerListener();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -184,18 +197,20 @@ class _IncomingOrderHeader extends StatelessWidget {
       textDirection: TextDirection.ltr,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IncomingOrderCardMeta(
-          codAmount: order.codAmount,
-          paymentMethod: order.paymentMethod,
-          distance: order.distance,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            IncomingOrderCardMeta(
+              codAmount: order.codAmount,
+              paymentMethod: order.paymentMethod,
+              distance: order.distance,
+            ),
+            if (onLocationTap != null) ...[
+              const SizedBox(height: 8),
+              IncomingOrderLocationButton(onTap: onLocationTap!),
+            ],
+          ],
         ),
-        if (onLocationTap != null) ...[
-          SizedBox(width: compact ? 4 : 8),
-          Padding(
-            padding: const EdgeInsets.only(top: 1),
-            child: IncomingOrderLocationButton(onTap: onLocationTap!),
-          ),
-        ],
         SizedBox(width: compact ? 4 : 8),
         Expanded(
           child: Column(
@@ -204,14 +219,14 @@ class _IncomingOrderHeader extends StatelessWidget {
               IncomingOrderMiniRow(
                 icon: Icons.storefront_rounded,
                 label: locale.driver_home_pickup_label,
-                value: order.vendorName,
+                value: _pickupSummary,
                 color: color.primary,
               ),
               const SizedBox(height: 4),
               IncomingOrderMiniRow(
                 icon: Icons.location_on_rounded,
                 label: locale.driver_home_delivery_label,
-                value: order.deliveryAddress,
+                value: _deliverySummary,
                 color: color.secondary,
               ),
             ],
@@ -219,5 +234,21 @@ class _IncomingOrderHeader extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  String get _pickupSummary {
+    final vendorName = order.vendorName.trim();
+    final pickupAddress = order.pickupAddress.trim();
+    if (vendorName.isEmpty) return pickupAddress;
+    if (pickupAddress.isEmpty) return vendorName;
+    return '$vendorName, $pickupAddress';
+  }
+
+  String get _deliverySummary {
+    final customerName = order.customerName.trim();
+    final deliveryAddress = order.deliveryAddress.trim();
+    if (customerName.isEmpty) return deliveryAddress;
+    if (deliveryAddress.isEmpty) return customerName;
+    return '$customerName, $deliveryAddress';
   }
 }

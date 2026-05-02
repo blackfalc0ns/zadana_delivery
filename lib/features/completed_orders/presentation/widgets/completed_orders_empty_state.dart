@@ -143,11 +143,7 @@ class _CompletedOrdersEmptyIcon extends StatelessWidget {
                 color: palette.badgeColor,
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                palette.badgeIcon,
-                size: 14,
-                color: Colors.white,
-              ),
+              child: Icon(palette.badgeIcon, size: 14, color: Colors.white),
             ),
           ),
         ],

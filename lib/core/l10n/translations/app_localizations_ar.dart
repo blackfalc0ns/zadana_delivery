@@ -1643,6 +1643,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_home_accept_order_dialog_confirm => 'تأكيد القبول';
 
   @override
+  String get driver_home_reject_order_dialog_title => 'تأكيد رفض الطلب';
+
+  @override
+  String driver_home_reject_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  ) {
+    return 'هل تريد رفض $orderTitle من $vendorName وانتظار العرض التالي؟';
+  }
+
+  @override
+  String get driver_home_reject_order_dialog_confirm => 'تأكيد الرفض';
+
+  @override
   String get driver_home_connection_online_title => 'متصل الآن';
 
   @override

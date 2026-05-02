@@ -143,7 +143,9 @@ extension DriverProfileReadinessModelMapper on DriverProfileReadinessModelDto {
       completionPercent: completionPercent,
       missingRequirements: missingRequirements,
       canSubmitForReview: canSubmitForReview,
-      checklist: checklist.map((item) => item.toEntity()).toList(growable: false),
+      checklist: checklist
+          .map((item) => item.toEntity())
+          .toList(growable: false),
     );
   }
 }

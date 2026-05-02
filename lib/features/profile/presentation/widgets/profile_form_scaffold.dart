@@ -61,7 +61,8 @@ class ProfileFormScaffold extends StatelessWidget {
                   const SizedBox(height: Spacing.lg),
                   AppButton.filled(
                     text:
-                        actionText ?? context.localization.profile_update_action,
+                        actionText ??
+                        context.localization.profile_update_action,
                     onPressed: isSaving ? null : onSave,
                     height: 52,
                     borderRadius: 18,
@@ -72,9 +73,7 @@ class ProfileFormScaffold extends StatelessWidget {
           ),
           if (isSaving) ...[
             Positioned.fill(
-              child: ColoredBox(
-                color: Colors.black.withValues(alpha: 0.08),
-              ),
+              child: ColoredBox(color: Colors.black.withValues(alpha: 0.08)),
             ),
             const Positioned.fill(child: CustomProgressIndicator()),
           ],

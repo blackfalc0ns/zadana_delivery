@@ -107,6 +107,7 @@ class OrderDetailsSheets {
   static Future<void> showCustomerOtpSheet({
     required BuildContext context,
     required Future<bool> Function(String otpCode) onSubmit,
+    VoidCallback? onSuccess,
   }) async {
     await showModalBottomSheet<void>(
       context: context,
@@ -115,6 +116,7 @@ class OrderDetailsSheets {
       builder: (sheetContext) => CustomerOtpSheetContent(
         sheetContext: sheetContext,
         onSubmit: onSubmit,
+        onSuccess: onSuccess,
       ),
     );
   }

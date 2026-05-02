@@ -1,6 +1,7 @@
 class DriverAccountStatusEntity {
   const DriverAccountStatusEntity({
     required this.driverId,
+    required this.gateStatus,
     required this.isOperational,
     required this.canReceiveOrders,
     required this.canGoAvailable,
@@ -10,12 +11,14 @@ class DriverAccountStatusEntity {
     required this.reviewedAtUtc,
     required this.reviewNote,
     required this.suspensionReason,
+    required this.restrictionMessage,
     required this.primaryZoneId,
     required this.zoneName,
     required this.message,
   });
 
   final String driverId;
+  final String gateStatus;
   final bool isOperational;
   final bool canReceiveOrders;
   final bool canGoAvailable;
@@ -25,9 +28,23 @@ class DriverAccountStatusEntity {
   final String? reviewedAtUtc;
   final String? reviewNote;
   final String? suspensionReason;
+  final String? restrictionMessage;
   final String? primaryZoneId;
   final String? zoneName;
   final String message;
+
+  String get primaryBlockedMessage {
+    for (final candidate in [
+      restrictionMessage,
+      suspensionReason,
+      reviewNote,
+      message,
+    ]) {
+      final normalized = candidate?.trim() ?? '';
+      if (normalized.isNotEmpty) return normalized;
+    }
+    return '';
+  }
 
   String get normalizedAccountStatus => accountStatus.trim().toLowerCase();
   String get normalizedVerificationStatus =>

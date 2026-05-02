@@ -78,8 +78,15 @@ class DriverProfileStepsBar extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: isDone || isActive
                             ? color.primary
-                            : color.outlineVariant.withValues(alpha: 0.55),
+                            : color.surfaceContainerHighest,
                         shape: BoxShape.circle,
+                        border: isDone || isActive
+                            ? null
+                            : Border.all(
+                                color: color.outlineVariant.withValues(
+                                  alpha: 0.35,
+                                ),
+                              ),
                       ),
                       child: Center(
                         child: isDone

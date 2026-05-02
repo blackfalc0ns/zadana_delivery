@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_home/data/mapper/driver_home_mapper.dart';
@@ -26,23 +27,28 @@ class DriverHomeRepositoryImpl implements DriverHomeRepository {
   }
 
   @override
-  Future<ApiResult<void>> updateAvailability({required bool isAvailable}) {
+  Future<ApiResult<LocalizedMessage>> updateAvailability({
+    required bool isAvailable,
+  }) {
     return safeApiCall(() async {
-      await _remoteDataSource.updateAvailability(isAvailable: isAvailable);
+      return _remoteDataSource.updateAvailability(isAvailable: isAvailable);
     });
   }
 
   @override
-  Future<ApiResult<void>> acceptOffer(String assignmentId) {
+  Future<ApiResult<LocalizedMessage>> acceptOffer(String assignmentId) {
     return safeApiCall(() async {
-      await _remoteDataSource.acceptOffer(assignmentId);
+      return _remoteDataSource.acceptOffer(assignmentId);
     });
   }
 
   @override
-  Future<ApiResult<void>> rejectOffer(String assignmentId, {String? reason}) {
+  Future<ApiResult<LocalizedMessage>> rejectOffer(
+    String assignmentId, {
+    String? reason,
+  }) {
     return safeApiCall(() async {
-      await _remoteDataSource.rejectOffer(assignmentId, reason: reason);
+      return _remoteDataSource.rejectOffer(assignmentId, reason: reason);
     });
   }
 }

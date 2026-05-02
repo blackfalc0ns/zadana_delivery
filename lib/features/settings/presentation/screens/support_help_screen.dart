@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
+import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -68,6 +70,16 @@ class SupportHelpScreen extends StatelessWidget {
           const SizedBox(height: Spacing.xl),
           _SectionTitle(title: locale.contact_us),
           const SizedBox(height: Spacing.md),
+          _ContactTile(
+            icon: FontAwesomeIcons.listCheck,
+            title: isArabic ? 'قضايا الدعم' : 'My cases',
+            subtitle: isArabic
+                ? 'راجع النزاعات والمشكلات السابقة'
+                : 'Review your past disputes and issues',
+            iconColor: const Color(0xFF7C4DFF),
+            onTap: () => context.pushNamed(AppRoutes.driverSupportCases),
+          ),
+          const SizedBox(height: Spacing.sm),
           _ContactTile(
             icon: FontAwesomeIcons.whatsapp,
             title: 'WhatsApp',

@@ -4,15 +4,13 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'base_error_widget.dart';
 
 class NoInternetErrorWidget extends BaseErrorWidget {
-  const NoInternetErrorWidget({
-    super.key,
-    super.onRetry,
-  }) : super(
-         title: '',
-         description: '',
-         icon: Icons.wifi_off,
-         primaryColor: Colors.orange,
-       );
+  const NoInternetErrorWidget({super.key, super.onRetry})
+    : super(
+        title: '',
+        description: '',
+        icon: Icons.wifi_off,
+        primaryColor: Colors.orange,
+      );
 
   @override
   Widget build(BuildContext context) {

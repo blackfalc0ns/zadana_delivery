@@ -165,14 +165,16 @@ class DriverHomeStatusPanel extends StatelessWidget {
 
   String _title(BuildContext context, bool isMissionMode) {
     if (isMissionMode) {
-      return home.currentAssignment?.orderNumber ?? context.localization.order_details_title;
+      return home.currentAssignment?.orderNumber ??
+          context.localization.order_details_title;
     }
 
     switch (home.homeState) {
       case 'Idle':
         return context.localization.driver_home_connection_online_title;
       case 'HasOffer':
-        return home.currentOffer?.orderNumber ?? context.localization.driver_home_connection_online_title;
+        return home.currentOffer?.orderNumber ??
+            context.localization.driver_home_connection_online_title;
       default:
         return isOnline
             ? context.localization.driver_home_connection_online_title
@@ -491,7 +493,6 @@ class _MissionHeader extends StatelessWidget {
     );
   }
 }
-
 
 class _SoftMessage extends StatelessWidget {
   const _SoftMessage({

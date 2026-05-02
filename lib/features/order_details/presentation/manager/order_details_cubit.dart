@@ -4,13 +4,20 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
+import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/features/driver_home/domain/usecase/accept_driver_offer_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
+import 'package:zadana_delivery/features/driver_home/domain/usecase/reject_driver_offer_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/create_driver_order_dispute_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/report_driver_order_issue_usecase.dart';
 import 'package:zadana_delivery/features/order_details/data/mapper/order_assignment_details_mapper.dart';
 import 'package:zadana_delivery/features/order_details/data/models/order_assignment_details_model_dto.dart';
 import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
+import 'package:zadana_delivery/features/order_details/domain/entities/order_details_action_result_entity.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/get_order_assignment_details_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_arrived_at_customer_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_arrived_at_vendor_usecase.dart';
@@ -29,6 +36,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     : super(const OrderDetailsState());
 
   static const String _logTag = '[OrderDetailsRealtime]';
+  static const Duration _arrivedAtVendorPollingInterval = Duration(seconds: 2);
 
   final GetOrderAssignmentDetailsUseCase _getOrderAssignmentDetailsUseCase;
   final MarkOrderArrivedAtVendorUseCase _markOrderArrivedAtVendorUseCase =
@@ -47,17 +55,26 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       getIt<VerifyDeliveryOtpUseCase>();
   final VerifyPickupOtpUseCase _verifyPickupOtpUseCase =
       getIt<VerifyPickupOtpUseCase>();
+  final AcceptDriverOfferUseCase _acceptDriverOfferUseCase =
+      getIt<AcceptDriverOfferUseCase>();
   final RefreshDriverHomeUseCase _refreshDriverHomeUseCase =
       getIt<RefreshDriverHomeUseCase>();
+  final RejectDriverOfferUseCase _rejectDriverOfferUseCase =
+      getIt<RejectDriverOfferUseCase>();
+  final ReportDriverOrderIssueUseCase _reportDriverOrderIssueUseCase =
+      getIt<ReportDriverOrderIssueUseCase>();
+  final CreateDriverOrderDisputeUseCase _createDriverOrderDisputeUseCase =
+      getIt<CreateDriverOrderDisputeUseCase>();
+  final LanguageService _languageService = getIt<LanguageService>();
   final DriverRealtimeService _driverRealtimeService =
       getIt<DriverRealtimeService>();
   final DriverRuntimeServicesController _driverRuntimeServicesController =
       getIt<DriverRuntimeServicesController>();
-
+  int _loadRequestSerial = 0;
   StreamSubscription<Map<String, dynamic>>? _notificationSubscription;
+  StreamSubscription<Map<String, dynamic>>? _assignmentUpdatedSubscription;
   StreamSubscription<Map<String, dynamic>>? _orderStatusSubscription;
   StreamSubscription<Map<String, dynamic>>? _arrivalStateSubscription;
-  StreamSubscription<Map<String, dynamic>>? _assignmentUpdatedSubscription;
   Timer? _assignmentPollingTimer;
   String? _activeAssignmentId;
   String? _activeOrderId;
@@ -82,6 +99,10 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       case OrderDetailsConsumeNotificationEvent():
         emit(state.copyWith(clearNotificationMessage: true));
         return true;
+      case OrderDetailsAcceptOfferEvent():
+        return _acceptOffer(event.assignmentId);
+      case OrderDetailsRejectOfferEvent():
+        return _rejectOffer(event.assignmentId, reason: event.reason);
       case OrderDetailsMarkPickedUpEvent():
         return _runAction(() => _markOrderPickedUpUseCase.call(event.orderId));
       case OrderDetailsMarkOnTheWayEvent():
@@ -126,6 +147,24 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
           ),
           onSuccessRefreshAssignment: true,
         );
+      case OrderDetailsReportIssueEvent():
+        return _runSupportCaseAction(
+          () => _reportDriverOrderIssueUseCase.call(
+            event.orderId,
+            request: event.request,
+          ),
+          successMessageAr: 'تم إرسال المشكلة بنجاح',
+          successMessageEn: 'Issue reported successfully',
+        );
+      case OrderDetailsCreateDisputeEvent():
+        return _runSupportCaseAction(
+          () => _createDriverOrderDisputeUseCase.call(
+            event.orderId,
+            request: event.request,
+          ),
+          successMessageAr: 'تم فتح النزاع بنجاح',
+          successMessageEn: 'Dispute created successfully',
+        );
     }
   }
 
@@ -133,6 +172,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     String assignmentId, {
     bool silent = false,
   }) async {
+    final requestSerial = ++_loadRequestSerial;
     if (!silent) {
       emit(state.copyWith(isLoading: true, clearFailure: true));
     }
@@ -140,10 +180,12 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     final result = await _getOrderAssignmentDetailsUseCase.call(assignmentId);
     switch (result) {
       case ApiSuccessResult():
+        if (requestSerial != _loadRequestSerial) return;
         final resolvedOrderId = result.data.orderId.trim();
         if (resolvedOrderId.isNotEmpty) {
           _activeOrderId = resolvedOrderId;
         }
+        _syncArrivedAtVendorPolling(result.data);
         emit(
           state.copyWith(
             isLoading: false,
@@ -152,6 +194,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
           ),
         );
       case ApiErrorResult():
+        if (requestSerial != _loadRequestSerial) return;
         if (!silent || state.details == null) {
           emit(state.copyWith(isLoading: false, failure: result.failure));
         } else {
@@ -165,65 +208,15 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     emit(state.copyWith(clearFailure: true));
   }
 
-  Future<bool> _runAction<T>(
-    Future<ApiResult<T>> Function() action, {
-    bool onSuccessRefreshAssignment = false,
-  }) async {
-    emit(state.copyWith(isActionLoading: true, clearFailure: true));
-    final result = await action();
-    switch (result) {
-      case ApiSuccessResult(data: final data):
-        if (data is OrderAssignmentDetailsEntity) {
-          final resolvedOrderId = data.orderId.trim();
-          if (resolvedOrderId.isNotEmpty) {
-            _activeOrderId = resolvedOrderId;
-          }
-          emit(
-            state.copyWith(
-              details: data,
-              isActionLoading: false,
-              clearFailure: true,
-            ),
-          );
-        } else {
-          emit(state.copyWith(isActionLoading: false, clearFailure: true));
-        }
-        await _refreshDriverHomeUseCase.call();
-        if (onSuccessRefreshAssignment && _activeAssignmentId != null) {
-          await _loadAssignmentDetails(_activeAssignmentId!, silent: true);
-        }
-        return true;
-      case ApiErrorResult():
-        emit(state.copyWith(isActionLoading: false, failure: result.failure));
-        return false;
-    }
-  }
-
-  Future<ApiResult<OrderAssignmentDetailsEntity?>> _markArrivalState(
-    String orderId,
-    String arrivalState,
-  ) {
-    final normalizedState = arrivalState.trim().toLowerCase();
-    if (normalizedState == 'arrived_at_vendor') {
-      return _markOrderArrivedAtVendorUseCase.call(orderId);
-    }
-    if (normalizedState == 'arrived_at_customer') {
-      return _markOrderArrivedAtCustomerUseCase.call(orderId);
-    }
-    throw ArgumentError.value(
-      arrivalState,
-      'arrivalState',
-      'Unsupported arrival state action',
-    );
-  }
-
   Future<void> _activateRealtime({
     required String assignmentId,
     required String orderId,
   }) async {
-    _activeAssignmentId = assignmentId;
-    _activeOrderId = orderId;
-    _log('Activating realtime: assignmentId=$assignmentId, orderId=$orderId');
+    _activeAssignmentId = assignmentId.trim();
+    _activeOrderId = orderId.trim();
+    _log(
+      'Activating realtime: assignmentId=$_activeAssignmentId, orderId=$_activeOrderId',
+    );
 
     try {
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
@@ -231,8 +224,11 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       _log('Runtime services initialization failed: $error');
     }
 
+    await _driverRealtimeService.initialize();
     await _driverRealtimeService.ensureConnected();
+
     await _notificationSubscription?.cancel();
+    await _assignmentUpdatedSubscription?.cancel();
     await _orderStatusSubscription?.cancel();
     await _arrivalStateSubscription?.cancel();
     _assignmentPollingTimer?.cancel();
@@ -255,8 +251,9 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
         body,
       ].where((value) => value.trim().isNotEmpty).join('\n');
       if (message.trim().isEmpty) return;
-      _log('Notification banner emitted to UI');
-      emit(state.copyWith(notificationMessage: message.trim()));
+      emit(
+        state.copyWith(clearFailure: true, notificationMessage: message.trim()),
+      );
     });
 
     _orderStatusSubscription = _driverRealtimeService.orderStatusChanged.listen((
@@ -270,7 +267,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       if (orderIdValue.isEmpty || orderIdValue != _activeOrderId) return;
       final assignmentIdValue = _activeAssignmentId;
       if (assignmentIdValue == null) return;
-      _log('Order status matched active order; reloading assignment details');
       unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
       unawaited(_refreshDriverHomeUseCase.call());
     });
@@ -286,39 +282,41 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       if (orderIdValue.isEmpty || orderIdValue != _activeOrderId) return;
       final assignmentIdValue = _activeAssignmentId;
       if (assignmentIdValue == null) return;
-      _log('Arrival state matched active order; reloading assignment details');
       unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
       unawaited(_refreshDriverHomeUseCase.call());
     });
 
-    // ⭐ PRIMARY: ReceiveAssignmentUpdated — full DTO directly from backend
-    _assignmentUpdatedSubscription = _driverRealtimeService.assignmentUpdated.listen((
-      payload,
-    ) {
-      _log(
-        'Assignment updated stream event received: '
-        'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
-        'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}',
-      );
-      final assignmentIdValue = payload['assignmentId']?.toString().trim() ?? '';
-      if (assignmentIdValue.isEmpty || assignmentIdValue != _activeAssignmentId) {
-        _log('Assignment updated event ignored: does not match active assignment');
-        return;
-      }
-      try {
-        final dto = OrderAssignmentDetailsModelDto.fromJson(payload);
-        final entity = dto.toEntity();
-        _log(
-          'Assignment updated: applying realtime state update '
-          '(status=${entity.assignmentStatus}, actions=${entity.allowedActions})',
-        );
-        emit(state.copyWith(details: entity, isLoading: false));
-        unawaited(_refreshDriverHomeUseCase.call());
-      } catch (error) {
-        _log('Failed to parse assignment updated payload: $error. Falling back to GET.');
-        unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
-      }
-    });
+    _assignmentUpdatedSubscription = _driverRealtimeService.assignmentUpdated
+        .listen((payload) {
+          _log(
+            'Assignment updated stream event received: '
+            'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
+            'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}',
+          );
+          final assignmentIdValue =
+              payload['assignmentId']?.toString().trim() ?? '';
+          if (assignmentIdValue.isEmpty ||
+              assignmentIdValue != _activeAssignmentId) {
+            return;
+          }
+          try {
+            final entity = OrderAssignmentDetailsModelDto.fromJson(
+              payload,
+            ).toEntity();
+            _syncArrivedAtVendorPolling(entity);
+            emit(
+              state.copyWith(
+                details: entity,
+                isLoading: false,
+                clearFailure: true,
+              ),
+            );
+            unawaited(_refreshDriverHomeUseCase.call());
+          } catch (error) {
+            _log('Failed to parse assignment update payload: $error');
+            unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
+          }
+        });
   }
 
   Future<void> _deactivateRealtime() async {
@@ -328,14 +326,229 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     _assignmentPollingTimer?.cancel();
     _assignmentPollingTimer = null;
     await _notificationSubscription?.cancel();
+    await _assignmentUpdatedSubscription?.cancel();
     await _orderStatusSubscription?.cancel();
     await _arrivalStateSubscription?.cancel();
-    await _assignmentUpdatedSubscription?.cancel();
     _notificationSubscription = null;
+    _assignmentUpdatedSubscription = null;
     _orderStatusSubscription = null;
     _arrivalStateSubscription = null;
-    _assignmentUpdatedSubscription = null;
     emit(state.copyWith(clearNotificationMessage: true));
+  }
+
+  void _syncArrivedAtVendorPolling(OrderAssignmentDetailsEntity details) {
+    if (_shouldPollArrivedAtVendor(details)) {
+      _startArrivedAtVendorPolling();
+      return;
+    }
+    _stopArrivedAtVendorPolling();
+  }
+
+  bool _shouldPollArrivedAtVendor(OrderAssignmentDetailsEntity details) {
+    final assignmentStatus = _normalizeToken(details.assignmentStatus);
+    final arrivalState = _normalizeToken(details.driverArrivalState);
+
+    if (_statusIn(assignmentStatus, const {
+          'pickedup',
+          'ontheway',
+          'outfordelivery',
+          'arrivedatcustomer',
+          'delivered',
+          'deliveryfailed',
+          'failed',
+          'cancelled',
+          'canceled',
+          'completed',
+        }) ||
+        _statusIn(arrivalState, const {
+          'arrivedatcustomer',
+          'enroutetocustomer',
+        })) {
+      return false;
+    }
+
+    return _statusIn(assignmentStatus, const {'arrivedatvendor'}) ||
+        _statusIn(arrivalState, const {'arrivedatvendor'});
+  }
+
+  void _startArrivedAtVendorPolling() {
+    if (_assignmentPollingTimer?.isActive == true) return;
+    final assignmentId = _activeAssignmentId;
+    if ((assignmentId ?? '').isEmpty) return;
+    _log('Starting arrived-at-vendor polling');
+    _assignmentPollingTimer = Timer.periodic(_arrivedAtVendorPollingInterval, (
+      _,
+    ) {
+      final currentAssignmentId = _activeAssignmentId;
+      if ((currentAssignmentId ?? '').isEmpty) return;
+      unawaited(_loadAssignmentDetails(currentAssignmentId!, silent: true));
+    });
+  }
+
+  void _stopArrivedAtVendorPolling() {
+    if (_assignmentPollingTimer == null) return;
+    _log('Stopping arrived-at-vendor polling');
+    _assignmentPollingTimer?.cancel();
+    _assignmentPollingTimer = null;
+  }
+
+  String _resolveLocalizedMessage(LocalizedMessage message) {
+    final isArabic = _languageService.getLanguageCode() == 'ar';
+    return message.resolve(isArabic: isArabic);
+  }
+
+  Future<bool> _acceptOffer(String assignmentId) async {
+    emit(
+      state.copyWith(
+        isActionLoading: true,
+        clearFailure: true,
+        clearNotificationMessage: true,
+      ),
+    );
+
+    final result = await _acceptDriverOfferUseCase.call(assignmentId);
+    switch (result) {
+      case ApiSuccessResult():
+        final successMessage = _resolveLocalizedMessage(result.data);
+        emit(
+          state.copyWith(
+            isActionLoading: false,
+            clearFailure: true,
+            notificationMessage: successMessage,
+          ),
+        );
+        await _refreshDriverHomeUseCase.call();
+        final activeAssignmentId = _activeAssignmentId;
+        if (activeAssignmentId != null) {
+          await _loadAssignmentDetails(activeAssignmentId, silent: true);
+        }
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(isActionLoading: false, failure: result.failure));
+        return false;
+    }
+  }
+
+  Future<bool> _rejectOffer(String assignmentId, {String? reason}) async {
+    emit(
+      state.copyWith(
+        isActionLoading: true,
+        clearFailure: true,
+        clearNotificationMessage: true,
+      ),
+    );
+
+    final result = await _rejectDriverOfferUseCase.call(
+      assignmentId,
+      reason: reason,
+    );
+    switch (result) {
+      case ApiSuccessResult():
+        emit(
+          state.copyWith(
+            isActionLoading: false,
+            clearFailure: true,
+            notificationMessage: _resolveLocalizedMessage(result.data),
+          ),
+        );
+        await _refreshDriverHomeUseCase.call();
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(isActionLoading: false, failure: result.failure));
+        return false;
+    }
+  }
+
+  Future<bool> _runAction(
+    Future<ApiResult<OrderDetailsActionResultEntity>> Function() action, {
+    bool onSuccessRefreshAssignment = false,
+  }) async {
+    emit(
+      state.copyWith(
+        isActionLoading: true,
+        clearFailure: true,
+        clearNotificationMessage: true,
+      ),
+    );
+    final result = await action();
+    switch (result) {
+      case ApiSuccessResult():
+        final localizedMessage = result.data.localizedMessage;
+        emit(
+          state.copyWith(
+            isActionLoading: false,
+            clearFailure: true,
+            notificationMessage: localizedMessage == null
+                ? null
+                : _resolveLocalizedMessage(localizedMessage),
+          ),
+        );
+        await _refreshDriverHomeUseCase.call();
+        if (onSuccessRefreshAssignment && _activeAssignmentId != null) {
+          await _loadAssignmentDetails(_activeAssignmentId!, silent: true);
+        }
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(isActionLoading: false, failure: result.failure));
+        return false;
+    }
+  }
+
+  Future<bool> _runSupportCaseAction(
+    Future<ApiResult<dynamic>> Function() action, {
+    required String successMessageAr,
+    required String successMessageEn,
+  }) async {
+    emit(
+      state.copyWith(
+        isActionLoading: true,
+        clearFailure: true,
+        clearNotificationMessage: true,
+      ),
+    );
+    final result = await action();
+    switch (result) {
+      case ApiSuccessResult():
+        emit(
+          state.copyWith(
+            isActionLoading: false,
+            clearFailure: true,
+            notificationMessage: _languageService.getLanguageCode() == 'ar'
+                ? successMessageAr
+                : successMessageEn,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(isActionLoading: false, failure: result.failure));
+        return false;
+    }
+  }
+
+  String _normalizeToken(String value) {
+    return value.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+  }
+
+  bool _statusIn(String value, Set<String> candidates) {
+    return candidates.contains(value);
+  }
+
+  Future<ApiResult<OrderDetailsActionResultEntity>> _markArrivalState(
+    String orderId,
+    String arrivalState,
+  ) {
+    final normalizedState = arrivalState.trim().toLowerCase();
+    if (normalizedState == 'arrived_at_vendor') {
+      return _markOrderArrivedAtVendorUseCase.call(orderId);
+    }
+    if (normalizedState == 'arrived_at_customer') {
+      return _markOrderArrivedAtCustomerUseCase.call(orderId);
+    }
+    throw ArgumentError.value(
+      arrivalState,
+      'arrivalState',
+      'Unsupported arrival state action',
+    );
   }
 
   void _log(String message) {

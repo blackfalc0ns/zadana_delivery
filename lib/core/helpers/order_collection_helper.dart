@@ -7,7 +7,10 @@ class OrderCollectionHelper {
 
   static bool requiresCollection(double? codAmount) => (codAmount ?? 0) > 0;
 
-  static bool isPaidOnline({required double? codAmount, String? paymentMethod}) {
+  static bool isPaidOnline({
+    required double? codAmount,
+    String? paymentMethod,
+  }) {
     if (requiresCollection(codAmount)) return false;
 
     final normalizedMethod = _normalizePaymentMethod(paymentMethod);
@@ -64,7 +67,11 @@ class OrderCollectionHelper {
   }
 
   static String collectionLabel(BuildContext context) {
-    return _localized(context, ar: 'تحصيل من العميل', en: 'Collect from customer');
+    return _localized(
+      context,
+      ar: 'تحصيل من العميل',
+      en: 'Collect from customer',
+    );
   }
 
   static String _normalizePaymentMethod(String? paymentMethod) {

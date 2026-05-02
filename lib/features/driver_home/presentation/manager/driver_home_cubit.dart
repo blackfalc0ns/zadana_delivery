@@ -6,8 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
+import 'package:zadana_delivery/core/services/language_service.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/accept_driver_offer_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
@@ -56,7 +58,14 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       getIt<LocationPermissionService>();
   final DriverRuntimeServicesController _driverRuntimeServicesController =
       getIt<DriverRuntimeServicesController>();
+  final LanguageService _languageService = getIt<LanguageService>();
   late final StreamSubscription<DriverHomeEntity> _homeSubscription;
+  String? _pendingOrderDetailsSuccessMessage;
+
+  String _resolveLocalizedMessage(LocalizedMessage message) {
+    final isArabic = _languageService.getLanguageCode() == 'ar';
+    return message.resolve(isArabic: isArabic);
+  }
 
   Future<bool> doIntent(DriverHomeEvent event) async {
     switch (event) {
@@ -120,11 +129,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       return true;
     }
 
-    if ({
-      'rejected',
-      'suspended',
-      'locked',
-    }.contains(normalizedGateStatus)) {
+    if ({'rejected', 'suspended', 'locked'}.contains(normalizedGateStatus)) {
       return true;
     }
 
@@ -159,6 +164,13 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     DriverHomeAssignmentEntity assignment,
   ) {
     return DriverHomeOrderPreviewMapper.fromAssignment(assignment);
+  }
+
+  String? consumePendingOrderDetailsSuccessMessage() {
+    final message = _pendingOrderDetailsSuccessMessage?.trim();
+    _pendingOrderDetailsSuccessMessage = null;
+    if ((message ?? '').isEmpty) return null;
+    return message;
   }
 
   void _emitIfOpen(DriverHomeState nextState) {
@@ -225,9 +237,15 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     );
     switch (result) {
       case ApiSuccessResult():
+        final successMessage = _resolveLocalizedMessage(result.data);
         _applyAvailabilityOptimistically(isAvailable);
         _emitIfOpen(
-          state.copyWith(isAvailabilityUpdating: false, clearFailure: true),
+          state.copyWith(
+            isAvailabilityUpdating: false,
+            clearFailure: true,
+            noticeMessage: successMessage,
+            noticeType: DriverHomeNoticeType.success,
+          ),
         );
         unawaited(_refreshHomeAfterAvailabilityChange());
         if (isAvailable) {
@@ -313,10 +331,17 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     final result = await _acceptDriverOfferUseCase.call(assignmentId);
     switch (result) {
       case ApiSuccessResult():
-        return _refreshAfterAction(
-          isOfferActionLoading: false,
-          clearActiveOfferActionId: true,
+        final successMessage = _resolveLocalizedMessage(result.data);
+        _pendingOrderDetailsSuccessMessage = successMessage;
+        _applyAcceptedOfferOptimistically(assignmentId);
+        _emitIfOpen(
+          state.copyWith(
+            isOfferActionLoading: false,
+            clearActiveOfferActionId: true,
+            clearFailure: true,
+          ),
         );
+        return true;
       case ApiErrorResult():
         _emitIfOpen(
           state.copyWith(
@@ -329,12 +354,58 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     }
   }
 
+  void _applyAcceptedOfferOptimistically(String assignmentId) {
+    final currentHome = state.home;
+    final currentOffer = currentHome?.currentOffer;
+    if (currentHome == null || currentOffer == null) return;
+    if (currentOffer.assignmentId.trim() != assignmentId.trim()) return;
+
+    _emitIfOpen(
+      state.copyWith(
+        home: DriverHomeEntity(
+          homeState: 'OnMission',
+          operationalStatus: currentHome.operationalStatus,
+          currentOffer: null,
+          currentAssignment: DriverHomeAssignmentEntity(
+            assignmentId: currentOffer.assignmentId,
+            orderId: currentOffer.orderId,
+            orderNumber: currentOffer.orderNumber,
+            status: 'Accepted',
+            vendorName: currentOffer.vendorName,
+            pickupAddress: currentOffer.pickupAddress,
+            deliveryAddress: currentOffer.deliveryAddress,
+            pickupLatitude: currentOffer.pickupLatitude,
+            pickupLongitude: currentOffer.pickupLongitude,
+            deliveryLatitude: currentOffer.deliveryLatitude,
+            deliveryLongitude: currentOffer.deliveryLongitude,
+            paymentMethod: currentOffer.paymentMethod,
+            totalAmount: currentOffer.totalAmount,
+            codAmount: currentOffer.codAmount,
+            createdAtUtc: '',
+            merchantContact: '',
+            vehicleType: '',
+            plateNumber: '',
+            pickupOtpRequired: false,
+            deliveryOtpRequired: false,
+            pickupOtpCode: null,
+          ),
+          earningsSummaryToday: currentHome.earningsSummaryToday,
+          unreadAlerts: currentHome.unreadAlerts,
+          commitment: currentHome.commitment,
+          profileReadiness: currentHome.profileReadiness,
+        ),
+        clearFailure: true,
+      ),
+    );
+  }
+
   Future<bool> _rejectOffer(String assignmentId, {String? reason}) async {
     _emitIfOpen(
       state.copyWith(
         isOfferActionLoading: true,
         activeOfferActionId: assignmentId,
         clearFailure: true,
+        clearNoticeMessage: true,
       ),
     );
 
@@ -344,6 +415,16 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     );
     switch (result) {
       case ApiSuccessResult():
+        final successMessage = _resolveLocalizedMessage(result.data);
+        _emitIfOpen(
+          state.copyWith(
+            isOfferActionLoading: false,
+            clearActiveOfferActionId: true,
+            clearFailure: true,
+            noticeMessage: successMessage,
+            noticeType: DriverHomeNoticeType.info,
+          ),
+        );
         return _refreshAfterAction(
           isOfferActionLoading: false,
           clearActiveOfferActionId: true,
@@ -366,10 +447,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     _emitIfOpen(state.copyWith(driverMarkerIcon: icon));
   }
 
-  Future<void> _loadPickupMarker(
-    String marketName,
-    String markerLabel,
-  ) async {
+  Future<void> _loadPickupMarker(String marketName, String markerLabel) async {
     final normalizedName = marketName.trim();
     if (normalizedName.isEmpty || state.pickupMarkerLabel == normalizedName) {
       return;
@@ -386,14 +464,11 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     );
   }
 
-  Future<void> syncLocalizedMarkers({
-    required String storeMarkerLabel,
-  }) async {
-    final activeName =
-        canShowOffer
-            ? state.home?.currentOffer?.vendorName ??
-                state.home?.currentAssignment?.vendorName
-            : state.home?.currentAssignment?.vendorName;
+  Future<void> syncLocalizedMarkers({required String storeMarkerLabel}) async {
+    final activeName = canShowOffer
+        ? state.home?.currentOffer?.vendorName ??
+              state.home?.currentAssignment?.vendorName
+        : state.home?.currentAssignment?.vendorName;
     if ((activeName ?? '').trim().isEmpty) return;
     await _loadPickupMarker(activeName!, storeMarkerLabel);
   }

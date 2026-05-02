@@ -162,9 +162,7 @@ class DriverRealtimeService {
         _arrivalStateController.add(payload);
       });
 
-      connection.on(NetworkConstants.driverAssignmentUpdatedEvent, (
-        arguments,
-      ) {
+      connection.on(NetworkConstants.driverAssignmentUpdatedEvent, (arguments) {
         final payload = _normalizeMap(_extractFirstArgument(arguments));
         if (payload.isEmpty) {
           _log('Assignment updated stream event ignored: payload is empty');

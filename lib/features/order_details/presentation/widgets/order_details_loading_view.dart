@@ -194,12 +194,7 @@ class _LoadingHeroCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12),
-              _LoadingPill(
-                width: 82,
-                height: 42,
-                radius: 999,
-                isBright: true,
-              ),
+              _LoadingPill(width: 82, height: 42, radius: 999, isBright: true),
             ],
           ),
           SizedBox(height: 16),
@@ -431,10 +426,7 @@ class _LoadingBottomAction extends StatelessWidget {
 }
 
 class _LoadingItemContainer extends StatelessWidget {
-  const _LoadingItemContainer({
-    this.height = 84,
-    required this.child,
-  });
+  const _LoadingItemContainer({this.height = 84, required this.child});
 
   final double height;
   final Widget child;
@@ -446,7 +438,9 @@ class _LoadingItemContainer extends StatelessWidget {
       radius: 16,
       borderAlpha: 0.10,
       shadowAlpha: 0,
-      color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.10),
+      color: context.colorScheme.surfaceContainerHighest.withValues(
+        alpha: 0.10,
+      ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       child: child,
     );
@@ -480,9 +474,7 @@ class _LoadingSurfaceCard extends StatelessWidget {
       height: height,
       padding: padding,
       decoration: BoxDecoration(
-        color:
-            color ??
-            colorScheme.surfaceContainerLow.withValues(alpha: 0.88),
+        color: color ?? colorScheme.surfaceContainerLow.withValues(alpha: 0.88),
         borderRadius: BorderRadius.circular(radius),
         border: Border.all(
           color: colorScheme.outlineVariant.withValues(alpha: borderAlpha),
@@ -503,11 +495,7 @@ class _LoadingSurfaceCard extends StatelessWidget {
 }
 
 class _LoadingLine extends StatelessWidget {
-  const _LoadingLine({
-    this.width,
-    this.height = 14,
-    this.isBright = false,
-  });
+  const _LoadingLine({this.width, this.height = 14, this.isBright = false});
 
   final double? width;
   final double height;
@@ -521,10 +509,9 @@ class _LoadingLine extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color:
-            isBright
-                ? Colors.white.withValues(alpha: 0.34)
-                : colorScheme.surfaceContainerHighest.withValues(alpha: 0.22),
+        color: isBright
+            ? Colors.white.withValues(alpha: 0.34)
+            : colorScheme.surfaceContainerHighest.withValues(alpha: 0.22),
         borderRadius: BorderRadius.circular(999),
       ),
     );
@@ -566,11 +553,7 @@ class _LoadingPill extends StatelessWidget {
 }
 
 class _LoadingCircle extends StatelessWidget {
-  const _LoadingCircle({
-    required this.size,
-    this.color,
-    this.isBright = false,
-  });
+  const _LoadingCircle({required this.size, this.color, this.isBright = false});
 
   final double size;
   final Color? color;

@@ -8,6 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/api_exception_mapper.dart';
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
@@ -33,14 +34,21 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   final ApiServices _apiServices;
   final StreamController<DriverHomeModelDto> _homeController;
+  final StreamController<Map<String, dynamic>>
+  _assignmentUpdatedStreamController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _orderStatusStreamController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _arrivalStateStreamController =
+      StreamController<Map<String, dynamic>>.broadcast();
   DriverHomeModelDto? _latestHome;
+  Future<DriverHomeModelDto>? _homeFetchInFlight;
   DateTime? _lastHomeFetchedAt;
+  DateTime? _lastHomeRefreshStartedAt;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
-  bool _isHomeRefreshInFlight = false;
   DateTime? _retryAfter;
   Timer? _reconnectTimer;
-  DateTime? _lastHomeRefreshStartedAt;
   static DriverHomeRemoteDataSourceImpl? _instanceForStreamCallback;
 
   static void _connectSignalRIfNeeded() {
@@ -52,6 +60,24 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   @override
   Future<DriverHomeModelDto> getHome() async {
+    final inFlight = _homeFetchInFlight;
+    if (inFlight != null) {
+      _log('Joining existing /drivers/home request already in flight');
+      return inFlight;
+    }
+
+    final request = _fetchHomeFromApi();
+    _homeFetchInFlight = request;
+    try {
+      return await request;
+    } finally {
+      if (identical(_homeFetchInFlight, request)) {
+        _homeFetchInFlight = null;
+      }
+    }
+  }
+
+  Future<DriverHomeModelDto> _fetchHomeFromApi() async {
     try {
       final response = await _apiServices.getDriverHome();
       final home = DriverHomeModelDto.fromJson(_normalizeMap(response));
@@ -63,31 +89,49 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   }
 
   @override
-  Future<void> updateAvailability({required bool isAvailable}) async {
+  Future<LocalizedMessage> updateAvailability({
+    required bool isAvailable,
+  }) async {
     try {
-      await _apiServices.updateDriverAvailability({'isAvailable': isAvailable});
+      final response = await _apiServices.updateDriverAvailability({
+        'isAvailable': isAvailable,
+      });
+      return LocalizedMessage.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> acceptOffer(String assignmentId) async {
+  Future<LocalizedMessage> acceptOffer(String assignmentId) async {
     try {
-      await _apiServices.acceptDriverOffer(assignmentId);
+      final response = await _apiServices.acceptDriverOffer(assignmentId);
+      return LocalizedMessage.fromJson(
+        _normalizeMap(response),
+        arKey: 'messageAr',
+        enKey: 'messageEn',
+      );
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
     }
   }
 
   @override
-  Future<void> rejectOffer(String assignmentId, {String? reason}) async {
+  Future<LocalizedMessage> rejectOffer(
+    String assignmentId, {
+    String? reason,
+  }) async {
     try {
-      await _apiServices.rejectDriverOffer(
+      final response = await _apiServices.rejectDriverOffer(
         assignmentId,
         (reason ?? '').trim().isEmpty
             ? const <String, dynamic>{}
             : {'reason': reason},
+      );
+      return LocalizedMessage.fromJson(
+        _normalizeMap(response),
+        arKey: 'messageAr',
+        enKey: 'messageEn',
       );
     } on DioException catch (exception) {
       throw ApiExceptionMapper.fromDioException(exception);
@@ -119,6 +163,18 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     );
     _homeController.add(home);
   }
+
+  @override
+  Stream<Map<String, dynamic>> get assignmentUpdatedStream =>
+      _assignmentUpdatedStreamController.stream;
+
+  @override
+  Stream<Map<String, dynamic>> get orderStatusChangedStream =>
+      _orderStatusStreamController.stream;
+
+  @override
+  Stream<Map<String, dynamic>> get arrivalStateChangedStream =>
+      _arrivalStateStreamController.stream;
 
   void _cacheHome(DriverHomeModelDto home) {
     _latestHome = home;
@@ -200,7 +256,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         )
         .build();
 
-    void handleOfferEvent(List<Object?>? arguments) {
+    connection.on(NetworkConstants.driverDeliveryOfferEvent, (arguments) {
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -217,10 +273,8 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
           'Delivery offer event could not fully update home; syncing fallback',
         );
       }
-      unawaited(_refreshHomeFromApi(reason: 'delivery offer event'));
-    }
-
-    connection.on(NetworkConstants.driverDeliveryOfferEvent, handleOfferEvent);
+      unawaited(_refreshHomeFromApi());
+    });
 
     connection.on(NetworkConstants.driverNotificationEvent, (arguments) {
       final payload = (arguments?.isNotEmpty ?? false)
@@ -239,7 +293,13 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         'Order status refresh signal received: '
         'orderId=${event['orderId'] ?? 'n/a'}, status=${event['status'] ?? event['newStatus'] ?? 'unknown'}',
       );
-      unawaited(_refreshHomeFromApi(reason: 'order status event'));
+      if (event.isNotEmpty && !_orderStatusStreamController.isClosed) {
+        _orderStatusStreamController.add(event);
+      }
+      _log(
+        'Skipping /drivers/home refresh for order status signal; '
+        'waiting for assignment-updated payload to sync cached home',
+      );
     });
 
     connection.on(NetworkConstants.driverArrivalStateChangedEvent, (arguments) {
@@ -251,7 +311,36 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         'Arrival state refresh signal received: '
         'orderId=${event['orderId'] ?? 'n/a'}, arrivalState=${event['arrivalState'] ?? event['state'] ?? 'unknown'}',
       );
-      unawaited(_refreshHomeFromApi(reason: 'arrival state event'));
+      if (event.isNotEmpty && !_arrivalStateStreamController.isClosed) {
+        _arrivalStateStreamController.add(event);
+      }
+      _log(
+        'Skipping /drivers/home refresh for arrival-state signal; '
+        'waiting for assignment-updated payload to sync cached home',
+      );
+    });
+
+    // ⭐ Listen for ReceiveAssignmentUpdated — full assignment DTO from backend
+    connection.on(NetworkConstants.driverAssignmentUpdatedEvent, (arguments) {
+      final payload = (arguments?.isNotEmpty ?? false)
+          ? arguments!.first
+          : null;
+      final event = _normalizeMap(payload);
+      _log(
+        'Assignment updated event received: '
+        'assignmentId=${event['assignmentId'] ?? 'n/a'}, '
+        'assignmentStatus=${event['assignmentStatus'] ?? 'unknown'}',
+      );
+      if (event.isNotEmpty && !_assignmentUpdatedStreamController.isClosed) {
+        _assignmentUpdatedStreamController.add(event);
+      }
+      final emitted = _emitHomeFromAssignmentUpdatedEvent(event);
+      if (!emitted) {
+        _log(
+          'Assignment updated event could not fully update cached home; syncing fallback',
+        );
+        unawaited(_refreshHomeFromApi());
+      }
     });
 
     connection.onreconnected(({String? connectionId}) {
@@ -262,7 +351,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       );
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
-      unawaited(_refreshHomeFromApi(reason: 'signalr reconnected'));
+      unawaited(_refreshHomeFromApi());
     });
 
     connection.onclose(({Exception? error}) {
@@ -314,10 +403,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     }
 
     _log('Refreshing /drivers/home after initial SignalR connect');
-    await _refreshHomeFromApi(reason: 'initial SignalR connect');
+    await _refreshHomeFromApi();
     Future<void>.delayed(_delayedOfferRefresh, () {
       _log('Running delayed home refresh after initial SignalR connect');
-      return _refreshHomeFromApi(reason: 'delayed initial SignalR sync');
+      return _refreshHomeFromApi();
     });
   }
 
@@ -368,11 +457,23 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
     if (_shouldRefreshHomeForNotification(notification)) {
       _log('Notification matched home refresh rules; refreshing home now');
-      await _refreshHomeFromApi(reason: 'notification event');
-      Future<void>.delayed(_delayedOfferRefresh, () {
-        _log('Running delayed home refresh after notification');
-        return _refreshHomeFromApi(reason: 'delayed notification sync');
-      });
+      await _refreshHomeFromApi();
+      if (_shouldScheduleDelayedRefreshForNotification(notification)) {
+        Future<void>.delayed(_delayedOfferRefresh, () {
+          if (!_shouldScheduleDelayedRefreshForNotification(notification)) {
+            _log(
+              'Skipping delayed home refresh after notification because the expected offer is already present',
+            );
+            return Future<void>.value();
+          }
+          _log('Running delayed home refresh after notification');
+          return _refreshHomeFromApi();
+        });
+      } else {
+        _log(
+          'Skipping delayed home refresh after notification because the expected offer is already present',
+        );
+      }
       return;
     }
 
@@ -433,7 +534,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       DriverHomeModelDto(
         homeState: _firstNonEmptyString([
           payload['homeState'],
-          'HasOffer',
+          'IncomingOffer',
           latestHome.homeState,
         ])!,
         operationalStatus: latestHome.operationalStatus,
@@ -448,28 +549,82 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     return true;
   }
 
-  Future<void> _refreshHomeFromApi({required String reason}) async {
-    final lastRefreshStartedAt = _lastHomeRefreshStartedAt;
-    if (_isHomeRefreshInFlight) {
-      _log(
-        'Skipping /drivers/home refresh for $reason: refresh already in flight',
-      );
-      return;
+  bool _emitHomeFromAssignmentUpdatedEvent(Map<String, dynamic> payload) {
+    if (payload.isEmpty) {
+      return false;
     }
+
+    final latestHome = _latestHome;
+    if (latestHome == null) {
+      _log(
+        'Assignment updated arrived before initial home cache; waiting for sync',
+      );
+      return false;
+    }
+
+    final assignmentId = _firstNonEmptyString([
+      payload['assignmentId'],
+      payload['assignment_id'],
+    ]);
+    final orderId = _firstNonEmptyString([
+      payload['orderId'],
+      payload['order_id'],
+    ]);
+
+    if (assignmentId == null || orderId == null) {
+      _log(
+        'Assignment updated event missing assignmentId/orderId; skipping direct emit',
+      );
+      return false;
+    }
+
+    final updatedAssignment = DriverHomeAssignmentModelDto.fromJson(payload);
+    final normalizedHomeState = _firstNonEmptyString([
+      payload['homeState'],
+      latestHome.homeState,
+    ])!;
+    final normalizedStatus = updatedAssignment.status.trim().toLowerCase();
+    final isTerminalStatus =
+        normalizedStatus.contains('delivered') ||
+        normalizedStatus.contains('deliveryfailed') ||
+        normalizedStatus.contains('delivery_failed') ||
+        normalizedStatus.contains('cancelled') ||
+        normalizedStatus.contains('canceled') ||
+        normalizedStatus.contains('completed');
+
+    emitHome(
+      DriverHomeModelDto(
+        homeState: normalizedHomeState,
+        operationalStatus: latestHome.operationalStatus,
+        currentOffer:
+            latestHome.currentOffer?.assignmentId.trim() == assignmentId
+            ? null
+            : latestHome.currentOffer,
+        currentAssignment: isTerminalStatus ? null : updatedAssignment,
+        earningsSummaryToday: latestHome.earningsSummaryToday,
+        unreadAlerts: latestHome.unreadAlerts,
+        commitment: latestHome.commitment,
+        profileReadiness: latestHome.profileReadiness,
+      ),
+    );
+    return true;
+  }
+
+  Future<void> _refreshHomeFromApi() async {
+    final lastRefreshStartedAt = _lastHomeRefreshStartedAt;
     if (lastRefreshStartedAt != null &&
         DateTime.now().difference(lastRefreshStartedAt) <
             _homeRefreshThrottleWindow) {
       _log(
-        'Skipping /drivers/home refresh for $reason: '
+        'Skipping /drivers/home refresh: '
         'throttled within ${_homeRefreshThrottleWindow.inMilliseconds}ms window',
       );
       return;
     }
 
-    _isHomeRefreshInFlight = true;
     _lastHomeRefreshStartedAt = DateTime.now();
     try {
-      _log('Refreshing /drivers/home after $reason');
+      _log('Refreshing /drivers/home after realtime event');
       final home = await getHome();
       _log(
         'Home refresh result: state=${home.homeState}, '
@@ -479,8 +634,6 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       emitHome(home);
     } catch (error) {
       _log('Home refresh after notification failed: $error');
-    } finally {
-      _isHomeRefreshInFlight = false;
     }
   }
 
@@ -557,6 +710,49 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         searchableText.contains('order') ||
         searchableText.contains('طلب') ||
         searchableText.contains('عرض');
+  }
+
+  bool _shouldScheduleDelayedRefreshForNotification(
+    Map<String, dynamic> notification,
+  ) {
+    final latestHome = _latestHome;
+    if (latestHome == null) {
+      return true;
+    }
+
+    final currentOffer = latestHome.currentOffer;
+    if (currentOffer == null) {
+      return true;
+    }
+
+    final referenceId = notification['referenceId']?.toString().trim() ?? '';
+    final dataObject = _normalizeMap(notification['dataObject']);
+    final dataMap = _normalizeMap(notification['data']);
+    final nestedPayload = dataObject.isNotEmpty ? dataObject : dataMap;
+    final expectedOrderId = _firstNonEmptyString([
+      notification['orderId'],
+      notification['order_id'],
+      nestedPayload['orderId'],
+      nestedPayload['order_id'],
+      referenceId,
+    ]);
+    final expectedAssignmentId = _firstNonEmptyString([
+      notification['assignmentId'],
+      notification['assignment_id'],
+      nestedPayload['assignmentId'],
+      nestedPayload['assignment_id'],
+    ]);
+
+    final assignmentMatches =
+        expectedAssignmentId != null &&
+        expectedAssignmentId.isNotEmpty &&
+        currentOffer.assignmentId.trim() == expectedAssignmentId;
+    final orderMatches =
+        expectedOrderId != null &&
+        expectedOrderId.isNotEmpty &&
+        currentOffer.orderId.trim() == expectedOrderId;
+
+    return !(assignmentMatches || orderMatches);
   }
 
   String? _firstNonEmptyString(Iterable<dynamic> values) {

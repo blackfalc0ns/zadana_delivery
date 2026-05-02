@@ -6,17 +6,9 @@ import 'package:zadana_delivery/features/order_details/presentation/widgets/orde
 class OrderDetailsBottomActions extends StatelessWidget {
   const OrderDetailsBottomActions({
     super.key,
-    required this.stage,
-    required this.pickupOtpRequired,
-    required this.deliveryOtpRequired,
-    required this.canMarkPickedUp,
-    required this.canMarkArrivedAtVendor,
-    required this.canMarkArrivedAtCustomer,
-    required this.hasArrivedAtVendor,
-    required this.hasArrivedAtCustomer,
-    required this.hasPickupOtpCode,
-    required this.isWaitingForMerchantConfirmation,
+    required this.controller,
     required this.onAcceptOrder,
+    required this.onRejectOrder,
     required this.onArrivedAtVendor,
     required this.onShowPickupOtp,
     required this.onArrivedAtCustomer,
@@ -25,17 +17,9 @@ class OrderDetailsBottomActions extends StatelessWidget {
     required this.onFinish,
   });
 
-  final OrderDeliveryStage stage;
-  final bool pickupOtpRequired;
-  final bool deliveryOtpRequired;
-  final bool canMarkPickedUp;
-  final bool canMarkArrivedAtVendor;
-  final bool canMarkArrivedAtCustomer;
-  final bool hasArrivedAtVendor;
-  final bool hasArrivedAtCustomer;
-  final bool hasPickupOtpCode;
-  final bool isWaitingForMerchantConfirmation;
+  final OrderDetailsController controller;
   final VoidCallback onAcceptOrder;
+  final VoidCallback onRejectOrder;
   final VoidCallback onArrivedAtVendor;
   final VoidCallback onShowPickupOtp;
   final VoidCallback onArrivedAtCustomer;
@@ -47,6 +31,14 @@ class OrderDetailsBottomActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final locale = context.localization;
     final scheme = context.colorScheme;
+    final stage = controller.stage;
+    final deliveryOtpRequired = controller.deliveryOtpRequired;
+    final canMarkArrivedAtVendor = controller.canMarkArrivedAtVendor;
+    final hasArrivedAtVendor = controller.hasArrivedAtVendor;
+    final isWaitingForMerchantConfirmation =
+        controller.isWaitingForMerchantConfirmation;
+    final canMarkArrivedAtCustomer = controller.canMarkArrivedAtCustomer;
+    final hasArrivedAtCustomer = controller.hasArrivedAtCustomer;
 
     switch (stage) {
       case OrderDeliveryStage.pending:
@@ -68,7 +60,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
                 foreground: scheme.error,
                 background: scheme.errorContainer.withValues(alpha: 0.25),
                 borderColor: scheme.error.withValues(alpha: 0.22),
-                onTap: onFinish,
+                onTap: onRejectOrder,
               ),
             ),
           ],

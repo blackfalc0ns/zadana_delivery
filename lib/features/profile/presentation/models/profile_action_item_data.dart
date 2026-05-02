@@ -46,8 +46,12 @@ enum ProfileActionType {
         locale.profile_change_password_subtitle,
       ),
       ProfileActionType.support => (
-        locale.help_support,
-        locale.profile_support_subtitle,
+        locale.localeName.startsWith('ar')
+            ? 'شكاواي ونزاعاتي'
+            : 'My issues & disputes',
+        locale.localeName.startsWith('ar')
+            ? 'راجع كل الشكاوى والنزاعات وتابع آخر التحديثات'
+            : 'Review all submitted cases and track the latest updates',
       ),
       ProfileActionType.privacy => (
         locale.privacy_policy,

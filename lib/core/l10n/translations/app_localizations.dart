@@ -3179,6 +3179,27 @@ abstract class AppLocalizations {
   /// **'Confirm acceptance'**
   String get driver_home_accept_order_dialog_confirm;
 
+  /// No description provided for @driver_home_reject_order_dialog_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject order confirmation'**
+  String get driver_home_reject_order_dialog_title;
+
+  /// No description provided for @driver_home_reject_order_dialog_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to reject {orderTitle} from {vendorName} and wait for the next offer?'**
+  String driver_home_reject_order_dialog_message(
+    Object orderTitle,
+    Object vendorName,
+  );
+
+  /// No description provided for @driver_home_reject_order_dialog_confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm rejection'**
+  String get driver_home_reject_order_dialog_confirm;
+
   /// No description provided for @driver_home_connection_online_title.
   ///
   /// In en, this message translates to:

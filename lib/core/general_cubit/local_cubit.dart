@@ -36,8 +36,8 @@ class LocaleCubitScope extends InheritedNotifier<LocaleCubit> {
   }) : super(notifier: cubit);
 
   static LocaleCubit of(BuildContext context) {
-    final scope =
-        context.dependOnInheritedWidgetOfExactType<LocaleCubitScope>();
+    final scope = context
+        .dependOnInheritedWidgetOfExactType<LocaleCubitScope>();
     assert(scope != null, 'LocaleCubitScope not found in context');
     return scope!.notifier!;
   }

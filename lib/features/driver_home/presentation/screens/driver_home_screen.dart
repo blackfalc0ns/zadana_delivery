@@ -16,6 +16,7 @@ import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_home_error_state.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_home_loaded_view.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_home_loading_state.dart';
+import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_home_reject_order_dialog.dart';
 
 class DriverHomeScreen extends StatefulWidget {
   const DriverHomeScreen({super.key});
@@ -52,19 +53,24 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverHomeToggleAvailabilityEvent(value),
     );
     if (!mounted || !changed) return;
-
-    CustomSnackbar.showSuccess(
-      context: context,
-      message: value
-          ? context.localization.driver_home_connection_online_title
-          : context.localization.driver_home_connection_offline_title,
-    );
   }
 
   void _showAvailabilityBlockedReason() {
     final message = _cubit.availabilityBlockedReason;
     if (message == null) return;
     CustomSnackbar.showWarning(context: context, message: message);
+  }
+
+  void _handleOrderDetailsResult(dynamic result) {
+    if (!mounted || result == null) return;
+
+    if (result is Map) {
+      final message = result['message']?.toString().trim() ?? '';
+      if (message.isNotEmpty) {
+        CustomSnackbar.showSuccess(context: context, message: message);
+      }
+      return;
+    }
   }
 
   Future<void> _acceptCurrentOffer() async {
@@ -86,14 +92,10 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
       DriverHomeAcceptOfferEvent(offer.assignmentId),
     );
     if (!mounted || !accepted) return;
-
-    CustomSnackbar.showSuccess(
-      context: context,
-      message: context.localization.driver_home_accept,
-    );
+    final successMessage = _cubit.consumePendingOrderDetailsSuccessMessage();
 
     final assignment = _cubit.currentAssignment;
-    await context.pushNamed(
+    final result = await context.pushNamed(
       AppRoutes.orderDetails,
       rootNavigator: true,
       arguments: {
@@ -104,30 +106,56 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
           _fallbackCameraPosition.target,
         ),
         'startAccepted': true,
+        'initialSuccessMessage': successMessage,
       },
     );
+    _handleOrderDetailsResult(result);
   }
 
   Future<void> _rejectCurrentOffer() async {
     final offer = _cubit.currentOffer;
     if (offer == null) return;
 
+    final orderPreview = _cubit.previewFromOffer(offer);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => DriverHomeRejectOrderDialog(
+        order: orderPreview,
+        dialogContext: dialogContext,
+      ),
+    );
+
+    if (!mounted || confirmed != true) return;
+
     final rejected = await _cubit.doIntent(
       DriverHomeRejectOfferEvent(offer.assignmentId),
     );
     if (!mounted || !rejected) return;
+  }
 
-    CustomSnackbar.showInfo(
-      context: context,
-      message: context.localization.driver_home_reject,
+  Future<void> _openCurrentOfferDetails() async {
+    final offer = _cubit.currentOffer;
+    if (offer == null) return;
+
+    final result = await context.pushNamed(
+      AppRoutes.orderDetails,
+      rootNavigator: true,
+      arguments: {
+        'order': _cubit.previewFromOffer(offer),
+        'driverLocation': _cubit.resolvedDriverLocation(
+          _fallbackCameraPosition.target,
+        ),
+        'startAccepted': false,
+      },
     );
+    _handleOrderDetailsResult(result);
   }
 
   Future<void> _openMissionDetails() async {
     final assignment = _cubit.currentAssignment;
     if (assignment == null) return;
 
-    await context.pushNamed(
+    final result = await context.pushNamed(
       AppRoutes.orderDetails,
       rootNavigator: true,
       arguments: {
@@ -138,6 +166,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         'startAccepted': true,
       },
     );
+    _handleOrderDetailsResult(result);
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -162,7 +191,14 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
 
     final noticeMessage = state.noticeMessage?.trim() ?? '';
     if (noticeMessage.isNotEmpty) {
-      CustomSnackbar.showWarning(context: context, message: noticeMessage);
+      switch (state.noticeType) {
+        case DriverHomeNoticeType.success:
+          CustomSnackbar.showSuccess(context: context, message: noticeMessage);
+        case DriverHomeNoticeType.warning:
+          CustomSnackbar.showWarning(context: context, message: noticeMessage);
+        case DriverHomeNoticeType.info:
+          CustomSnackbar.showInfo(context: context, message: noticeMessage);
+      }
       _cubit.clearNotice();
     }
 
@@ -232,6 +268,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             onOfferExpired: () =>
                 _cubit.doIntent(const DriverHomeLoadEvent(refresh: true)),
             onAnimateToLocation: _animateToLocation,
+            onOpenOfferDetails: _openCurrentOfferDetails,
             onOpenMission: _openMissionDetails,
             toPreviewFromOffer: _cubit.previewFromOffer,
           );

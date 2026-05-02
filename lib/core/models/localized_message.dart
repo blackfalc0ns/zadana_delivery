@@ -1,9 +1,5 @@
 class LocalizedMessage {
-  const LocalizedMessage({
-    this.ar = '',
-    this.en = '',
-    this.fallback = '',
-  });
+  const LocalizedMessage({this.ar = '', this.en = '', this.fallback = ''});
 
   factory LocalizedMessage.fromJson(
     Map<String, dynamic> json, {

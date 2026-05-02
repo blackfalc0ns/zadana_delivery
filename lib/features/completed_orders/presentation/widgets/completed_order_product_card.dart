@@ -64,7 +64,9 @@ class CompletedOrderProductCard extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: scheme.secondaryContainer.withValues(alpha: 0.78),
+                        color: scheme.secondaryContainer.withValues(
+                          alpha: 0.78,
+                        ),
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(

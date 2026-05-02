@@ -11,13 +11,16 @@ class CustomerOtpSheetContent extends StatefulWidget {
     super.key,
     required this.sheetContext,
     required this.onSubmit,
+    this.onSuccess,
   });
 
   final BuildContext sheetContext;
   final Future<bool> Function(String otpCode) onSubmit;
+  final VoidCallback? onSuccess;
 
   @override
-  State<CustomerOtpSheetContent> createState() => _CustomerOtpSheetContentState();
+  State<CustomerOtpSheetContent> createState() =>
+      _CustomerOtpSheetContentState();
 }
 
 class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
@@ -63,6 +66,7 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
 
     if (success) {
       Navigator.of(context).pop();
+      widget.onSuccess?.call();
       return;
     }
 
@@ -110,12 +114,7 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
                 controller: _controller,
                 focusNode: _focusNode,
                 enabled: !_isSubmitting,
-                onChanged: (value) {
-                  final otpCode = value.trim();
-                  if (otpCode.length == 4) {
-                    _submitIfPossible();
-                  }
-                },
+                onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 10),
               const OrderDetailsSheetHint(),
@@ -123,6 +122,8 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
               SheetConfirmButton(
                 label: locale.order_details_confirm_delivery,
                 onPressed: _submitIfPossible,
+                isLoading: _isSubmitting,
+                isEnabled: _controller.text.trim().length == 4,
               ),
             ],
           ),

@@ -38,6 +38,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
         isLoading: true,
         clearTargetRoute: true,
         clearFailure: true,
+        clearAccountStatus: true,
         resetLogoutSucceeded: true,
       ),
     );
@@ -57,6 +58,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
           emit(
             state.copyWith(
               isLoading: false,
+              accountStatus: status,
               targetRoute: AppRoutes.accountPendingApproval,
             ),
           );
@@ -67,6 +69,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
           emit(
             state.copyWith(
               isLoading: false,
+              accountStatus: status,
               targetRoute: AppRoutes.accountBlocked,
             ),
           );
@@ -76,6 +79,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
         emit(
           state.copyWith(
             isLoading: false,
+            accountStatus: status,
             targetRoute: status.shouldGoHome
                 ? AppRoutes.mainShell
                 : status.hasCompletedProfile
@@ -105,6 +109,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
         isLoggingOut: true,
         clearFailure: true,
         clearTargetRoute: true,
+        clearAccountStatus: true,
         resetLogoutSucceeded: true,
       ),
     );
@@ -136,6 +141,7 @@ class AuthGateCubit extends Cubit<AuthGateState> {
       state.copyWith(
         clearFailure: true,
         clearTargetRoute: true,
+        clearAccountStatus: true,
         resetLogoutSucceeded: true,
       ),
     );

@@ -78,6 +78,34 @@ abstract class ApiServices {
   @GET(EndPoints.driverNotificationsUnreadCount)
   Future<dynamic> getDriverNotificationsUnreadCount();
 
+  @GET(EndPoints.driverSupportCases)
+  Future<dynamic> getDriverSupportCases({
+    @Query('page') int page = 1,
+    @Query('pageSize') int pageSize = 20,
+  });
+
+  @GET(EndPoints.driverSupportCaseDetails)
+  Future<dynamic> getDriverSupportCaseDetails(@Path('caseId') String caseId);
+
+  @POST(EndPoints.driverOrderReportIssue)
+  Future<dynamic> reportDriverOrderIssue(
+    @Path('orderId') String orderId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverOrderDispute)
+  Future<dynamic> createDriverOrderDispute(
+    @Path('orderId') String orderId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverSupportCaseMessages)
+  Future<dynamic> sendDriverSupportCaseMessage(
+    @Path('orderId') String orderId,
+    @Path('caseId') String caseId,
+    @Body() Map<String, dynamic> request,
+  );
+
   @GET(EndPoints.driverUnifiedProfile)
   Future<dynamic> getDriverUnifiedProfile();
 

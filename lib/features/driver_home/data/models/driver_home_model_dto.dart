@@ -410,7 +410,9 @@ class DriverProfileReadinessModelDto {
       ).map((item) => item.toString()).toList(growable: false),
       canSubmitForReview: _asBool(json['canSubmitForReview']),
       checklist: _asList(json['checklist'])
-          .map((item) => DriverProfileChecklistItemModelDto.fromJson(_asMap(item)))
+          .map(
+            (item) => DriverProfileChecklistItemModelDto.fromJson(_asMap(item)),
+          )
           .toList(growable: false),
     );
   }

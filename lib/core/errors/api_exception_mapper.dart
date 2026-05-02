@@ -48,7 +48,8 @@ class ApiExceptionMapper {
         final response = exception.response?.data;
         return ApiException(
           errorType: ApiErrorType.unknown,
-          message: _extractMessage(response) ?? ApiErrorType.unknown.translationKey,
+          message:
+              _extractMessage(response) ?? ApiErrorType.unknown.translationKey,
           response: response,
           statusCode: exception.response?.statusCode,
           isTranslationKey: _extractMessage(response) == null,

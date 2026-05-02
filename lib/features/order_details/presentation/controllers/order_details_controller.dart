@@ -29,6 +29,7 @@ class OrderDetailsController extends ChangeNotifier {
   int _markerLoadVersion = 0;
   String? _lastStoreMarkerKey;
   String? _lastCustomerMarkerKey;
+  bool _hasArrivedAtCustomerOverride = false;
 
   OrderDeliveryStage _stage;
 
@@ -56,8 +57,8 @@ class OrderDetailsController extends ChangeNotifier {
 
   bool get isWaitingForMerchantConfirmation {
     final details = _details;
-    if (details == null) return false;
-    if (_isPastMerchantPickupStep) return false;
+    if (details == null || _isPastMerchantPickupStep) return false;
+    if (canVerifyPickupOtp || canMarkPickedUp || hasPickupOtpCode) return false;
 
     final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
     final otpStatus = details.pickupOtpStatus.trim().toLowerCase();
@@ -66,31 +67,28 @@ class OrderDetailsController extends ChangeNotifier {
         assignmentStatus.contains('arrivedatvendor') ||
         assignmentStatus.contains('arrived_at_vendor');
 
-    if (!arrivedAtVendor) {
-      return false;
-    }
-
-    return otpStatus == 'pending' || (!canMarkPickedUp && hasPickupOtpCode);
+    return arrivedAtVendor && otpStatus == 'pending';
   }
 
   bool get canMarkPickedUp =>
-      _normalizedAllowedActions.contains('mark_picked_up');
+      stage == OrderDeliveryStage.arrivedAtVendor &&
+      (!pickupOtpRequired || _normalizedAllowedActions.contains('mark_picked_up'));
 
   bool get canShowPickupOtpSheet =>
-      !_isPastMerchantPickupStep && hasPickupOtpCode && !canMarkPickedUp;
+      stage == OrderDeliveryStage.arrivedAtVendor && hasPickupOtpCode;
 
   bool get canVerifyPickupOtp =>
-      !_isPastMerchantPickupStep &&
+      stage == OrderDeliveryStage.arrivedAtVendor &&
       pickupOtpRequired &&
-      _normalizedAllowedActions.contains('verify_pickup_otp');
+      (hasPickupOtpCode || _normalizedAllowedActions.contains('verify_pickup_otp'));
 
-  bool get canMarkArrivedAtVendor =>
-      _normalizedAllowedActions.contains('arrived_at_vendor');
+  bool get canMarkArrivedAtVendor => stage == OrderDeliveryStage.accepted;
 
   bool get canMarkArrivedAtCustomer =>
-      _normalizedAllowedActions.contains('arrived_at_customer');
+      stage == OrderDeliveryStage.onTheWay && !hasArrivedAtCustomer;
 
   bool get hasArrivedAtVendor =>
+      stage.index >= OrderDeliveryStage.arrivedAtVendor.index ||
       _normalizedArrivalState.contains('arrived_at_vendor') ||
       (_details?.assignmentStatus.trim().toLowerCase().contains(
             'arrived_at_vendor',
@@ -102,6 +100,8 @@ class OrderDetailsController extends ChangeNotifier {
           false);
 
   bool get hasArrivedAtCustomer =>
+      _hasArrivedAtCustomerOverride ||
+      stage == OrderDeliveryStage.delivered ||
       _normalizedArrivalState.contains('arrived_at_customer');
 
   bool get isHeadingToCustomer =>
@@ -231,6 +231,11 @@ class OrderDetailsController extends ChangeNotifier {
       clearPickupOtpCode: details.pickupOtpCode == null,
     );
     _stage = _resolveStageFromDetails(details);
+    _hasArrivedAtCustomerOverride =
+        _stage == OrderDeliveryStage.delivered ||
+        details.driverArrivalState.trim().toLowerCase().contains(
+          'arrived_at_customer',
+        );
     _loadMarkerIcons();
     notifyListeners();
   }
@@ -238,6 +243,85 @@ class OrderDetailsController extends ChangeNotifier {
   void updateStage(OrderDeliveryStage value) {
     if (_stage == value) return;
     _stage = value;
+    if (value.index < OrderDeliveryStage.onTheWay.index) {
+      _hasArrivedAtCustomerOverride = false;
+    }
+    if (value == OrderDeliveryStage.delivered) {
+      _hasArrivedAtCustomerOverride = true;
+    }
+    notifyListeners();
+  }
+
+  void applyLocalStageTransition(OrderDeliveryStage nextStage) {
+    if (_details != null) {
+      switch (nextStage) {
+        case OrderDeliveryStage.pending:
+          break;
+        case OrderDeliveryStage.accepted:
+          _details = _details!.copyWith(
+            assignmentStatus: 'accepted',
+            driverArrivalState: '',
+            allowedActions: const <String>['arrived_at_vendor'],
+          );
+          break;
+        case OrderDeliveryStage.arrivedAtVendor:
+          _details = _details!.copyWith(
+            assignmentStatus: 'arrived_at_vendor',
+            driverArrivalState: 'arrived_at_vendor',
+            allowedActions: pickupOtpRequired
+                ? (hasPickupOtpCode
+                      ? const <String>['verify_pickup_otp']
+                      : const <String>[])
+                : const <String>['mark_picked_up'],
+          );
+          break;
+        case OrderDeliveryStage.pickedUp:
+          _details = _details!.copyWith(
+            assignmentStatus: 'picked_up',
+            pickupOtpStatus: pickupOtpRequired
+                ? 'verified'
+                : _details!.pickupOtpStatus,
+            allowedActions: const <String>['mark_on_the_way'],
+          );
+          break;
+        case OrderDeliveryStage.onTheWay:
+          _details = _details!.copyWith(
+            assignmentStatus: 'on_the_way',
+            driverArrivalState: 'en_route_to_customer',
+            allowedActions: const <String>['arrived_at_customer'],
+          );
+          break;
+        case OrderDeliveryStage.delivered:
+          _details = _details!.copyWith(
+            assignmentStatus: 'delivered',
+            deliveryOtpStatus: deliveryOtpRequired
+                ? 'verified'
+                : _details!.deliveryOtpStatus,
+            allowedActions: const <String>[],
+          );
+          break;
+      }
+    }
+    _stage = nextStage;
+    if (nextStage.index < OrderDeliveryStage.onTheWay.index) {
+      _hasArrivedAtCustomerOverride = false;
+    }
+    if (nextStage == OrderDeliveryStage.delivered) {
+      _hasArrivedAtCustomerOverride = true;
+    }
+    notifyListeners();
+  }
+
+  void markArrivedAtCustomer() {
+    if (_details != null) {
+      _details = _details!.copyWith(
+        driverArrivalState: 'arrived_at_customer',
+        allowedActions: deliveryOtpRequired
+            ? const <String>['verify_delivery_otp']
+            : const <String>['confirm_delivery'],
+      );
+    }
+    _hasArrivedAtCustomerOverride = true;
     notifyListeners();
   }
 
@@ -281,10 +365,21 @@ class OrderDetailsController extends ChangeNotifier {
         .toUpperCase();
   }
 
+  String _normalizeStatusToken(String value) {
+    return value.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+  }
+
+  bool _hasNormalizedStatus(String value, Set<String> candidates) {
+    return candidates.contains(value);
+  }
+
   OrderDeliveryStage _resolveStageFromDetails(
     OrderAssignmentDetailsEntity details,
   ) {
     final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
+    final normalizedAssignmentStatus = _normalizeStatusToken(
+      details.assignmentStatus,
+    );
     final homeState = details.homeState.trim().toLowerCase();
     final pickupOtpStatus = details.pickupOtpStatus.trim().toLowerCase();
     final deliveryOtpStatus = details.deliveryOtpStatus.trim().toLowerCase();
@@ -293,32 +388,64 @@ class OrderDetailsController extends ChangeNotifier {
         .map((action) => action.trim().toLowerCase())
         .toSet();
     final isOnMission =
-        homeState.contains('onmission') || assignmentStatus.contains('onmission');
+        homeState.contains('onmission') ||
+        assignmentStatus.contains('onmission');
     final hasOfferDecision =
         allowedActions.contains('accept_offer') ||
         allowedActions.contains('reject_offer') ||
         assignmentStatus.contains('offersent') ||
         assignmentStatus.contains('offer_sent');
 
-    if (assignmentStatus.contains('deliver') ||
+    if (_hasNormalizedStatus(normalizedAssignmentStatus, const {
+          'delivered',
+          'deliveryfailed',
+          'failed',
+          'cancelled',
+          'canceled',
+          'completed',
+        }) ||
+        assignmentStatus.contains('deliver') ||
         assignmentStatus.contains('fail') ||
         assignmentStatus.contains('cancel') ||
         assignmentStatus.contains('complete')) {
       return OrderDeliveryStage.delivered;
     }
 
-    if (allowedActions.contains('arrived_at_customer') ||
+    final hasCustomerDeliveryStep =
+        allowedActions.contains('arrived_at_customer') ||
         allowedActions.contains('verify_delivery_otp') ||
         allowedActions.contains('confirm_delivery') ||
         allowedActions.contains('delivery_otp') ||
         deliveryOtpStatus == 'pending' ||
+        _hasNormalizedStatus(normalizedAssignmentStatus, const {
+          'ontheway',
+          'outfordelivery',
+          'arrivedatcustomer',
+        }) ||
         assignmentStatus.contains('arrivedatcustomer') ||
         assignmentStatus.contains('arrived_at_customer') ||
-        arrivalState.contains('customer')) {
+        arrivalState.contains('arrived_at_customer');
+    if (hasCustomerDeliveryStep ||
+        (arrivalState == 'en_route' &&
+            allowedActions.contains('arrived_at_customer'))) {
       return OrderDeliveryStage.onTheWay;
     }
 
+    final hasArrivedAtVendor =
+        arrivalState.contains('arrived_at_vendor') ||
+        _hasNormalizedStatus(normalizedAssignmentStatus, const {
+          'arrivedatvendor',
+        }) ||
+        assignmentStatus.contains('arrived_at_vendor') ||
+        assignmentStatus.contains('arrivedatvendor');
+    if (hasArrivedAtVendor ||
+        allowedActions.contains('verify_pickup_otp') ||
+        allowedActions.contains('mark_picked_up')) {
+      return OrderDeliveryStage.arrivedAtVendor;
+    }
+
     if (allowedActions.contains('mark_on_the_way') ||
+        _hasNormalizedStatus(normalizedAssignmentStatus, const {'pickedup'}) ||
         assignmentStatus.contains('pickedup') ||
         assignmentStatus.contains('picked_up') ||
         assignmentStatus.contains('ontheway') ||
@@ -328,19 +455,16 @@ class OrderDetailsController extends ChangeNotifier {
       return OrderDeliveryStage.pickedUp;
     }
 
-    if (arrivalState.contains('arrived_at_vendor') ||
-        assignmentStatus.contains('arrived_at_vendor') ||
-        (isOnMission &&
-            (pickupOtpStatus == 'pending' || details.pickupOtpRequired)) ||
-        assignmentStatus.contains('arrivedatvendor')) {
-      return OrderDeliveryStage.arrivedAtVendor;
-    }
-
     if (hasOfferDecision) {
       return OrderDeliveryStage.pending;
     }
 
     if (allowedActions.contains('arrived_at_vendor') ||
+        _hasNormalizedStatus(normalizedAssignmentStatus, const {
+          'accepted',
+          'driverassigned',
+          'preparing',
+        }) ||
         assignmentStatus.contains('accepted') ||
         isOnMission ||
         details.pickupOtpRequired) {

@@ -11,6 +11,7 @@ class OrderDetailsScreenView extends StatelessWidget {
     required this.controller,
     required this.onBack,
     required this.onAcceptOrder,
+    required this.onRejectOrder,
     required this.onArrivedAtVendor,
     required this.onShowPickupOtp,
     required this.onArrivedAtCustomer,
@@ -23,12 +24,14 @@ class OrderDetailsScreenView extends StatelessWidget {
     required this.onOpenCustomerRoute,
     required this.onFinish,
     required this.onRefresh,
+    required this.onOpenSupportComposer,
     this.isActionLoading = false,
   });
 
   final OrderDetailsController controller;
   final VoidCallback onBack;
   final VoidCallback onAcceptOrder;
+  final VoidCallback onRejectOrder;
   final VoidCallback onArrivedAtVendor;
   final VoidCallback onShowPickupOtp;
   final VoidCallback onArrivedAtCustomer;
@@ -41,33 +44,29 @@ class OrderDetailsScreenView extends StatelessWidget {
   final VoidCallback onOpenCustomerRoute;
   final VoidCallback onFinish;
   final Future<void> Function() onRefresh;
+  final VoidCallback onOpenSupportComposer;
   final bool isActionLoading;
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: controller,
-      builder: (_, _) => OrderDetailsScaffold(
-        onBack: onBack,
-        actions: [
-          IconButton(
-            onPressed: isActionLoading ? null : () => onRefresh(),
-            icon: const Icon(Icons.refresh_rounded),
-          ),
-        ],
-        bottomActions: OrderDetailsBottomActions(
-          stage: controller.stage,
-          pickupOtpRequired: controller.pickupOtpRequired,
-          deliveryOtpRequired: controller.deliveryOtpRequired,
-          canMarkPickedUp: controller.canMarkPickedUp,
-          canMarkArrivedAtVendor: controller.canMarkArrivedAtVendor,
-          canMarkArrivedAtCustomer: controller.canMarkArrivedAtCustomer,
-          hasArrivedAtVendor: controller.hasArrivedAtVendor,
-          hasArrivedAtCustomer: controller.hasArrivedAtCustomer,
-          hasPickupOtpCode: controller.hasPickupOtpCode,
-          isWaitingForMerchantConfirmation:
-              controller.isWaitingForMerchantConfirmation,
+    return OrderDetailsScaffold(
+      onBack: onBack,
+      actions: [
+        IconButton(
+          onPressed: isActionLoading ? null : onOpenSupportComposer,
+          icon: const Icon(Icons.support_agent_rounded),
+        ),
+        IconButton(
+          onPressed: isActionLoading ? null : onRefresh,
+          icon: const Icon(Icons.refresh_rounded),
+        ),
+      ],
+      bottomActions: AnimatedBuilder(
+        animation: controller,
+        builder: (_, _) => OrderDetailsBottomActions(
+          controller: controller,
           onAcceptOrder: onAcceptOrder,
+          onRejectOrder: onRejectOrder,
           onArrivedAtVendor: onArrivedAtVendor,
           onShowPickupOtp: onShowPickupOtp,
           onArrivedAtCustomer: onArrivedAtCustomer,
@@ -75,33 +74,23 @@ class OrderDetailsScreenView extends StatelessWidget {
           onShowCustomerOtp: onShowCustomerOtp,
           onFinish: onFinish,
         ),
-        child: Stack(
-          children: [
-            OrderDetailsBody(
-              activeStatusIndex: controller.activeStatusIndex,
-              order: controller.order,
-              isCashPayment: controller.isCashPayment,
-              pickupOtpCode: controller.pickupOtpCode,
-              isWaitingForMerchantConfirmation:
-                  controller.isWaitingForMerchantConfirmation,
-              items: controller.orderItems,
-              markers: controller.markers,
-              showStoreRouteFirst: controller.showStoreRouteFirst,
-              storeLocation: controller.storeLocation,
-              customerLocation: controller.customerLocation,
-              onCallStore: onCallStore,
-              onCallCustomer: onCallCustomer,
-              onShowItems: onShowItems,
-              onOpenCustomerRoute: onOpenCustomerRoute,
-              onOpenStoreRoute: onOpenStoreRoute,
-              onRefresh: onRefresh,
-            ),
-            if (isActionLoading) ...[
-              const ModalBarrier(dismissible: false, color: Colors.black26),
-              const Center(child: CustomProgressIndicator()),
-            ],
+      ),
+      child: Stack(
+        children: [
+          OrderDetailsBody(
+            controller: controller,
+            onCallStore: onCallStore,
+            onCallCustomer: onCallCustomer,
+            onShowItems: onShowItems,
+            onOpenCustomerRoute: onOpenCustomerRoute,
+            onOpenStoreRoute: onOpenStoreRoute,
+            onRefresh: onRefresh,
+          ),
+          if (isActionLoading) ...[
+            const ModalBarrier(dismissible: false, color: Colors.black26),
+            const Center(child: CustomProgressIndicator()),
           ],
-        ),
+        ],
       ),
     );
   }

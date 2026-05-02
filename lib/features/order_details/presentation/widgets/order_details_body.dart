@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
+import 'package:zadana_delivery/features/order_details/presentation/controllers/order_details_controller.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_customer_details_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_hero_card.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_items_details_card.dart';
@@ -13,16 +12,7 @@ import 'package:zadana_delivery/features/order_details/presentation/widgets/orde
 class OrderDetailsBody extends StatelessWidget {
   const OrderDetailsBody({
     super.key,
-    required this.activeStatusIndex,
-    required this.order,
-    required this.isCashPayment,
-    required this.pickupOtpCode,
-    required this.isWaitingForMerchantConfirmation,
-    required this.items,
-    required this.markers,
-    required this.showStoreRouteFirst,
-    required this.storeLocation,
-    required this.customerLocation,
+    required this.controller,
     required this.onCallStore,
     required this.onCallCustomer,
     required this.onShowItems,
@@ -31,16 +21,7 @@ class OrderDetailsBody extends StatelessWidget {
     required this.onRefresh,
   });
 
-  final int activeStatusIndex;
-  final DriverOrderPreview order;
-  final bool isCashPayment;
-  final String? pickupOtpCode;
-  final bool isWaitingForMerchantConfirmation;
-  final List<DriverOrderItemPreview> items;
-  final Set<Marker> markers;
-  final bool showStoreRouteFirst;
-  final LatLng storeLocation;
-  final LatLng customerLocation;
+  final OrderDetailsController controller;
   final VoidCallback onCallStore;
   final VoidCallback onCallCustomer;
   final VoidCallback onShowItems;
@@ -50,14 +31,17 @@ class OrderDetailsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasPickupOtpCode = pickupOtpCode?.trim().isNotEmpty == true;
-
     return SafeArea(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
-            child: DeliveryStatusCard(activeIndex: activeStatusIndex),
+          AnimatedBuilder(
+            animation: controller,
+            builder: (context, _) => Padding(
+              padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
+              child: DeliveryStatusCard(
+                activeIndex: controller.activeStatusIndex,
+              ),
+            ),
           ),
           Expanded(
             child: RefreshIndicator(
@@ -68,36 +52,74 @@ class OrderDetailsBody extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    HeroCard(
-                      order: order,
-                      isCashPayment: isCashPayment,
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) {
+                        final pickupOtpCode = controller.pickupOtpCode?.trim();
+                        final hasPickupOtpCode =
+                            pickupOtpCode?.isNotEmpty == true;
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            HeroCard(
+                              order: controller.order,
+                              isCashPayment: controller.isCashPayment,
+                            ),
+                            const SizedBox(height: 10),
+                            if (hasPickupOtpCode) ...[
+                              OrderDetailsPickupOtpBanner(
+                                otpCode: pickupOtpCode!,
+                                isWaitingForMerchantConfirmation:
+                                    controller.isWaitingForMerchantConfirmation,
+                              ),
+                              const SizedBox(height: 10),
+                            ],
+                          ],
+                        );
+                      },
+                    ),
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) => ItemsDetailsCard(
+                        items: controller.orderItems,
+                        onTap: onShowItems,
+                      ),
                     ),
                     const SizedBox(height: 10),
-                    if (hasPickupOtpCode) ...[
-                      OrderDetailsPickupOtpBanner(
-                        otpCode: pickupOtpCode!.trim(),
-                        isWaitingForMerchantConfirmation:
-                            isWaitingForMerchantConfirmation,
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) => StoreDetailsCard(
+                        order: controller.order,
+                        onCall: onCallStore,
                       ),
-                      const SizedBox(height: 10),
-                    ],
-                    ItemsDetailsCard(items: items, onTap: onShowItems),
+                    ),
                     const SizedBox(height: 10),
-                    StoreDetailsCard(order: order, onCall: onCallStore),
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) => CustomerDetailsCard(
+                        order: controller.order,
+                        onCall: onCallCustomer,
+                      ),
+                    ),
                     const SizedBox(height: 10),
-                    CustomerDetailsCard(order: order, onCall: onCallCustomer),
-                    const SizedBox(height: 10),
-                    MapCard(
-                      markers: markers,
-                      target: showStoreRouteFirst
-                          ? storeLocation
-                          : customerLocation,
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) => MapCard(
+                        markers: controller.markers,
+                        target: controller.showStoreRouteFirst
+                            ? controller.storeLocation
+                            : controller.customerLocation,
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    RouteButtons(
-                      showStoreRouteFirst: showStoreRouteFirst,
-                      onOpenCustomerRoute: onOpenCustomerRoute,
-                      onOpenStoreRoute: onOpenStoreRoute,
+                    AnimatedBuilder(
+                      animation: controller,
+                      builder: (context, _) => RouteButtons(
+                        showStoreRouteFirst: controller.showStoreRouteFirst,
+                        onOpenCustomerRoute: onOpenCustomerRoute,
+                        onOpenStoreRoute: onOpenStoreRoute,
+                      ),
                     ),
                   ],
                 ),

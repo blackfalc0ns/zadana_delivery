@@ -13,6 +13,7 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_cubit.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
@@ -31,6 +32,7 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
   void initState() {
     super.initState();
     _cubit = getIt<AuthGateCubit>();
+    _cubit.doIntent(const AuthGateStartedEvent());
   }
 
   @override
@@ -69,6 +71,9 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
           }
         },
         builder: (context, state) {
+          final backendMessage = _primaryBlockedMessage(state.accountStatus);
+          final backendDetail = _secondaryBlockedMessage(state.accountStatus);
+
           return Scaffold(
             backgroundColor: color.surface,
             body: Stack(
@@ -129,7 +134,9 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                     ),
                                     const SizedBox(height: Spacing.sm),
                                     Text(
-                                      locale.auth_blocked_description,
+                                      backendMessage.isNotEmpty
+                                          ? backendMessage
+                                          : locale.auth_blocked_description,
                                       textAlign: TextAlign.center,
                                       style: getRegularStyle(
                                         fontFamily: FontConstant.cairo,
@@ -181,7 +188,12 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Text(
-                                              locale.auth_blocked_access_hint,
+                                              backendDetail.isNotEmpty
+                                                  ? backendDetail
+                                                  : backendMessage.isNotEmpty
+                                                  ? backendMessage
+                                                  : locale
+                                                        .auth_blocked_access_hint,
                                               style: getRegularStyle(
                                                 fontFamily: FontConstant.cairo,
                                                 fontSize: FontSize.size13,
@@ -216,7 +228,10 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                           const SizedBox(width: 10),
                                           Expanded(
                                             child: Text(
-                                              locale.auth_blocked_support_hint,
+                                              backendMessage.isNotEmpty
+                                                  ? backendMessage
+                                                  : locale
+                                                        .auth_blocked_support_hint,
                                               style: getMediumStyle(
                                                 fontFamily: FontConstant.cairo,
                                                 fontSize: FontSize.size13,
@@ -272,6 +287,31 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
         },
       ),
     );
+  }
+
+  String _primaryBlockedMessage(DriverAccountStatusEntity? status) {
+    return status?.primaryBlockedMessage.trim() ?? '';
+  }
+
+  String _secondaryBlockedMessage(DriverAccountStatusEntity? status) {
+    if (status == null) return '';
+
+    for (final candidate in [
+      status.restrictionMessage,
+      status.suspensionReason,
+      status.reviewNote,
+      if (status.message.trim() != status.primaryBlockedMessage) status.message,
+    ]) {
+      final normalized = candidate?.trim() ?? '';
+      if (normalized.isNotEmpty) return normalized;
+    }
+
+    final enforcementLevel = status.gateStatus.trim().isNotEmpty
+        ? status.gateStatus.trim()
+        : status.accountStatus.trim();
+    if (enforcementLevel.isEmpty) return '';
+
+    return 'Status: $enforcementLevel';
   }
 }
 

@@ -118,10 +118,7 @@ class ProfileFormLoadingSkeleton extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: color.surface,
-      appBar: CustomAppBar.modern(
-        title: title,
-        backgroundColor: color.surface,
-      ),
+      appBar: CustomAppBar.modern(title: title, backgroundColor: color.surface),
       body: SkeletonStateWidget(
         child: ListView(
           padding: const EdgeInsets.all(Spacing.base),
@@ -258,11 +255,7 @@ class _ProfileActionSectionSkeleton extends StatelessWidget {
                         color: color.surface,
                       ),
                       const SizedBox(height: 8),
-                      _ShimmerBox(
-                        width: 180,
-                        height: 12,
-                        color: color.surface,
-                      ),
+                      _ShimmerBox(width: 180, height: 12, color: color.surface),
                     ],
                   ),
                 ),

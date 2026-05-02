@@ -46,7 +46,9 @@ class InfoTile extends StatelessWidget {
             child: Icon(icon, color: accent, size: 20),
           ),
           const SizedBox(width: 10),
-          Expanded(child: InfoTileText(label: label, value: value)),
+          Expanded(
+            child: InfoTileText(label: label, value: value),
+          ),
           if (action != null) ...[const SizedBox(width: 8), action!],
         ],
       ),

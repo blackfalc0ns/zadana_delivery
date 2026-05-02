@@ -586,6 +586,19 @@
     }
   },
   "driver_home_accept_order_dialog_confirm": "تأكيد القبول",
+  "driver_home_reject_order_dialog_title": "تأكيد رفض الطلب",
+  "driver_home_reject_order_dialog_message": "هل تريد رفض {orderTitle} من {vendorName} وانتظار العرض التالي؟",
+  "@driver_home_reject_order_dialog_message": {
+    "placeholders": {
+      "orderTitle": {
+        "type": "Object"
+      },
+      "vendorName": {
+        "type": "Object"
+      }
+    }
+  },
+  "driver_home_reject_order_dialog_confirm": "تأكيد الرفض",
   "driver_home_connection_online_title": "متصل الآن",
   "driver_home_connection_offline_title": "غير متصل",
   "driver_home_connection_online_subtitle": "جاهز للطلبات",

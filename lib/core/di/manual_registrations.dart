@@ -4,6 +4,13 @@ import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/repo/driver_support_repository.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/create_driver_order_dispute_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_case_details_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_cases_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/report_driver_order_issue_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/send_driver_support_case_message_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source_impl.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/repo/driver_tracking_repository_impl.dart';
@@ -146,4 +153,45 @@ void registerManualDependencies(GetIt getIt) {
     );
   }
 
+  if (!getIt.isRegistered<ReportDriverOrderIssueUseCase>()) {
+    getIt.registerFactory<ReportDriverOrderIssueUseCase>(
+      () => ReportDriverOrderIssueUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<CreateDriverOrderDisputeUseCase>()) {
+    getIt.registerFactory<CreateDriverOrderDisputeUseCase>(
+      () => CreateDriverOrderDisputeUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<GetDriverSupportCasesUseCase>()) {
+    getIt.registerFactory<GetDriverSupportCasesUseCase>(
+      () => GetDriverSupportCasesUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<GetDriverSupportCaseDetailsUseCase>()) {
+    getIt.registerFactory<GetDriverSupportCaseDetailsUseCase>(
+      () =>
+          GetDriverSupportCaseDetailsUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<SendDriverSupportCaseMessageUseCase>()) {
+    getIt.registerFactory<SendDriverSupportCaseMessageUseCase>(
+      () =>
+          SendDriverSupportCaseMessageUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<DriverSupportCubit>()) {
+    getIt.registerFactory<DriverSupportCubit>(
+      () => DriverSupportCubit(
+        getIt<GetDriverSupportCasesUseCase>(),
+        getIt<GetDriverSupportCaseDetailsUseCase>(),
+        getIt<SendDriverSupportCaseMessageUseCase>(),
+      ),
+    );
+  }
 }

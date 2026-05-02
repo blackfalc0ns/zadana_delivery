@@ -6,11 +6,7 @@ import 'package:zadana_delivery/core/helpers/order_collection_helper.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 
 class HeroCard extends StatelessWidget {
-  const HeroCard({
-    super.key,
-    required this.order,
-    required this.isCashPayment,
-  });
+  const HeroCard({super.key, required this.order, required this.isCashPayment});
 
   final DriverOrderPreview order;
   final bool isCashPayment;

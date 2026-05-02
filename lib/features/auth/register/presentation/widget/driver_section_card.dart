@@ -46,7 +46,7 @@ class DriverSectionCard extends StatelessWidget {
             ),
           ),
           if ((subtitle ?? '').trim().isNotEmpty) ...[
-          const SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               subtitle!,
               style: getRegularStyle(
