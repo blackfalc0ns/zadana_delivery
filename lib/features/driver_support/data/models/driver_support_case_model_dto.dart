@@ -8,13 +8,23 @@ class DriverSupportCaseModelDto {
     required this.orderId,
     required this.orderNumber,
     required this.type,
+    this.typeLabelAr,
+    this.typeLabelEn,
     required this.status,
+    this.statusLabelAr,
+    this.statusLabelEn,
     required this.priority,
+    this.priorityLabelAr,
+    this.priorityLabelEn,
     required this.reasonCode,
+    this.reasonLabelAr,
+    this.reasonLabelEn,
     required this.message,
     required this.createdAt,
     this.adminNote,
     this.queue,
+    this.queueLabelAr,
+    this.queueLabelEn,
     this.decisionNotes,
     this.updatedAt,
     this.closedAt,
@@ -23,21 +33,39 @@ class DriverSupportCaseModelDto {
   });
 
   factory DriverSupportCaseModelDto.fromJson(Map<String, dynamic> json) {
+    final orderIdValue = json['orderId'] ?? json['order_id'];
+    final orderNumberValue = json['orderNumber'] ?? json['order_number'];
+    final reasonCodeValue = json['reasonCode'] ?? json['reason_code'];
+    final adminNoteValue = json['adminNote'] ?? json['admin_note'];
+    final decisionNotesValue = json['decisionNotes'] ?? json['decision_notes'];
+    final createdAtValue = json['createdAt'] ?? json['created_at'];
+    final updatedAtValue = json['updatedAt'] ?? json['updated_at'];
+    final closedAtValue = json['closedAt'] ?? json['closed_at'];
     return DriverSupportCaseModelDto(
       id: json['id']?.toString() ?? '',
-      orderId: json['orderId']?.toString() ?? '',
-      orderNumber: json['orderNumber']?.toString() ?? '',
+      orderId: orderIdValue?.toString() ?? '',
+      orderNumber: orderNumberValue?.toString() ?? '',
       type: json['type']?.toString() ?? '',
+      typeLabelAr: json['type_label_ar']?.toString(),
+      typeLabelEn: json['type_label_en']?.toString(),
       status: json['status']?.toString() ?? '',
+      statusLabelAr: json['status_label_ar']?.toString(),
+      statusLabelEn: json['status_label_en']?.toString(),
       priority: json['priority']?.toString() ?? '',
-      reasonCode: json['reasonCode']?.toString() ?? '',
+      priorityLabelAr: json['priority_label_ar']?.toString(),
+      priorityLabelEn: json['priority_label_en']?.toString(),
+      reasonCode: reasonCodeValue?.toString() ?? '',
+      reasonLabelAr: json['reason_label_ar']?.toString(),
+      reasonLabelEn: json['reason_label_en']?.toString(),
       message: json['message']?.toString() ?? '',
-      adminNote: json['adminNote']?.toString(),
+      adminNote: adminNoteValue?.toString(),
       queue: json['queue']?.toString(),
-      decisionNotes: json['decisionNotes']?.toString(),
-      createdAt: _dateTimeFromJson(json['createdAt']),
-      updatedAt: _dateTimeFromJson(json['updatedAt']),
-      closedAt: _dateTimeFromJson(json['closedAt']),
+      queueLabelAr: json['queue_label_ar']?.toString(),
+      queueLabelEn: json['queue_label_en']?.toString(),
+      decisionNotes: decisionNotesValue?.toString(),
+      createdAt: _dateTimeFromJson(createdAtValue),
+      updatedAt: _dateTimeFromJson(updatedAtValue),
+      closedAt: _dateTimeFromJson(closedAtValue),
       attachments: _attachmentsFromJson(json['attachments']),
       activities: _activitiesFromJson(json['activities']),
     );
@@ -47,12 +75,22 @@ class DriverSupportCaseModelDto {
   final String orderId;
   final String orderNumber;
   final String type;
+  final String? typeLabelAr;
+  final String? typeLabelEn;
   final String status;
+  final String? statusLabelAr;
+  final String? statusLabelEn;
   final String priority;
+  final String? priorityLabelAr;
+  final String? priorityLabelEn;
   final String reasonCode;
+  final String? reasonLabelAr;
+  final String? reasonLabelEn;
   final String message;
   final String? adminNote;
   final String? queue;
+  final String? queueLabelAr;
+  final String? queueLabelEn;
   final String? decisionNotes;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -66,12 +104,22 @@ class DriverSupportCaseModelDto {
       orderId: orderId,
       orderNumber: orderNumber,
       type: type,
+      typeLabelAr: typeLabelAr,
+      typeLabelEn: typeLabelEn,
       status: status,
+      statusLabelAr: statusLabelAr,
+      statusLabelEn: statusLabelEn,
       priority: priority,
+      priorityLabelAr: priorityLabelAr,
+      priorityLabelEn: priorityLabelEn,
       reasonCode: reasonCode,
+      reasonLabelAr: reasonLabelAr,
+      reasonLabelEn: reasonLabelEn,
       message: message,
       adminNote: adminNote,
       queue: queue,
+      queueLabelAr: queueLabelAr,
+      queueLabelEn: queueLabelEn,
       decisionNotes: decisionNotes,
       createdAt: createdAt,
       updatedAt: updatedAt,

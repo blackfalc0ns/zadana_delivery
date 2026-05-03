@@ -17,7 +17,10 @@ class DriverSupportAttachmentDto {
   final String fileUrl;
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{'fileName': fileName, 'fileUrl': fileUrl};
+    return <String, dynamic>{
+      'file_name': fileName,
+      'file_url': fileUrl,
+    };
   }
 
   DriverSupportAttachmentEntity toEntity() {

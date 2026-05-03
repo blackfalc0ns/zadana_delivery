@@ -56,6 +56,7 @@ abstract class EndPoints {
   static const String driverSupportCases = '/drivers/support/cases';
   static const String driverSupportCaseDetails =
       '/drivers/support/cases/{caseId}';
+  static const String driverSupportReasons = '/drivers/support/reasons/{type}';
   static const String driverOrderReportIssue =
       '/drivers/support/orders/{orderId}/report-issue';
   static const String driverOrderDispute =

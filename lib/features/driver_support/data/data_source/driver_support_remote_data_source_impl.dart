@@ -6,6 +6,7 @@ import 'package:zadana_delivery/features/driver_support/data/data_source/driver_
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_attachment_dto.dart';
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_case_model_dto.dart';
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_cases_page_model_dto.dart';
+import 'package:zadana_delivery/features/driver_support/data/models/driver_support_reason_dto.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 
 @Injectable(as: DriverSupportRemoteDataSource)
@@ -74,6 +75,19 @@ class DriverSupportRemoteDataSourceImpl
   }
 
   @override
+  Future<List<DriverSupportReasonDto>> getReasons(String type) async {
+    try {
+      final response = await _apiServices.getDriverSupportReasons(type);
+      if (response is! List) return const <DriverSupportReasonDto>[];
+      return response
+          .map((item) => DriverSupportReasonDto.fromJson(_normalizeMap(item)))
+          .toList(growable: false);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
   Future<DriverSupportCaseModelDto> sendMessage({
     required String orderId,
     required String caseId,
@@ -95,7 +109,7 @@ class DriverSupportRemoteDataSourceImpl
     DriverSupportCaseMessageRequestEntity request,
   ) {
     return <String, dynamic>{
-      'reasonCode': request.reasonCode,
+      'reason_code': request.reasonCode,
       'message': request.message,
       'attachments': request.attachments
           .map(

@@ -4,6 +4,7 @@ import 'package:zadana_delivery/features/driver_support/data/data_source/driver_
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_cases_page_entity.dart';
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_reason_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/repo/driver_support_repository.dart';
 
 @Injectable(as: DriverSupportRepository)
@@ -59,6 +60,14 @@ class DriverSupportRepositoryImpl implements DriverSupportRepository {
     return safeApiCall(() async {
       final response = await _remoteDataSource.getCaseDetails(caseId);
       return response.toEntity();
+    });
+  }
+
+  @override
+  Future<ApiResult<List<DriverSupportReasonEntity>>> getReasons(String type) {
+    return safeApiCall(() async {
+      final response = await _remoteDataSource.getReasons(type);
+      return response.map((item) => item.toEntity()).toList(growable: false);
     });
   }
 

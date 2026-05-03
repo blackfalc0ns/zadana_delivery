@@ -8,6 +8,7 @@ import 'package:zadana_delivery/features/driver_support/domain/repo/driver_suppo
 import 'package:zadana_delivery/features/driver_support/domain/usecase/create_driver_order_dispute_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_case_details_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_cases_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_reasons_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/report_driver_order_issue_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/send_driver_support_case_message_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
@@ -175,6 +176,12 @@ void registerManualDependencies(GetIt getIt) {
     getIt.registerFactory<GetDriverSupportCaseDetailsUseCase>(
       () =>
           GetDriverSupportCaseDetailsUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<GetDriverSupportReasonsUseCase>()) {
+    getIt.registerFactory<GetDriverSupportReasonsUseCase>(
+      () => GetDriverSupportReasonsUseCase(getIt<DriverSupportRepository>()),
     );
   }
 

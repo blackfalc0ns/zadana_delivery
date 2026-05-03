@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_activity_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
@@ -82,7 +84,7 @@ class _DriverSupportCaseDetailsScreenState
       CustomSnackbar.showError(
         context: context,
         message: _text(
-          'اختار سبب المتابعة واكتب الرسالة',
+          'اختر سبب المتابعة واكتب الرسالة',
           'Choose a follow-up reason and enter a message',
         ),
       );
@@ -214,8 +216,7 @@ class _DriverSupportCaseDetailsScreenState
                                 padding: const EdgeInsets.only(bottom: 10),
                                 child: _ActivityTile(
                                   isArabic: _isArabic,
-                                  message: activity.message,
-                                  dateTime: activity.createdAt,
+                                  activity: activity,
                                 ),
                               ),
                             )
@@ -234,7 +235,10 @@ class _DriverSupportCaseDetailsScreenState
                           initialValue: _selectedReasonCode,
                           borderRadius: BorderRadius.circular(18),
                           decoration: InputDecoration(
-                            labelText: _text('سبب المتابعة', 'Follow-up reason'),
+                            labelText: _text(
+                              'سبب المتابعة',
+                              'Follow-up reason',
+                            ),
                             filled: true,
                           ),
                           items: _followUpReasons
@@ -324,10 +328,106 @@ class _CaseDetailsHero extends StatelessWidget {
         );
   }
 
+  String _localizedLabel({
+    required String? ar,
+    required String? en,
+    required String fallback,
+  }) {
+    final preferred = isArabic ? ar : en;
+    final normalized = preferred?.trim() ?? '';
+    if (normalized.isNotEmpty) return normalized;
+    return fallback;
+  }
+
+  String _caseTypeLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.typeLabelAr,
+      en: item.typeLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.type.trim().toLowerCase()) {
+      case 'driver_report':
+      case 'driverreport':
+        return _text('بلاغ سائق', 'Driver report');
+      case 'dispute':
+        return _text('نزاع', 'Dispute');
+      default:
+        return _labelize(item.type);
+    }
+  }
+
+  String _statusLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.statusLabelAr,
+      en: item.statusLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.status.trim().toLowerCase()) {
+      case 'submitted':
+        return _text('تم الإرسال', 'Submitted');
+      case 'in_review':
+        return _text('قيد المراجعة', 'In review');
+      case 'open':
+        return _text('مفتوحة', 'Open');
+      case 'closed':
+        return _text('مغلقة', 'Closed');
+      case 'resolved':
+        return _text('تم الحل', 'Resolved');
+      default:
+        return _labelize(item.status);
+    }
+  }
+
+  String _priorityLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.priorityLabelAr,
+      en: item.priorityLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.priority.trim().toLowerCase()) {
+      case 'low':
+        return _text('منخفضة', 'Low');
+      case 'medium':
+        return _text('متوسطة', 'Medium');
+      case 'high':
+        return _text('عالية', 'High');
+      case 'urgent':
+        return _text('عاجلة', 'Urgent');
+      default:
+        return _labelize(item.priority);
+    }
+  }
+
+  String _reasonLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.reasonLabelAr,
+      en: item.reasonLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.reasonCode.trim().toLowerCase()) {
+      case 'customer_unreachable':
+        return _text('العميل لا يرد', 'Customer unreachable');
+      case 'wrong_address':
+        return _text('العنوان غير صحيح', 'Wrong address');
+      case 'payment_issue':
+        return _text('مشكلة في الدفع', 'Payment issue');
+      case 'order_damaged':
+        return _text('الطلب تالف', 'Order damaged');
+      default:
+        return _labelize(item.reasonCode);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final title = item.orderNumber.isEmpty ? item.id : item.orderNumber;
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final infoCardWidth = math.max((screenWidth - 46) / 2, 132.0);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
@@ -341,18 +441,26 @@ class _CaseDetailsHero extends StatelessWidget {
           end: Alignment.bottomCenter,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.14)),
+        border: Border.all(
+          color: scheme.outlineVariant.withValues(alpha: 0.14),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
+            _text('رقم الطلب', 'Order number'),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: scheme.onSurfaceVariant,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
             title,
-            style: Theme.of(
-              context,
-            ).textTheme.headlineSmall?.copyWith(
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.w800,
-              fontSize: 22,
+              fontSize: 21,
               letterSpacing: -0.4,
             ),
           ),
@@ -362,39 +470,55 @@ class _CaseDetailsHero extends StatelessWidget {
             runSpacing: 6,
             children: [
               _HeroPill(
-                icon: Icons.priority_high_rounded,
-                label: _labelize(item.priority),
-                color: scheme.secondary,
+                icon: Icons.balance_rounded,
+                label: _caseTypeLabel(),
+                color: scheme.tertiary,
               ),
               _HeroPill(
                 icon: Icons.flag_rounded,
-                label: _labelize(item.status),
+                label: _statusLabel(),
                 color: scheme.primary,
               ),
               _HeroPill(
-                icon: Icons.balance_rounded,
-                label: _labelize(item.type),
-                color: scheme.tertiary,
+                icon: Icons.priority_high_rounded,
+                label: _priorityLabel(),
+                color: scheme.secondary,
               ),
             ],
           ),
           const SizedBox(height: 10),
-          _HeroInfoLine(
-            label: _text('السبب', 'Reason'),
-            value: _formatDate(item.createdAt),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              SizedBox(
+                width: infoCardWidth,
+                child: _HeroInfoLine(
+                  label: _text('السبب', 'Reason'),
+                  value: _reasonLabel(),
+                ),
+              ),
+              SizedBox(
+                width: infoCardWidth,
+                child: _HeroInfoLine(
+                  label: _text('آخر تحديث', 'Last update'),
+                  value: _formatDate(item.updatedAt ?? item.createdAt),
+                ),
+              ),
+              if ((item.queue ?? '').trim().isNotEmpty)
+                SizedBox(
+                  width: infoCardWidth,
+                  child: _HeroInfoLine(
+                    label: _text('القسم', 'Queue'),
+                    value: _localizedLabel(
+                      ar: item.queueLabelAr,
+                      en: item.queueLabelEn,
+                      fallback: item.queue!.trim(),
+                    ),
+                  ),
+                ),
+            ],
           ),
-          const SizedBox(height: 8),
-          _HeroInfoLine(
-            label: _text('آخر تحديث', 'Last update'),
-            value: _formatDate(item.updatedAt ?? item.createdAt),
-          ),
-          if ((item.queue ?? '').trim().isNotEmpty) ...[
-            const SizedBox(height: 8),
-            _HeroInfoLine(
-              label: _text('القسم', 'Queue'),
-              value: item.queue!.trim(),
-            ),
-          ],
         ],
       ),
     );
@@ -467,7 +591,7 @@ class _HeroInfoLine extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             value,
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               color: scheme.onSurface,
@@ -529,7 +653,7 @@ class _SectionCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           child,
         ],
       ),
@@ -538,24 +662,77 @@ class _SectionCard extends StatelessWidget {
 }
 
 class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({
-    required this.isArabic,
-    required this.message,
-    required this.dateTime,
-  });
+  const _ActivityTile({required this.isArabic, required this.activity});
 
   final bool isArabic;
-  final String message;
-  final DateTime? dateTime;
+  final DriverSupportCaseActivityEntity activity;
 
   String _formatDate(DateTime? value) {
     if (value == null) return '--';
     return DateFormat('dd/MM/yyyy - hh:mm a').format(value.toLocal());
   }
 
+  String _labelize(String value) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) return '--';
+    return normalized
+        .replaceAll('_', ' ')
+        .replaceAllMapped(
+          RegExp(r'([a-z])([A-Z])'),
+          (match) => '${match.group(1)} ${match.group(2)}',
+        );
+  }
+
+  String _localizedLabel({
+    required String? ar,
+    required String? en,
+    required String fallback,
+  }) {
+    final preferred = isArabic ? ar : en;
+    final normalized = preferred?.trim() ?? '';
+    if (normalized.isNotEmpty) return normalized;
+    return fallback;
+  }
+
+  String _activityLabel() {
+    final titleLabel = _localizedLabel(
+      ar: activity.titleAr,
+      en: activity.titleEn,
+      fallback: '',
+    );
+    if (titleLabel.isNotEmpty) return titleLabel;
+
+    final actionLabel = _localizedLabel(
+      ar: activity.typeLabelAr,
+      en: activity.typeLabelEn,
+      fallback: '',
+    );
+    if (actionLabel.isNotEmpty) return actionLabel;
+    switch (activity.type.trim().toLowerCase()) {
+      case 'submitted':
+        return isArabic ? 'تم إرسال الشكوى' : 'Case submitted';
+      case 'follow_up':
+        return isArabic ? 'تمت إضافة متابعة' : 'Follow-up added';
+      case 'driver_response':
+        return isArabic ? 'رد المندوب' : 'Driver replied';
+      default:
+        return _labelize(activity.type);
+    }
+  }
+
+  String? _actorLabel() {
+    final value = _localizedLabel(
+      ar: activity.actorRoleLabelAr,
+      en: activity.actorRoleLabelEn,
+      fallback: activity.actorName?.trim() ?? '',
+    );
+    return value.trim().isEmpty ? null : value;
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final actorLabel = _actorLabel();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
@@ -581,15 +758,36 @@ class _ActivityTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  message.trim().isEmpty ? '--' : message.trim(),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    height: 1.3,
-                    fontSize: 13.5,
+                  _activityLabel(),
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: scheme.primary,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
+
+                if (activity.message.trim().isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    activity.message.trim(),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      height: 1.3,
+                      fontSize: 13.5,
+                    ),
+                  ),
+                ],
+                if (actorLabel != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    actorLabel,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: scheme.primary.withValues(alpha: 0.84),
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 4),
                 Text(
-                  _formatDate(dateTime),
+                  _formatDate(activity.createdAt),
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),

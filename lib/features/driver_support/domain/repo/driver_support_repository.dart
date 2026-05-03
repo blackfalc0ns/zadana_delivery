@@ -2,6 +2,7 @@ import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_cases_page_entity.dart';
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_reason_entity.dart';
 
 abstract class DriverSupportRepository {
   Future<ApiResult<DriverSupportCaseEntity>> reportIssue(
@@ -20,6 +21,8 @@ abstract class DriverSupportRepository {
   });
 
   Future<ApiResult<DriverSupportCaseEntity>> getCaseDetails(String caseId);
+
+  Future<ApiResult<List<DriverSupportReasonEntity>>> getReasons(String type);
 
   Future<ApiResult<DriverSupportCaseEntity>> sendMessage({
     required String orderId,

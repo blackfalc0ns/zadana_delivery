@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
@@ -105,16 +104,6 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 children: [
-                  _CasesHero(
-                    title: _text(
-                      'كل شكاواك في مكان واحد',
-                      'All your cases in one place',
-                    ),
-                    subtitle: _text(
-                      'راجع آخر التحديثات بسرعة.',
-                      'Review the latest updates quickly.',
-                    ),
-                  ),
                   const SizedBox(height: 16),
                   if (items.isEmpty)
                     _EmptyState(
@@ -151,77 +140,6 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
   }
 }
 
-class _CasesHero extends StatelessWidget {
-  const _CasesHero({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            scheme.primary.withValues(alpha: 0.045),
-            scheme.secondary.withValues(alpha: 0.025),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.16)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: scheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: scheme.primary.withValues(alpha: 0.08),
-              ),
-            ),
-            child: Icon(
-              Icons.inventory_2_outlined,
-              color: scheme.primary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                    height: 1.35,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _CaseCard extends StatelessWidget {
   const _CaseCard({
     required this.item,
@@ -233,11 +151,6 @@ class _CaseCard extends StatelessWidget {
   final bool isArabic;
   final VoidCallback onTap;
 
-  String _formatDate(DateTime? value) {
-    if (value == null) return '--';
-    return DateFormat('dd/MM/yyyy - hh:mm a').format(value.toLocal());
-  }
-
   String _labelize(String value) {
     final normalized = value.trim();
     if (normalized.isEmpty) return '--';
@@ -247,6 +160,58 @@ class _CaseCard extends StatelessWidget {
           RegExp(r'([a-z])([A-Z])'),
           (match) => '${match.group(1)} ${match.group(2)}',
         );
+  }
+
+  String _localizedLabel({
+    required String? ar,
+    required String? en,
+    required String fallback,
+  }) {
+    final preferred = isArabic ? ar : en;
+    final normalized = preferred?.trim() ?? '';
+    if (normalized.isNotEmpty) return normalized;
+    return fallback;
+  }
+
+  String _caseTypeLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.typeLabelAr,
+      en: item.typeLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.type.trim().toLowerCase()) {
+      case 'driver_report':
+      case 'driverreport':
+        return isArabic ? 'بلاغ سائق' : 'Driver report';
+      case 'dispute':
+        return isArabic ? 'نزاع' : 'Dispute';
+      default:
+        return _labelize(item.type);
+    }
+  }
+
+  String _statusLabel() {
+    final apiLabel = _localizedLabel(
+      ar: item.statusLabelAr,
+      en: item.statusLabelEn,
+      fallback: '',
+    );
+    if (apiLabel.isNotEmpty) return apiLabel;
+    switch (item.status.trim().toLowerCase()) {
+      case 'submitted':
+        return isArabic ? 'تم الإرسال' : 'Submitted';
+      case 'in_review':
+        return isArabic ? 'قيد المراجعة' : 'In review';
+      case 'open':
+        return isArabic ? 'مفتوحة' : 'Open';
+      case 'closed':
+        return isArabic ? 'مغلقة' : 'Closed';
+      case 'resolved':
+        return isArabic ? 'تم الحل' : 'Resolved';
+      default:
+        return _labelize(item.status);
+    }
   }
 
   @override
@@ -278,20 +243,21 @@ class _CaseCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-              
                 children: [
-                  // Icon(
-                  //   isArabic
-                  //       ? Icons.arrow_back_ios_new_rounded
-                  //       : Icons.arrow_forward_ios_rounded,
-                  //   size: 14,
-                  //   color: scheme.onSurfaceVariant,
-                  // ),
-                  // const SizedBox(width: 10),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text(
+                          isArabic ? 'رقم الطلب' : 'Order number',
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(
+                                color: scheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 12,
+                              ),
+                        ),
+                        const SizedBox(height: 4),
                         Text(
                           title,
                           maxLines: 1,
@@ -309,39 +275,23 @@ class _CaseCard extends StatelessWidget {
                           children: [
                             _MetaPill(
                               icon: Icons.flag_rounded,
-                              label: _labelize(item.status),
+                              label: _statusLabel(),
                               foreground: scheme.primary,
-                              background: scheme.primary.withValues(alpha: 0.08),
+                              background: scheme.primary.withValues(
+                                alpha: 0.08,
+                              ),
                             ),
                             _MetaPill(
                               icon: Icons.balance_rounded,
-                              label: _labelize(item.type),
+                              label: _caseTypeLabel(),
                               foreground: scheme.secondary,
-                              background: scheme.secondary.withValues(alpha: 0.08),
+                              background: scheme.secondary.withValues(
+                                alpha: 0.08,
+                              ),
                             ),
                           ],
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.schedule_rounded,
-                    size: 13,
-                    color: scheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Text(
-                      _formatDate(item.updatedAt ?? item.createdAt),
-                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                        fontSize: 12,
-                      ),
                     ),
                   ),
                 ],
@@ -421,15 +371,18 @@ class _EmptyState extends StatelessWidget {
               color: scheme.primary.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(22),
             ),
-            child: Icon(Icons.mark_email_unread_outlined, color: scheme.primary),
+            child: Icon(
+              Icons.mark_email_unread_outlined,
+              color: scheme.primary,
+            ),
           ),
           const SizedBox(height: 16),
           Text(
             title,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(

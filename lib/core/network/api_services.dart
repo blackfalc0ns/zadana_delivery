@@ -87,6 +87,9 @@ abstract class ApiServices {
   @GET(EndPoints.driverSupportCaseDetails)
   Future<dynamic> getDriverSupportCaseDetails(@Path('caseId') String caseId);
 
+  @GET(EndPoints.driverSupportReasons)
+  Future<dynamic> getDriverSupportReasons(@Path('type') String type);
+
   @POST(EndPoints.driverOrderReportIssue)
   Future<dynamic> reportDriverOrderIssue(
     @Path('orderId') String orderId,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
@@ -23,8 +24,11 @@ class CustomerOtpField extends StatelessWidget {
     return TextField(
       controller: controller,
       focusNode: focusNode,
+      autofocus: true,
       enabled: enabled,
       keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.done,
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       textAlign: TextAlign.center,
       maxLength: 4,
       onChanged: onChanged,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 
 /// ─────────────────────────────────────────────────────────────
 /// Full‑screen semi‑transparent loading overlay.
@@ -31,14 +32,8 @@ class LoadingOverlay extends StatelessWidget {
           Positioned.fill(
             child: ColoredBox(
               color: barrierColor ?? Colors.black38,
-              child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Image.asset(
-                    'assets/images/car_loading.gif',
-                    width: 120,
-                  ),
-                ),
+              child: const Center(
+                child: CustomProgressIndicator(),
               ),
             ),
           ),
@@ -52,13 +47,10 @@ class LoadingOverlay extends StatelessWidget {
   static void show(BuildContext context) {
     _entry?.remove();
     _entry = OverlayEntry(
-      builder: (_) => ColoredBox(
+      builder: (_) => const ColoredBox(
         color: Colors.black38,
         child: Center(
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: Image.asset('assets/images/car_loading.gif', width: 120),
-          ),
+          child: CustomProgressIndicator(),
         ),
       ),
     );

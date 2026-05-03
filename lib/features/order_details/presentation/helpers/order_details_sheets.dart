@@ -115,6 +115,7 @@ class OrderDetailsSheets {
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => CustomerOtpSheetContent(
         sheetContext: sheetContext,
+        loadingContext: context,
         onSubmit: onSubmit,
         onSuccess: onSuccess,
       ),
