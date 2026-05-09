@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
+import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
@@ -200,9 +201,13 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
 
   bool _hasRequiredImages(RegisterProfileDraft draft) {
     final requiredImages = _normalizedImages(draft);
-    final requiredKeys = isProfileMode
-        ? const ['portrait', 'idFront', 'license', 'vehicle']
-        : const ['portrait', 'idFront', 'idBack', 'license', 'vehicle'];
+    const requiredKeys = [
+      'portrait',
+      'idFront',
+      'idBack',
+      'license',
+      'vehicle',
+    ];
 
     return requiredKeys.every((key) {
       final value = requiredImages[key] ?? '';
@@ -235,17 +240,27 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
             draft: _normalizeDraft(
               RegisterProfileDraft(
                 vehicleType: result.data.vehicleType,
-                cityId: result.data.primaryZoneId,
-                regionCode: '',
-                cityName: result.data.zoneName,
-                regionName: '',
+                cityId: result.data.city,
+                regionCode: result.data.region,
+                cityName: result.data.displayCityName,
+                regionName: result.data.displayRegionName,
                 address: result.data.address,
                 nationalId: result.data.nationalId,
+                nationalIdExpiryDate: DocumentExpiryDateHelper.toFormValue(
+                  result.data.nationalIdExpiryDate,
+                ),
                 licenseNumber: result.data.licenseNumber,
+                driverLicenseExpiryDate: DocumentExpiryDateHelper.toFormValue(
+                  result.data.driverLicenseExpiryDate,
+                ),
+                vehicleLicenseNumber: result.data.vehicleLicenseNumber,
+                vehicleLicenseExpiryDate: DocumentExpiryDateHelper.toFormValue(
+                  result.data.vehicleLicenseExpiryDate,
+                ),
                 images: {
                   'portrait': result.data.personalPhotoUrl,
-                  'idFront': result.data.nationalIdImageUrl,
-                  'idBack': '',
+                  'idFront': result.data.nationalIdFrontImageUrl,
+                  'idBack': result.data.nationalIdBackImageUrl,
                   'license': result.data.licenseImageUrl,
                   'vehicle': result.data.vehicleImageUrl,
                 },
@@ -307,6 +322,10 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         vehicleType: draft.vehicleType,
         nationalId: draft.nationalId,
         licenseNumber: draft.licenseNumber,
+        nationalIdExpiryDate: draft.nationalIdExpiryDate,
+        driverLicenseExpiryDate: draft.driverLicenseExpiryDate,
+        vehicleLicenseNumber: draft.vehicleLicenseNumber,
+        vehicleLicenseExpiryDate: draft.vehicleLicenseExpiryDate,
         address: draft.address,
         region: draft.regionCode,
         city: draft.cityId,
@@ -356,7 +375,12 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         vehicleType: draft.vehicleType,
         nationalId: draft.nationalId,
         licenseNumber: draft.licenseNumber,
-        primaryZoneId: draft.cityId,
+        nationalIdExpiryDate: draft.nationalIdExpiryDate,
+        driverLicenseExpiryDate: draft.driverLicenseExpiryDate,
+        vehicleLicenseNumber: draft.vehicleLicenseNumber,
+        vehicleLicenseExpiryDate: draft.vehicleLicenseExpiryDate,
+        region: draft.regionCode,
+        city: draft.cityId,
       ),
     );
 
@@ -368,7 +392,8 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     final documentsResult = await _updateDocumentsUseCase.call(
       UpdateDriverDocumentsRequestEntity(
         personalPhotoUrl: draft.images['portrait'] ?? '',
-        nationalIdImageUrl: draft.images['idFront'] ?? '',
+        nationalIdFrontImageUrl: draft.images['idFront'] ?? '',
+        nationalIdBackImageUrl: draft.images['idBack'] ?? '',
         licenseImageUrl: draft.images['license'] ?? '',
         vehicleImageUrl: draft.images['vehicle'] ?? '',
       ),
@@ -396,6 +421,15 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
       vehicleType: draft.vehicleType.trim().isEmpty
           ? ''
           : DriverVehicleType.normalize(draft.vehicleType),
+      nationalIdExpiryDate: DocumentExpiryDateHelper.toFormValue(
+        draft.nationalIdExpiryDate,
+      ),
+      driverLicenseExpiryDate: DocumentExpiryDateHelper.toFormValue(
+        draft.driverLicenseExpiryDate,
+      ),
+      vehicleLicenseExpiryDate: DocumentExpiryDateHelper.toFormValue(
+        draft.vehicleLicenseExpiryDate,
+      ),
       images: _normalizedImages(draft),
     );
   }

@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/services/driver_notification_router_service.dart';
 import 'package:zadana_delivery/features/completed_orders/presentation/screens/completed_orders_screen.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_screen.dart';
 import 'package:zadana_delivery/features/driver_tracking/presentation/manager/driver_tracking_cubit.dart';
@@ -32,6 +35,9 @@ class _AppShellScreenState extends State<AppShellScreen> {
     _controller = PersistentTabController(initialIndex: widget.initialIndex);
     _driverTrackingCubit = getIt<DriverTrackingCubit>()
       ..doIntent(const DriverTrackingBootstrapEvent());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(getIt<DriverNotificationRouterService>().unlockNavigation());
+    });
   }
 
   @override

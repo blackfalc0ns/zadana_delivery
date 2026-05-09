@@ -1406,10 +1406,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_national_id_hint => 'أدخل الرقم القومي';
 
   @override
+  String get driver_profile_national_id_expiry_label => 'تاريخ انتهاء البطاقة';
+
+  @override
   String get driver_profile_license_number_label => 'رقم الرخصة';
 
   @override
   String get driver_profile_license_number_hint => 'أدخل رقم الرخصة';
+
+  @override
+  String get driver_profile_driver_license_expiry_label =>
+      'تاريخ انتهاء رخصة القيادة';
+
+  @override
+  String get driver_profile_vehicle_license_number_label => 'رقم رخصة المركبة';
+
+  @override
+  String get driver_profile_vehicle_license_number_hint =>
+      'أدخل رقم رخصة المركبة';
+
+  @override
+  String get driver_profile_vehicle_license_expiry_label =>
+      'تاريخ انتهاء رخصة المركبة';
+
+  @override
+  String get driver_profile_expiry_date_label => 'تاريخ الانتهاء';
+
+  @override
+  String get driver_profile_expiry_date_hint => 'اختر تاريخ الانتهاء';
+
+  @override
+  String get driver_profile_invalid_date_error => 'أدخل تاريخًا صالحًا.';
+
+  @override
+  String get driver_profile_expiry_date_past_error =>
+      'تاريخ الانتهاء لا يمكن أن يكون في الماضي.';
 
   @override
   String get driver_profile_vehicle_card_title => 'بيانات المركبة';
@@ -1512,6 +1543,22 @@ class AppLocalizationsAr extends AppLocalizations {
       'كل ملف يتم رفعه هنا يجعل بيانات السائق والمركبة أوضح.';
 
   @override
+  String get driver_profile_national_id_card_title => 'البطاقة الشخصية';
+
+  @override
+  String get driver_profile_driver_license_card_title => 'رخصة القيادة';
+
+  @override
+  String get driver_profile_vehicle_license_card_title => 'رخصة المركبة';
+
+  @override
+  String get driver_profile_vehicle_license_title => 'صورة رخصة المركبة';
+
+  @override
+  String get driver_profile_vehicle_license_subtitle =>
+      'ارفع صورة واضحة لرخصة المركبة.';
+
+  @override
   String get driver_profile_review_card_title => 'المراجعة والإرسال';
 
   @override
@@ -1587,6 +1634,110 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get auth_pending_eta_hint =>
       'عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.';
+
+  @override
+  String get driver_account_status_title => 'حالة الحساب';
+
+  @override
+  String get driver_account_status_subtitle =>
+      'تابع مراجعة كل مستند، والمتطلبات الناقصة، وما الذي يجب تحديثه حتى يكتمل حسابك.';
+
+  @override
+  String get driver_account_status_completion_label => 'نسبة اكتمال الملف';
+
+  @override
+  String get driver_account_status_account_label => 'حالة الحساب';
+
+  @override
+  String get driver_account_status_portrait_ready => 'تم رفع الصورة الشخصية';
+
+  @override
+  String get driver_account_status_portrait_missing =>
+      'الصورة الشخصية غير مرفوعة';
+
+  @override
+  String get driver_account_status_files_label => 'الملفات المرفوعة';
+
+  @override
+  String driver_account_status_files_count(int count) {
+    return '$count ملف';
+  }
+
+  @override
+  String get driver_account_status_edit_details => 'تعديل البيانات';
+
+  @override
+  String get driver_account_status_update_files => 'تحديث الملفات';
+
+  @override
+  String get driver_account_status_edit_personal => 'تعديل البيانات الشخصية';
+
+  @override
+  String get driver_account_status_edit_vehicle => 'تعديل المركبة والتواريخ';
+
+  @override
+  String get driver_account_status_edit_documents => 'تعديل المستندات المرفوعة';
+
+  @override
+  String get driver_account_status_document_valid => 'تمت الموافقة';
+
+  @override
+  String get driver_account_status_document_review => 'تحت المراجعة';
+
+  @override
+  String get driver_account_status_document_rejected => 'مرفوض';
+
+  @override
+  String get driver_account_status_document_expiring => 'منتهي';
+
+  @override
+  String get driver_account_status_verification_approved => 'تم اعتماد التحقق';
+
+  @override
+  String get driver_account_status_verification_needs_documents =>
+      'مطلوب مستندات';
+
+  @override
+  String get driver_account_status_verification_under_review => 'قيد المراجعة';
+
+  @override
+  String get driver_account_status_account_active => 'نشط';
+
+  @override
+  String get driver_account_status_account_pending => 'معلّق';
+
+  @override
+  String get driver_account_status_missing_personal_info =>
+      'بيانات شخصية ناقصة';
+
+  @override
+  String get driver_account_status_missing_vehicle_info =>
+      'بيانات المركبة ناقصة';
+
+  @override
+  String get driver_account_status_missing_documents => 'مستندات ناقصة';
+
+  @override
+  String get driver_account_status_expired_documents => 'مستندات منتهية';
+
+  @override
+  String get driver_account_status_rejected_documents => 'مستندات مرفوضة';
+
+  @override
+  String get driver_account_status_missing_region_city =>
+      'المنطقة والمدينة غير مكتملتين';
+
+  @override
+  String get driver_account_status_document_rejected_banner =>
+      'يوجد مستند يحتاج تعديلًا';
+
+  @override
+  String get driver_account_status_document_approved_banner =>
+      'تم اعتماد أحد المستندات';
+
+  @override
+  String get driver_account_status_request_docs_banner =>
+      'مطلوب استكمال مستندات إضافية';
 
   @override
   String get auth_blocked_title => 'الحساب محظور مؤقتًا';
@@ -1779,6 +1930,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'تابع رصيدك الحالي، وجاهزية السحب، والحوافز، وكل حركة في لوحة تحكم متميزة.';
 
   @override
+  String get wallet_subtitle_secure =>
+      'راجع رصيدك الحالي، وآخر الحركات، وجاهزية السحب من خلال مركز محفظة آمن.';
+
+  @override
   String get wallet_preview_state => 'حالة المعاينة';
 
   @override
@@ -1880,6 +2035,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_transaction_adjustment => 'تعديل على المحفظة';
 
   @override
+  String get wallet_transaction_release => 'إرجاع مبلغ السحب';
+
+  @override
+  String get wallet_direction_in => 'داخل';
+
+  @override
+  String get wallet_direction_out => 'خارج';
+
+  @override
   String get wallet_payment_bank_account => 'حساب بنكي';
 
   @override
@@ -1887,6 +2051,141 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_payment_instant_transfer => 'تحويل فوري';
+
+  @override
+  String get wallet_withdrawal_requests => 'طلبات السحب';
+
+  @override
+  String get wallet_pending_requests => 'الطلبات المعلقة';
+
+  @override
+  String get wallet_pending_requests_amount => 'المبلغ المعلق';
+
+  @override
+  String get wallet_total_requests => 'إجمالي الطلبات';
+
+  @override
+  String get wallet_view_all => 'عرض الكل';
+
+  @override
+  String get wallet_transactions_empty_title => 'لا توجد معاملات للمحفظة بعد';
+
+  @override
+  String get wallet_transactions_empty_subtitle =>
+      'ستظهر هنا أرباح التوصيل وحركات المحفظة بعد بدء النشاط.';
+
+  @override
+  String get wallet_withdrawals_empty_title => 'لا توجد طلبات سحب بعد';
+
+  @override
+  String get wallet_withdrawals_empty_subtitle =>
+      'سيظهر سجل طلبات السحب هنا بعد أول طلب سحب.';
+
+  @override
+  String get wallet_load_more => 'تحميل المزيد';
+
+  @override
+  String get wallet_add_method => 'إضافة وسيلة';
+
+  @override
+  String get wallet_methods_empty_title => 'لا توجد وسائل سحب مضافة';
+
+  @override
+  String get wallet_methods_empty_subtitle =>
+      'أضف وسيلة سحب آمنة لبدء سحب رصيد محفظتك.';
+
+  @override
+  String get wallet_withdraw_title => 'إنشاء طلب سحب';
+
+  @override
+  String get wallet_withdraw_info_hint =>
+      'تتم معالجة طلبات السحب بشكل آمن باستخدام وسيلة السحب التي تختارها.';
+
+  @override
+  String get wallet_withdraw_amount_subtitle =>
+      'أدخل المبلغ الذي تريد تحويله من رصيد محفظتك.';
+
+  @override
+  String get wallet_withdraw_method_subtitle =>
+      'اختر استخدام وسيلة السحب الأساسية أو حدد وسيلة محفوظة أخرى.';
+
+  @override
+  String get wallet_amount_label => 'المبلغ';
+
+  @override
+  String get wallet_amount_hint => 'أدخل المبلغ';
+
+  @override
+  String get wallet_amount_invalid => 'أدخل مبلغًا أكبر من صفر.';
+
+  @override
+  String get wallet_amount_exceeds_balance => 'المبلغ أكبر من الرصيد المتاح.';
+
+  @override
+  String get wallet_use_primary_method => 'استخدم وسيلة السحب الأساسية';
+
+  @override
+  String get wallet_no_primary_method => 'لا توجد وسيلة أساسية متاحة';
+
+  @override
+  String get wallet_select_method => 'اختر وسيلة سحب.';
+
+  @override
+  String get wallet_method_saved => 'تمت إضافة وسيلة السحب بنجاح.';
+
+  @override
+  String get wallet_method_updated => 'تم تحديث وسيلة السحب بنجاح.';
+
+  @override
+  String get wallet_method_deleted => 'تم حذف وسيلة السحب بنجاح.';
+
+  @override
+  String get wallet_make_primary => 'تعيين كأساسية';
+
+  @override
+  String get wallet_primary_updated => 'تم تحديث وسيلة السحب الأساسية.';
+
+  @override
+  String get wallet_delete_method_title => 'حذف وسيلة السحب؟';
+
+  @override
+  String get wallet_delete_method_message =>
+      'سيتم حذف وسيلة السحب إذا لم تكن مرتبطة بسجل طلبات سحب.';
+
+  @override
+  String get wallet_edit_method_title => 'تعديل وسيلة السحب';
+
+  @override
+  String get wallet_type_label => 'نوع الوسيلة';
+
+  @override
+  String get wallet_account_holder_label => 'اسم صاحب الحساب';
+
+  @override
+  String get wallet_provider_name_label => 'اسم الجهة';
+
+  @override
+  String get wallet_account_identifier_label => 'معرّف الحساب';
+
+  @override
+  String get wallet_identifier_reentry_hint =>
+      'أعد إدخال المعرّف كاملًا للحفاظ على أمان وسيلة السحب.';
+
+  @override
+  String get wallet_identifier_secure_hint =>
+      'يتم إرسال المعرّف الكامل بشكل آمن ولا يظهر مرة أخرى داخل واجهة المحفظة.';
+
+  @override
+  String get wallet_save_action => 'حفظ';
+
+  @override
+  String get wallet_status_processing => 'قيد المعالجة';
+
+  @override
+  String get wallet_status_paid => 'تم الدفع';
+
+  @override
+  String get wallet_status_cancelled => 'تم الإلغاء';
 
   @override
   String get wallet_bonus_weekend => 'تحدي نهاية الأسبوع';
@@ -2069,6 +2368,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get order_details_confirm_delivery => 'تأكيد التسليم';
 
   @override
+  String get order_details_resend_otp => 'إعادة إرسال الرمز';
+
+  @override
+  String order_details_resend_otp_in(int seconds) {
+    return 'إعادة الإرسال خلال $seconds ث';
+  }
+
+  @override
   String get order_details_pickup_code_title => 'كود استلام الطلب';
 
   @override
@@ -2205,6 +2512,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_delivered_dialog_confirm => 'تأكيد التسليم';
+
+  @override
+  String get order_delivery_success_title => 'تم تسليم الطلب بنجاح';
+
+  @override
+  String get order_delivery_success_subtitle =>
+      'أحسنت، تم إغلاق الرحلة بنجاح ويمكنك الآن الرجوع لمتابعة الطلبات الجديدة.';
+
+  @override
+  String get order_delivery_success_button => 'العودة للرئيسية';
 
   @override
   String get order_details_call_failure =>

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_case_details_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_cases_usecase.dart';
@@ -12,11 +15,32 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
     this._getCasesUseCase,
     this._getCaseDetailsUseCase,
     this._sendMessageUseCase,
-  ) : super(const DriverSupportState());
+    DriverRealtimeService driverRealtimeService,
+  ) : super(const DriverSupportState()) {
+    _supportCaseChangedSubscription = driverRealtimeService.supportCaseChanged
+        .listen((payload) {
+          final selectedCaseId = state.selectedCase?.id.trim() ?? '';
+          final payloadCaseId =
+              payload['supportCaseId']?.toString().trim() ??
+              payload['caseId']?.toString().trim() ??
+              '';
+
+          if (selectedCaseId.isNotEmpty && selectedCaseId == payloadCaseId) {
+            unawaited(_loadCaseDetails(selectedCaseId, refresh: true));
+            return;
+          }
+
+          if (state.cases != null) {
+            unawaited(_loadCases(refresh: true));
+          }
+        });
+  }
 
   final GetDriverSupportCasesUseCase _getCasesUseCase;
   final GetDriverSupportCaseDetailsUseCase _getCaseDetailsUseCase;
   final SendDriverSupportCaseMessageUseCase _sendMessageUseCase;
+  late final StreamSubscription<Map<String, dynamic>>
+  _supportCaseChangedSubscription;
 
   Future<bool> doIntent(DriverSupportEvent event) async {
     switch (event) {
@@ -135,5 +159,11 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
         emit(state.copyWith(isMessageSending: false, failure: result.failure));
         return false;
     }
+  }
+
+  @override
+  Future<void> close() async {
+    await _supportCaseChangedSubscription.cancel();
+    return super.close();
   }
 }

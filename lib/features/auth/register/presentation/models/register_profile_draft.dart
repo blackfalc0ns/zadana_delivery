@@ -7,7 +7,11 @@ class RegisterProfileDraft {
     required this.regionName,
     required this.address,
     required this.nationalId,
+    required this.nationalIdExpiryDate,
     required this.licenseNumber,
+    required this.driverLicenseExpiryDate,
+    required this.vehicleLicenseNumber,
+    required this.vehicleLicenseExpiryDate,
     required this.images,
   });
 
@@ -18,7 +22,11 @@ class RegisterProfileDraft {
   final String regionName;
   final String address;
   final String nationalId;
+  final String nationalIdExpiryDate;
   final String licenseNumber;
+  final String driverLicenseExpiryDate;
+  final String vehicleLicenseNumber;
+  final String vehicleLicenseExpiryDate;
   final Map<String, String> images;
 
   RegisterProfileDraft copyWith({
@@ -29,7 +37,11 @@ class RegisterProfileDraft {
     String? regionName,
     String? address,
     String? nationalId,
+    String? nationalIdExpiryDate,
     String? licenseNumber,
+    String? driverLicenseExpiryDate,
+    String? vehicleLicenseNumber,
+    String? vehicleLicenseExpiryDate,
     Map<String, String>? images,
   }) {
     return RegisterProfileDraft(
@@ -40,7 +52,13 @@ class RegisterProfileDraft {
       regionName: regionName ?? this.regionName,
       address: address ?? this.address,
       nationalId: nationalId ?? this.nationalId,
+      nationalIdExpiryDate: nationalIdExpiryDate ?? this.nationalIdExpiryDate,
       licenseNumber: licenseNumber ?? this.licenseNumber,
+      driverLicenseExpiryDate:
+          driverLicenseExpiryDate ?? this.driverLicenseExpiryDate,
+      vehicleLicenseNumber: vehicleLicenseNumber ?? this.vehicleLicenseNumber,
+      vehicleLicenseExpiryDate:
+          vehicleLicenseExpiryDate ?? this.vehicleLicenseExpiryDate,
       images: images ?? this.images,
     );
   }
@@ -53,7 +71,11 @@ class RegisterProfileDraft {
     regionName: '',
     address: '',
     nationalId: '',
+    nationalIdExpiryDate: '',
     licenseNumber: '',
+    driverLicenseExpiryDate: '',
+    vehicleLicenseNumber: '',
+    vehicleLicenseExpiryDate: '',
     images: <String, String>{},
   );
 }

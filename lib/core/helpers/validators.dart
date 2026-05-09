@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
+
 import '../helpers/regex.dart';
 import '../l10n/translations/app_localizations.dart';
 
@@ -73,6 +75,26 @@ abstract class Validations {
     if (value == null || value.trim().isEmpty) {
       return AppLocalizations.of(context)!.this_field_is_required;
     }
+    return null;
+  }
+
+  static String? validateFutureDate(BuildContext context, String? value) {
+    final normalized = value?.trim() ?? '';
+    if (normalized.isEmpty) {
+      return AppLocalizations.of(context)!.this_field_is_required;
+    }
+
+    final parsed = DocumentExpiryDateHelper.tryParse(normalized);
+    if (parsed == null) {
+      return AppLocalizations.of(context)!.driver_profile_invalid_date_error;
+    }
+
+    if (DocumentExpiryDateHelper.isExpired(normalized)) {
+      return AppLocalizations.of(
+        context,
+      )!.driver_profile_expiry_date_past_error;
+    }
+
     return null;
   }
 

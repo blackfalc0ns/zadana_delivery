@@ -18,4 +18,6 @@ abstract class DriverHomeRemoteDataSource {
   Stream<Map<String, dynamic>> get assignmentUpdatedStream;
   Stream<Map<String, dynamic>> get orderStatusChangedStream;
   Stream<Map<String, dynamic>> get arrivalStateChangedStream;
+
+  Future<void> disconnectRealtime();
 }

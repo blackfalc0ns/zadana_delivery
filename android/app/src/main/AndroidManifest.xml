@@ -8,8 +8,14 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <application
         android:label="zadana_delivery"
-        android:name="${applicationName}"
+        android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.onesignal.NotificationServiceExtension"
+            android:value="com.example.zadana_delivery.OneSignalNotificationServiceExtension" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="zadana_driver_general_notifications" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA1XNcpZlXAgDtKVmC3vMi_V4_f3O4tLes" />

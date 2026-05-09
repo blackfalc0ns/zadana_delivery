@@ -103,13 +103,18 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
               path: state.documentPaths['idFront'] ?? '',
             ),
             ProfileDocumentItemData(
+              type: ProfileDocumentType.idBack,
+              icon: Icons.badge_outlined,
+              path: state.documentPaths['idBack'] ?? '',
+            ),
+            ProfileDocumentItemData(
               type: ProfileDocumentType.license,
               icon: Icons.assignment_ind_outlined,
               path: state.documentPaths['license'] ?? '',
             ),
             ProfileDocumentItemData(
               type: ProfileDocumentType.vehicle,
-              icon: Icons.two_wheeler_rounded,
+              icon: Icons.description_outlined,
               path: state.documentPaths['vehicle'] ?? '',
             ),
           ];
@@ -140,6 +145,19 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
   }
 
   Future<void> _save() async {
+    final paths = _cubit.state.documentPaths;
+    if ((paths['portrait'] ?? '').trim().isEmpty ||
+        (paths['idFront'] ?? '').trim().isEmpty ||
+        (paths['idBack'] ?? '').trim().isEmpty ||
+        (paths['license'] ?? '').trim().isEmpty ||
+        (paths['vehicle'] ?? '').trim().isEmpty) {
+      CustomSnackbar.showError(
+        context: context,
+        message: context.localization.driver_profile_images_required_error,
+      );
+      return;
+    }
+
     await _cubit.doIntent(const ProfileFormSaveDocumentsEvent());
   }
 

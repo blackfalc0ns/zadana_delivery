@@ -14,8 +14,14 @@ class OrderDetailsActionResponseDto {
   factory OrderDetailsActionResponseDto.fromJson(Map<String, dynamic> json) {
     return OrderDetailsActionResponseDto(
       updatedAssignment: _extractUpdatedAssignment(json),
-      messageAr: json['messageAr']?.toString(),
-      messageEn: json['messageEn']?.toString(),
+      messageAr:
+          json['messageAr']?.toString() ??
+          json['message_ar']?.toString() ??
+          json['message']?.toString(),
+      messageEn:
+          json['messageEn']?.toString() ??
+          json['message_en']?.toString() ??
+          json['message']?.toString(),
       status: json['status']?.toString(),
       oldStatus: json['oldStatus']?.toString(),
       newStatus: json['newStatus']?.toString(),

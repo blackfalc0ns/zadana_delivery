@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 import 'package:zadana_delivery/features/auth/logout/data/data_source/logout_remote_data_source.dart';
@@ -32,6 +34,7 @@ class LogoutRepositoryImpl implements LogoutRepository {
         }
       }
 
+      await getIt<DriverNotificationSessionService>().handleLogout();
       await _tokenService.deleteToken();
       await _tokenService.deleteRefreshToken();
       await _identityService.clearIdentity();

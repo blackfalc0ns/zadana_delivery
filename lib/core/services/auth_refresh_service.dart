@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 
 import '../network/network_constants.dart';
+import 'driver_notification_session_service.dart';
 import 'token_interceptor.dart';
 import 'token_service.dart';
 
@@ -42,6 +46,9 @@ class AuthRefreshService {
 
     await _tokenService.saveAccessToken(newAccessToken);
     await _tokenService.saveRefreshToken(newRefreshToken);
+    unawaited(
+      getIt<DriverNotificationSessionService>().handleAccessTokenRefreshed(),
+    );
 
     return newAccessToken;
   }

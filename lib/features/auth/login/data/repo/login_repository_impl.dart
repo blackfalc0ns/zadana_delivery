@@ -1,7 +1,9 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/api_error_type.dart';
 import 'package:zadana_delivery/core/errors/api_exception.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 
@@ -54,6 +56,9 @@ class LoginRepositoryImpl implements LoginRepository {
           lastIdentifier: request.identifier.trim(),
         ),
       );
+      await _tokenService.saveCurrentUserId(entity.user.id);
+      await getIt<DriverNotificationSessionService>()
+          .handleSuccessfulAuthentication(entity.user.id);
 
       return LoginResponseEntity(
         tokens: entity.tokens,

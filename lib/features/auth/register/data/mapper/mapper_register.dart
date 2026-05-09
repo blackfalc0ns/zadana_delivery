@@ -1,3 +1,4 @@
+import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 
 import '../../domain/entities/register_request_entity.dart';
@@ -24,6 +25,16 @@ extension RegisterRequestEntityMapper on RegisterRequestEntity {
       vehicleType: normalizedVehicleType,
       nationalId: nationalId.trim(),
       licenseNumber: licenseNumber.trim(),
+      nationalIdExpiryDate: DocumentExpiryDateHelper.toBackendValue(
+        nationalIdExpiryDate,
+      ),
+      driverLicenseExpiryDate: DocumentExpiryDateHelper.toBackendValue(
+        driverLicenseExpiryDate,
+      ),
+      vehicleLicenseNumber: vehicleLicenseNumber.trim(),
+      vehicleLicenseExpiryDate: DocumentExpiryDateHelper.toBackendValue(
+        vehicleLicenseExpiryDate,
+      ),
       address: address.trim(),
       region: region.trim(),
       city: city.trim(),

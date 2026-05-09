@@ -89,5 +89,6 @@ class AuthSessionRepositoryImpl implements AuthSessionRepository {
         lastIdentifier: resolvedLastIdentifier,
       ),
     );
+    await _tokenService.saveCurrentUserId(user.id);
   }
 }

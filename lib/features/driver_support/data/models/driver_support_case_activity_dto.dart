@@ -30,16 +30,20 @@ class DriverSupportCaseActivityDto {
           actionValue?.toString() ??
           '',
       type: actionValue?.toString() ?? '',
-      typeLabelAr: json['action_label_ar']?.toString(),
-      typeLabelEn: json['action_label_en']?.toString(),
-      titleAr: json['title_ar']?.toString(),
-      titleEn: json['title_en']?.toString(),
+      typeLabelAr: (json['action_label_ar'] ?? json['actionLabelAr'])
+          ?.toString(),
+      typeLabelEn: (json['action_label_en'] ?? json['actionLabelEn'])
+          ?.toString(),
+      titleAr: (json['title_ar'] ?? json['titleAr'])?.toString(),
+      titleEn: (json['title_en'] ?? json['titleEn'])?.toString(),
       message: noteValue,
       createdAt: _dateTimeFromJson(json['createdAt'] ?? json['created_at']),
       actorName: (json['actorName'] ?? json['actor_name'] ?? json['actor_role'])
           ?.toString(),
-      actorRoleLabelAr: json['actor_role_label_ar']?.toString(),
-      actorRoleLabelEn: json['actor_role_label_en']?.toString(),
+      actorRoleLabelAr:
+          (json['actor_role_label_ar'] ?? json['actorRoleLabelAr'])?.toString(),
+      actorRoleLabelEn:
+          (json['actor_role_label_en'] ?? json['actorRoleLabelEn'])?.toString(),
     );
   }
 

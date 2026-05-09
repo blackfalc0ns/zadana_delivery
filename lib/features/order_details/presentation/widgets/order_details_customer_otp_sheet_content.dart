@@ -5,6 +5,7 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/loading/loading_overlay.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_customer_otp_field.dart';
+import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_resend_otp_action.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_sheet_components.dart';
 
 class CustomerOtpSheetContent extends StatefulWidget {
@@ -13,13 +14,15 @@ class CustomerOtpSheetContent extends StatefulWidget {
     required this.sheetContext,
     required this.loadingContext,
     required this.onSubmit,
-    this.onSuccess,
+    this.onVerified,
+    this.onResend,
   });
 
   final BuildContext sheetContext;
   final BuildContext loadingContext;
   final Future<bool> Function(String otpCode) onSubmit;
-  final VoidCallback? onSuccess;
+  final Future<void> Function()? onVerified;
+  final Future<bool> Function()? onResend;
 
   @override
   State<CustomerOtpSheetContent> createState() =>
@@ -27,6 +30,7 @@ class CustomerOtpSheetContent extends StatefulWidget {
 }
 
 class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
+  static const int _deliveryOtpLength = 4;
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
   bool _isSubmitting = false;
@@ -59,7 +63,7 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
     if (_isSubmitting) return;
 
     final otpCode = _controller.text.trim();
-    if (otpCode.length != 4) {
+    if (otpCode.length != _deliveryOtpLength) {
       ScaffoldMessenger.of(widget.sheetContext).showSnackBar(
         SnackBar(
           content: Text(
@@ -77,8 +81,11 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
       if (!mounted) return;
 
       if (success) {
-        Navigator.of(context).pop();
-        widget.onSuccess?.call();
+        Navigator.of(context).pop(true);
+        if (widget.onVerified != null) {
+          await Future<void>.delayed(const Duration(milliseconds: 180));
+          await widget.onVerified!.call();
+        }
         return;
       }
 
@@ -131,14 +138,25 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
                 controller: _controller,
                 focusNode: _focusNode,
                 enabled: !_isSubmitting,
-                onChanged: (_) => setState(() {}),
+                maxLength: _deliveryOtpLength,
+                onChanged: (value) {
+                  setState(() {});
+                  if (value.trim().length == _deliveryOtpLength) {
+                    _submitIfPossible();
+                  }
+                },
               ),
+              if (widget.onResend != null) ...[
+                const SizedBox(height: 14),
+                OrderDetailsResendOtpAction(onResend: widget.onResend!),
+              ],
               const SizedBox(height: 18),
               SheetConfirmButton(
                 label: locale.order_details_confirm_delivery,
                 onPressed: _submitIfPossible,
                 isEnabled:
-                    _controller.text.trim().length == 4 && !_isSubmitting,
+                    _controller.text.trim().length == _deliveryOtpLength &&
+                    !_isSubmitting,
               ),
             ],
           ),

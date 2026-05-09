@@ -55,5 +55,25 @@ class TokenService {
   Future<void> clearTokens() async {
     await deleteToken();
     await deleteRefreshToken();
+    await deleteCurrentUserId();
+  }
+
+  Future<void> saveCurrentUserId(String userId) async {
+    final normalizedUserId = userId.trim();
+    if (normalizedUserId.isEmpty) return;
+    await _sharedPreferences.setString(
+      AppConstants.currentUserId,
+      normalizedUserId,
+    );
+  }
+
+  Future<String?> getCurrentUserId() async {
+    final value = _sharedPreferences.getString(AppConstants.currentUserId);
+    final normalizedValue = value?.trim() ?? '';
+    return normalizedValue.isEmpty ? null : normalizedValue;
+  }
+
+  Future<void> deleteCurrentUserId() async {
+    await _sharedPreferences.remove(AppConstants.currentUserId);
   }
 }

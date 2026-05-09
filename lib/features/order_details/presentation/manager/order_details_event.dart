@@ -114,6 +114,18 @@ class OrderDetailsVerifyPickupOtpEvent extends OrderDetailsEvent {
   final String otpCode;
 }
 
+class OrderDetailsResendDeliveryOtpEvent extends OrderDetailsEvent {
+  const OrderDetailsResendDeliveryOtpEvent(this.assignmentId);
+
+  final String assignmentId;
+}
+
+class OrderDetailsResendPickupOtpEvent extends OrderDetailsEvent {
+  const OrderDetailsResendPickupOtpEvent(this.assignmentId);
+
+  final String assignmentId;
+}
+
 class OrderDetailsReportIssueEvent extends OrderDetailsEvent {
   const OrderDetailsReportIssueEvent(this.orderId, {required this.request});
 

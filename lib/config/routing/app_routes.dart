@@ -10,6 +10,7 @@ abstract class AppRoutes {
   static const String driverHome = '/driver-home';
   static const String mainShell = '/main-shell';
   static const String orderDetails = '/order-details';
+  static const String orderDeliverySuccess = '/order-delivery-success';
   static const String completedOrders = '/completed-orders';
   static const String wallet = '/wallet';
   static const String profile = '/profile';

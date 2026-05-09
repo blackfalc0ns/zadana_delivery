@@ -7,9 +7,13 @@ abstract class NetworkConstants {
   static const String driverNotificationEvent = 'ReceiveNotification';
   static const String driverOrderStatusChangedEvent =
       'ReceiveOrderStatusChanged';
+  static const String driverOrderSupportCaseChangedEvent =
+      'ReceiveOrderSupportCaseChanged';
   static const String driverArrivalStateChangedEvent =
       'ReceiveDriverArrivalStateChanged';
   static const String driverAssignmentUpdatedEvent = 'ReceiveAssignmentUpdated';
+  static const String driverHomeUpdatedEvent = 'ReceiveDriverHomeUpdated';
+  static const String driverWalletUpdatedEvent = 'ReceiveDriverWalletUpdated';
   static const String driverOfferNotificationType = 'driver-offer';
 }
 
@@ -34,6 +38,8 @@ abstract class EndPoints {
       '/drivers/assignments/{assignmentId}/status';
   static const String driverAssignmentVerifyOtp =
       '/drivers/assignments/{assignmentId}/verify-otp';
+  static const String driverAssignmentResendOtp =
+      '/drivers/assignments/{assignmentId}/resend-otp';
   static const String driverOrderArrivedAtVendor =
       '/drivers/orders/{orderId}/arrived-at-vendor';
   static const String driverOrderArrivedAtCustomer =
@@ -47,12 +53,21 @@ abstract class EndPoints {
   static const String driverOrderDeliveryFailed =
       '/drivers/orders/{orderId}/delivery-failed';
   static const String driverNotifications = '/drivers/notifications';
+  static const String driverNotificationDevices =
+      '/drivers/notifications/devices';
   static const String driverNotificationRead =
       '/drivers/notifications/{notificationId}/read';
   static const String driverNotificationsReadAll =
       '/drivers/notifications/read-all';
   static const String driverNotificationsUnreadCount =
       '/drivers/notifications/unread-count';
+  static const String driverWallet = '/drivers/wallet';
+  static const String driverWalletTransactions = '/drivers/wallet/transactions';
+  static const String driverWalletPaymentMethods =
+      '/drivers/wallet/payment-methods';
+  static const String driverWalletPaymentMethodPrimary =
+      '/drivers/wallet/payment-methods/{id}/make-primary';
+  static const String driverWalletWithdrawals = '/drivers/wallet/withdrawals';
   static const String driverSupportCases = '/drivers/support/cases';
   static const String driverSupportCaseDetails =
       '/drivers/support/cases/{caseId}';

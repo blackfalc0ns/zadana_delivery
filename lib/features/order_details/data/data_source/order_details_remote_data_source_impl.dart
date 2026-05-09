@@ -131,6 +131,36 @@ class OrderDetailsRemoteDataSourceImpl implements OrderDetailsRemoteDataSource {
   }
 
   @override
+  Future<OrderDetailsActionResponseDto> resendDeliveryOtp(
+    String assignmentId,
+  ) async {
+    try {
+      final response = await _apiServices.resendDriverAssignmentOtp(
+        assignmentId,
+        const {'otpType': 'delivery'},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<OrderDetailsActionResponseDto> resendPickupOtp(
+    String assignmentId,
+  ) async {
+    try {
+      final response = await _apiServices.resendDriverAssignmentOtp(
+        assignmentId,
+        const {'otpType': 'pickup'},
+      );
+      return OrderDetailsActionResponseDto.fromJson(_normalizeMap(response));
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
   Future<OrderDetailsActionResponseDto> markOrderArrivedAtVendor(
     String orderId,
   ) async {

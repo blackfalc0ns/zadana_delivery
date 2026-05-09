@@ -13,49 +13,47 @@ extension WalletLocalizedCopy on AppLocalizations {
     }
   }
 
-  String walletTransactionKindLabel(WalletTransactionKind kind) {
-    switch (kind) {
-      case WalletTransactionKind.delivery:
+  String walletTransactionTypeLabel(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'orderrevenue':
         return wallet_transaction_delivery;
-      case WalletTransactionKind.withdrawal:
+      case 'hold':
+      case 'payout':
         return wallet_transaction_withdrawal;
-      case WalletTransactionKind.bonus:
-        return wallet_transaction_bonus;
-      case WalletTransactionKind.adjustment:
+      case 'adjustment':
         return wallet_transaction_adjustment;
+      case 'release':
+        return wallet_transaction_release;
+      default:
+        return wallet_transaction_bonus;
     }
   }
 
-  String walletTransactionStatusLabel(WalletTransactionStatus status) {
-    switch (status) {
-      case WalletTransactionStatus.completed:
-        return wallet_status_completed;
-      case WalletTransactionStatus.pending:
+  String walletWithdrawalStatusLabel(String status) {
+    switch (status.trim().toLowerCase()) {
+      case 'pending':
         return wallet_status_pending;
-      case WalletTransactionStatus.failed:
+      case 'processing':
+        return wallet_status_processing;
+      case 'paid':
+        return wallet_status_paid;
+      case 'cancelled':
+        return wallet_status_cancelled;
+      case 'failed':
+      default:
         return wallet_status_failed;
     }
   }
 
-  String walletPaymentMethodLabel(WalletPaymentMethodKind kind) {
-    switch (kind) {
-      case WalletPaymentMethodKind.bankAccount:
+  String walletPaymentMethodLabel(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'bankaccount':
         return wallet_payment_bank_account;
-      case WalletPaymentMethodKind.debitCard:
+      case 'debitcard':
         return wallet_payment_debit_card;
-      case WalletPaymentMethodKind.instantTransfer:
+      case 'instanttransfer':
+      default:
         return wallet_payment_instant_transfer;
-    }
-  }
-
-  String walletBonusLabel(WalletBonusKind kind) {
-    switch (kind) {
-      case WalletBonusKind.weekend:
-        return wallet_bonus_weekend;
-      case WalletBonusKind.consistency:
-        return wallet_bonus_consistency;
-      case WalletBonusKind.peakHours:
-        return wallet_bonus_peak_hours;
     }
   }
 

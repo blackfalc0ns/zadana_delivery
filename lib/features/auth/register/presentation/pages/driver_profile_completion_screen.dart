@@ -5,6 +5,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/auth/register/domain/usecase/register_usecase.dart';
@@ -35,6 +36,10 @@ class _DriverProfileCompletionScreenState
   final _addressController = TextEditingController();
   final _nationalIdController = TextEditingController();
   final _licenseNumberController = TextEditingController();
+  final _nationalIdExpiryController = TextEditingController();
+  final _driverLicenseExpiryController = TextEditingController();
+  final _vehicleLicenseNumberController = TextEditingController();
+  final _vehicleLicenseExpiryController = TextEditingController();
   bool _didSeedControllers = false;
 
   late final DriverProfileCompletionCubit _cubit;
@@ -57,6 +62,10 @@ class _DriverProfileCompletionScreenState
       _addressController,
       _nationalIdController,
       _licenseNumberController,
+      _nationalIdExpiryController,
+      _driverLicenseExpiryController,
+      _vehicleLicenseNumberController,
+      _vehicleLicenseExpiryController,
     ]) {
       controller.addListener(_onFormChanged);
     }
@@ -69,6 +78,10 @@ class _DriverProfileCompletionScreenState
     _addressController.dispose();
     _nationalIdController.dispose();
     _licenseNumberController.dispose();
+    _nationalIdExpiryController.dispose();
+    _driverLicenseExpiryController.dispose();
+    _vehicleLicenseNumberController.dispose();
+    _vehicleLicenseExpiryController.dispose();
     super.dispose();
   }
 
@@ -76,6 +89,10 @@ class _DriverProfileCompletionScreenState
     _addressController.text = draft.address;
     _nationalIdController.text = draft.nationalId;
     _licenseNumberController.text = draft.licenseNumber;
+    _nationalIdExpiryController.text = draft.nationalIdExpiryDate;
+    _driverLicenseExpiryController.text = draft.driverLicenseExpiryDate;
+    _vehicleLicenseNumberController.text = draft.vehicleLicenseNumber;
+    _vehicleLicenseExpiryController.text = draft.vehicleLicenseExpiryDate;
   }
 
   RegisterProfileDraft _buildCurrentDraft() {
@@ -88,7 +105,11 @@ class _DriverProfileCompletionScreenState
       regionName: currentDraft.regionName,
       address: _addressController.text.trim(),
       nationalId: _nationalIdController.text.trim(),
+      nationalIdExpiryDate: _nationalIdExpiryController.text.trim(),
       licenseNumber: _licenseNumberController.text.trim(),
+      driverLicenseExpiryDate: _driverLicenseExpiryController.text.trim(),
+      vehicleLicenseNumber: _vehicleLicenseNumberController.text.trim(),
+      vehicleLicenseExpiryDate: _vehicleLicenseExpiryController.text.trim(),
       images: currentDraft.images,
     );
   }
@@ -110,7 +131,7 @@ class _DriverProfileCompletionScreenState
 
   Future<void> _goNext() async {
     final currentStep = _cubit.state.currentStep;
-    final needsFormValidation = currentStep == 0 || currentStep == 3;
+    final needsFormValidation = currentStep == 0 || currentStep == 1;
     final message = await _cubit.goNext(
       isFormValid:
           !needsFormValidation || (_formKey.currentState?.validate() ?? false),
@@ -124,6 +145,24 @@ class _DriverProfileCompletionScreenState
     );
     if (!mounted || (message ?? '').isEmpty) return;
     CustomSnackbar.showError(context: context, message: message!);
+  }
+
+  Future<void> _pickExpiryDate(TextEditingController controller) async {
+    final initialDate =
+        DocumentExpiryDateHelper.tryParse(controller.text) ??
+        DateTime.now().add(const Duration(days: 365));
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isBefore(now) ? now : initialDate,
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: DateTime(now.year + 25),
+    );
+    if (picked == null) return;
+
+    controller.text = DocumentExpiryDateHelper.formatForDisplay(
+      picked.toIso8601String(),
+    );
   }
 
   Future<void> _retryCurrentAction() {
@@ -226,11 +265,19 @@ class _DriverProfileCompletionScreenState
                         addressController: _addressController,
                         nationalIdController: _nationalIdController,
                         licenseNumberController: _licenseNumberController,
+                        nationalIdExpiryController: _nationalIdExpiryController,
+                        driverLicenseExpiryController:
+                            _driverLicenseExpiryController,
+                        vehicleLicenseNumberController:
+                            _vehicleLicenseNumberController,
+                        vehicleLicenseExpiryController:
+                            _vehicleLicenseExpiryController,
                         onBack: _goBack,
                         onNext: _goNext,
                         onVehicleTypeChanged: _cubit.updateVehicleType,
                         onRegionCityChanged: _cubit.updateRegionCity,
                         onPickImage: _pickImage,
+                        onPickExpiryDate: _pickExpiryDate,
                       ),
                     ),
                     if (state.isLoading) ...[

@@ -1,3 +1,5 @@
+import 'package:zadana_delivery/features/profile/data/models/driver_compliance_document_model_dto.dart';
+
 class DriverUnifiedProfileModelDto {
   const DriverUnifiedProfileModelDto({
     required this.fullName,
@@ -7,12 +9,22 @@ class DriverUnifiedProfileModelDto {
     required this.vehicleType,
     required this.licenseNumber,
     required this.nationalId,
+    required this.nationalIdExpiryDate,
+    required this.driverLicenseExpiryDate,
+    required this.vehicleLicenseNumber,
+    required this.vehicleLicenseExpiryDate,
     required this.personalPhotoUrl,
-    required this.nationalIdImageUrl,
+    required this.nationalIdFrontImageUrl,
+    required this.nationalIdBackImageUrl,
     required this.licenseImageUrl,
     required this.vehicleImageUrl,
-    required this.primaryZoneId,
-    required this.zoneName,
+    required this.region,
+    required this.city,
+    required this.regionNameAr,
+    required this.regionNameEn,
+    required this.cityNameAr,
+    required this.cityNameEn,
+    required this.documents,
     required this.verificationStatus,
     required this.accountStatus,
     required this.reviewNote,
@@ -32,15 +44,33 @@ class DriverUnifiedProfileModelDto {
       vehicleType: json['vehicleType']?.toString() ?? '',
       licenseNumber: json['licenseNumber']?.toString() ?? '',
       nationalId: json['nationalId']?.toString() ?? '',
+      nationalIdExpiryDate: json['nationalIdExpiryDate']?.toString() ?? '',
+      driverLicenseExpiryDate:
+          json['driverLicenseExpiryDate']?.toString() ?? '',
+      vehicleLicenseNumber: json['vehicleLicenseNumber']?.toString() ?? '',
+      vehicleLicenseExpiryDate:
+          json['vehicleLicenseExpiryDate']?.toString() ?? '',
       personalPhotoUrl: json['personalPhotoUrl']?.toString() ?? '',
-      nationalIdImageUrl:
-          json['nationalIdImageUrl']?.toString() ??
+      nationalIdFrontImageUrl:
           json['nationalIdFrontImageUrl']?.toString() ??
+          json['nationalIdImageUrl']?.toString() ??
+          '',
+      nationalIdBackImageUrl:
+          json['nationalIdBackImageUrl']?.toString() ??
+          json['nationalIdBackImage']?.toString() ??
           '',
       licenseImageUrl: json['licenseImageUrl']?.toString() ?? '',
       vehicleImageUrl: json['vehicleImageUrl']?.toString() ?? '',
-      primaryZoneId: json['primaryZoneId']?.toString() ?? '',
-      zoneName: json['zoneName']?.toString() ?? '',
+      region:
+          json['region']?.toString() ?? json['regionCode']?.toString() ?? '',
+      city: json['city']?.toString() ?? json['primaryZoneId']?.toString() ?? '',
+      regionNameAr: json['regionNameAr']?.toString() ?? '',
+      regionNameEn: json['regionNameEn']?.toString() ?? '',
+      cityNameAr:
+          json['cityNameAr']?.toString() ?? json['zoneName']?.toString() ?? '',
+      cityNameEn:
+          json['cityNameEn']?.toString() ?? json['zoneName']?.toString() ?? '',
+      documents: _readDocuments(json['documents']),
       verificationStatus: json['verificationStatus']?.toString() ?? '',
       accountStatus: json['accountStatus']?.toString() ?? '',
       reviewNote: json['reviewNote']?.toString(),
@@ -59,12 +89,22 @@ class DriverUnifiedProfileModelDto {
   final String vehicleType;
   final String licenseNumber;
   final String nationalId;
+  final String nationalIdExpiryDate;
+  final String driverLicenseExpiryDate;
+  final String vehicleLicenseNumber;
+  final String vehicleLicenseExpiryDate;
   final String personalPhotoUrl;
-  final String nationalIdImageUrl;
+  final String nationalIdFrontImageUrl;
+  final String nationalIdBackImageUrl;
   final String licenseImageUrl;
   final String vehicleImageUrl;
-  final String primaryZoneId;
-  final String zoneName;
+  final String region;
+  final String city;
+  final String regionNameAr;
+  final String regionNameEn;
+  final String cityNameAr;
+  final String cityNameEn;
+  final List<DriverComplianceDocumentModelDto> documents;
   final String verificationStatus;
   final String accountStatus;
   final String? reviewNote;
@@ -88,5 +128,20 @@ class DriverUnifiedProfileModelDto {
           .toList();
     }
     return const <String>[];
+  }
+
+  static List<DriverComplianceDocumentModelDto> _readDocuments(dynamic value) {
+    if (value is! List) {
+      return const <DriverComplianceDocumentModelDto>[];
+    }
+
+    return value
+        .whereType<Map>()
+        .map(
+          (item) => DriverComplianceDocumentModelDto.fromJson(
+            Map<String, dynamic>.from(item),
+          ),
+        )
+        .toList();
   }
 }

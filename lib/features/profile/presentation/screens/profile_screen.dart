@@ -100,6 +100,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _handleAction(ProfileActionType type) async {
     switch (type) {
+      case ProfileActionType.accountStatus:
+        return _open(AppRoutes.accountPendingApproval);
       case ProfileActionType.personalInfo:
         return _open(AppRoutes.profileEdit);
       case ProfileActionType.vehicleInfo:

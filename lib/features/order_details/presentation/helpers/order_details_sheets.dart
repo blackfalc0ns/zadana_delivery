@@ -68,6 +68,7 @@ class OrderDetailsSheets {
     required BuildContext context,
     required String otp,
     Future<bool> Function(String otpCode)? onSubmit,
+    Future<bool> Function()? onResend,
     VoidCallback? onConfirm,
     ValueChanged<BuildContext>? onSheetContextReady,
   }) async {
@@ -81,6 +82,7 @@ class OrderDetailsSheets {
           otp: otp,
           sheetContext: sheetContext,
           onSubmit: onSubmit,
+          onResend: onResend,
           onConfirm: onConfirm == null
               ? null
               : () {
@@ -104,12 +106,13 @@ class OrderDetailsSheets {
     );
   }
 
-  static Future<void> showCustomerOtpSheet({
+  static Future<bool> showCustomerOtpSheet({
     required BuildContext context,
     required Future<bool> Function(String otpCode) onSubmit,
-    VoidCallback? onSuccess,
+    Future<bool> Function()? onResend,
+    Future<void> Function()? onVerified,
   }) async {
-    await showModalBottomSheet<void>(
+    final didVerify = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -117,8 +120,11 @@ class OrderDetailsSheets {
         sheetContext: sheetContext,
         loadingContext: context,
         onSubmit: onSubmit,
-        onSuccess: onSuccess,
+        onVerified: onVerified,
+        onResend: onResend,
       ),
     );
+    final verified = didVerify ?? false;
+    return verified;
   }
 }

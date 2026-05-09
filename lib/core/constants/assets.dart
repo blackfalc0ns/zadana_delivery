@@ -8,6 +8,7 @@ class Assets {
 
   static const String splash = "$_animations/splash.json";
   static const String loading = "$_animations/custom_loading.json";
+  static const String deliveryDone = "$_animations/delivery_done.json";
   static const String notFound = "$_images/image_not_found.png";
   static const String logoDark = '$_images/logo_dark.png';
   static const String logoLight = '$_images/logo_light.png';

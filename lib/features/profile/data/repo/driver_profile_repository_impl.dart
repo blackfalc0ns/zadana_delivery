@@ -42,10 +42,26 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
     return safeApiCall(() async {
       final dto = request
           .copyWithResolvedUrls(
-            personalPhotoUrl: await _resolveUrl(request.personalPhotoUrl),
-            nationalIdImageUrl: await _resolveUrl(request.nationalIdImageUrl),
-            licenseImageUrl: await _resolveUrl(request.licenseImageUrl),
-            vehicleImageUrl: await _resolveUrl(request.vehicleImageUrl),
+            personalPhotoUrl: await _resolveUrl(
+              request.personalPhotoUrl,
+              directory: DriverUploadDirectory.profile,
+            ),
+            nationalIdFrontImageUrl: await _resolveUrl(
+              request.nationalIdFrontImageUrl,
+              directory: DriverUploadDirectory.nationalId,
+            ),
+            nationalIdBackImageUrl: await _resolveUrl(
+              request.nationalIdBackImageUrl,
+              directory: DriverUploadDirectory.nationalId,
+            ),
+            licenseImageUrl: await _resolveUrl(
+              request.licenseImageUrl,
+              directory: DriverUploadDirectory.license,
+            ),
+            vehicleImageUrl: await _resolveUrl(
+              request.vehicleImageUrl,
+              directory: DriverUploadDirectory.vehicle,
+            ),
           )
           .toDto();
       final profile = (await _remoteDataSource.updateDocuments(dto)).toEntity();
@@ -80,14 +96,17 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
     });
   }
 
-  Future<String> _resolveUrl(String value) async {
+  Future<String> _resolveUrl(
+    String value, {
+    required DriverUploadDirectory directory,
+  }) async {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return '';
     if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
       return trimmed;
     }
     if (File(trimmed).existsSync()) {
-      return _uploadService.uploadFile(trimmed);
+      return _uploadService.uploadFile(trimmed, directory: directory);
     }
     return trimmed;
   }
@@ -105,36 +124,22 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
       ),
     );
 
-    await _draftService.saveProfileDraft(
-      DriverProfileDraft(
-        vehicleType: profile.vehicleType,
-        address: profile.address,
-        nationalId: profile.nationalId,
-        licenseNumber: profile.licenseNumber,
-        vehicleBrand: '',
-        vehicleModel: '',
-        plateNumber: '',
-        images: {
-          'portrait': profile.personalPhotoUrl,
-          'idFront': profile.nationalIdImageUrl,
-          'license': profile.licenseImageUrl,
-          'vehicle': profile.vehicleImageUrl,
-        },
-      ),
-    );
+    await _draftService.saveProfileDraft(profile.toLocalDraft());
   }
 }
 
 extension on UpdateDriverDocumentsRequestEntity {
   UpdateDriverDocumentsRequestEntity copyWithResolvedUrls({
     required String personalPhotoUrl,
-    required String nationalIdImageUrl,
+    required String nationalIdFrontImageUrl,
+    required String nationalIdBackImageUrl,
     required String licenseImageUrl,
     required String vehicleImageUrl,
   }) {
     return UpdateDriverDocumentsRequestEntity(
       personalPhotoUrl: personalPhotoUrl,
-      nationalIdImageUrl: nationalIdImageUrl,
+      nationalIdFrontImageUrl: nationalIdFrontImageUrl,
+      nationalIdBackImageUrl: nationalIdBackImageUrl,
       licenseImageUrl: licenseImageUrl,
       vehicleImageUrl: vehicleImageUrl,
     );

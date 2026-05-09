@@ -1,17 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
+import 'package:zadana_delivery/core/services/file_upload_service.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_attachment_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_activity_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
@@ -33,7 +38,10 @@ class _DriverSupportCaseDetailsScreenState
     extends State<DriverSupportCaseDetailsScreen> {
   late final DriverSupportCubit _cubit;
   late final TextEditingController _messageController;
+  final ImagePicker _imagePicker = getIt<ImagePicker>();
+  final FileUploadService _fileUploadService = getIt<FileUploadService>();
   String _selectedReasonCode = 'follow_up';
+  List<XFile> _selectedImages = const <XFile>[];
 
   bool get _isArabic => Localizations.localeOf(context).languageCode == 'ar';
 
@@ -91,6 +99,14 @@ class _DriverSupportCaseDetailsScreenState
       return;
     }
 
+    List<DriverSupportAttachmentEntity> attachments;
+    try {
+      attachments = await _uploadSelectedImages();
+    } catch (_) {
+      return;
+    }
+    if (!mounted) return;
+
     final success = await _cubit.doIntent(
       DriverSupportSendMessageEvent(
         orderId: item.orderId,
@@ -98,11 +114,106 @@ class _DriverSupportCaseDetailsScreenState
         request: DriverSupportCaseMessageRequestEntity(
           reasonCode: reasonCode,
           message: message,
+          attachments: attachments,
         ),
       ),
     );
     if (!mounted || !success) return;
     _messageController.clear();
+    setState(() {
+      _selectedImages = const <XFile>[];
+    });
+  }
+
+  Future<void> _pickImages() async {
+    if (_cubit.state.isMessageSending) return;
+
+    try {
+      final images = await _imagePicker.pickMultiImage(imageQuality: 82);
+      if (!mounted || images.isEmpty) return;
+      setState(() {
+        final existingPaths = _selectedImages.map((item) => item.path).toSet();
+        final merged = List<XFile>.from(_selectedImages);
+        for (final image in images) {
+          if (existingPaths.add(image.path)) {
+            merged.add(image);
+          }
+        }
+        _selectedImages = merged;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context: context,
+        message: _text(
+          'تعذر فتح منتقي الصور. حاول مرة أخرى.',
+          'Unable to open the image picker. Please try again.',
+        ),
+      );
+    }
+  }
+
+  Future<List<DriverSupportAttachmentEntity>> _uploadSelectedImages() async {
+    if (_selectedImages.isEmpty) return const <DriverSupportAttachmentEntity>[];
+
+    try {
+      final attachments = <DriverSupportAttachmentEntity>[];
+      for (final image in _selectedImages) {
+        final url = await _fileUploadService.uploadFile(
+          image.path,
+          directory: DriverUploadDirectory.proofs,
+        );
+        final file = File(image.path);
+        final fileName = file.uri.pathSegments.isEmpty
+            ? 'attachment.jpg'
+            : file.uri.pathSegments.last;
+        attachments.add(
+          DriverSupportAttachmentEntity(fileName: fileName, fileUrl: url),
+        );
+      }
+      return attachments;
+    } catch (error) {
+      if (!mounted) return const <DriverSupportAttachmentEntity>[];
+      CustomSnackbar.showError(
+        context: context,
+        message: error is Exception
+            ? error.toString().replaceFirst('Exception: ', '')
+            : _text(
+                'تعذر رفع الملفات المرفقة. حاول مرة أخرى.',
+                'Unable to upload attachments. Please try again.',
+              ),
+      );
+      rethrow;
+    }
+  }
+
+  void _removeImage(XFile image) {
+    if (_cubit.state.isMessageSending) return;
+    setState(() {
+      _selectedImages = _selectedImages
+          .where((item) => item.path != image.path)
+          .toList(growable: false);
+    });
+  }
+
+  Future<void> _openAttachment(String url) async {
+    final value = url.trim();
+    if (value.isEmpty) return;
+
+    final uri = Uri.tryParse(value);
+    if (uri != null &&
+        await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      return;
+    }
+
+    if (!mounted) return;
+    CustomSnackbar.showError(
+      context: context,
+      message: _text(
+        'تعذر فتح الملف المرفق.',
+        'Unable to open the attachment.',
+      ),
+    );
   }
 
   @override
@@ -204,6 +315,27 @@ class _DriverSupportCaseDetailsScreenState
                       child: Text(item.decisionNotes!.trim()),
                     ),
                   ],
+                  if (item.attachments.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    _SectionCard(
+                      title: _text('المرفقات', 'Attachments'),
+                      icon: Icons.attach_file_rounded,
+                      child: Column(
+                        children: item.attachments
+                            .map(
+                              (attachment) => Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: _AttachmentTile(
+                                  fileName: attachment.fileName,
+                                  onTap: () =>
+                                      _openAttachment(attachment.fileUrl),
+                                ),
+                              ),
+                            )
+                            .toList(growable: false),
+                      ),
+                    ),
+                  ],
                   if (item.activities.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     _SectionCard(
@@ -273,6 +405,43 @@ class _DriverSupportCaseDetailsScreenState
                             filled: true,
                           ),
                         ),
+                        const SizedBox(height: 12),
+                        OutlinedButton.icon(
+                          onPressed: state.isMessageSending
+                              ? null
+                              : _pickImages,
+                          icon: const Icon(Icons.image_outlined, size: 20),
+                          label: Text(
+                            _selectedImages.isEmpty
+                                ? _text('إرفاق ملفات', 'Attach files')
+                                : _text(
+                                    'إرفاق ملفات إضافية',
+                                    'Attach more files',
+                                  ),
+                          ),
+                        ),
+                        if (_selectedImages.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: _selectedImages
+                                .map(
+                                  (image) => _SelectedAttachmentChip(
+                                    fileName:
+                                        File(
+                                          image.path,
+                                        ).uri.pathSegments.isEmpty
+                                        ? 'attachment.jpg'
+                                        : File(
+                                            image.path,
+                                          ).uri.pathSegments.last,
+                                    onRemove: () => _removeImage(image),
+                                  ),
+                                )
+                                .toList(growable: false),
+                          ),
+                        ],
                         const SizedBox(height: 12),
                         AppButton.filled(
                           text: _text('إرسال المتابعة', 'Send follow-up'),
@@ -655,6 +824,101 @@ class _SectionCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           child,
+        ],
+      ),
+    );
+  }
+}
+
+class _AttachmentTile extends StatelessWidget {
+  const _AttachmentTile({required this.fileName, required this.onTap});
+
+  final String fileName;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: Ink(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: scheme.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: scheme.outlineVariant.withValues(alpha: 0.14),
+            ),
+          ),
+          child: Row(
+            children: [
+              Icon(Icons.insert_drive_file_outlined, color: scheme.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  fileName.trim().isEmpty ? 'attachment' : fileName.trim(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Icon(Icons.open_in_new_rounded, color: scheme.onSurfaceVariant),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SelectedAttachmentChip extends StatelessWidget {
+  const _SelectedAttachmentChip({
+    required this.fileName,
+    required this.onRemove,
+  });
+
+  final String fileName;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: scheme.surface,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.2)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              fileName,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(width: 8),
+          InkWell(
+            onTap: onRemove,
+            borderRadius: BorderRadius.circular(999),
+            child: Icon(
+              Icons.close_rounded,
+              size: 16,
+              color: scheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );

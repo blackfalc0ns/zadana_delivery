@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
@@ -56,6 +57,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   bool _isPickupOtpSheetOpen = false;
   bool _isCustomerOtpSheetOpen = false;
   bool _isSupportComposerOpen = false;
+  bool _hasOpenedDeliverySuccess = false;
   BuildContext? _pickupOtpSheetContext;
   String? _pendingCompletionMessage;
   String? _pendingSupportNotificationMessage;
@@ -64,17 +66,17 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       widget.order.packageNote ??
       context.localization.order_details_package_note_fallback;
 
-  void _popWithResult({required String action, String? message}) {
-    Navigator.of(context).pop(<String, dynamic>{
-      'action': action,
-      if ((message ?? '').trim().isNotEmpty) 'message': message!.trim(),
-    });
-  }
-
-  void _completeFlowAndReturnHome() {
+  Future<void> _openDeliverySuccessScreen() async {
+    if (_hasOpenedDeliverySuccess) return;
+    _hasOpenedDeliverySuccess = true;
     final message = (_pendingCompletionMessage ?? '').trim();
-    _popWithResult(action: 'accept', message: message.isEmpty ? null : message);
     _pendingCompletionMessage = null;
+    if (!mounted) return;
+    await context.pushReplacementNamed(
+      AppRoutes.orderDeliverySuccess,
+      rootNavigator: true,
+      arguments: {if (message.isNotEmpty) 'message': message},
+    );
   }
 
   @override
@@ -206,6 +208,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       context: context,
       otp: _controller.pickupOtpCode ?? '',
       onSubmit: _controller.canVerifyPickupOtp ? _verifyPickupOtp : null,
+      onResend: _resendPickupOtp,
       onConfirm: _controller.canMarkPickedUp ? _confirmPickup : null,
       onSheetContextReady: (sheetContext) {
         _pickupOtpSheetContext = sheetContext;
@@ -225,10 +228,8 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       await OrderDetailsSheets.showCustomerOtpSheet(
         context: context,
         onSubmit: _verifyDeliveryOtp,
-        onSuccess: () {
-          if (!mounted) return;
-          _completeFlowAndReturnHome();
-        },
+        onResend: _resendDeliveryOtp,
+        onVerified: _openDeliverySuccessScreen,
       );
     } finally {
       if (mounted) {
@@ -366,7 +367,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted || !success) return;
     _pendingCompletionMessage = _cubit.state.notificationMessage?.trim();
-    _completeFlowAndReturnHome();
+    await _openDeliverySuccessScreen();
   }
 
   Future<bool> _verifyDeliveryOtp(String otpCode) async {
@@ -392,6 +393,54 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (!mounted || !success) return false;
 
     await _refreshOrderDetails(silent: true);
+    return true;
+  }
+
+  Future<bool> _resendDeliveryOtp() async {
+    final assignmentId = _controller.assignmentId.trim();
+    if (assignmentId.isEmpty) return false;
+
+    final success = await _cubit.doIntent(
+      OrderDetailsResendDeliveryOtpEvent(assignmentId),
+    );
+    if (!mounted || !success) return false;
+
+    await _refreshOrderDetails(silent: true);
+    return true;
+  }
+
+  Future<bool> _resendPickupOtp() async {
+    final assignmentId = _controller.assignmentId.trim();
+    if (assignmentId.isEmpty) return false;
+
+    final wasShowingPickupCode = (_controller.pickupOtpCode ?? '')
+        .trim()
+        .isNotEmpty;
+    final success = await _cubit.doIntent(
+      OrderDetailsResendPickupOtpEvent(assignmentId),
+    );
+    if (!mounted || !success) return false;
+
+    await _refreshOrderDetails(silent: true);
+    final details = _cubit.state.details;
+    if (details != null) {
+      _controller.applyAssignmentDetails(details);
+    }
+
+    if (wasShowingPickupCode && _isPickupOtpSheetOpen) {
+      final sheetContext = _pickupOtpSheetContext;
+      if (sheetContext != null && sheetContext.mounted) {
+        Navigator.of(sheetContext).pop();
+      }
+
+      unawaited(
+        Future<void>.delayed(const Duration(milliseconds: 160), () async {
+          if (!mounted) return;
+          await _showPickupOtp();
+        }),
+      );
+    }
+
     return true;
   }
 
@@ -534,8 +583,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         listener: (context, state) {
           final details = state.details;
           if (details != null) {
+            final wasDelivered =
+                _controller.stage == OrderDeliveryStage.delivered;
             _controller.applyAssignmentDetails(details);
             _dismissPickupOtpSheetIfNeeded();
+            final isDelivered =
+                _controller.stage == OrderDeliveryStage.delivered;
+            if (!wasDelivered && isDelivered && !_hasOpenedDeliverySuccess) {
+              final notificationMessage = state.notificationMessage?.trim();
+              if ((notificationMessage ?? '').isNotEmpty) {
+                _pendingCompletionMessage = notificationMessage;
+              }
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                unawaited(_openDeliverySuccessScreen());
+              });
+            }
           }
 
           final notificationMessage = state.notificationMessage;
@@ -595,7 +658,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
           return OrderDetailsScreenView(
             controller: _controller,
-            isActionLoading: state.isActionLoading && !_isCustomerOtpSheetOpen,
+            isActionLoading:
+                state.isActionLoading &&
+                !_isCustomerOtpSheetOpen &&
+                !_isPickupOtpSheetOpen,
             onBack: context.pop,
             onAcceptOrder: _acceptOrder,
             onRejectOrder: _rejectOrder,
@@ -827,9 +893,15 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
   }
 
   bool get _requiresNote => _selectedReason?.requiresNote ?? false;
+  bool get _hasReasons => _reasonOptions.isNotEmpty;
+  bool get _canSubmit => !_isSubmitting && !_isLoadingReasons && _hasReasons;
 
   String _reasonLabel(DriverSupportReasonEntity option) =>
       widget.isArabic ? option.labelAr : option.labelEn;
+
+  String get _messageLabel => _requiresNote
+      ? _text('الملاحظة المطلوبة', 'Required note')
+      : _text('ملاحظات إضافية', 'Additional note');
 
   String get _submitLabel => _mode == _OrderSupportMode.issue
       ? _text('إرسال الحالة', 'Send case')
@@ -931,6 +1003,27 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
   Future<void> _submit() async {
     final reasonCode = (_selectedReasonCode ?? '').trim();
     final message = _messageController.text.trim();
+    if (_isLoadingReasons) return;
+    if ((_reasonsErrorMessage ?? '').trim().isNotEmpty) {
+      CustomSnackbar.showError(
+        context: context,
+        message: _text(
+          'تعذر تحميل الأسباب حالياً. أعد المحاولة أولاً.',
+          'Unable to load reasons right now. Please retry first.',
+        ),
+      );
+      return;
+    }
+    if (!_hasReasons) {
+      CustomSnackbar.showError(
+        context: context,
+        message: _text(
+          'لا توجد أسباب متاحة حالياً لهذا النوع.',
+          'No reasons are available for this type right now.',
+        ),
+      );
+      return;
+    }
     if (reasonCode.isEmpty) {
       CustomSnackbar.showError(
         context: context,
@@ -1016,7 +1109,10 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
 
     final attachments = <DriverSupportAttachmentEntity>[];
     for (final image in _selectedImages) {
-      final url = await _fileUploadService.uploadFile(image.path);
+      final url = await _fileUploadService.uploadFile(
+        image.path,
+        directory: DriverUploadDirectory.proofs,
+      );
       final file = File(image.path);
       final fileName = file.uri.pathSegments.isEmpty
           ? 'attachment.jpg'
@@ -1084,6 +1180,28 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
             ),
           ),
         ],
+      );
+    }
+
+    if (_reasonOptions.isEmpty) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: scheme.outlineVariant.withValues(alpha: 0.28),
+          ),
+        ),
+        child: Text(
+          _text(
+            'لا توجد أسباب متاحة حالياً. حاول مرة أخرى لاحقاً.',
+            'No reasons are available right now. Please try again later.',
+          ),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+        ),
       );
     }
 
@@ -1327,6 +1445,8 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
             minLines: 3,
             textInputAction: TextInputAction.newline,
             decoration: InputDecoration(
+              labelText: _messageLabel,
+              alignLabelWithHint: true,
               hintText: _text('اكتب ما حدث', 'Write what happened'),
               hintStyle: theme.textTheme.titleMedium?.copyWith(
                 color: scheme.onSurfaceVariant.withValues(alpha: 0.48),
@@ -1344,6 +1464,12 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
+              helperText: _requiresNote
+                  ? _text(
+                      'هذا السبب يتطلب كتابة ملاحظة قبل الإرسال.',
+                      'This reason requires a note before submission.',
+                    )
+                  : null,
             ),
           ),
           const SizedBox(height: 14),
@@ -1371,7 +1497,7 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
                   borderRadius: 12,
                   color: scheme.primary,
                   textColor: Colors.white,
-                  onPressed: _isSubmitting ? null : _submit,
+                  onPressed: _canSubmit ? _submit : null,
                 ),
               ),
             ],

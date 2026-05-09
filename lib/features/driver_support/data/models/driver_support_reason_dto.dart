@@ -13,8 +13,9 @@ class DriverSupportReasonDto {
       code: json['code']?.toString() ?? '',
       labelAr: (json['label_ar'] ?? json['labelAr'])?.toString() ?? '',
       labelEn: (json['label_en'] ?? json['labelEn'])?.toString() ?? '',
-      requiresNote:
-          (json['requires_note'] ?? json['requiresNote']) == true,
+      requiresNote: _boolFromJson(
+        json['requires_note'] ?? json['requiresNote'],
+      ),
     );
   }
 
@@ -30,5 +31,12 @@ class DriverSupportReasonDto {
       labelEn: labelEn,
       requiresNote: requiresNote,
     );
+  }
+
+  static bool _boolFromJson(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    final normalized = value?.toString().trim().toLowerCase() ?? '';
+    return normalized == 'true' || normalized == '1';
   }
 }

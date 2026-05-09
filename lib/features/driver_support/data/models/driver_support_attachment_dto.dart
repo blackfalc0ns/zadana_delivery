@@ -8,8 +8,8 @@ class DriverSupportAttachmentDto {
 
   factory DriverSupportAttachmentDto.fromJson(Map<String, dynamic> json) {
     return DriverSupportAttachmentDto(
-      fileName: json['fileName']?.toString() ?? '',
-      fileUrl: json['fileUrl']?.toString() ?? '',
+      fileName: (json['file_name'] ?? json['fileName'])?.toString() ?? '',
+      fileUrl: (json['file_url'] ?? json['fileUrl'])?.toString() ?? '',
     );
   }
 
@@ -17,10 +17,7 @@ class DriverSupportAttachmentDto {
   final String fileUrl;
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'file_name': fileName,
-      'file_url': fileUrl,
-    };
+    return <String, dynamic>{'file_name': fileName, 'file_url': fileUrl};
   }
 
   DriverSupportAttachmentEntity toEntity() {

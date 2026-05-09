@@ -174,6 +174,26 @@ class OrderDetailsRepositoryImpl implements OrderDetailsRepository {
   }
 
   @override
+  Future<ApiResult<OrderDetailsActionResultEntity>> resendDeliveryOtp(
+    String assignmentId,
+  ) {
+    return safeApiCall(() async {
+      final response = await _remoteDataSource.resendDeliveryOtp(assignmentId);
+      return _mapActionResult(response);
+    });
+  }
+
+  @override
+  Future<ApiResult<OrderDetailsActionResultEntity>> resendPickupOtp(
+    String assignmentId,
+  ) {
+    return safeApiCall(() async {
+      final response = await _remoteDataSource.resendPickupOtp(assignmentId);
+      return _mapActionResult(response);
+    });
+  }
+
+  @override
   Future<ApiResult<OrderDetailsActionResultEntity>> markOrderArrivedAtVendor(
     String orderId,
   ) {

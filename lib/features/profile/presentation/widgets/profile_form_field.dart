@@ -10,6 +10,10 @@ class ProfileFormField extends StatelessWidget {
     required this.hint,
     required this.icon,
     this.keyboardType,
+    this.validator,
+    this.readOnly = false,
+    this.onTap,
+    this.suffixIcon,
   });
 
   final TextEditingController controller;
@@ -17,6 +21,10 @@ class ProfileFormField extends StatelessWidget {
   final String hint;
   final IconData icon;
   final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +33,12 @@ class ProfileFormField extends StatelessWidget {
       label: label,
       hintText: hint,
       keyboardType: keyboardType,
+      readOnly: readOnly,
+      onTap: onTap,
+      suffixIcon: suffixIcon,
       prefixIcon: Icon(icon),
-      validator: (value) => Validations.validateRequired(context, value),
+      validator:
+          validator ?? (value) => Validations.validateRequired(context, value),
     );
   }
 }

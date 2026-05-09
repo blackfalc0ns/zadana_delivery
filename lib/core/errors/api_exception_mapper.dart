@@ -169,7 +169,8 @@ class ApiExceptionMapper {
   }
 
   static String? _extractErrorCode(dynamic data) {
-    return _extractString(data, 'errorCode');
+    return _extractString(data, 'errorCode') ??
+        _extractString(data, 'error_code');
   }
 
   static String? _extractString(dynamic data, String key) {

@@ -2774,6 +2774,12 @@ abstract class AppLocalizations {
   /// **'Enter national ID'**
   String get driver_profile_national_id_hint;
 
+  /// No description provided for @driver_profile_national_id_expiry_label.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID expiry date'**
+  String get driver_profile_national_id_expiry_label;
+
   /// No description provided for @driver_profile_license_number_label.
   ///
   /// In en, this message translates to:
@@ -2785,6 +2791,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter license number'**
   String get driver_profile_license_number_hint;
+
+  /// No description provided for @driver_profile_driver_license_expiry_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver license expiry date'**
+  String get driver_profile_driver_license_expiry_label;
+
+  /// No description provided for @driver_profile_vehicle_license_number_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle license number'**
+  String get driver_profile_vehicle_license_number_label;
+
+  /// No description provided for @driver_profile_vehicle_license_number_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter vehicle license number'**
+  String get driver_profile_vehicle_license_number_hint;
+
+  /// No description provided for @driver_profile_vehicle_license_expiry_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle license expiry date'**
+  String get driver_profile_vehicle_license_expiry_label;
+
+  /// No description provided for @driver_profile_expiry_date_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry date'**
+  String get driver_profile_expiry_date_label;
+
+  /// No description provided for @driver_profile_expiry_date_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select expiry date'**
+  String get driver_profile_expiry_date_hint;
+
+  /// No description provided for @driver_profile_invalid_date_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid date.'**
+  String get driver_profile_invalid_date_error;
+
+  /// No description provided for @driver_profile_expiry_date_past_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiry date cannot be in the past.'**
+  String get driver_profile_expiry_date_past_error;
 
   /// No description provided for @driver_profile_vehicle_card_title.
   ///
@@ -2954,6 +3008,36 @@ abstract class AppLocalizations {
   /// **'Each upload here makes the driver and vehicle data clearer.'**
   String get driver_profile_uploads_card_subtitle;
 
+  /// No description provided for @driver_profile_national_id_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'National ID'**
+  String get driver_profile_national_id_card_title;
+
+  /// No description provided for @driver_profile_driver_license_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver license'**
+  String get driver_profile_driver_license_card_title;
+
+  /// No description provided for @driver_profile_vehicle_license_card_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle license'**
+  String get driver_profile_vehicle_license_card_title;
+
+  /// No description provided for @driver_profile_vehicle_license_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle license image'**
+  String get driver_profile_vehicle_license_title;
+
+  /// No description provided for @driver_profile_vehicle_license_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload a clear image of the vehicle license.'**
+  String get driver_profile_vehicle_license_subtitle;
+
   /// No description provided for @driver_profile_review_card_title.
   ///
   /// In en, this message translates to:
@@ -3085,6 +3169,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account review usually happens shortly after the submitted data is confirmed as complete.'**
   String get auth_pending_eta_hint;
+
+  /// No description provided for @driver_account_status_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Account status'**
+  String get driver_account_status_title;
+
+  /// No description provided for @driver_account_status_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track each document review, missing requirements, and the next action needed to complete your account.'**
+  String get driver_account_status_subtitle;
+
+  /// No description provided for @driver_account_status_completion_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile completion'**
+  String get driver_account_status_completion_label;
+
+  /// No description provided for @driver_account_status_account_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Account status'**
+  String get driver_account_status_account_label;
+
+  /// No description provided for @driver_account_status_portrait_ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal photo uploaded'**
+  String get driver_account_status_portrait_ready;
+
+  /// No description provided for @driver_account_status_portrait_missing.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal photo missing'**
+  String get driver_account_status_portrait_missing;
+
+  /// No description provided for @driver_account_status_files_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploaded files'**
+  String get driver_account_status_files_label;
+
+  /// No description provided for @driver_account_status_files_count.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} file(s)'**
+  String driver_account_status_files_count(int count);
+
+  /// No description provided for @driver_account_status_edit_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit details'**
+  String get driver_account_status_edit_details;
+
+  /// No description provided for @driver_account_status_update_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Update files'**
+  String get driver_account_status_update_files;
+
+  /// No description provided for @driver_account_status_edit_personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit personal info'**
+  String get driver_account_status_edit_personal;
+
+  /// No description provided for @driver_account_status_edit_vehicle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit vehicle and dates'**
+  String get driver_account_status_edit_vehicle;
+
+  /// No description provided for @driver_account_status_edit_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit uploaded documents'**
+  String get driver_account_status_edit_documents;
+
+  /// No description provided for @driver_account_status_document_valid.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get driver_account_status_document_valid;
+
+  /// No description provided for @driver_account_status_document_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get driver_account_status_document_review;
+
+  /// No description provided for @driver_account_status_document_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get driver_account_status_document_rejected;
+
+  /// No description provided for @driver_account_status_document_expiring.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get driver_account_status_document_expiring;
+
+  /// No description provided for @driver_account_status_verification_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification approved'**
+  String get driver_account_status_verification_approved;
+
+  /// No description provided for @driver_account_status_verification_needs_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Documents required'**
+  String get driver_account_status_verification_needs_documents;
+
+  /// No description provided for @driver_account_status_verification_under_review.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get driver_account_status_verification_under_review;
+
+  /// No description provided for @driver_account_status_account_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get driver_account_status_account_active;
+
+  /// No description provided for @driver_account_status_account_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get driver_account_status_account_pending;
+
+  /// No description provided for @driver_account_status_missing_personal_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing personal info'**
+  String get driver_account_status_missing_personal_info;
+
+  /// No description provided for @driver_account_status_missing_vehicle_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing vehicle info'**
+  String get driver_account_status_missing_vehicle_info;
+
+  /// No description provided for @driver_account_status_missing_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing documents'**
+  String get driver_account_status_missing_documents;
+
+  /// No description provided for @driver_account_status_expired_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired documents'**
+  String get driver_account_status_expired_documents;
+
+  /// No description provided for @driver_account_status_rejected_documents.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected documents'**
+  String get driver_account_status_rejected_documents;
+
+  /// No description provided for @driver_account_status_missing_region_city.
+  ///
+  /// In en, this message translates to:
+  /// **'Region and city missing'**
+  String get driver_account_status_missing_region_city;
+
+  /// No description provided for @driver_account_status_document_rejected_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'A document needs your attention'**
+  String get driver_account_status_document_rejected_banner;
+
+  /// No description provided for @driver_account_status_document_approved_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'A document was approved'**
+  String get driver_account_status_document_approved_banner;
+
+  /// No description provided for @driver_account_status_request_docs_banner.
+  ///
+  /// In en, this message translates to:
+  /// **'More documents are required'**
+  String get driver_account_status_request_docs_banner;
 
   /// No description provided for @auth_blocked_title.
   ///
@@ -3434,6 +3704,12 @@ abstract class AppLocalizations {
   /// **'Track your live balance, payout readiness, incentives, and every movement in one premium dashboard.'**
   String get wallet_subtitle;
 
+  /// No description provided for @wallet_subtitle_secure.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your live balance, recent activity, and payout readiness in one secure wallet hub.'**
+  String get wallet_subtitle_secure;
+
   /// No description provided for @wallet_preview_state.
   ///
   /// In en, this message translates to:
@@ -3632,6 +3908,24 @@ abstract class AppLocalizations {
   /// **'Wallet adjustment'**
   String get wallet_transaction_adjustment;
 
+  /// No description provided for @wallet_transaction_release.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal released'**
+  String get wallet_transaction_release;
+
+  /// No description provided for @wallet_direction_in.
+  ///
+  /// In en, this message translates to:
+  /// **'IN'**
+  String get wallet_direction_in;
+
+  /// No description provided for @wallet_direction_out.
+  ///
+  /// In en, this message translates to:
+  /// **'OUT'**
+  String get wallet_direction_out;
+
   /// No description provided for @wallet_payment_bank_account.
   ///
   /// In en, this message translates to:
@@ -3649,6 +3943,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Instant transfer'**
   String get wallet_payment_instant_transfer;
+
+  /// No description provided for @wallet_withdrawal_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal requests'**
+  String get wallet_withdrawal_requests;
+
+  /// No description provided for @wallet_pending_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending requests'**
+  String get wallet_pending_requests;
+
+  /// No description provided for @wallet_pending_requests_amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending amount'**
+  String get wallet_pending_requests_amount;
+
+  /// No description provided for @wallet_total_requests.
+  ///
+  /// In en, this message translates to:
+  /// **'Total requests'**
+  String get wallet_total_requests;
+
+  /// No description provided for @wallet_view_all.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get wallet_view_all;
+
+  /// No description provided for @wallet_transactions_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No wallet transactions yet'**
+  String get wallet_transactions_empty_title;
+
+  /// No description provided for @wallet_transactions_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed deliveries and wallet movements will appear here.'**
+  String get wallet_transactions_empty_subtitle;
+
+  /// No description provided for @wallet_withdrawals_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No withdrawal requests yet'**
+  String get wallet_withdrawals_empty_title;
+
+  /// No description provided for @wallet_withdrawals_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your withdrawal history will appear here after the first payout request.'**
+  String get wallet_withdrawals_empty_subtitle;
+
+  /// No description provided for @wallet_load_more.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get wallet_load_more;
+
+  /// No description provided for @wallet_add_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Add method'**
+  String get wallet_add_method;
+
+  /// No description provided for @wallet_methods_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No payout methods added'**
+  String get wallet_methods_empty_title;
+
+  /// No description provided for @wallet_methods_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a secure payout method to start withdrawing your wallet balance.'**
+  String get wallet_methods_empty_subtitle;
+
+  /// No description provided for @wallet_withdraw_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create withdrawal request'**
+  String get wallet_withdraw_title;
+
+  /// No description provided for @wallet_withdraw_info_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawals are processed securely using your selected payout method.'**
+  String get wallet_withdraw_info_hint;
+
+  /// No description provided for @wallet_withdraw_amount_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the amount you want to transfer from your wallet balance.'**
+  String get wallet_withdraw_amount_subtitle;
+
+  /// No description provided for @wallet_withdraw_method_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether to use the primary payout method or select another saved method.'**
+  String get wallet_withdraw_method_subtitle;
+
+  /// No description provided for @wallet_amount_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get wallet_amount_label;
+
+  /// No description provided for @wallet_amount_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter amount'**
+  String get wallet_amount_hint;
+
+  /// No description provided for @wallet_amount_invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount greater than zero.'**
+  String get wallet_amount_invalid;
+
+  /// No description provided for @wallet_amount_exceeds_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount exceeds available balance.'**
+  String get wallet_amount_exceeds_balance;
+
+  /// No description provided for @wallet_use_primary_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Use primary payout method'**
+  String get wallet_use_primary_method;
+
+  /// No description provided for @wallet_no_primary_method.
+  ///
+  /// In en, this message translates to:
+  /// **'No primary method available'**
+  String get wallet_no_primary_method;
+
+  /// No description provided for @wallet_select_method.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a payout method.'**
+  String get wallet_select_method;
+
+  /// No description provided for @wallet_method_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method added successfully.'**
+  String get wallet_method_saved;
+
+  /// No description provided for @wallet_method_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method updated successfully.'**
+  String get wallet_method_updated;
+
+  /// No description provided for @wallet_method_deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method deleted successfully.'**
+  String get wallet_method_deleted;
+
+  /// No description provided for @wallet_make_primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Make primary'**
+  String get wallet_make_primary;
+
+  /// No description provided for @wallet_primary_updated.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary payout method updated.'**
+  String get wallet_primary_updated;
+
+  /// No description provided for @wallet_delete_method_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete payout method?'**
+  String get wallet_delete_method_title;
+
+  /// No description provided for @wallet_delete_method_message.
+  ///
+  /// In en, this message translates to:
+  /// **'This action removes the payout method if it is not linked to withdrawal history.'**
+  String get wallet_delete_method_message;
+
+  /// No description provided for @wallet_edit_method_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit payout method'**
+  String get wallet_edit_method_title;
+
+  /// No description provided for @wallet_type_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Method type'**
+  String get wallet_type_label;
+
+  /// No description provided for @wallet_account_holder_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Account holder name'**
+  String get wallet_account_holder_label;
+
+  /// No description provided for @wallet_provider_name_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Provider name'**
+  String get wallet_provider_name_label;
+
+  /// No description provided for @wallet_account_identifier_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Account identifier'**
+  String get wallet_account_identifier_label;
+
+  /// No description provided for @wallet_identifier_reentry_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter the full identifier to keep this payment method secure.'**
+  String get wallet_identifier_reentry_hint;
+
+  /// No description provided for @wallet_identifier_secure_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'The full identifier is sent securely and never shown back in the wallet UI.'**
+  String get wallet_identifier_secure_hint;
+
+  /// No description provided for @wallet_save_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get wallet_save_action;
+
+  /// No description provided for @wallet_status_processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get wallet_status_processing;
+
+  /// No description provided for @wallet_status_paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get wallet_status_paid;
+
+  /// No description provided for @wallet_status_cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get wallet_status_cancelled;
 
   /// No description provided for @wallet_bonus_weekend.
   ///
@@ -3980,6 +4526,18 @@ abstract class AppLocalizations {
   /// **'Confirm delivery'**
   String get order_details_confirm_delivery;
 
+  /// No description provided for @order_details_resend_otp.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get order_details_resend_otp;
+
+  /// No description provided for @order_details_resend_otp_in.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend in {seconds}s'**
+  String order_details_resend_otp_in(int seconds);
+
   /// No description provided for @order_details_pickup_code_title.
   ///
   /// In en, this message translates to:
@@ -4225,6 +4783,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm delivery'**
   String get order_details_delivered_dialog_confirm;
+
+  /// No description provided for @order_delivery_success_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order delivered successfully'**
+  String get order_delivery_success_title;
+
+  /// No description provided for @order_delivery_success_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nice work. This trip is complete and you can head back to check new orders now.'**
+  String get order_delivery_success_subtitle;
+
+  /// No description provided for @order_delivery_success_button.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get order_delivery_success_button;
 
   /// No description provided for @order_details_call_failure.
   ///

@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/notifications/domain/entities/driver_notification_entity.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/get_driver_notifications_unread_count_usecase.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/get_driver_notifications_usecase.dart';
@@ -16,7 +20,15 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     this._markDriverNotificationReadUseCase,
     this._markAllDriverNotificationsReadUseCase,
     this._getDriverNotificationsUnreadCountUseCase,
-  ) : super(const NotificationsState());
+  ) : super(const NotificationsState()) {
+    _notificationSubscription = getIt<DriverRealtimeService>().notifications
+        .listen((_) {
+          unawaited(_refreshUnreadCount());
+          if (state.hasLoadedOnce && !state.isLoading) {
+            unawaited(_loadNotifications(refresh: true));
+          }
+        });
+  }
 
   final GetDriverNotificationsUseCase _getDriverNotificationsUseCase;
   final MarkDriverNotificationReadUseCase _markDriverNotificationReadUseCase;
@@ -24,6 +36,7 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   _markAllDriverNotificationsReadUseCase;
   final GetDriverNotificationsUnreadCountUseCase
   _getDriverNotificationsUnreadCountUseCase;
+  late final StreamSubscription<Map<String, dynamic>> _notificationSubscription;
 
   List<DriverNotificationEntity> get items =>
       state.notifications?.items ?? const <DriverNotificationEntity>[];
@@ -230,5 +243,11 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   void _clearError() {
     if (state.failure == null) return;
     emit(state.copyWith(clearFailure: true));
+  }
+
+  @override
+  Future<void> close() async {
+    await _notificationSubscription.cancel();
+    return super.close();
   }
 }

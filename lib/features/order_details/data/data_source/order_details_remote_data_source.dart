@@ -35,6 +35,10 @@ abstract class OrderDetailsRemoteDataSource {
     required String otpCode,
   });
 
+  Future<OrderDetailsActionResponseDto> resendDeliveryOtp(String assignmentId);
+
+  Future<OrderDetailsActionResponseDto> resendPickupOtp(String assignmentId);
+
   Future<OrderDetailsActionResponseDto> markOrderArrivedAtVendor(
     String orderId,
   );

@@ -11,9 +11,12 @@ import 'package:zadana_delivery/features/auth/session/presentation/pages/account
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_pending_approval_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_detail_entry_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_details_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_cases_screen.dart';
 import 'package:zadana_delivery/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:zadana_delivery/features/order_details/presentation/screens/assignment_detail_entry_screen.dart';
+import 'package:zadana_delivery/features/order_details/presentation/screens/order_delivery_success_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_details_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/personal_info_screen.dart';
@@ -63,7 +66,13 @@ class RouteGenerator {
       case AppRoutes.profile:
         return _pageRoute(settings, const AppShellScreen(initialIndex: 3));
       case AppRoutes.mainShell:
-        return _pageRoute(settings, const AppShellScreen());
+        final args = settings.arguments;
+        final initialIndex = args is Map<String, dynamic>
+            ? args['initialIndex'] as int? ?? 0
+            : args is int
+            ? args
+            : 0;
+        return _pageRoute(settings, AppShellScreen(initialIndex: initialIndex));
       case AppRoutes.notifications:
         return _pageRoute(settings, const NotificationsScreen());
       case AppRoutes.supportHelp:
@@ -72,6 +81,15 @@ class RouteGenerator {
         return _pageRoute(settings, const DriverSupportCasesScreen());
       case AppRoutes.driverSupportCaseDetails:
         final args = settings.arguments;
+        if (args is Map<String, dynamic>) {
+          final caseId = args['caseId']?.toString().trim() ?? '';
+          if (caseId.isNotEmpty) {
+            return _pageRoute(
+              settings,
+              DriverSupportCaseDetailEntryScreen(caseId: caseId),
+            );
+          }
+        }
         if (args is! DriverSupportCaseEntity) {
           return unDefinedRoute(settings.name);
         }
@@ -93,6 +111,15 @@ class RouteGenerator {
         return _pageRoute(settings, const SecurityDocumentsScreen());
       case AppRoutes.orderDetails:
         final args = settings.arguments;
+        if (args is Map<String, dynamic>) {
+          final assignmentId = args['assignmentId']?.toString().trim() ?? '';
+          if (assignmentId.isNotEmpty) {
+            return _pageRoute(
+              settings,
+              AssignmentDetailEntryScreen(assignmentId: assignmentId),
+            );
+          }
+        }
         if (args is! Map<String, dynamic> ||
             !args.containsKey('order') ||
             !args.containsKey('driverLocation')) {
@@ -107,6 +134,15 @@ class RouteGenerator {
             startAccepted: args['startAccepted'] as bool? ?? false,
             initialSuccessMessage: args['initialSuccessMessage'] as String?,
           ),
+        );
+      case AppRoutes.orderDeliverySuccess:
+        final args = settings.arguments;
+        final message = args is Map<String, dynamic>
+            ? args['message'] as String?
+            : null;
+        return _pageRoute(
+          settings,
+          OrderDeliverySuccessScreen(message: message),
         );
       default:
         return unDefinedRoute(settings.name);

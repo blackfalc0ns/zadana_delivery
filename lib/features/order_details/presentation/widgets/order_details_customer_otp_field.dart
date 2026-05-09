@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/constants/app_constants.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 
 class CustomerOtpField extends StatelessWidget {
@@ -11,12 +12,14 @@ class CustomerOtpField extends StatelessWidget {
     required this.focusNode,
     required this.onChanged,
     this.enabled = true,
+    this.maxLength = AppConstants.otpLength,
   });
 
   final TextEditingController controller;
   final FocusNode focusNode;
   final ValueChanged<String> onChanged;
   final bool enabled;
+  final int maxLength;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +33,7 @@ class CustomerOtpField extends StatelessWidget {
       textInputAction: TextInputAction.done,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       textAlign: TextAlign.center,
-      maxLength: 4,
+      maxLength: maxLength,
       onChanged: onChanged,
       style: getBoldStyle(
         fontFamily: FontConstant.cairo,

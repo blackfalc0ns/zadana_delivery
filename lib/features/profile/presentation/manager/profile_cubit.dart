@@ -1,8 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
+import 'package:zadana_delivery/core/services/driver_notification_device_service.dart';
 import 'package:zadana_delivery/features/auth/logout/domain/usecase/logout_usecase.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/usecase/get_driver_zones_usecase.dart';
@@ -40,6 +44,8 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   Future<void> loadProfile() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
+    final notificationsEnabled = await getIt<DriverNotificationDeviceService>()
+        .isPushEnabled();
 
     final result = await _getProfileUseCase.call();
     switch (result) {
@@ -50,10 +56,12 @@ class ProfileCubit extends Cubit<ProfileState> {
             profile: result.data,
             documentPaths: {
               'portrait': result.data.personalPhotoUrl,
-              'idFront': result.data.nationalIdImageUrl,
+              'idFront': result.data.nationalIdFrontImageUrl,
+              'idBack': result.data.nationalIdBackImageUrl,
               'license': result.data.licenseImageUrl,
               'vehicle': result.data.vehicleImageUrl,
             },
+            notificationsEnabled: notificationsEnabled,
             clearFailure: true,
           ),
         );
@@ -65,6 +73,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   void updateNotifications(bool value) {
     if (state.notificationsEnabled == value) return;
     emit(state.copyWith(notificationsEnabled: value));
+    unawaited(getIt<DriverNotificationDeviceService>().setPushEnabled(value));
   }
 
   Future<void> doIntent(ProfileFormEvent event) async {
@@ -153,7 +162,8 @@ class ProfileCubit extends Cubit<ProfileState> {
             ? state.documentPaths
             : {
                 'portrait': profile.personalPhotoUrl,
-                'idFront': profile.nationalIdImageUrl,
+                'idFront': profile.nationalIdFrontImageUrl,
+                'idBack': profile.nationalIdBackImageUrl,
                 'license': profile.licenseImageUrl,
                 'vehicle': profile.vehicleImageUrl,
               },
@@ -202,7 +212,8 @@ class ProfileCubit extends Cubit<ProfileState> {
             profile: result.data,
             documentPaths: {
               'portrait': result.data.personalPhotoUrl,
-              'idFront': result.data.nationalIdImageUrl,
+              'idFront': result.data.nationalIdFrontImageUrl,
+              'idBack': result.data.nationalIdBackImageUrl,
               'license': result.data.licenseImageUrl,
               'vehicle': result.data.vehicleImageUrl,
             },
@@ -233,7 +244,8 @@ class ProfileCubit extends Cubit<ProfileState> {
             profile: result.data,
             documentPaths: {
               'portrait': result.data.personalPhotoUrl,
-              'idFront': result.data.nationalIdImageUrl,
+              'idFront': result.data.nationalIdFrontImageUrl,
+              'idBack': result.data.nationalIdBackImageUrl,
               'license': result.data.licenseImageUrl,
               'vehicle': result.data.vehicleImageUrl,
             },
@@ -285,7 +297,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     final result = await _updateDocumentsUseCase.call(
       UpdateDriverDocumentsRequestEntity(
         personalPhotoUrl: documentPaths['portrait'] ?? '',
-        nationalIdImageUrl: documentPaths['idFront'] ?? '',
+        nationalIdFrontImageUrl: documentPaths['idFront'] ?? '',
+        nationalIdBackImageUrl: documentPaths['idBack'] ?? '',
         licenseImageUrl: documentPaths['license'] ?? '',
         vehicleImageUrl: documentPaths['vehicle'] ?? '',
       ),
@@ -300,7 +313,8 @@ class ProfileCubit extends Cubit<ProfileState> {
             profile: result.data,
             documentPaths: {
               'portrait': result.data.personalPhotoUrl,
-              'idFront': result.data.nationalIdImageUrl,
+              'idFront': result.data.nationalIdFrontImageUrl,
+              'idBack': result.data.nationalIdBackImageUrl,
               'license': result.data.licenseImageUrl,
               'vehicle': result.data.vehicleImageUrl,
             },

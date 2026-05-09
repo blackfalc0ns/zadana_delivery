@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
@@ -26,6 +27,10 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nationalIdController;
   late final TextEditingController _licenseController;
+  late final TextEditingController _nationalIdExpiryController;
+  late final TextEditingController _driverLicenseExpiryController;
+  late final TextEditingController _vehicleLicenseNumberController;
+  late final TextEditingController _vehicleLicenseExpiryController;
   String _vehicleType = DriverVehicleType.car;
   String _selectedCityId = '';
   String _selectedRegionCode = '';
@@ -40,14 +45,26 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       ..doIntent(const ProfileFormLoadEvent(includeRegionCities: true));
     _nationalIdController = TextEditingController();
     _licenseController = TextEditingController();
+    _nationalIdExpiryController = TextEditingController();
+    _driverLicenseExpiryController = TextEditingController();
+    _vehicleLicenseNumberController = TextEditingController();
+    _vehicleLicenseExpiryController = TextEditingController();
     _nationalIdController.addListener(_cubit.clearError);
     _licenseController.addListener(_cubit.clearError);
+    _nationalIdExpiryController.addListener(_cubit.clearError);
+    _driverLicenseExpiryController.addListener(_cubit.clearError);
+    _vehicleLicenseNumberController.addListener(_cubit.clearError);
+    _vehicleLicenseExpiryController.addListener(_cubit.clearError);
   }
 
   @override
   void dispose() {
     _nationalIdController.dispose();
     _licenseController.dispose();
+    _nationalIdExpiryController.dispose();
+    _driverLicenseExpiryController.dispose();
+    _vehicleLicenseNumberController.dispose();
+    _vehicleLicenseExpiryController.dispose();
     _cubit.close();
     super.dispose();
   }
@@ -65,10 +82,23 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             _vehicleType = DriverVehicleType.normalize(profile.vehicleType);
             _nationalIdController.text = profile.nationalId;
             _licenseController.text = profile.licenseNumber;
-            _selectedCityId = profile.primaryZoneId;
-            _selectedRegionCode = '';
-            _selectedCityName = profile.zoneName;
-            _selectedRegionName = '';
+            _nationalIdExpiryController.text =
+                DocumentExpiryDateHelper.toFormValue(
+                  profile.nationalIdExpiryDate,
+                );
+            _driverLicenseExpiryController.text =
+                DocumentExpiryDateHelper.toFormValue(
+                  profile.driverLicenseExpiryDate,
+                );
+            _vehicleLicenseNumberController.text = profile.vehicleLicenseNumber;
+            _vehicleLicenseExpiryController.text =
+                DocumentExpiryDateHelper.toFormValue(
+                  profile.vehicleLicenseExpiryDate,
+                );
+            _selectedCityId = profile.city;
+            _selectedRegionCode = profile.region;
+            _selectedCityName = profile.displayCityName;
+            _selectedRegionName = profile.displayRegionName;
           }
 
           if (state.isSuccess) {
@@ -134,6 +164,10 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                 onTypeChanged: _selectType,
                 nationalIdController: _nationalIdController,
                 licenseController: _licenseController,
+                nationalIdExpiryController: _nationalIdExpiryController,
+                driverLicenseExpiryController: _driverLicenseExpiryController,
+                vehicleLicenseNumberController: _vehicleLicenseNumberController,
+                vehicleLicenseExpiryController: _vehicleLicenseExpiryController,
                 regionCities: state.regionCities,
                 isRegionCitiesLoading: state.isRegionCitiesLoading,
                 selectedCityId: _selectedCityId,
@@ -152,6 +186,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                   });
                   _cubit.clearError();
                 },
+                onPickDate: _pickDate,
               ),
             ],
           );
@@ -174,16 +209,50 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
       );
       return;
     }
+    final documentPaths = _cubit.state.documentPaths;
+    if ((documentPaths['idFront'] ?? '').trim().isEmpty ||
+        (documentPaths['idBack'] ?? '').trim().isEmpty ||
+        (documentPaths['license'] ?? '').trim().isEmpty ||
+        (documentPaths['vehicle'] ?? '').trim().isEmpty) {
+      CustomSnackbar.showError(
+        context: context,
+        message: context.localization.driver_profile_images_required_error,
+      );
+      return;
+    }
 
     await _cubit.doIntent(
       ProfileFormSaveVehicleEvent(
         UpdateDriverVehicleRequestEntity(
           vehicleType: _vehicleType,
-          nationalId: _nationalIdController.text,
-          licenseNumber: _licenseController.text,
-          primaryZoneId: _selectedCityId,
+          nationalId: _nationalIdController.text.trim(),
+          licenseNumber: _licenseController.text.trim(),
+          nationalIdExpiryDate: _nationalIdExpiryController.text.trim(),
+          driverLicenseExpiryDate: _driverLicenseExpiryController.text.trim(),
+          vehicleLicenseNumber: _vehicleLicenseNumberController.text.trim(),
+          vehicleLicenseExpiryDate: _vehicleLicenseExpiryController.text.trim(),
+          region: _selectedRegionCode,
+          city: _selectedCityId,
         ),
       ),
+    );
+  }
+
+  Future<void> _pickDate(TextEditingController controller) async {
+    final initialDate =
+        DocumentExpiryDateHelper.tryParse(controller.text) ??
+        DateTime.now().add(const Duration(days: 365));
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: initialDate.isBefore(now) ? now : initialDate,
+      firstDate: DateTime(now.year, now.month, now.day),
+      lastDate: DateTime(now.year + 25),
+    );
+    if (picked == null) return;
+
+    controller.text = DocumentExpiryDateHelper.formatForDisplay(
+      picked.toIso8601String(),
     );
   }
 }

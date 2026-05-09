@@ -1,5 +1,6 @@
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
+import 'package:zadana_delivery/features/order_details/domain/entities/order_assignment_details_entity.dart';
 
 class DriverHomeOrderPreviewMapper {
   const DriverHomeOrderPreviewMapper._();
@@ -69,6 +70,46 @@ class DriverHomeOrderPreviewMapper {
       deliveryOtpRequired: assignment.deliveryOtpRequired,
       pickupOtpCode: assignment.pickupOtpCode,
       orderId: assignment.orderId,
+    );
+  }
+
+  static DriverOrderPreview fromAssignmentDetails(
+    OrderAssignmentDetailsEntity assignment,
+  ) {
+    return DriverOrderPreview(
+      id: assignment.assignmentId,
+      title: assignment.orderNumber,
+      vendorName: assignment.vendorName,
+      pickupAddress: assignment.pickupAddress,
+      pickupLatitude: assignment.pickupLatitude,
+      pickupLongitude: assignment.pickupLongitude,
+      customerName: assignment.customerName,
+      deliveryAddress: assignment.deliveryAddress,
+      deliveryLatitude: assignment.deliveryLatitude,
+      deliveryLongitude: assignment.deliveryLongitude,
+      distance: '0.0',
+      eta: assignment.assignmentStatus,
+      payout: assignment.codAmount.toStringAsFixed(2),
+      totalAmount: assignment.totalAmount,
+      codAmount: assignment.codAmount,
+      vendorInitials: _resolveInitials(assignment.vendorName, null),
+      customerInitials: _resolveInitials(assignment.customerName, null),
+      countdownSeconds: 3600,
+      storePhone: assignment.storePhone,
+      customerPhone: assignment.customerPhone,
+      paymentMethod: assignment.paymentMethod,
+      pickupOtpRequired: assignment.pickupOtpRequired,
+      deliveryOtpRequired: assignment.deliveryOtpRequired,
+      pickupOtpCode: assignment.pickupOtpCode,
+      orderId: assignment.orderId,
+      orderItems: assignment.orderItems
+          .map(
+            (item) => DriverOrderItemPreview(
+              name: item.name,
+              quantity: item.quantity,
+            ),
+          )
+          .toList(growable: false),
     );
   }
 

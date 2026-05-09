@@ -1,5 +1,7 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/file_upload_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
@@ -33,18 +35,23 @@ class RegisterRepositoryImpl implements RegisterRepository {
     return safeApiCall(() async {
       final nationalIdFrontImageUrl = await _uploadService.uploadFile(
         request.nationalIdFrontImagePath,
+        directory: DriverUploadDirectory.nationalId,
       );
       final nationalIdBackImageUrl = await _uploadService.uploadFile(
         request.nationalIdBackImagePath,
+        directory: DriverUploadDirectory.nationalId,
       );
       final licenseImageUrl = await _uploadService.uploadFile(
         request.licenseImagePath,
+        directory: DriverUploadDirectory.license,
       );
       final vehicleImageUrl = await _uploadService.uploadFile(
         request.vehicleImagePath,
+        directory: DriverUploadDirectory.vehicle,
       );
       final personalPhotoUrl = await _uploadService.uploadFile(
         request.personalPhotoPath,
+        directory: DriverUploadDirectory.profile,
       );
 
       final response = await _remoteDataSource.register(
@@ -81,6 +88,9 @@ class RegisterRepositoryImpl implements RegisterRepository {
             lastIdentifier: user.email.isNotEmpty ? user.email : user.phone,
           ),
         );
+        await _tokenService.saveCurrentUserId(user.id);
+        await getIt<DriverNotificationSessionService>()
+            .handleSuccessfulAuthentication(user.id);
       }
 
       await _draftService.saveProfileDraft(
@@ -88,7 +98,13 @@ class RegisterRepositoryImpl implements RegisterRepository {
           vehicleType: request.vehicleType,
           address: request.address,
           nationalId: request.nationalId,
+          nationalIdExpiryDate: request.nationalIdExpiryDate,
           licenseNumber: request.licenseNumber,
+          driverLicenseExpiryDate: request.driverLicenseExpiryDate,
+          vehicleLicenseNumber: request.vehicleLicenseNumber,
+          vehicleLicenseExpiryDate: request.vehicleLicenseExpiryDate,
+          region: request.region,
+          city: request.city,
           vehicleBrand: '',
           vehicleModel: '',
           plateNumber: '',

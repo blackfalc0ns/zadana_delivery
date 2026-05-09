@@ -4,7 +4,7 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/wallet/presentation/mock/wallet_fake_data.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transaction_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/mock/wallet_localization_examples.dart';
 
 class WalletTransactionTile extends StatelessWidget {
@@ -14,15 +14,14 @@ class WalletTransactionTile extends StatelessWidget {
     required this.amountText,
   });
 
-  final WalletTransactionItem item;
+  final DriverWalletTransactionEntity item;
   final String amountText;
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
     final color = context.colorScheme;
-    final kindColor = _kindColor(item.kind);
-    final statusColor = _statusColor(context, item.status);
+    final kindColor = _kindColor(item.type);
     final borderColor = color.outlineVariant.withValues(alpha: 0.45);
 
     return Container(
@@ -42,7 +41,7 @@ class WalletTransactionTile extends StatelessWidget {
               color: kindColor.withValues(alpha: 0.14),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(_kindIcon(item.kind), color: kindColor),
+            child: Icon(_kindIcon(item.type), color: kindColor),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -53,7 +52,7 @@ class WalletTransactionTile extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        locale.walletTransactionKindLabel(item.kind),
+                        locale.walletTransactionTypeLabel(item.type),
                         style: getBoldStyle(
                           fontFamily: FontConstant.cairo,
                           fontSize: FontSize.size14,
@@ -66,7 +65,7 @@ class WalletTransactionTile extends StatelessWidget {
                       style: getBoldStyle(
                         fontFamily: FontConstant.cairo,
                         fontSize: FontSize.size14,
-                        color: item.amount >= 0
+                        color: item.isIncoming
                             ? AppColors.success
                             : color.onSurface,
                       ),
@@ -75,7 +74,7 @@ class WalletTransactionTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  item.note,
+                  item.description,
                   style: getRegularStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size11,
@@ -88,12 +87,21 @@ class WalletTransactionTile extends StatelessWidget {
                   runSpacing: 8,
                   children: [
                     _MetaPill(
-                      label: locale.walletTransactionStatusLabel(item.status),
-                      color: statusColor,
+                      label: item.isIncoming
+                          ? locale.wallet_direction_in
+                          : locale.wallet_direction_out,
+                      color: item.isIncoming
+                          ? AppColors.success
+                          : AppColors.warning,
                     ),
-                    _MetaPill(label: item.reference, color: color.primary),
                     _MetaPill(
-                      label: DateFormat('d MMM, h:mm a').format(item.date),
+                      label: item.referenceId?.trim().isNotEmpty == true
+                          ? item.referenceId!
+                          : item.referenceType,
+                      color: color.primary,
+                    ),
+                    _MetaPill(
+                      label: DateFormat('d MMM, h:mm a').format(item.createdAt),
                       color: color.secondary,
                     ),
                   ],
@@ -106,40 +114,33 @@ class WalletTransactionTile extends StatelessWidget {
     );
   }
 
-  IconData _kindIcon(WalletTransactionKind kind) {
-    switch (kind) {
-      case WalletTransactionKind.delivery:
+  IconData _kindIcon(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'orderrevenue':
         return Icons.local_shipping_rounded;
-      case WalletTransactionKind.withdrawal:
+      case 'hold':
+      case 'payout':
         return Icons.south_west_rounded;
-      case WalletTransactionKind.bonus:
-        return Icons.auto_awesome_rounded;
-      case WalletTransactionKind.adjustment:
+      case 'release':
+        return Icons.undo_rounded;
+      case 'adjustment':
+      default:
         return Icons.tune_rounded;
     }
   }
 
-  Color _kindColor(WalletTransactionKind kind) {
-    switch (kind) {
-      case WalletTransactionKind.delivery:
+  Color _kindColor(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'orderrevenue':
         return AppColors.success;
-      case WalletTransactionKind.withdrawal:
+      case 'hold':
+      case 'payout':
         return AppColors.info;
-      case WalletTransactionKind.bonus:
+      case 'release':
         return AppColors.secondary;
-      case WalletTransactionKind.adjustment:
+      case 'adjustment':
+      default:
         return AppColors.warning;
-    }
-  }
-
-  Color _statusColor(BuildContext context, WalletTransactionStatus status) {
-    switch (status) {
-      case WalletTransactionStatus.completed:
-        return AppColors.success;
-      case WalletTransactionStatus.pending:
-        return AppColors.warning;
-      case WalletTransactionStatus.failed:
-        return Theme.of(context).colorScheme.error;
     }
   }
 }

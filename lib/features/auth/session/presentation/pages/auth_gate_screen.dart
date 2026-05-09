@@ -8,6 +8,7 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/constants/assets.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/services/driver_notification_router_service.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_cubit.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
@@ -26,6 +27,7 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
   void initState() {
     super.initState();
     _cubit = getIt<AuthGateCubit>();
+    getIt<DriverNotificationRouterService>().lockNavigation();
     _cubit.doIntent(const AuthGateStartedEvent());
   }
 

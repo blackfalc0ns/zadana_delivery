@@ -47,6 +47,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   DateTime? _lastHomeRefreshStartedAt;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
+  bool _disconnectRequested = false;
   DateTime? _retryAfter;
   Timer? _reconnectTimer;
   static DriverHomeRemoteDataSourceImpl? _instanceForStreamCallback;
@@ -220,6 +221,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     }
 
     _isConnecting = true;
+    _disconnectRequested = false;
     try {
       final token = (await getIt<TokenService>().getToken())?.trim() ?? '';
       if (token.isEmpty) {
@@ -343,6 +345,31 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       }
     });
 
+    connection.on(NetworkConstants.driverHomeUpdatedEvent, (arguments) {
+      final payload = (arguments?.isNotEmpty ?? false)
+          ? arguments!.first
+          : null;
+      final event = _normalizeMap(payload);
+      if (event.isEmpty) {
+        _log('Driver home updated event ignored: payload is empty');
+        return;
+      }
+
+      try {
+        final home = DriverHomeModelDto.fromJson(event);
+        _log(
+          'Driver home updated event received: '
+          'homeState=${home.homeState}, hasOffer=${home.currentOffer != null}',
+        );
+        emitHome(home);
+      } catch (_) {
+        _log(
+          'Driver home updated payload could not be parsed directly; syncing fallback',
+        );
+        unawaited(_refreshHomeFromApi());
+      }
+    });
+
     connection.onreconnected(({String? connectionId}) {
       _logConnectionStatus(
         'RECONNECTED',
@@ -362,6 +389,10 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       );
       if (identical(_hubConnection, connection)) {
         _hubConnection = null;
+      }
+      if (_disconnectRequested) {
+        _log('Home realtime disconnect was requested manually; reconnect skipped');
+        return;
       }
       _scheduleReconnect();
     });
@@ -429,6 +460,25 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       _reconnectTimer = null;
       unawaited(_ensureSignalRConnected());
     });
+  }
+
+  @override
+  Future<void> disconnectRealtime() async {
+    _disconnectRequested = true;
+    _retryAfter = null;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    final connection = _hubConnection;
+    _hubConnection = null;
+    if (connection == null) {
+      return;
+    }
+
+    try {
+      await connection.stop();
+    } catch (error) {
+      _log('Home realtime disconnect ignored an error: $error');
+    }
   }
 
   Future<void> _ensureHostReachable() async {

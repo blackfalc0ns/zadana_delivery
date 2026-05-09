@@ -46,22 +46,30 @@ class DriverSupportCaseModelDto {
       orderId: orderIdValue?.toString() ?? '',
       orderNumber: orderNumberValue?.toString() ?? '',
       type: json['type']?.toString() ?? '',
-      typeLabelAr: json['type_label_ar']?.toString(),
-      typeLabelEn: json['type_label_en']?.toString(),
+      typeLabelAr: (json['type_label_ar'] ?? json['typeLabelAr'])?.toString(),
+      typeLabelEn: (json['type_label_en'] ?? json['typeLabelEn'])?.toString(),
       status: json['status']?.toString() ?? '',
-      statusLabelAr: json['status_label_ar']?.toString(),
-      statusLabelEn: json['status_label_en']?.toString(),
+      statusLabelAr: (json['status_label_ar'] ?? json['statusLabelAr'])
+          ?.toString(),
+      statusLabelEn: (json['status_label_en'] ?? json['statusLabelEn'])
+          ?.toString(),
       priority: json['priority']?.toString() ?? '',
-      priorityLabelAr: json['priority_label_ar']?.toString(),
-      priorityLabelEn: json['priority_label_en']?.toString(),
+      priorityLabelAr: (json['priority_label_ar'] ?? json['priorityLabelAr'])
+          ?.toString(),
+      priorityLabelEn: (json['priority_label_en'] ?? json['priorityLabelEn'])
+          ?.toString(),
       reasonCode: reasonCodeValue?.toString() ?? '',
-      reasonLabelAr: json['reason_label_ar']?.toString(),
-      reasonLabelEn: json['reason_label_en']?.toString(),
+      reasonLabelAr: (json['reason_label_ar'] ?? json['reasonLabelAr'])
+          ?.toString(),
+      reasonLabelEn: (json['reason_label_en'] ?? json['reasonLabelEn'])
+          ?.toString(),
       message: json['message']?.toString() ?? '',
       adminNote: adminNoteValue?.toString(),
       queue: json['queue']?.toString(),
-      queueLabelAr: json['queue_label_ar']?.toString(),
-      queueLabelEn: json['queue_label_en']?.toString(),
+      queueLabelAr: (json['queue_label_ar'] ?? json['queueLabelAr'])
+          ?.toString(),
+      queueLabelEn: (json['queue_label_en'] ?? json['queueLabelEn'])
+          ?.toString(),
       decisionNotes: decisionNotesValue?.toString(),
       createdAt: _dateTimeFromJson(createdAtValue),
       updatedAt: _dateTimeFromJson(updatedAtValue),

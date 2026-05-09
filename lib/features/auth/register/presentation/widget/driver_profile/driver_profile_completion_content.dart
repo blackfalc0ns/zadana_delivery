@@ -17,11 +17,16 @@ class DriverProfileCompletionContent extends StatelessWidget {
     required this.addressController,
     required this.nationalIdController,
     required this.licenseNumberController,
+    required this.nationalIdExpiryController,
+    required this.driverLicenseExpiryController,
+    required this.vehicleLicenseNumberController,
+    required this.vehicleLicenseExpiryController,
     required this.onBack,
     required this.onNext,
     required this.onVehicleTypeChanged,
     required this.onRegionCityChanged,
     required this.onPickImage,
+    required this.onPickExpiryDate,
   });
 
   final GlobalKey<FormState> formKey;
@@ -29,11 +34,16 @@ class DriverProfileCompletionContent extends StatelessWidget {
   final TextEditingController addressController;
   final TextEditingController nationalIdController;
   final TextEditingController licenseNumberController;
+  final TextEditingController nationalIdExpiryController;
+  final TextEditingController driverLicenseExpiryController;
+  final TextEditingController vehicleLicenseNumberController;
+  final TextEditingController vehicleLicenseExpiryController;
   final VoidCallback onBack;
   final VoidCallback onNext;
   final ValueChanged<String> onVehicleTypeChanged;
   final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
   final ValueChanged<String> onPickImage;
+  final ValueChanged<TextEditingController> onPickExpiryDate;
 
   @override
   Widget build(BuildContext context) {
@@ -90,9 +100,16 @@ class DriverProfileCompletionContent extends StatelessWidget {
                   addressController: addressController,
                   nationalIdController: nationalIdController,
                   licenseNumberController: licenseNumberController,
+                  nationalIdExpiryController: nationalIdExpiryController,
+                  driverLicenseExpiryController: driverLicenseExpiryController,
+                  vehicleLicenseNumberController:
+                      vehicleLicenseNumberController,
+                  vehicleLicenseExpiryController:
+                      vehicleLicenseExpiryController,
                   onVehicleTypeChanged: onVehicleTypeChanged,
                   onRegionCityChanged: onRegionCityChanged,
                   onPickImage: onPickImage,
+                  onPickExpiryDate: onPickExpiryDate,
                 ),
               ),
             ),

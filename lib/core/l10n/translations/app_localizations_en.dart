@@ -1436,10 +1436,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver_profile_national_id_hint => 'Enter national ID';
 
   @override
+  String get driver_profile_national_id_expiry_label =>
+      'National ID expiry date';
+
+  @override
   String get driver_profile_license_number_label => 'License number';
 
   @override
   String get driver_profile_license_number_hint => 'Enter license number';
+
+  @override
+  String get driver_profile_driver_license_expiry_label =>
+      'Driver license expiry date';
+
+  @override
+  String get driver_profile_vehicle_license_number_label =>
+      'Vehicle license number';
+
+  @override
+  String get driver_profile_vehicle_license_number_hint =>
+      'Enter vehicle license number';
+
+  @override
+  String get driver_profile_vehicle_license_expiry_label =>
+      'Vehicle license expiry date';
+
+  @override
+  String get driver_profile_expiry_date_label => 'Expiry date';
+
+  @override
+  String get driver_profile_expiry_date_hint => 'Select expiry date';
+
+  @override
+  String get driver_profile_invalid_date_error => 'Enter a valid date.';
+
+  @override
+  String get driver_profile_expiry_date_past_error =>
+      'Expiry date cannot be in the past.';
 
   @override
   String get driver_profile_vehicle_card_title => 'Vehicle details';
@@ -1543,6 +1576,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Each upload here makes the driver and vehicle data clearer.';
 
   @override
+  String get driver_profile_national_id_card_title => 'National ID';
+
+  @override
+  String get driver_profile_driver_license_card_title => 'Driver license';
+
+  @override
+  String get driver_profile_vehicle_license_card_title => 'Vehicle license';
+
+  @override
+  String get driver_profile_vehicle_license_title => 'Vehicle license image';
+
+  @override
+  String get driver_profile_vehicle_license_subtitle =>
+      'Upload a clear image of the vehicle license.';
+
+  @override
   String get driver_profile_review_card_title => 'Review and submit';
 
   @override
@@ -1617,6 +1666,110 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get auth_pending_eta_hint =>
       'Account review usually happens shortly after the submitted data is confirmed as complete.';
+
+  @override
+  String get driver_account_status_title => 'Account status';
+
+  @override
+  String get driver_account_status_subtitle =>
+      'Track each document review, missing requirements, and the next action needed to complete your account.';
+
+  @override
+  String get driver_account_status_completion_label => 'Profile completion';
+
+  @override
+  String get driver_account_status_account_label => 'Account status';
+
+  @override
+  String get driver_account_status_portrait_ready => 'Personal photo uploaded';
+
+  @override
+  String get driver_account_status_portrait_missing => 'Personal photo missing';
+
+  @override
+  String get driver_account_status_files_label => 'Uploaded files';
+
+  @override
+  String driver_account_status_files_count(int count) {
+    return '$count file(s)';
+  }
+
+  @override
+  String get driver_account_status_edit_details => 'Edit details';
+
+  @override
+  String get driver_account_status_update_files => 'Update files';
+
+  @override
+  String get driver_account_status_edit_personal => 'Edit personal info';
+
+  @override
+  String get driver_account_status_edit_vehicle => 'Edit vehicle and dates';
+
+  @override
+  String get driver_account_status_edit_documents => 'Edit uploaded documents';
+
+  @override
+  String get driver_account_status_document_valid => 'Approved';
+
+  @override
+  String get driver_account_status_document_review => 'Under review';
+
+  @override
+  String get driver_account_status_document_rejected => 'Rejected';
+
+  @override
+  String get driver_account_status_document_expiring => 'Expired';
+
+  @override
+  String get driver_account_status_verification_approved =>
+      'Verification approved';
+
+  @override
+  String get driver_account_status_verification_needs_documents =>
+      'Documents required';
+
+  @override
+  String get driver_account_status_verification_under_review => 'Under review';
+
+  @override
+  String get driver_account_status_account_active => 'Active';
+
+  @override
+  String get driver_account_status_account_pending => 'Pending';
+
+  @override
+  String get driver_account_status_missing_personal_info =>
+      'Missing personal info';
+
+  @override
+  String get driver_account_status_missing_vehicle_info =>
+      'Missing vehicle info';
+
+  @override
+  String get driver_account_status_missing_documents => 'Missing documents';
+
+  @override
+  String get driver_account_status_expired_documents => 'Expired documents';
+
+  @override
+  String get driver_account_status_rejected_documents => 'Rejected documents';
+
+  @override
+  String get driver_account_status_missing_region_city =>
+      'Region and city missing';
+
+  @override
+  String get driver_account_status_document_rejected_banner =>
+      'A document needs your attention';
+
+  @override
+  String get driver_account_status_document_approved_banner =>
+      'A document was approved';
+
+  @override
+  String get driver_account_status_request_docs_banner =>
+      'More documents are required';
 
   @override
   String get auth_blocked_title => 'Account temporarily blocked';
@@ -1811,6 +1964,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Track your live balance, payout readiness, incentives, and every movement in one premium dashboard.';
 
   @override
+  String get wallet_subtitle_secure =>
+      'Review your live balance, recent activity, and payout readiness in one secure wallet hub.';
+
+  @override
   String get wallet_preview_state => 'Preview state';
 
   @override
@@ -1913,6 +2070,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_transaction_adjustment => 'Wallet adjustment';
 
   @override
+  String get wallet_transaction_release => 'Withdrawal released';
+
+  @override
+  String get wallet_direction_in => 'IN';
+
+  @override
+  String get wallet_direction_out => 'OUT';
+
+  @override
   String get wallet_payment_bank_account => 'Bank account';
 
   @override
@@ -1920,6 +2086,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wallet_payment_instant_transfer => 'Instant transfer';
+
+  @override
+  String get wallet_withdrawal_requests => 'Withdrawal requests';
+
+  @override
+  String get wallet_pending_requests => 'Pending requests';
+
+  @override
+  String get wallet_pending_requests_amount => 'Pending amount';
+
+  @override
+  String get wallet_total_requests => 'Total requests';
+
+  @override
+  String get wallet_view_all => 'View all';
+
+  @override
+  String get wallet_transactions_empty_title => 'No wallet transactions yet';
+
+  @override
+  String get wallet_transactions_empty_subtitle =>
+      'Completed deliveries and wallet movements will appear here.';
+
+  @override
+  String get wallet_withdrawals_empty_title => 'No withdrawal requests yet';
+
+  @override
+  String get wallet_withdrawals_empty_subtitle =>
+      'Your withdrawal history will appear here after the first payout request.';
+
+  @override
+  String get wallet_load_more => 'Load more';
+
+  @override
+  String get wallet_add_method => 'Add method';
+
+  @override
+  String get wallet_methods_empty_title => 'No payout methods added';
+
+  @override
+  String get wallet_methods_empty_subtitle =>
+      'Add a secure payout method to start withdrawing your wallet balance.';
+
+  @override
+  String get wallet_withdraw_title => 'Create withdrawal request';
+
+  @override
+  String get wallet_withdraw_info_hint =>
+      'Withdrawals are processed securely using your selected payout method.';
+
+  @override
+  String get wallet_withdraw_amount_subtitle =>
+      'Enter the amount you want to transfer from your wallet balance.';
+
+  @override
+  String get wallet_withdraw_method_subtitle =>
+      'Choose whether to use the primary payout method or select another saved method.';
+
+  @override
+  String get wallet_amount_label => 'Amount';
+
+  @override
+  String get wallet_amount_hint => 'Enter amount';
+
+  @override
+  String get wallet_amount_invalid => 'Enter an amount greater than zero.';
+
+  @override
+  String get wallet_amount_exceeds_balance =>
+      'Amount exceeds available balance.';
+
+  @override
+  String get wallet_use_primary_method => 'Use primary payout method';
+
+  @override
+  String get wallet_no_primary_method => 'No primary method available';
+
+  @override
+  String get wallet_select_method => 'Select a payout method.';
+
+  @override
+  String get wallet_method_saved => 'Payout method added successfully.';
+
+  @override
+  String get wallet_method_updated => 'Payout method updated successfully.';
+
+  @override
+  String get wallet_method_deleted => 'Payout method deleted successfully.';
+
+  @override
+  String get wallet_make_primary => 'Make primary';
+
+  @override
+  String get wallet_primary_updated => 'Primary payout method updated.';
+
+  @override
+  String get wallet_delete_method_title => 'Delete payout method?';
+
+  @override
+  String get wallet_delete_method_message =>
+      'This action removes the payout method if it is not linked to withdrawal history.';
+
+  @override
+  String get wallet_edit_method_title => 'Edit payout method';
+
+  @override
+  String get wallet_type_label => 'Method type';
+
+  @override
+  String get wallet_account_holder_label => 'Account holder name';
+
+  @override
+  String get wallet_provider_name_label => 'Provider name';
+
+  @override
+  String get wallet_account_identifier_label => 'Account identifier';
+
+  @override
+  String get wallet_identifier_reentry_hint =>
+      'Re-enter the full identifier to keep this payment method secure.';
+
+  @override
+  String get wallet_identifier_secure_hint =>
+      'The full identifier is sent securely and never shown back in the wallet UI.';
+
+  @override
+  String get wallet_save_action => 'Save';
+
+  @override
+  String get wallet_status_processing => 'Processing';
+
+  @override
+  String get wallet_status_paid => 'Paid';
+
+  @override
+  String get wallet_status_cancelled => 'Cancelled';
 
   @override
   String get wallet_bonus_weekend => 'Weekend challenge';
@@ -2105,6 +2407,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get order_details_confirm_delivery => 'Confirm delivery';
 
   @override
+  String get order_details_resend_otp => 'Resend code';
+
+  @override
+  String order_details_resend_otp_in(int seconds) {
+    return 'Resend in ${seconds}s';
+  }
+
+  @override
   String get order_details_pickup_code_title => 'Order pickup code';
 
   @override
@@ -2243,6 +2553,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get order_details_delivered_dialog_confirm => 'Confirm delivery';
+
+  @override
+  String get order_delivery_success_title => 'Order delivered successfully';
+
+  @override
+  String get order_delivery_success_subtitle =>
+      'Nice work. This trip is complete and you can head back to check new orders now.';
+
+  @override
+  String get order_delivery_success_button => 'Back to home';
 
   @override
   String get order_details_call_failure =>

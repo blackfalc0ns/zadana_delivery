@@ -5,6 +5,12 @@ abstract class AppConstants {
   static const String refreshToken = 'refreshToken';
   static const String isAccessTokenSaved = 'isAccessTokenSaved';
   static const String isRefreshTokenSaved = 'isRefreshTokenSaved';
+  static const String currentUserId = 'currentUserId';
+  static const String notificationsEnabled = 'notificationsEnabled';
+  static const String notificationDeviceId = 'notificationDeviceId';
+  static const String notificationPushToken = 'notificationPushToken';
+  static const String notificationPushSubscriptionId =
+      'notificationPushSubscriptionId';
   static const String isRemember = 'isRemember';
   static const String driverId = 'driverId';
   static const String driverFullName = 'driverFullName';

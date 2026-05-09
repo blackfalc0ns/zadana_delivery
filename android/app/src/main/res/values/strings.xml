@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="driver_heads_up_channel_name">Urgent driver updates</string>
+    <string name="driver_heads_up_channel_description">Urgent alerts for delivery offers, account changes, and support requests.</string>
+    <string name="driver_general_channel_name">Driver updates</string>
+    <string name="driver_general_channel_description">General alerts for wallet, assignment, and inbox updates.</string>
+</resources>

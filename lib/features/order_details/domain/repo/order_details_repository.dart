@@ -40,6 +40,14 @@ abstract class OrderDetailsRepository {
     required String otpCode,
   });
 
+  Future<ApiResult<OrderDetailsActionResultEntity>> resendDeliveryOtp(
+    String assignmentId,
+  );
+
+  Future<ApiResult<OrderDetailsActionResultEntity>> resendPickupOtp(
+    String assignmentId,
+  );
+
   Future<ApiResult<OrderDetailsActionResultEntity>> markOrderArrivedAtVendor(
     String orderId,
   );

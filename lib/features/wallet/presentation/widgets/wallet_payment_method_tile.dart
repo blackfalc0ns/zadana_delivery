@@ -3,13 +3,13 @@ import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/features/wallet/presentation/mock/wallet_fake_data.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/mock/wallet_localization_examples.dart';
 
 class WalletPaymentMethodTile extends StatelessWidget {
   const WalletPaymentMethodTile({super.key, required this.item});
 
-  final WalletPaymentMethodItem item;
+  final DriverPayoutMethodEntity item;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class WalletPaymentMethodTile extends StatelessWidget {
               color: color.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(item.icon, color: color.primary),
+            child: Icon(_iconForType(item.type), color: color.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -42,7 +42,7 @@ class WalletPaymentMethodTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  locale.walletPaymentMethodLabel(item.kind),
+                  locale.walletPaymentMethodLabel(item.type),
                   style: getBoldStyle(
                     fontFamily: FontConstant.cairo,
                     fontSize: FontSize.size14,
@@ -84,5 +84,17 @@ class WalletPaymentMethodTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  IconData _iconForType(String type) {
+    switch (type.trim().toLowerCase()) {
+      case 'bankaccount':
+        return Icons.account_balance_rounded;
+      case 'debitcard':
+        return Icons.credit_card_rounded;
+      case 'instanttransfer':
+      default:
+        return Icons.bolt_rounded;
+    }
   }
 }

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
+import 'package:zadana_delivery/core/constants/app_constants.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_customer_otp_field.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_otp_value_card.dart';
+import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_resend_otp_action.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_sheet_components.dart';
 
 class PickupOtpSheetContent extends StatefulWidget {
@@ -13,6 +15,7 @@ class PickupOtpSheetContent extends StatefulWidget {
     required this.sheetContext,
     this.onConfirm,
     this.onSubmit,
+    this.onResend,
     this.onCopyTap,
   });
 
@@ -20,6 +23,7 @@ class PickupOtpSheetContent extends StatefulWidget {
   final BuildContext sheetContext;
   final VoidCallback? onConfirm;
   final Future<bool> Function(String otpCode)? onSubmit;
+  final Future<bool> Function()? onResend;
   final VoidCallback? onCopyTap;
 
   @override
@@ -57,7 +61,7 @@ class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
     if (onSubmit == null || _isSubmitting) return;
 
     final otpCode = _controller.text.trim();
-    if (otpCode.length != 4) {
+    if (otpCode.length != AppConstants.otpLength) {
       ScaffoldMessenger.of(widget.sheetContext).showSnackBar(
         SnackBar(
           content: Text(
@@ -118,7 +122,7 @@ class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
               focusNode: _focusNode,
               enabled: !_isSubmitting,
               onChanged: (value) {
-                if (value.trim().length == 4) {
+                if (value.trim().length == AppConstants.otpLength) {
                   _submitIfPossible();
                 }
               },
@@ -128,6 +132,10 @@ class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
               onTap: widget.onCopyTap,
               child: OtpValueCard(otp: widget.otp),
             ),
+          if (widget.onResend != null) ...[
+            const SizedBox(height: 14),
+            OrderDetailsResendOtpAction(onResend: widget.onResend!),
+          ],
           if (widget.onConfirm != null) ...[
             const SizedBox(height: 18),
             SheetConfirmButton(

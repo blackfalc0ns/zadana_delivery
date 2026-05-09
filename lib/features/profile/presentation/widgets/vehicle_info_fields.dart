@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_region_city_selector.dart';
@@ -15,6 +16,10 @@ class VehicleInfoFields extends StatelessWidget {
     required this.onTypeChanged,
     required this.nationalIdController,
     required this.licenseController,
+    required this.nationalIdExpiryController,
+    required this.driverLicenseExpiryController,
+    required this.vehicleLicenseNumberController,
+    required this.vehicleLicenseExpiryController,
     required this.regionCities,
     required this.isRegionCitiesLoading,
     required this.selectedCityId,
@@ -24,12 +29,17 @@ class VehicleInfoFields extends StatelessWidget {
     required this.regionCitiesFailure,
     required this.onRetryRegionCities,
     required this.onRegionCityChanged,
+    required this.onPickDate,
   });
 
   final String groupValue;
   final ValueChanged<String> onTypeChanged;
   final TextEditingController nationalIdController;
   final TextEditingController licenseController;
+  final TextEditingController nationalIdExpiryController;
+  final TextEditingController driverLicenseExpiryController;
+  final TextEditingController vehicleLicenseNumberController;
+  final TextEditingController vehicleLicenseExpiryController;
   final List<DriverRegionCityEntity> regionCities;
   final bool isRegionCitiesLoading;
   final String selectedCityId;
@@ -39,6 +49,7 @@ class VehicleInfoFields extends StatelessWidget {
   final Failure? regionCitiesFailure;
   final VoidCallback onRetryRegionCities;
   final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
+  final ValueChanged<TextEditingController> onPickDate;
 
   @override
   Widget build(BuildContext context) {
@@ -85,10 +96,53 @@ class VehicleInfoFields extends StatelessWidget {
               ),
               const SizedBox(height: Spacing.md),
               ProfileFormField(
+                controller: nationalIdExpiryController,
+                label: locale.driver_profile_national_id_expiry_label,
+                hint: locale.driver_profile_expiry_date_hint,
+                icon: Icons.event_outlined,
+                readOnly: true,
+                onTap: () => onPickDate(nationalIdExpiryController),
+                suffixIcon: const Icon(Icons.calendar_month_outlined),
+                validator: (value) =>
+                    Validations.validateFutureDate(context, value),
+              ),
+              const SizedBox(height: Spacing.md),
+              ProfileFormField(
                 controller: licenseController,
                 label: locale.driver_profile_license_number_label,
                 hint: locale.driver_profile_license_number_hint,
                 icon: Icons.assignment_outlined,
+              ),
+              const SizedBox(height: Spacing.md),
+              ProfileFormField(
+                controller: driverLicenseExpiryController,
+                label: locale.driver_profile_driver_license_expiry_label,
+                hint: locale.driver_profile_expiry_date_hint,
+                icon: Icons.event_outlined,
+                readOnly: true,
+                onTap: () => onPickDate(driverLicenseExpiryController),
+                suffixIcon: const Icon(Icons.calendar_month_outlined),
+                validator: (value) =>
+                    Validations.validateFutureDate(context, value),
+              ),
+              const SizedBox(height: Spacing.md),
+              ProfileFormField(
+                controller: vehicleLicenseNumberController,
+                label: locale.driver_profile_vehicle_license_number_label,
+                hint: locale.driver_profile_vehicle_license_number_hint,
+                icon: Icons.description_outlined,
+              ),
+              const SizedBox(height: Spacing.md),
+              ProfileFormField(
+                controller: vehicleLicenseExpiryController,
+                label: locale.driver_profile_vehicle_license_expiry_label,
+                hint: locale.driver_profile_expiry_date_hint,
+                icon: Icons.event_outlined,
+                readOnly: true,
+                onTap: () => onPickDate(vehicleLicenseExpiryController),
+                suffixIcon: const Icon(Icons.calendar_month_outlined),
+                validator: (value) =>
+                    Validations.validateFutureDate(context, value),
               ),
             ],
           ),

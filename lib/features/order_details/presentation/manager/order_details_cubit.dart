@@ -25,6 +25,8 @@ import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_delivery_failed_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_on_the_way_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/mark_order_picked_up_usecase.dart';
+import 'package:zadana_delivery/features/order_details/domain/usecase/resend_delivery_otp_usecase.dart';
+import 'package:zadana_delivery/features/order_details/domain/usecase/resend_pickup_otp_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/verify_delivery_otp_usecase.dart';
 import 'package:zadana_delivery/features/order_details/domain/usecase/verify_pickup_otp_usecase.dart';
 import 'package:zadana_delivery/features/order_details/presentation/manager/order_details_event.dart';
@@ -55,6 +57,10 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       getIt<VerifyDeliveryOtpUseCase>();
   final VerifyPickupOtpUseCase _verifyPickupOtpUseCase =
       getIt<VerifyPickupOtpUseCase>();
+  final ResendDeliveryOtpUseCase _resendDeliveryOtpUseCase =
+      getIt<ResendDeliveryOtpUseCase>();
+  final ResendPickupOtpUseCase _resendPickupOtpUseCase =
+      getIt<ResendPickupOtpUseCase>();
   final AcceptDriverOfferUseCase _acceptDriverOfferUseCase =
       getIt<AcceptDriverOfferUseCase>();
   final RefreshDriverHomeUseCase _refreshDriverHomeUseCase =
@@ -145,6 +151,16 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             event.assignmentId,
             otpCode: event.otpCode,
           ),
+          onSuccessRefreshAssignment: true,
+        );
+      case OrderDetailsResendDeliveryOtpEvent():
+        return _runAction(
+          () => _resendDeliveryOtpUseCase.call(event.assignmentId),
+          onSuccessRefreshAssignment: true,
+        );
+      case OrderDetailsResendPickupOtpEvent():
+        return _runAction(
+          () => _resendPickupOtpUseCase.call(event.assignmentId),
           onSuccessRefreshAssignment: true,
         );
       case OrderDetailsReportIssueEvent():

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
@@ -19,27 +19,58 @@ class DriverRealtimeService {
 
   final StreamController<Map<String, dynamic>> _notificationController =
       StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _deliveryOfferController =
+      StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _orderStatusController =
       StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _arrivalStateController =
       StreamController<Map<String, dynamic>>.broadcast();
   final StreamController<Map<String, dynamic>> _assignmentUpdatedController =
       StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _supportCaseChangedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _driverHomeUpdatedController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  final StreamController<Map<String, dynamic>> _driverWalletUpdatedController =
+      StreamController<Map<String, dynamic>>.broadcast();
 
   HubConnection? _hubConnection;
   bool _isInitialized = false;
   bool _isConnecting = false;
+  bool _disconnectRequested = false;
   DateTime? _retryAfter;
   Timer? _reconnectTimer;
 
   Stream<Map<String, dynamic>> get notifications =>
       _notificationController.stream;
+  Stream<Map<String, dynamic>> get deliveryOffers =>
+      _deliveryOfferController.stream;
   Stream<Map<String, dynamic>> get orderStatusChanged =>
       _orderStatusController.stream;
   Stream<Map<String, dynamic>> get arrivalStateChanged =>
       _arrivalStateController.stream;
   Stream<Map<String, dynamic>> get assignmentUpdated =>
       _assignmentUpdatedController.stream;
+  Stream<Map<String, dynamic>> get supportCaseChanged =>
+      _supportCaseChangedController.stream;
+  Stream<Map<String, dynamic>> get driverHomeUpdated =>
+      _driverHomeUpdatedController.stream;
+  Stream<Map<String, dynamic>> get driverWalletUpdated =>
+      _driverWalletUpdatedController.stream;
+
+  Future<void> handleAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.resumed) {
+      _log('App resumed; ensuring SignalR connection is active');
+      await ensureConnected();
+      return;
+    }
+
+    if (state == AppLifecycleState.detached) {
+      _log('App detached; clearing pending reconnect timer');
+      _reconnectTimer?.cancel();
+      _reconnectTimer = null;
+    }
+  }
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -90,6 +121,7 @@ class DriverRealtimeService {
     }
 
     _isConnecting = true;
+    _disconnectRequested = false;
     try {
       await _ensureHostReachable();
       final hubUrl = _resolveHubUrl(
@@ -115,6 +147,20 @@ class DriverRealtimeService {
             retryDelays: const [0, 2000, 5000, 10000, 20000],
           )
           .build();
+
+      connection.on(NetworkConstants.driverDeliveryOfferEvent, (arguments) {
+        final payload = _normalizeMap(_extractFirstArgument(arguments));
+        if (payload.isEmpty) {
+          _log('Delivery offer stream event ignored: payload is empty');
+          return;
+        }
+        _log(
+          'Delivery offer stream event received: '
+          'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
+          'orderId=${payload['orderId'] ?? 'n/a'}',
+        );
+        _deliveryOfferController.add(payload);
+      });
 
       connection.on(NetworkConstants.driverNotificationEvent, (arguments) {
         final payload = _extractFirstArgument(arguments);
@@ -177,6 +223,50 @@ class DriverRealtimeService {
         _assignmentUpdatedController.add(payload);
       });
 
+      connection.on(
+        NetworkConstants.driverOrderSupportCaseChangedEvent,
+        (arguments) {
+          final payload = _normalizeMap(_extractFirstArgument(arguments));
+          if (payload.isEmpty) {
+            _log('Support case stream event ignored: payload is empty');
+            return;
+          }
+          _log(
+            'Support case stream event received: '
+            'supportCaseId=${payload['supportCaseId'] ?? payload['caseId'] ?? 'n/a'}, '
+            'orderId=${payload['orderId'] ?? 'n/a'}',
+          );
+          _supportCaseChangedController.add(payload);
+        },
+      );
+
+      connection.on(NetworkConstants.driverHomeUpdatedEvent, (arguments) {
+        final payload = _normalizeMap(_extractFirstArgument(arguments));
+        if (payload.isEmpty) {
+          _log('Driver home stream event ignored: payload is empty');
+          return;
+        }
+        _log(
+          'Driver home stream event received: '
+          'homeState=${payload['homeState'] ?? 'unknown'}',
+        );
+        _driverHomeUpdatedController.add(payload);
+      });
+
+      connection.on(NetworkConstants.driverWalletUpdatedEvent, (arguments) {
+        final payload = _normalizeMap(_extractFirstArgument(arguments));
+        if (payload.isEmpty) {
+          _log('Driver wallet stream event ignored: payload is empty');
+          return;
+        }
+        _log(
+          'Driver wallet stream event received: '
+          'currentBalance=${payload['currentBalance'] ?? 'n/a'}, '
+          'pendingBalance=${payload['pendingBalance'] ?? 'n/a'}',
+        );
+        _driverWalletUpdatedController.add(payload);
+      });
+
       connection.onreconnected(({String? connectionId}) {
         _logConnectionStatus(
           'RECONNECTED',
@@ -195,6 +285,10 @@ class DriverRealtimeService {
         );
         if (identical(_hubConnection, connection)) {
           _hubConnection = null;
+        }
+        if (_disconnectRequested) {
+          _log('SignalR disconnect was requested manually; reconnect skipped');
+          return;
         }
         _scheduleReconnect();
       });
@@ -236,6 +330,24 @@ class DriverRealtimeService {
       _reconnectTimer = null;
       unawaited(ensureConnected());
     });
+  }
+
+  Future<void> disconnect() async {
+    _disconnectRequested = true;
+    _retryAfter = null;
+    _reconnectTimer?.cancel();
+    _reconnectTimer = null;
+    final connection = _hubConnection;
+    _hubConnection = null;
+    if (connection == null) {
+      return;
+    }
+
+    try {
+      await connection.stop();
+    } catch (error) {
+      _log('SignalR disconnect ignored an error: $error');
+    }
   }
 
   Future<void> _ensureHostReachable() async {

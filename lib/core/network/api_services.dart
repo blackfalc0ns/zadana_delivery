@@ -15,6 +15,7 @@ abstract class ApiServices {
   @MultiPart()
   @POST(EndPoints.fileUpload)
   Future<FileUploadResponseDto> uploadFile(
+    @Part(name: 'directory') String directory,
     @Part(name: 'file') MultipartFile file,
   );
 
@@ -77,6 +78,46 @@ abstract class ApiServices {
 
   @GET(EndPoints.driverNotificationsUnreadCount)
   Future<dynamic> getDriverNotificationsUnreadCount();
+
+  @GET(EndPoints.driverWallet)
+  Future<dynamic> getDriverWalletSummary();
+
+  @GET(EndPoints.driverWalletTransactions)
+  Future<dynamic> getDriverWalletTransactions({
+    @Query('page') int page = 1,
+    @Query('pageSize') int pageSize = 20,
+  });
+
+  @GET(EndPoints.driverWalletPaymentMethods)
+  Future<dynamic> getDriverWalletPaymentMethods();
+
+  @POST(EndPoints.driverWalletPaymentMethods)
+  Future<dynamic> createDriverWalletPaymentMethod(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @PUT('${EndPoints.driverWalletPaymentMethods}/{id}')
+  Future<dynamic> updateDriverWalletPaymentMethod(
+    @Path('id') String id,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @DELETE('${EndPoints.driverWalletPaymentMethods}/{id}')
+  Future<dynamic> deleteDriverWalletPaymentMethod(@Path('id') String id);
+
+  @POST(EndPoints.driverWalletPaymentMethodPrimary)
+  Future<dynamic> makeDriverWalletPaymentMethodPrimary(@Path('id') String id);
+
+  @POST(EndPoints.driverWalletWithdrawals)
+  Future<dynamic> createDriverWalletWithdrawal(
+    @Body() Map<String, dynamic> request,
+  );
+
+  @GET(EndPoints.driverWalletWithdrawals)
+  Future<dynamic> getDriverWalletWithdrawals({
+    @Query('page') int page = 1,
+    @Query('pageSize') int pageSize = 20,
+  });
 
   @GET(EndPoints.driverSupportCases)
   Future<dynamic> getDriverSupportCases({
@@ -152,6 +193,12 @@ abstract class ApiServices {
 
   @POST(EndPoints.driverAssignmentVerifyOtp)
   Future<dynamic> verifyDriverAssignmentOtp(
+    @Path('assignmentId') String assignmentId,
+    @Body() Map<String, dynamic> request,
+  );
+
+  @POST(EndPoints.driverAssignmentResendOtp)
+  Future<dynamic> resendDriverAssignmentOtp(
     @Path('assignmentId') String assignmentId,
     @Body() Map<String, dynamic> request,
   );

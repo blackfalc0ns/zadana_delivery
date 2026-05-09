@@ -103,6 +103,11 @@ class ProfileScreenContent extends StatelessWidget {
       const ProfileSectionData(
         items: [
           ProfileActionItemData(
+            icon: Icons.fact_check_outlined,
+            colorToken: ProfileColorToken.primary,
+            type: ProfileActionType.accountStatus,
+          ),
+          ProfileActionItemData(
             icon: Icons.person_outline_rounded,
             colorToken: ProfileColorToken.primary,
             type: ProfileActionType.personalInfo,

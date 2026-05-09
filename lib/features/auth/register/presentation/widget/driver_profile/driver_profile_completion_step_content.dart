@@ -23,18 +23,28 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
     required this.addressController,
     required this.nationalIdController,
     required this.licenseNumberController,
+    required this.nationalIdExpiryController,
+    required this.driverLicenseExpiryController,
+    required this.vehicleLicenseNumberController,
+    required this.vehicleLicenseExpiryController,
     required this.onVehicleTypeChanged,
     required this.onRegionCityChanged,
     required this.onPickImage,
+    required this.onPickExpiryDate,
   });
 
   final DriverProfileCompletionState state;
   final TextEditingController addressController;
   final TextEditingController nationalIdController;
   final TextEditingController licenseNumberController;
+  final TextEditingController nationalIdExpiryController;
+  final TextEditingController driverLicenseExpiryController;
+  final TextEditingController vehicleLicenseNumberController;
+  final TextEditingController vehicleLicenseExpiryController;
   final ValueChanged<String> onVehicleTypeChanged;
   final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
   final ValueChanged<String> onPickImage;
+  final ValueChanged<TextEditingController> onPickExpiryDate;
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +81,28 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                 isSubmitting: isSubmitting,
               ),
               const SizedBox(height: 12),
+              _buildDateField(
+                context,
+                controller: nationalIdExpiryController,
+                label: locale.driver_profile_national_id_expiry_label,
+                hint: locale.driver_profile_expiry_date_hint,
+                isSubmitting: isSubmitting,
+              ),
+              const SizedBox(height: 12),
               _buildField(
                 context,
                 controller: licenseNumberController,
                 label: locale.driver_profile_license_number_label,
                 hint: locale.driver_profile_license_number_hint,
                 icon: Icons.assignment_outlined,
+                isSubmitting: isSubmitting,
+              ),
+              const SizedBox(height: 12),
+              _buildDateField(
+                context,
+                controller: driverLicenseExpiryController,
+                label: locale.driver_profile_driver_license_expiry_label,
+                hint: locale.driver_profile_expiry_date_hint,
                 isSubmitting: isSubmitting,
               ),
             ],
@@ -108,6 +134,23 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                         .read<RegisterRegionsCubit>()
                         .loadRegionCities,
                     onChanged: isSubmitting ? (_) {} : onRegionCityChanged,
+                  ),
+                  const SizedBox(height: 14),
+                  _buildField(
+                    context,
+                    controller: vehicleLicenseNumberController,
+                    label: locale.driver_profile_vehicle_license_number_label,
+                    hint: locale.driver_profile_vehicle_license_number_hint,
+                    icon: Icons.description_outlined,
+                    isSubmitting: isSubmitting,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDateField(
+                    context,
+                    controller: vehicleLicenseExpiryController,
+                    label: locale.driver_profile_vehicle_license_expiry_label,
+                    hint: locale.driver_profile_expiry_date_hint,
+                    isSubmitting: isSubmitting,
                   ),
                   if (hasSelectedVehicle) ...[
                     const SizedBox(height: 14),
@@ -187,9 +230,9 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
               const SizedBox(height: 8),
               _buildUploadTile(
                 keyName: 'vehicle',
-                title: locale.driver_profile_vehicle_photo_title,
-                subtitle: locale.driver_profile_vehicle_photo_subtitle,
-                icon: _vehicleTypeIcon(normalizedVehicleType),
+                title: locale.driver_profile_vehicle_license_title,
+                subtitle: locale.driver_profile_vehicle_license_subtitle,
+                icon: Icons.description_outlined,
                 imagePath: state.draft.images['vehicle'],
               ),
             ],
@@ -210,8 +253,16 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                 value: nationalIdController.text,
               ),
               (
+                label: locale.driver_profile_national_id_expiry_label,
+                value: nationalIdExpiryController.text,
+              ),
+              (
                 label: locale.driver_profile_license_number_label,
                 value: licenseNumberController.text,
+              ),
+              (
+                label: locale.driver_profile_driver_license_expiry_label,
+                value: driverLicenseExpiryController.text,
               ),
               (
                 label: locale.driver_profile_vehicle_type_label,
@@ -226,6 +277,14 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                     : (state.draft.regionName.isEmpty
                           ? state.draft.cityName
                           : '${state.draft.cityName}, ${state.draft.regionName}'),
+              ),
+              (
+                label: locale.driver_profile_vehicle_license_number_label,
+                value: vehicleLicenseNumberController.text,
+              ),
+              (
+                label: locale.driver_profile_vehicle_license_expiry_label,
+                value: vehicleLicenseExpiryController.text,
               ),
               (
                 label: locale.driver_profile_portrait_title,
@@ -244,13 +303,41 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                 value: state.draft.images['license'] ?? '',
               ),
               (
-                label: locale.driver_profile_vehicle_photo_title,
+                label: locale.driver_profile_vehicle_license_title,
                 value: state.draft.images['vehicle'] ?? '',
               ),
             ],
           ),
         );
     }
+  }
+
+  Widget _buildDateField(
+    BuildContext context, {
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required bool isSubmitting,
+  }) {
+    final color = context.colorScheme;
+
+    return AuthTextField(
+      controller: controller,
+      label: label,
+      hintText: hint,
+      validator: (value) => Validations.validateFutureDate(context, value),
+      enabled: !isSubmitting,
+      readOnly: true,
+      onTap: isSubmitting ? null : () => onPickExpiryDate(controller),
+      prefixIcon: Icon(
+        Icons.event_outlined,
+        color: color.onSurface.withValues(alpha: 0.6),
+      ),
+      suffixIcon: Icon(
+        Icons.calendar_month_outlined,
+        color: color.onSurface.withValues(alpha: 0.6),
+      ),
+    );
   }
 
   Widget _buildField(

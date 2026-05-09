@@ -5,6 +5,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+val googleServicesConfig = file("google-services.json")
+if (googleServicesConfig.exists()) {
+    apply(plugin = "com.google.gms.google-services")
+} else {
+    logger.warn(
+        "google-services.json was not found for the driver app at ${googleServicesConfig.path}. " +
+            "Android push registration will stay incomplete until the driver-specific Firebase config is added.",
+    )
+}
+
 android {
     namespace = "com.example.zadana_delivery"
     compileSdk = flutter.compileSdkVersion
@@ -42,6 +52,7 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+    implementation("com.onesignal:OneSignal:5.7.7")
 }
 
 flutter {

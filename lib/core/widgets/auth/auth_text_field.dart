@@ -18,6 +18,8 @@ class AuthTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.onFieldSubmitted,
+    this.readOnly = false,
+    this.onTap,
   });
 
   final TextEditingController controller;
@@ -31,6 +33,8 @@ class AuthTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final ValueChanged<String>? onFieldSubmitted;
+  final bool readOnly;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +61,14 @@ class AuthTextField extends StatelessWidget {
           textInputAction: textInputAction,
           obscureText: obscureText,
           enabled: enabled,
+          readOnly: readOnly,
           style: getRegularStyle(
             fontFamily: FontConstant.cairo,
             fontSize: FontSize.size13,
             color: color.onSurface,
           ),
           onFieldSubmitted: onFieldSubmitted,
+          onTap: onTap,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: getRegularStyle(
