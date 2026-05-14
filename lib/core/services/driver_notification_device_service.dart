@@ -28,9 +28,12 @@ class DriverNotificationDeviceService {
   final Uuid _uuid = const Uuid();
 
   String? _lastRegistrationSignature;
+  String? _inFlightRegistrationSignature;
+  Future<void>? _registrationFuture;
 
   Future<bool> isPushEnabled() async {
-    return _sharedPreferences.getBool(AppConstants.notificationsEnabled) ?? true;
+    return _sharedPreferences.getBool(AppConstants.notificationsEnabled) ??
+        true;
   }
 
   Future<void> cachePushToken(
@@ -38,26 +41,42 @@ class DriverNotificationDeviceService {
     String? subscriptionId,
   }) async {
     final normalizedPushToken = pushToken?.trim() ?? '';
+    var didChange = false;
     if (normalizedPushToken.isNotEmpty) {
-      await _sharedPreferences.setString(
-        AppConstants.notificationPushToken,
-        normalizedPushToken,
-      );
+      final previousPushToken = _pushToken;
+      if (previousPushToken != normalizedPushToken) {
+        await _sharedPreferences.setString(
+          AppConstants.notificationPushToken,
+          normalizedPushToken,
+        );
+        didChange = true;
+      }
     }
 
     final normalizedSubscriptionId = subscriptionId?.trim() ?? '';
     if (normalizedSubscriptionId.isNotEmpty) {
-      await _sharedPreferences.setString(
-        AppConstants.notificationPushSubscriptionId,
-        normalizedSubscriptionId,
-      );
+      final previousSubscriptionId = _pushSubscriptionId;
+      if (previousSubscriptionId != normalizedSubscriptionId) {
+        await _sharedPreferences.setString(
+          AppConstants.notificationPushSubscriptionId,
+          normalizedSubscriptionId,
+        );
+        didChange = true;
+      }
+    }
+
+    if (!didChange) {
+      return;
     }
 
     await registerCurrentDeviceIfAuthenticated(force: true);
   }
 
   Future<void> setPushEnabled(bool enabled) async {
-    await _sharedPreferences.setBool(AppConstants.notificationsEnabled, enabled);
+    await _sharedPreferences.setBool(
+      AppConstants.notificationsEnabled,
+      enabled,
+    );
     await _syncPushPreferencesIfAuthenticated(enabled);
   }
 
@@ -105,28 +124,33 @@ class DriverNotificationDeviceService {
       return;
     }
 
-    debugPrint(
-      '[DriverNotificationDevice] Registering driver push device: '
-      'deviceId=$deviceId platform=${body['platform']} '
-      'subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId} '
-      'locale=$locale appVersion=${packageInfo.version}',
-    );
-
-    final succeeded = await _performFirstSuccessfulCall(<Future<dynamic> Function()>[
-      () => _dio.post<dynamic>(EndPoints.driverNotificationDevices, data: body),
-      () => _dio.put<dynamic>(EndPoints.driverNotificationDevices, data: body),
-      () => _dio.post<dynamic>(
-        '${EndPoints.driverNotificationDevices}/register',
-        data: body,
-      ),
-    ]);
-
-    if (succeeded) {
-      _lastRegistrationSignature = signature;
+    final inFlightRegistration = _registrationFuture;
+    if (inFlightRegistration != null &&
+        _inFlightRegistrationSignature == signature) {
       debugPrint(
-        '[DriverNotificationDevice] Device registration succeeded for '
-        'deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
+        '[DriverNotificationDevice] Registration joined existing in-flight request '
+        'for deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
       );
+      await inFlightRegistration;
+      return;
+    }
+
+    final registration = _registerDevice(
+      body: body,
+      deviceId: deviceId,
+      locale: locale,
+      appVersion: packageInfo.version,
+      signature: signature,
+    );
+    _registrationFuture = registration;
+    _inFlightRegistrationSignature = signature;
+    try {
+      await registration;
+    } finally {
+      if (identical(_registrationFuture, registration)) {
+        _registrationFuture = null;
+        _inFlightRegistrationSignature = null;
+      }
     }
   }
 
@@ -144,17 +168,21 @@ class DriverNotificationDeviceService {
         'pushSubscriptionId': _pushSubscriptionId,
     };
 
-    final succeeded = await _performFirstSuccessfulCall(<Future<dynamic> Function()>[
-      () => _dio.post<dynamic>(
-        '${EndPoints.driverNotificationDevices}/unregister',
-        data: body,
-      ),
-      () => _dio.delete<dynamic>(EndPoints.driverNotificationDevices, data: body),
-      () => _dio.post<dynamic>(
-        '${EndPoints.driverNotificationDevices}/delete',
-        data: body,
-      ),
-    ]);
+    final succeeded =
+        await _performFirstSuccessfulCall(<Future<dynamic> Function()>[
+          () => _dio.post<dynamic>(
+            '${EndPoints.driverNotificationDevices}/unregister',
+            data: body,
+          ),
+          () => _dio.delete<dynamic>(
+            EndPoints.driverNotificationDevices,
+            data: body,
+          ),
+          () => _dio.post<dynamic>(
+            '${EndPoints.driverNotificationDevices}/delete',
+            data: body,
+          ),
+        ]);
 
     if (succeeded) {
       _lastRegistrationSignature = null;
@@ -216,6 +244,37 @@ class DriverNotificationDeviceService {
     return false;
   }
 
+  Future<void> _registerDevice({
+    required Map<String, dynamic> body,
+    required String deviceId,
+    required String locale,
+    required String appVersion,
+    required String signature,
+  }) async {
+    debugPrint(
+      '[DriverNotificationDevice] Registering driver push device: '
+      'deviceId=$deviceId platform=${body['platform']} '
+      'subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId} '
+      'locale=$locale appVersion=$appVersion',
+    );
+
+    final succeeded =
+        await _performFirstSuccessfulCall(<Future<dynamic> Function()>[
+          () => _dio.post<dynamic>(
+            '${EndPoints.driverNotificationDevices}/register',
+            data: body,
+          ),
+        ]);
+
+    if (succeeded) {
+      _lastRegistrationSignature = signature;
+      debugPrint(
+        '[DriverNotificationDevice] Device registration succeeded for '
+        'deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
+      );
+    }
+  }
+
   Future<String> _getOrCreateDeviceId() async {
     final existingDeviceId = _sharedPreferences.getString(
       AppConstants.notificationDeviceId,
@@ -234,7 +293,9 @@ class DriverNotificationDeviceService {
   }
 
   String get _pushToken =>
-      _sharedPreferences.getString(AppConstants.notificationPushToken)?.trim() ??
+      _sharedPreferences
+          .getString(AppConstants.notificationPushToken)
+          ?.trim() ??
       '';
 
   String get _pushSubscriptionId =>

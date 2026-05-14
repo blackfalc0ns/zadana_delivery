@@ -201,7 +201,18 @@ import '../helpers/permision_service.dart' as _i367;
 import '../helpers/shared_pref.dart' as _i42;
 import '../network/api_services.dart' as _i804;
 import '../network/external_modules.dart' as _i576;
+import '../services/app_navigator_service.dart' as _i179;
 import '../services/auth_refresh_service.dart' as _i820;
+import '../services/driver_local_notification_service.dart' as _i430;
+import '../services/driver_notification_bootstrap_service.dart' as _i223;
+import '../services/driver_notification_dedup_service.dart' as _i889;
+import '../services/driver_notification_device_service.dart' as _i1059;
+import '../services/driver_notification_launch_payload_service.dart' as _i368;
+import '../services/driver_notification_overlay_service.dart' as _i1015;
+import '../services/driver_notification_router_service.dart' as _i585;
+import '../services/driver_notification_session_service.dart' as _i30;
+import '../services/driver_realtime_service.dart' as _i794;
+import '../services/driver_runtime_services_controller.dart' as _i88;
 import '../services/file_upload_service.dart' as _i102;
 import '../services/language_interceptor.dart' as _i32;
 import '../services/language_service.dart' as _i819;
@@ -238,6 +249,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i183.ImagePicker>(
       () => externalModules.provideImagePicker(),
     );
+    gh.lazySingleton<_i179.AppNavigatorService>(
+      () => _i179.AppNavigatorService(),
+    );
+    gh.lazySingleton<_i889.DriverNotificationDedupService>(
+      () => _i889.DriverNotificationDedupService(),
+    );
+    gh.lazySingleton<_i368.DriverNotificationLaunchPayloadService>(
+      () => _i368.DriverNotificationLaunchPayloadService(),
+    );
     gh.lazySingleton<_i361.Dio>(
       () => externalModules.provideRefreshDio(),
       instanceName: 'refreshDio',
@@ -248,6 +268,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i361.Dio>(
       () => externalModules.provideOsmDio(gh<_i528.PrettyDioLogger>()),
       instanceName: 'osmDio',
+    );
+    gh.lazySingleton<_i585.DriverNotificationRouterService>(
+      () => _i585.DriverNotificationRouterService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+      ),
     );
     gh.factory<_i227.TokenService>(
       () => _i227.TokenService(
@@ -264,6 +290,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i227.TokenService>(),
       ),
     );
+    gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
+      () => _i1015.DriverNotificationOverlayService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+        gh<_i794.DriverRealtimeService>(),
+      ),
+    );
+    gh.lazySingleton<_i430.DriverLocalNotificationService>(
+      () => _i430.DriverLocalNotificationService(
+        gh<_i585.DriverNotificationRouterService>(),
+      ),
+    );
     gh.factory<_i1056.TokenInterceptor>(
       () => _i1056.TokenInterceptor(
         gh<_i227.TokenService>(),
@@ -278,6 +317,25 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i528.PrettyDioLogger>(),
         gh<_i1056.TokenInterceptor>(),
         gh<_i32.LanguageInterceptor>(),
+      ),
+    );
+    gh.lazySingleton<_i1059.DriverNotificationDeviceService>(
+      () => _i1059.DriverNotificationDeviceService(
+        gh<_i361.Dio>(),
+        gh<_i460.SharedPreferences>(),
+        gh<_i227.TokenService>(),
+        gh<_i819.LanguageService>(),
+      ),
+    );
+    gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
+      () => _i223.DriverNotificationBootstrapService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i430.DriverLocalNotificationService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i368.DriverNotificationLaunchPayloadService>(),
+        gh<_i1015.DriverNotificationOverlayService>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i227.TokenService>(),
       ),
     );
     gh.factory<_i804.ApiServices>(() => _i804.ApiServices(gh<_i361.Dio>()));
@@ -373,6 +431,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i291.DriverRegionsRemoteDataSourceImpl(
         gh<_i804.ApiServices>(),
         gh<_i819.LanguageService>(),
+      ),
+    );
+    gh.lazySingleton<_i30.DriverNotificationSessionService>(
+      () => _i30.DriverNotificationSessionService(
+        gh<_i227.TokenService>(),
+        gh<_i223.DriverNotificationBootstrapService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i88.DriverRuntimeServicesController>(),
+        gh<_i794.DriverRealtimeService>(),
+        gh<_i458.DriverHomeRemoteDataSource>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i889.DriverNotificationDedupService>(),
       ),
     );
     gh.factory<_i341.NotificationsRepository>(

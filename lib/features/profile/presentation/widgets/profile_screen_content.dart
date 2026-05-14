@@ -8,6 +8,7 @@ import 'package:zadana_delivery/features/profile/presentation/models/profile_act
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_item_builder.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_card.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_rejection_policy_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_sections_list.dart';
 
 class ProfileScreenContent extends StatelessWidget {
@@ -54,7 +55,13 @@ class ProfileScreenContent extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (profile != null) const SizedBox(height: 1),
+                  if (profile != null) ...[
+                    const SizedBox(height: 1),
+                    ProfileRejectionPolicyCard(
+                      policy: profile.rejectionPolicy,
+                    ),
+                    const SizedBox(height: Spacing.base),
+                  ],
                   ProfileSectionsList(
                     sections: _buildSections(locale, color),
                     itemBuilder: (item) => ProfileActionItemBuilder(
@@ -102,11 +109,6 @@ class ProfileScreenContent extends StatelessWidget {
     final sections = [
       const ProfileSectionData(
         items: [
-          ProfileActionItemData(
-            icon: Icons.fact_check_outlined,
-            colorToken: ProfileColorToken.primary,
-            type: ProfileActionType.accountStatus,
-          ),
           ProfileActionItemData(
             icon: Icons.person_outline_rounded,
             colorToken: ProfileColorToken.primary,

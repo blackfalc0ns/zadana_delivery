@@ -9,9 +9,9 @@ class DriverWalletWithdrawalSummaryModelDto {
     Map<String, dynamic> json,
   ) {
     return DriverWalletWithdrawalSummaryModelDto(
-      pendingCount: json['pendingCount'] as int? ?? 0,
+      pendingCount: _toInt(json['pendingCount']),
       pendingAmount: _toDouble(json['pendingAmount']),
-      totalRequests: json['totalRequests'] as int? ?? 0,
+      totalRequests: _toInt(json['totalRequests']),
     );
   }
 
@@ -22,6 +22,13 @@ class DriverWalletWithdrawalSummaryModelDto {
   static double _toDouble(dynamic value) {
     if (value is num) return value.toDouble();
     if (value is String) return double.tryParse(value) ?? 0;
+    return 0;
+  }
+
+  static int _toInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
     return 0;
   }
 }

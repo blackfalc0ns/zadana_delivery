@@ -11,13 +11,13 @@ class DriverPayoutMethodModelDto {
 
   factory DriverPayoutMethodModelDto.fromJson(Map<String, dynamic> json) {
     return DriverPayoutMethodModelDto(
-      id: json['id'] as String? ?? '',
-      type: json['type'] as String? ?? '',
-      accountHolderName: json['accountHolderName'] as String? ?? '',
-      providerName: json['providerName'] as String? ?? '',
-      maskedLabel: json['maskedLabel'] as String? ?? '',
-      isPrimary: json['isPrimary'] as bool? ?? false,
-      isVerified: json['isVerified'] as bool? ?? false,
+      id: json['id']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      accountHolderName: json['accountHolderName']?.toString() ?? '',
+      providerName: json['providerName']?.toString() ?? '',
+      maskedLabel: json['maskedLabel']?.toString() ?? '',
+      isPrimary: _toBool(json['isPrimary']),
+      isVerified: _toBool(json['isVerified']),
     );
   }
 
@@ -28,4 +28,11 @@ class DriverPayoutMethodModelDto {
   final String maskedLabel;
   final bool isPrimary;
   final bool isVerified;
+
+  static bool _toBool(dynamic value) {
+    if (value is bool) return value;
+    if (value is num) return value != 0;
+    if (value is String) return value.trim().toLowerCase() == 'true';
+    return false;
+  }
 }

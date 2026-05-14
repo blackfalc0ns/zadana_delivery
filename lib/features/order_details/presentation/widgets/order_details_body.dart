@@ -19,6 +19,7 @@ class OrderDetailsBody extends StatelessWidget {
     required this.onOpenCustomerRoute,
     required this.onOpenStoreRoute,
     required this.onRefresh,
+    required this.onResendPickupOtp,
   });
 
   final OrderDetailsController controller;
@@ -28,6 +29,7 @@ class OrderDetailsBody extends StatelessWidget {
   final VoidCallback onOpenCustomerRoute;
   final VoidCallback onOpenStoreRoute;
   final Future<void> Function() onRefresh;
+  final Future<bool> Function() onResendPickupOtp;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +74,7 @@ class OrderDetailsBody extends StatelessWidget {
                                 otpCode: pickupOtpCode!,
                                 isWaitingForMerchantConfirmation:
                                     controller.isWaitingForMerchantConfirmation,
+                                onResend: onResendPickupOtp,
                               ),
                               const SizedBox(height: 10),
                             ],

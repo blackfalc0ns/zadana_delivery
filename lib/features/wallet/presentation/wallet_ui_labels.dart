@@ -1,31 +1,30 @@
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
-import 'package:zadana_delivery/features/wallet/presentation/mock/wallet_fake_data.dart';
 
-extension WalletLocalizedCopy on AppLocalizations {
-  String walletPreviewLabel(WalletPreviewState state) {
-    switch (state) {
-      case WalletPreviewState.success:
-        return wallet_state_success;
-      case WalletPreviewState.empty:
-        return wallet_state_empty;
-      case WalletPreviewState.error:
-        return wallet_state_error;
-    }
-  }
-
+extension WalletUiLabels on AppLocalizations {
   String walletTransactionTypeLabel(String type) {
     switch (type.trim().toLowerCase()) {
       case 'orderrevenue':
         return wallet_transaction_delivery;
-      case 'hold':
       case 'payout':
         return wallet_transaction_withdrawal;
+      case 'refund':
+        return wallet_transaction_refund;
+      case 'settlement':
+        return wallet_transaction_settlement;
       case 'adjustment':
         return wallet_transaction_adjustment;
+      case 'cashcollected':
+        return wallet_transaction_cash_collected;
+      case 'hold':
+        return wallet_transaction_hold;
       case 'release':
         return wallet_transaction_release;
+      case 'credit':
+        return wallet_transaction_credit;
+      case 'debit':
+        return wallet_transaction_debit;
       default:
-        return wallet_transaction_bonus;
+        return wallet_transaction_generic;
     }
   }
 
@@ -49,22 +48,13 @@ extension WalletLocalizedCopy on AppLocalizations {
     switch (type.trim().toLowerCase()) {
       case 'bankaccount':
         return wallet_payment_bank_account;
+      case 'mobilewallet':
+        return wallet_payment_mobile_wallet;
       case 'debitcard':
         return wallet_payment_debit_card;
       case 'instanttransfer':
       default:
         return wallet_payment_instant_transfer;
-    }
-  }
-
-  String walletAlertActionLabel(WalletAlertAction action) {
-    switch (action) {
-      case WalletAlertAction.verify:
-        return wallet_alert_action_verify;
-      case WalletAlertAction.view:
-        return wallet_alert_action_view;
-      case WalletAlertAction.claim:
-        return wallet_alert_action_claim;
     }
   }
 }

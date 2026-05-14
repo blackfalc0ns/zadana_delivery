@@ -7,6 +7,7 @@ import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_upsert_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
+import 'package:zadana_delivery/features/wallet/presentation/wallet_ui_labels.dart';
 
 class WalletPaymentMethodFormScreen extends StatefulWidget {
   const WalletPaymentMethodFormScreen({
@@ -60,6 +61,17 @@ class _WalletPaymentMethodFormScreenState
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
+    final supportedTypes = <String>[
+      'BankAccount',
+      'MobileWallet',
+      'InstantTransfer',
+      if (!const <String>{
+        'BankAccount',
+        'MobileWallet',
+        'InstantTransfer',
+      }.contains(_type))
+        _type,
+    ];
 
     return BlocProvider.value(
       value: widget.viewModel,
@@ -91,20 +103,18 @@ class _WalletPaymentMethodFormScreenState
                                 title: locale.wallet_type_label,
                                 child: DropdownButtonFormField<String>(
                                   initialValue: _type,
-                                  items: const [
-                                    DropdownMenuItem(
-                                      value: 'BankAccount',
-                                      child: Text('Bank Account'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'DebitCard',
-                                      child: Text('Debit Card'),
-                                    ),
-                                    DropdownMenuItem(
-                                      value: 'InstantTransfer',
-                                      child: Text('Instant Transfer'),
-                                    ),
-                                  ],
+                                  items: supportedTypes
+                                      .map(
+                                        (type) => DropdownMenuItem(
+                                          value: type,
+                                          child: Text(
+                                            locale.walletPaymentMethodLabel(
+                                              type,
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                      .toList(growable: false),
                                   onChanged: isBusy
                                       ? null
                                       : (value) => setState(
@@ -123,7 +133,8 @@ class _WalletPaymentMethodFormScreenState
                                   autocorrect: false,
                                   enableSuggestions: false,
                                   decoration: InputDecoration(
-                                    hintText: locale.wallet_account_holder_label,
+                                    hintText:
+                                        locale.wallet_account_holder_label,
                                     border: const OutlineInputBorder(),
                                   ),
                                   validator: (value) =>
@@ -211,21 +222,25 @@ class _WalletPaymentMethodFormScreenState
                                 onPressed: isBusy
                                     ? null
                                     : () {
-                                        if (!_formKey.currentState!.validate()) {
+                                        if (!_formKey.currentState!
+                                            .validate()) {
                                           return;
                                         }
                                         Navigator.of(context).pop(
                                           DriverPayoutMethodUpsertRequestEntity(
                                             type: _type,
-                                            accountHolderName:
-                                                _holderController.text.trim(),
+                                            accountHolderName: _holderController
+                                                .text
+                                                .trim(),
                                             accountIdentifier:
                                                 _identifierController.text
                                                     .trim(),
-                                            providerName:
-                                                _providerController.text.trim(),
-                                            isPrimary:
-                                                _isEditing ? null : _isPrimary,
+                                            providerName: _providerController
+                                                .text
+                                                .trim(),
+                                            isPrimary: _isEditing
+                                                ? null
+                                                : _isPrimary,
                                           ),
                                         );
                                       },
@@ -279,17 +294,17 @@ class _WalletFormCard extends StatelessWidget {
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 6),
             Text(
               subtitle!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: colors.onSurfaceVariant,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
             ),
           ],
           const SizedBox(height: 14),

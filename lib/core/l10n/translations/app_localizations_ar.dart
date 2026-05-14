@@ -1636,11 +1636,82 @@ class AppLocalizationsAr extends AppLocalizations {
       'عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.';
 
   @override
+  String get auth_pending_update_required => 'مطلوب تعديل';
+
+  @override
+  String get auth_pending_under_review_badge => 'قيد المراجعة';
+
+  @override
+  String get auth_pending_update_short_description =>
+      'فيه بيانات أو مستندات محتاجة تعديل.';
+
+  @override
+  String get auth_pending_review_short_description =>
+      'بياناتك وصلت لفريق المراجعة.';
+
+  @override
+  String get auth_pending_note_title => 'ملاحظة';
+
+  @override
+  String get auth_pending_notifications_title => 'الإشعارات';
+
+  @override
+  String get auth_pending_notifications_update_message =>
+      'تابع أي طلب تعديل من زر الإشعارات.';
+
+  @override
+  String get auth_pending_notifications_review_message =>
+      'سيصلك إشعار أول ما تتم المراجعة.';
+
+  @override
+  String get auth_pending_update_details => 'تحديث البيانات';
+
+  @override
+  String get auth_pending_review_details => 'مراجعة البيانات';
+
+  @override
   String get driver_account_status_title => 'حالة الحساب';
 
   @override
   String get driver_account_status_subtitle =>
       'تابع مراجعة كل مستند، والمتطلبات الناقصة، وما الذي يجب تحديثه حتى يكتمل حسابك.';
+
+  @override
+  String get profile_rejection_policy_title => 'سياسة رفض العروض';
+
+  @override
+  String get profile_rejection_policy_tracking_subtitle =>
+      'حدود الرفض اليومية والأسبوعية كما يعرضها النظام';
+
+  @override
+  String get profile_rejection_policy_frozen_badge =>
+      'استلام العروض موقوف مؤقتًا';
+
+  @override
+  String get profile_rejection_policy_status_active => 'نشط';
+
+  @override
+  String get profile_rejection_policy_status_frozen => 'مجمّد';
+
+  @override
+  String get profile_rejection_policy_summary_active =>
+      'تابع حدود الرفض اليومية والأسبوعية بشكل مباشر';
+
+  @override
+  String get profile_rejection_policy_summary_frozen =>
+      'تم إيقاف استلام العروض مؤقتًا حسب السياسة الحالية';
+
+  @override
+  String get profile_rejection_today_label => 'اليوم';
+
+  @override
+  String get profile_rejection_today_remaining_label => 'المتبقي اليوم';
+
+  @override
+  String get profile_rejection_week_label => 'هذا الأسبوع';
+
+  @override
+  String get profile_rejection_week_remaining_label => 'المتبقي هذا الأسبوع';
 
   @override
   String get driver_account_status_completion_label => 'نسبة اكتمال الملف';
@@ -1753,6 +1824,14 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get auth_blocked_support_hint =>
       'يمكنك الرجوع إلى الدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.';
+
+  @override
+  String get auth_blocked_rejection_policy_hint =>
+      'يُرفع هذا الحظر اليومي تلقائيًا غدًا حسب يوم الخادم، ما لم يقم المشرف بإزالته قبل ذلك.';
+
+  @override
+  String get auth_blocked_rejection_policy_reset_note =>
+      'يتم رفع تجميد الرفض اليومي تلقائيًا مع بداية يوم الخادم التالي، ويمكن للمشرف أيضًا إزالة التقييد قبل ذلك.';
 
   @override
   String get auth_contact_support => 'التواصل مع الدعم';
@@ -1934,6 +2013,20 @@ class AppLocalizationsAr extends AppLocalizations {
       'راجع رصيدك الحالي، وآخر الحركات، وجاهزية السحب من خلال مركز محفظة آمن.';
 
   @override
+  String get wallet_subtitle_ready => 'صافي الرصيد المتاح جاهز للسحب الآن.';
+
+  @override
+  String get wallet_subtitle_add_primary => 'أضف وسيلة سحب أساسية لبدء السحب.';
+
+  @override
+  String get wallet_subtitle_cod_blocked =>
+      'السحب متوقف حتى تتم تسوية مستحق COD.';
+
+  @override
+  String get wallet_subtitle_no_withdrawable =>
+      'لا يوجد صافي رصيد متاح للسحب حاليًا.';
+
+  @override
   String get wallet_preview_state => 'حالة المعاينة';
 
   @override
@@ -1953,6 +2046,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_pending_balance => 'الرصيد المعلّق';
+
+  @override
+  String get wallet_cod_owed_balance => 'مستحق COD';
 
   @override
   String get wallet_withdraw_cta => 'اسحب الآن';
@@ -2017,6 +2113,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_status_completed => 'مكتمل';
 
   @override
+  String get wallet_status_ready => 'جاهز';
+
+  @override
+  String get wallet_status_blocked => 'متوقف';
+
+  @override
   String get wallet_status_pending => 'قيد الانتظار';
 
   @override
@@ -2026,16 +2128,37 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_transaction_delivery => 'أرباح التوصيل';
 
   @override
-  String get wallet_transaction_withdrawal => 'طلب سحب';
+  String get wallet_transaction_withdrawal => 'تم صرف السحب';
 
   @override
   String get wallet_transaction_bonus => 'صرف مكافأة';
 
   @override
+  String get wallet_transaction_refund => 'استرجاع/عكس';
+
+  @override
+  String get wallet_transaction_settlement => 'تسوية';
+
+  @override
   String get wallet_transaction_adjustment => 'تعديل على المحفظة';
 
   @override
-  String get wallet_transaction_release => 'إرجاع مبلغ السحب';
+  String get wallet_transaction_cash_collected => 'تحصيل/توريد COD';
+
+  @override
+  String get wallet_transaction_hold => 'رصيد محتجز';
+
+  @override
+  String get wallet_transaction_release => 'رصيد تم الإفراج عنه';
+
+  @override
+  String get wallet_transaction_credit => 'إضافة';
+
+  @override
+  String get wallet_transaction_debit => 'خصم';
+
+  @override
+  String get wallet_transaction_generic => 'حركة على المحفظة';
 
   @override
   String get wallet_direction_in => 'داخل';
@@ -2045,6 +2168,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_payment_bank_account => 'حساب بنكي';
+
+  @override
+  String get wallet_payment_mobile_wallet => 'محفظة إلكترونية';
 
   @override
   String get wallet_payment_debit_card => 'بطاقة خصم';
@@ -2128,6 +2254,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_no_primary_method => 'لا توجد وسيلة أساسية متاحة';
 
   @override
+  String get wallet_withdraw_blocked_no_primary =>
+      'أضف وسيلة سحب أساسية قبل طلب السحب.';
+
+  @override
+  String get wallet_withdraw_blocked_cod =>
+      'يجب تسوية النقد المحصل COD قبل طلب السحب.';
+
+  @override
+  String get wallet_withdraw_blocked_no_balance =>
+      'قيمة السحب أكبر من صافي الرصيد المتاح بعد التزامات COD.';
+
+  @override
   String get wallet_select_method => 'اختر وسيلة سحب.';
 
   @override
@@ -2188,6 +2326,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_status_cancelled => 'تم الإلغاء';
 
   @override
+  String get wallet_transfer_reference => 'مرجع التحويل';
+
+  @override
   String get wallet_bonus_weekend => 'تحدي نهاية الأسبوع';
 
   @override
@@ -2209,6 +2350,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get wallet_alert_payout_subtitle =>
       'تم إدراج آخر طلب سحب لديك في قائمة المعالجة، ويُفترض أن يصل خلال المدة المتوقعة للتسوية.';
+
+  @override
+  String get wallet_cod_block_title => 'مستحق COD يمنع السحب';
+
+  @override
+  String get wallet_cod_block_subtitle =>
+      'يجب أن تنهي الإدارة مطابقة توريد COD قبل أن تتمكن من السحب من المحفظة.';
 
   @override
   String get wallet_alert_incentive_title => 'تم فتح حافز جديد';

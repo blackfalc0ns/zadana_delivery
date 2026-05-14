@@ -39,6 +39,7 @@ extension DriverHomeOperationalStatusModelMapper
       reviewNote: reviewNote,
       suspensionReason: suspensionReason,
       message: message,
+      policyIsFrozen: policyIsFrozen,
     );
   }
 }

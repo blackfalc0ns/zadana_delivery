@@ -6,16 +6,19 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_otp_value_card.dart';
+import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_resend_otp_action.dart';
 
 class OrderDetailsPickupOtpBanner extends StatelessWidget {
   const OrderDetailsPickupOtpBanner({
     super.key,
     required this.otpCode,
     required this.isWaitingForMerchantConfirmation,
+    this.onResend,
   });
 
   final String otpCode;
   final bool isWaitingForMerchantConfirmation;
+  final Future<bool> Function()? onResend;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +96,10 @@ class OrderDetailsPickupOtpBanner extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             OtpValueCard(otp: otpCode),
+            if (onResend != null) ...[
+              const SizedBox(height: 10),
+              OrderDetailsResendOtpAction(onResend: onResend!),
+            ],
             if (isWaitingForMerchantConfirmation) ...[
               const SizedBox(height: 14),
               Row(

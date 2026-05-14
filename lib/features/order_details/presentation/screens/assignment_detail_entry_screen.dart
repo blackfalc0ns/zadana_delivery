@@ -39,6 +39,43 @@ class _AssignmentDetailEntryScreenState extends State<AssignmentDetailEntryScree
     }
   }
 
+  bool _startAcceptedFromDetails(OrderAssignmentDetailsEntity details) {
+    final assignmentStatus = details.assignmentStatus.trim().toLowerCase();
+    final normalizedStatus = assignmentStatus.replaceAll(
+      RegExp(r'[^a-z0-9]'),
+      '',
+    );
+    final allowedActions = details.allowedActions
+        .map((action) => action.trim().toLowerCase())
+        .toSet();
+
+    final hasPendingOfferDecision =
+        allowedActions.contains('accept_offer') ||
+        allowedActions.contains('reject_offer') ||
+        normalizedStatus == 'offersent' ||
+        assignmentStatus.contains('offer_sent');
+    if (hasPendingOfferDecision) {
+      return false;
+    }
+
+    return allowedActions.contains('arrived_at_vendor') ||
+        allowedActions.contains('mark_picked_up') ||
+        allowedActions.contains('verify_pickup_otp') ||
+        allowedActions.contains('mark_on_the_way') ||
+        allowedActions.contains('arrived_at_customer') ||
+        allowedActions.contains('verify_delivery_otp') ||
+        allowedActions.contains('confirm_delivery') ||
+        normalizedStatus == 'accepted' ||
+        normalizedStatus == 'driverassigned' ||
+        normalizedStatus == 'preparing' ||
+        normalizedStatus == 'arrivedatvendor' ||
+        normalizedStatus == 'pickedup' ||
+        normalizedStatus == 'ontheway' ||
+        normalizedStatus == 'arrivedatcustomer' ||
+        details.pickupOtpRequired ||
+        details.deliveryOtpRequired;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<OrderAssignmentDetailsEntity?>(
@@ -84,7 +121,7 @@ class _AssignmentDetailEntryScreenState extends State<AssignmentDetailEntryScree
             details.pickupLatitude,
             details.pickupLongitude,
           ),
-          startAccepted: details.assignmentStatus.trim().isNotEmpty,
+          startAccepted: _startAcceptedFromDetails(details),
         );
       },
     );

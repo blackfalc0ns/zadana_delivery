@@ -3170,6 +3170,66 @@ abstract class AppLocalizations {
   /// **'Account review usually happens shortly after the submitted data is confirmed as complete.'**
   String get auth_pending_eta_hint;
 
+  /// No description provided for @auth_pending_update_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Update required'**
+  String get auth_pending_update_required;
+
+  /// No description provided for @auth_pending_under_review_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get auth_pending_under_review_badge;
+
+  /// No description provided for @auth_pending_update_short_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Some details or documents need updating.'**
+  String get auth_pending_update_short_description;
+
+  /// No description provided for @auth_pending_review_short_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Your details are being reviewed.'**
+  String get auth_pending_review_short_description;
+
+  /// No description provided for @auth_pending_note_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get auth_pending_note_title;
+
+  /// No description provided for @auth_pending_notifications_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get auth_pending_notifications_title;
+
+  /// No description provided for @auth_pending_notifications_update_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Check notifications for update requests.'**
+  String get auth_pending_notifications_update_message;
+
+  /// No description provided for @auth_pending_notifications_review_message.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be notified once reviewed.'**
+  String get auth_pending_notifications_review_message;
+
+  /// No description provided for @auth_pending_update_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Update details'**
+  String get auth_pending_update_details;
+
+  /// No description provided for @auth_pending_review_details.
+  ///
+  /// In en, this message translates to:
+  /// **'Review details'**
+  String get auth_pending_review_details;
+
   /// No description provided for @driver_account_status_title.
   ///
   /// In en, this message translates to:
@@ -3181,6 +3241,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Track each document review, missing requirements, and the next action needed to complete your account.'**
   String get driver_account_status_subtitle;
+
+  /// No description provided for @profile_rejection_policy_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer rejection policy'**
+  String get profile_rejection_policy_title;
+
+  /// No description provided for @profile_rejection_policy_tracking_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Backend-tracked daily and weekly rejection limits'**
+  String get profile_rejection_policy_tracking_subtitle;
+
+  /// No description provided for @profile_rejection_policy_frozen_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer receiving is temporarily frozen'**
+  String get profile_rejection_policy_frozen_badge;
+
+  /// No description provided for @profile_rejection_policy_status_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get profile_rejection_policy_status_active;
+
+  /// No description provided for @profile_rejection_policy_status_frozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen'**
+  String get profile_rejection_policy_status_frozen;
+
+  /// No description provided for @profile_rejection_policy_summary_active.
+  ///
+  /// In en, this message translates to:
+  /// **'Track daily and weekly rejection limits live'**
+  String get profile_rejection_policy_summary_active;
+
+  /// No description provided for @profile_rejection_policy_summary_frozen.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer receiving is temporarily paused by policy'**
+  String get profile_rejection_policy_summary_frozen;
+
+  /// No description provided for @profile_rejection_today_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get profile_rejection_today_label;
+
+  /// No description provided for @profile_rejection_today_remaining_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining today'**
+  String get profile_rejection_today_remaining_label;
+
+  /// No description provided for @profile_rejection_week_label.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get profile_rejection_week_label;
+
+  /// No description provided for @profile_rejection_week_remaining_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining this week'**
+  String get profile_rejection_week_remaining_label;
 
   /// No description provided for @driver_account_status_completion_label.
   ///
@@ -3379,6 +3505,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can return to support and help to send an inquiry or follow up on the reason for the block and the account recovery steps.'**
   String get auth_blocked_support_hint;
+
+  /// No description provided for @auth_blocked_rejection_policy_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'This daily block clears automatically tomorrow based on the server day, unless an admin clears it earlier.'**
+  String get auth_blocked_rejection_policy_hint;
+
+  /// No description provided for @auth_blocked_rejection_policy_reset_note.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily rejection freezes are cleared automatically on the next server day. Admins can also clear the restriction earlier.'**
+  String get auth_blocked_rejection_policy_reset_note;
 
   /// No description provided for @auth_contact_support.
   ///
@@ -3710,6 +3848,30 @@ abstract class AppLocalizations {
   /// **'Review your live balance, recent activity, and payout readiness in one secure wallet hub.'**
   String get wallet_subtitle_secure;
 
+  /// No description provided for @wallet_subtitle_ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Your net withdrawable balance is ready now.'**
+  String get wallet_subtitle_ready;
+
+  /// No description provided for @wallet_subtitle_add_primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a primary payout method to start withdrawing.'**
+  String get wallet_subtitle_add_primary;
+
+  /// No description provided for @wallet_subtitle_cod_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal is blocked until COD dues are settled.'**
+  String get wallet_subtitle_cod_blocked;
+
+  /// No description provided for @wallet_subtitle_no_withdrawable.
+  ///
+  /// In en, this message translates to:
+  /// **'There is no net withdrawable balance right now.'**
+  String get wallet_subtitle_no_withdrawable;
+
   /// No description provided for @wallet_preview_state.
   ///
   /// In en, this message translates to:
@@ -3751,6 +3913,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending balance'**
   String get wallet_pending_balance;
+
+  /// No description provided for @wallet_cod_owed_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'COD due'**
+  String get wallet_cod_owed_balance;
 
   /// No description provided for @wallet_withdraw_cta.
   ///
@@ -3872,6 +4040,18 @@ abstract class AppLocalizations {
   /// **'Completed'**
   String get wallet_status_completed;
 
+  /// No description provided for @wallet_status_ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get wallet_status_ready;
+
+  /// No description provided for @wallet_status_blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get wallet_status_blocked;
+
   /// No description provided for @wallet_status_pending.
   ///
   /// In en, this message translates to:
@@ -3893,7 +4073,7 @@ abstract class AppLocalizations {
   /// No description provided for @wallet_transaction_withdrawal.
   ///
   /// In en, this message translates to:
-  /// **'Withdrawal request'**
+  /// **'Withdrawal paid'**
   String get wallet_transaction_withdrawal;
 
   /// No description provided for @wallet_transaction_bonus.
@@ -3902,17 +4082,59 @@ abstract class AppLocalizations {
   /// **'Bonus payout'**
   String get wallet_transaction_bonus;
 
+  /// No description provided for @wallet_transaction_refund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund/reversal'**
+  String get wallet_transaction_refund;
+
+  /// No description provided for @wallet_transaction_settlement.
+  ///
+  /// In en, this message translates to:
+  /// **'Settlement'**
+  String get wallet_transaction_settlement;
+
   /// No description provided for @wallet_transaction_adjustment.
   ///
   /// In en, this message translates to:
   /// **'Wallet adjustment'**
   String get wallet_transaction_adjustment;
 
+  /// No description provided for @wallet_transaction_cash_collected.
+  ///
+  /// In en, this message translates to:
+  /// **'COD collection/remittance'**
+  String get wallet_transaction_cash_collected;
+
+  /// No description provided for @wallet_transaction_hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Held balance'**
+  String get wallet_transaction_hold;
+
   /// No description provided for @wallet_transaction_release.
   ///
   /// In en, this message translates to:
-  /// **'Withdrawal released'**
+  /// **'Released balance'**
   String get wallet_transaction_release;
+
+  /// No description provided for @wallet_transaction_credit.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit'**
+  String get wallet_transaction_credit;
+
+  /// No description provided for @wallet_transaction_debit.
+  ///
+  /// In en, this message translates to:
+  /// **'Debit'**
+  String get wallet_transaction_debit;
+
+  /// No description provided for @wallet_transaction_generic.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet transaction'**
+  String get wallet_transaction_generic;
 
   /// No description provided for @wallet_direction_in.
   ///
@@ -3931,6 +4153,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bank account'**
   String get wallet_payment_bank_account;
+
+  /// No description provided for @wallet_payment_mobile_wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile wallet'**
+  String get wallet_payment_mobile_wallet;
 
   /// No description provided for @wallet_payment_debit_card.
   ///
@@ -4082,6 +4310,24 @@ abstract class AppLocalizations {
   /// **'No primary method available'**
   String get wallet_no_primary_method;
 
+  /// No description provided for @wallet_withdraw_blocked_no_primary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a primary payout method before requesting a withdrawal.'**
+  String get wallet_withdraw_blocked_no_primary;
+
+  /// No description provided for @wallet_withdraw_blocked_cod.
+  ///
+  /// In en, this message translates to:
+  /// **'Settle outstanding COD cash before requesting a withdrawal.'**
+  String get wallet_withdraw_blocked_cod;
+
+  /// No description provided for @wallet_withdraw_blocked_no_balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal amount exceeds net available balance after COD obligations.'**
+  String get wallet_withdraw_blocked_no_balance;
+
   /// No description provided for @wallet_select_method.
   ///
   /// In en, this message translates to:
@@ -4196,6 +4442,12 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get wallet_status_cancelled;
 
+  /// No description provided for @wallet_transfer_reference.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer ref'**
+  String get wallet_transfer_reference;
+
   /// No description provided for @wallet_bonus_weekend.
   ///
   /// In en, this message translates to:
@@ -4237,6 +4489,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your latest payout request is queued and should arrive within the expected settlement window.'**
   String get wallet_alert_payout_subtitle;
+
+  /// No description provided for @wallet_cod_block_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding COD cash blocks withdrawal'**
+  String get wallet_cod_block_title;
+
+  /// No description provided for @wallet_cod_block_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin must reconcile your COD remittance before you can withdraw from the wallet.'**
+  String get wallet_cod_block_subtitle;
 
   /// No description provided for @wallet_alert_incentive_title.
   ///

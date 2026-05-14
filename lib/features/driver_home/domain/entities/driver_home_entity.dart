@@ -40,6 +40,7 @@ class DriverHomeOperationalStatusEntity {
     required this.reviewNote,
     required this.suspensionReason,
     required this.message,
+    required this.policyIsFrozen,
     this.canGoAvailable,
   });
 
@@ -62,6 +63,7 @@ class DriverHomeOperationalStatusEntity {
   final String? reviewNote;
   final String? suspensionReason;
   final String message;
+  final bool policyIsFrozen;
 }
 
 class DriverHomeOfferEntity {

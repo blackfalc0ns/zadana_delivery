@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
@@ -9,6 +10,7 @@ import 'package:zadana_delivery/core/constants/assets.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/services/driver_notification_router_service.dart';
+import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_cubit.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
@@ -48,7 +50,14 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         listener: (context, state) {
           final route = state.targetRoute;
           if (route == null) return;
-          context.pushReplacementNamed(route, rootNavigator: true);
+          context.pushReplacementNamed(
+            route,
+            rootNavigator: true,
+            arguments: _buildRouteArguments(
+              route: route,
+              accountStatus: state.accountStatus,
+            ),
+          );
         },
         builder: (context, state) {
           return Scaffold(
@@ -158,5 +167,18 @@ class _AuthGateScreenState extends State<AuthGateScreen> {
         },
       ),
     );
+  }
+
+  Object? _buildRouteArguments({
+    required String route,
+    required DriverAccountStatusEntity? accountStatus,
+  }) {
+    switch (route) {
+      case AppRoutes.accountBlocked:
+      case AppRoutes.accountPendingApproval:
+        return accountStatus;
+      default:
+        return null;
+    }
   }
 }

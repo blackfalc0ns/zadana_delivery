@@ -109,6 +109,8 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       status.suspensionReason,
       status.reviewNote,
       status.message,
+      if (status.policyIsFrozen)
+        'Offer access is temporarily frozen by the rejection policy.',
       if (status.canGoAvailable == false)
         'This account cannot go online right now.',
     ].where((value) => (value ?? '').trim().isNotEmpty).firstOrNull;
@@ -126,6 +128,10 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     final normalizedGateStatus = status.gateStatus.trim().toLowerCase();
 
     if (!status.isOperational) {
+      return true;
+    }
+
+    if (status.policyIsFrozen) {
       return true;
     }
 
@@ -184,8 +190,23 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
   }
 
   Future<void> _initialize() async {
-    await Future.wait<void>([_loadHome(), _loadDriverMarker()]);
+    await Future.wait<void>([
+      _loadHome(),
+      _loadDriverMarker(),
+      _loadInitialLocation(),
+    ]);
     unawaited(_bootstrapActiveSession());
+  }
+
+  /// Attempts to get the driver's current GPS position on startup so the map
+  /// centers on their real location instead of the Riyadh fallback.
+  Future<void> _loadInitialLocation() async {
+    try {
+      await _locationPermissionService.ensureForegroundPermission();
+      await _loadCurrentLocation();
+    } catch (_) {
+      // Permission denied or service disabled – silently fall back to default.
+    }
   }
 
   Future<void> _loadHome({bool refresh = false}) async {
@@ -296,6 +317,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
             reviewNote: currentHome.operationalStatus.reviewNote,
             suspensionReason: currentHome.operationalStatus.suspensionReason,
             message: currentHome.operationalStatus.message,
+            policyIsFrozen: currentHome.operationalStatus.policyIsFrozen,
           ),
           currentOffer: currentHome.currentOffer,
           currentAssignment: currentHome.currentAssignment,
@@ -644,6 +666,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       status.reviewNote,
       status.suspensionReason,
       status.message,
+      status.policyIsFrozen,
     );
   }
 

@@ -12,14 +12,15 @@ class DriverWalletTransactionModelDto {
 
   factory DriverWalletTransactionModelDto.fromJson(Map<String, dynamic> json) {
     return DriverWalletTransactionModelDto(
-      id: json['id'] as String? ?? '',
-      type: json['type'] as String? ?? '',
-      direction: json['direction'] as String? ?? '',
+      id: json['id']?.toString() ?? '',
+      type: json['type']?.toString() ?? '',
+      direction: json['direction']?.toString() ?? '',
       amount: _toDouble(json['amount']),
-      description: json['description'] as String? ?? '',
-      referenceType: json['referenceType'] as String? ?? '',
-      referenceId: json['referenceId'] as String?,
-      createdAtUtc: json['createdAtUtc'] as String? ?? '',
+      description: json['description']?.toString() ?? '',
+      referenceType: json['referenceType']?.toString() ?? '',
+      referenceId: json['referenceId']?.toString(),
+      createdAtUtc:
+          json['createdAtUtc']?.toString() ?? json['createdAt']?.toString() ?? '',
     );
   }
 

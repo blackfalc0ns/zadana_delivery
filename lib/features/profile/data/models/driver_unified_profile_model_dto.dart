@@ -1,4 +1,5 @@
 import 'package:zadana_delivery/features/profile/data/models/driver_compliance_document_model_dto.dart';
+import 'package:zadana_delivery/features/profile/data/models/driver_rejection_policy_model_dto.dart';
 
 class DriverUnifiedProfileModelDto {
   const DriverUnifiedProfileModelDto({
@@ -33,6 +34,7 @@ class DriverUnifiedProfileModelDto {
     required this.completionPercent,
     required this.missingRequirements,
     required this.canSubmitForReview,
+    required this.rejectionPolicy,
   });
 
   factory DriverUnifiedProfileModelDto.fromJson(Map<String, dynamic> json) {
@@ -79,6 +81,9 @@ class DriverUnifiedProfileModelDto {
       completionPercent: _readInt(json['completionPercent']),
       missingRequirements: _readStringList(json['missingRequirements']),
       canSubmitForReview: json['canSubmitForReview'] == true,
+      rejectionPolicy: DriverRejectionPolicyModelDto.fromJson(
+        _readMap(json['rejectionPolicy']),
+      ),
     );
   }
 
@@ -113,6 +118,7 @@ class DriverUnifiedProfileModelDto {
   final int completionPercent;
   final List<String> missingRequirements;
   final bool canSubmitForReview;
+  final DriverRejectionPolicyModelDto rejectionPolicy;
 
   static int _readInt(dynamic value) {
     if (value is int) return value;
@@ -143,5 +149,11 @@ class DriverUnifiedProfileModelDto {
           ),
         )
         .toList();
+  }
+
+  static Map<String, dynamic> _readMap(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return const <String, dynamic>{};
   }
 }

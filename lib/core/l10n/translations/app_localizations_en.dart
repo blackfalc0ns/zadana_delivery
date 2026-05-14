@@ -1668,11 +1668,82 @@ class AppLocalizationsEn extends AppLocalizations {
       'Account review usually happens shortly after the submitted data is confirmed as complete.';
 
   @override
+  String get auth_pending_update_required => 'Update required';
+
+  @override
+  String get auth_pending_under_review_badge => 'Under review';
+
+  @override
+  String get auth_pending_update_short_description =>
+      'Some details or documents need updating.';
+
+  @override
+  String get auth_pending_review_short_description =>
+      'Your details are being reviewed.';
+
+  @override
+  String get auth_pending_note_title => 'Note';
+
+  @override
+  String get auth_pending_notifications_title => 'Notifications';
+
+  @override
+  String get auth_pending_notifications_update_message =>
+      'Check notifications for update requests.';
+
+  @override
+  String get auth_pending_notifications_review_message =>
+      'You will be notified once reviewed.';
+
+  @override
+  String get auth_pending_update_details => 'Update details';
+
+  @override
+  String get auth_pending_review_details => 'Review details';
+
+  @override
   String get driver_account_status_title => 'Account status';
 
   @override
   String get driver_account_status_subtitle =>
       'Track each document review, missing requirements, and the next action needed to complete your account.';
+
+  @override
+  String get profile_rejection_policy_title => 'Offer rejection policy';
+
+  @override
+  String get profile_rejection_policy_tracking_subtitle =>
+      'Backend-tracked daily and weekly rejection limits';
+
+  @override
+  String get profile_rejection_policy_frozen_badge =>
+      'Offer receiving is temporarily frozen';
+
+  @override
+  String get profile_rejection_policy_status_active => 'Active';
+
+  @override
+  String get profile_rejection_policy_status_frozen => 'Frozen';
+
+  @override
+  String get profile_rejection_policy_summary_active =>
+      'Track daily and weekly rejection limits live';
+
+  @override
+  String get profile_rejection_policy_summary_frozen =>
+      'Offer receiving is temporarily paused by policy';
+
+  @override
+  String get profile_rejection_today_label => 'Today';
+
+  @override
+  String get profile_rejection_today_remaining_label => 'Remaining today';
+
+  @override
+  String get profile_rejection_week_label => 'This week';
+
+  @override
+  String get profile_rejection_week_remaining_label => 'Remaining this week';
 
   @override
   String get driver_account_status_completion_label => 'Profile completion';
@@ -1785,6 +1856,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get auth_blocked_support_hint =>
       'You can return to support and help to send an inquiry or follow up on the reason for the block and the account recovery steps.';
+
+  @override
+  String get auth_blocked_rejection_policy_hint =>
+      'This daily block clears automatically tomorrow based on the server day, unless an admin clears it earlier.';
+
+  @override
+  String get auth_blocked_rejection_policy_reset_note =>
+      'Daily rejection freezes are cleared automatically on the next server day. Admins can also clear the restriction earlier.';
 
   @override
   String get auth_contact_support => 'Contact support';
@@ -1968,6 +2047,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'Review your live balance, recent activity, and payout readiness in one secure wallet hub.';
 
   @override
+  String get wallet_subtitle_ready =>
+      'Your net withdrawable balance is ready now.';
+
+  @override
+  String get wallet_subtitle_add_primary =>
+      'Add a primary payout method to start withdrawing.';
+
+  @override
+  String get wallet_subtitle_cod_blocked =>
+      'Withdrawal is blocked until COD dues are settled.';
+
+  @override
+  String get wallet_subtitle_no_withdrawable =>
+      'There is no net withdrawable balance right now.';
+
+  @override
   String get wallet_preview_state => 'Preview state';
 
   @override
@@ -1987,6 +2082,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wallet_pending_balance => 'Pending balance';
+
+  @override
+  String get wallet_cod_owed_balance => 'COD due';
 
   @override
   String get wallet_withdraw_cta => 'Withdraw now';
@@ -2052,6 +2150,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_status_completed => 'Completed';
 
   @override
+  String get wallet_status_ready => 'Ready';
+
+  @override
+  String get wallet_status_blocked => 'Blocked';
+
+  @override
   String get wallet_status_pending => 'Pending';
 
   @override
@@ -2061,16 +2165,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_transaction_delivery => 'Delivery earnings';
 
   @override
-  String get wallet_transaction_withdrawal => 'Withdrawal request';
+  String get wallet_transaction_withdrawal => 'Withdrawal paid';
 
   @override
   String get wallet_transaction_bonus => 'Bonus payout';
 
   @override
+  String get wallet_transaction_refund => 'Refund/reversal';
+
+  @override
+  String get wallet_transaction_settlement => 'Settlement';
+
+  @override
   String get wallet_transaction_adjustment => 'Wallet adjustment';
 
   @override
-  String get wallet_transaction_release => 'Withdrawal released';
+  String get wallet_transaction_cash_collected => 'COD collection/remittance';
+
+  @override
+  String get wallet_transaction_hold => 'Held balance';
+
+  @override
+  String get wallet_transaction_release => 'Released balance';
+
+  @override
+  String get wallet_transaction_credit => 'Credit';
+
+  @override
+  String get wallet_transaction_debit => 'Debit';
+
+  @override
+  String get wallet_transaction_generic => 'Wallet transaction';
 
   @override
   String get wallet_direction_in => 'IN';
@@ -2080,6 +2205,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wallet_payment_bank_account => 'Bank account';
+
+  @override
+  String get wallet_payment_mobile_wallet => 'Mobile wallet';
 
   @override
   String get wallet_payment_debit_card => 'Debit card';
@@ -2164,6 +2292,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_no_primary_method => 'No primary method available';
 
   @override
+  String get wallet_withdraw_blocked_no_primary =>
+      'Add a primary payout method before requesting a withdrawal.';
+
+  @override
+  String get wallet_withdraw_blocked_cod =>
+      'Settle outstanding COD cash before requesting a withdrawal.';
+
+  @override
+  String get wallet_withdraw_blocked_no_balance =>
+      'Withdrawal amount exceeds net available balance after COD obligations.';
+
+  @override
   String get wallet_select_method => 'Select a payout method.';
 
   @override
@@ -2224,6 +2364,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_status_cancelled => 'Cancelled';
 
   @override
+  String get wallet_transfer_reference => 'Transfer ref';
+
+  @override
   String get wallet_bonus_weekend => 'Weekend challenge';
 
   @override
@@ -2245,6 +2388,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get wallet_alert_payout_subtitle =>
       'Your latest payout request is queued and should arrive within the expected settlement window.';
+
+  @override
+  String get wallet_cod_block_title => 'Outstanding COD cash blocks withdrawal';
+
+  @override
+  String get wallet_cod_block_subtitle =>
+      'Admin must reconcile your COD remittance before you can withdraw from the wallet.';
 
   @override
   String get wallet_alert_incentive_title => 'New incentive unlocked';

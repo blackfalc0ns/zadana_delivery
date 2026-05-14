@@ -1,11 +1,13 @@
 import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/features/profile/data/models/driver_compliance_document_model_dto.dart';
+import 'package:zadana_delivery/features/profile/data/models/driver_rejection_policy_model_dto.dart';
 import 'package:zadana_delivery/features/profile/data/models/driver_unified_profile_model_dto.dart';
 import 'package:zadana_delivery/features/profile/data/models/update_driver_documents_request_model_dto.dart';
 import 'package:zadana_delivery/features/profile/data/models/update_driver_personal_request_model_dto.dart';
 import 'package:zadana_delivery/features/profile/data/models/update_driver_vehicle_request_model_dto.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_compliance_document_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_rejection_policy_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_documents_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
@@ -52,6 +54,24 @@ extension DriverUnifiedProfileDtoMapper on DriverUnifiedProfileModelDto {
           .where((item) => item.isNotEmpty)
           .toList(),
       canSubmitForReview: canSubmitForReview,
+      rejectionPolicy: rejectionPolicy.toEntity(),
+    );
+  }
+}
+
+extension DriverRejectionPolicyModelDtoMapper on DriverRejectionPolicyModelDto {
+  DriverRejectionPolicyEntity toEntity() {
+    return DriverRejectionPolicyEntity(
+      dailyRejections: dailyRejections,
+      dailyLimit: dailyLimit,
+      remainingBeforeFreeze: remainingBeforeFreeze,
+      weeklyRejections: weeklyRejections,
+      weeklyLimit: weeklyLimit,
+      remainingBeforeWeeklyFreeze: remainingBeforeWeeklyFreeze,
+      isFrozen: isFrozen,
+      restrictionMessage: restrictionMessage?.trim().isEmpty == true
+          ? null
+          : restrictionMessage?.trim(),
     );
   }
 }

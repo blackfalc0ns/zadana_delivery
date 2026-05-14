@@ -7,6 +7,8 @@ class DriverWalletSummaryModelDto {
     required this.currentBalance,
     required this.availableToWithdraw,
     required this.pendingBalance,
+    required this.codOwedBalance,
+    required this.netWithdrawable,
     required this.todayEarnings,
     required this.weekEarnings,
     required this.monthEarnings,
@@ -16,23 +18,34 @@ class DriverWalletSummaryModelDto {
   });
 
   factory DriverWalletSummaryModelDto.fromJson(Map<String, dynamic> json) {
+    final payload = _resolvePayload(json);
     return DriverWalletSummaryModelDto(
-      currentBalance: _toDouble(json['currentBalance']),
-      availableToWithdraw: _toDouble(json['availableToWithdraw']),
-      pendingBalance: _toDouble(json['pendingBalance']),
-      todayEarnings: _toDouble(json['todayEarnings']),
-      weekEarnings: _toDouble(json['weekEarnings']),
-      monthEarnings: _toDouble(json['monthEarnings']),
+      currentBalance: _toDouble(payload['currentBalance']),
+      availableToWithdraw: _toDouble(payload['availableToWithdraw']),
+      pendingBalance: _toDouble(payload['pendingBalance']),
+      codOwedBalance: _toDouble(payload['codOwedBalance']),
+      netWithdrawable: _toDouble(payload['netWithdrawable']),
+      todayEarnings: _toDouble(payload['todayEarnings']),
+      weekEarnings: _toDouble(payload['weekEarnings']),
+      monthEarnings: _toDouble(payload['monthEarnings']),
       recentTransactions: _toList(
-        json['recentTransactions'],
+        payload['recentTransactions'] ??
+            payload['transactions'] ??
+            payload['recentWalletTransactions'],
         DriverWalletTransactionModelDto.fromJson,
       ),
       paymentMethods: _toList(
-        json['paymentMethods'],
+        payload['paymentMethods'] ??
+            payload['methods'] ??
+            payload['payoutMethods'],
         DriverPayoutMethodModelDto.fromJson,
       ),
       withdrawalSummary: DriverWalletWithdrawalSummaryModelDto.fromJson(
-        _normalizeMap(json['withdrawalSummary']),
+        _normalizeMap(
+          payload['withdrawalSummary'] ??
+              payload['withdrawalsSummary'] ??
+              payload['withdrawalStats'],
+        ),
       ),
     );
   }
@@ -40,6 +53,8 @@ class DriverWalletSummaryModelDto {
   final double currentBalance;
   final double availableToWithdraw;
   final double pendingBalance;
+  final double codOwedBalance;
+  final double netWithdrawable;
   final double todayEarnings;
   final double weekEarnings;
   final double monthEarnings;
@@ -70,5 +85,15 @@ class DriverWalletSummaryModelDto {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);
     return const <String, dynamic>{};
+  }
+
+  static Map<String, dynamic> _resolvePayload(Map<String, dynamic> json) {
+    for (final key in const ['data', 'result', 'wallet', 'summary']) {
+      final nested = _normalizeMap(json[key]);
+      if (nested.isNotEmpty) {
+        return nested;
+      }
+    }
+    return json;
   }
 }

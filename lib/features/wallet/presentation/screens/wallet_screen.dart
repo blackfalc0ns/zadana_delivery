@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
-import 'package:zadana_delivery/core/errors/error_widgets/empty_state_widget.dart';
-import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
-import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_upsert_request_entity.dart';
@@ -20,11 +16,7 @@ import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_paym
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_transactions_screen.dart';
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_withdrawal_form_screen.dart';
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_withdrawals_screen.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_balance_hero_card.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_payment_method_tile.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_section_shell.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_summary_metric_card.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_transaction_tile.dart';
+import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_screen_content.dart';
 
 class WalletScreen extends StatefulWidget {
   const WalletScreen({super.key});
@@ -78,9 +70,6 @@ class _WalletScreenState extends State<WalletScreen> {
             );
           }
 
-          final summary = _viewModel.summary;
-          final paymentMethods = _viewModel.paymentMethods;
-
           return Scaffold(
             body: SafeArea(
               top: false,
@@ -90,274 +79,20 @@ class _WalletScreenState extends State<WalletScreen> {
                     title: locale.wallet_title,
                     onBackPressed: () => Navigator.of(context).maybePop(),
                   ),
-                  if (state.isRefreshing)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: Center(
-                        child: CustomProgressIndicator.compact(size: 22),
-                      ),
-                    ),
                   Expanded(
-                    child: summary == null && state.isLoading
-                        ? const _WalletLoadingSkeleton()
-                        : RefreshIndicator(
-                            onRefresh: _viewModel.refreshWallet,
-                            child: ListView(
-                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
-                              physics: const AlwaysScrollableScrollPhysics(
-                                parent: BouncingScrollPhysics(),
-                              ),
-                              children: [
-                                WalletBalanceHeroCard(
-                                  title: locale.wallet_current_balance,
-                                  subtitle: locale.wallet_subtitle_secure,
-                                  balanceValue: _formatCurrency(
-                                    context,
-                                    summary?.currentBalance ?? 0,
-                                  ),
-                                  availableLabel:
-                                      locale.wallet_available_to_withdraw,
-                                  availableValue: _formatCurrency(
-                                    context,
-                                    summary?.availableToWithdraw ?? 0,
-                                  ),
-                                  pendingLabel: locale.wallet_pending_balance,
-                                  pendingValue: _formatCurrency(
-                                    context,
-                                    summary?.pendingBalance ?? 0,
-                                  ),
-                                  ctaLabel: locale.wallet_withdraw_cta,
-                                  onWithdraw: () => _openWithdrawalPage(
-                                    summary?.availableToWithdraw ?? 0,
-                                  ),
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF0B8FA3),
-                                      Color(0xFF05657D),
-                                      Color(0xFF02384E),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  glowColor: const Color(0x332BBBD0),
-                                ),
-                                const SizedBox(height: 18),
-                                WalletSectionShell(
-                                  title: locale.wallet_earnings_summary,
-                                  child: Column(
-                                    children: [
-                                      WalletSummaryMetricCard(
-                                        label: locale.wallet_metric_today,
-                                        value: _formatCurrency(
-                                          context,
-                                          summary?.todayEarnings ?? 0,
-                                        ),
-                                        icon: Icons.today_rounded,
-                                        tint: AppColors.success,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      WalletSummaryMetricCard(
-                                        label: locale.wallet_metric_week,
-                                        value: _formatCurrency(
-                                          context,
-                                          summary?.weekEarnings ?? 0,
-                                        ),
-                                        icon: Icons.date_range_rounded,
-                                        tint: AppColors.info,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      WalletSummaryMetricCard(
-                                        label: locale.wallet_metric_month,
-                                        value: _formatCurrency(
-                                          context,
-                                          summary?.monthEarnings ?? 0,
-                                        ),
-                                        icon: Icons.insights_rounded,
-                                        tint: AppColors.secondary,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                WalletSectionShell(
-                                  title: locale.wallet_withdrawal_requests,
-                                  trailing: TextButton(
-                                    onPressed: _openWithdrawalsPage,
-                                    child: Text(locale.wallet_view_all),
-                                  ),
-                                  child: Column(
-                                    children: [
-                                      WalletSummaryMetricCard(
-                                        label: locale.wallet_pending_requests,
-                                        value:
-                                            '${summary?.withdrawalSummary.pendingCount ?? 0}',
-                                        icon: Icons.pending_actions_rounded,
-                                        tint: AppColors.warning,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      WalletSummaryMetricCard(
-                                        label:
-                                            locale.wallet_pending_requests_amount,
-                                        value: _formatCurrency(
-                                          context,
-                                          summary?.withdrawalSummary.pendingAmount ??
-                                              0,
-                                        ),
-                                        icon: Icons.hourglass_top_rounded,
-                                        tint: AppColors.info,
-                                      ),
-                                      const SizedBox(height: 10),
-                                      WalletSummaryMetricCard(
-                                        label: locale.wallet_total_requests,
-                                        value:
-                                            '${summary?.withdrawalSummary.totalRequests ?? 0}',
-                                        icon: Icons.receipt_long_rounded,
-                                        tint: AppColors.secondary,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 20),
-                                WalletSectionShell(
-                                  title: locale.wallet_transaction_history,
-                                  trailing: TextButton(
-                                    onPressed: _openTransactionsPage,
-                                    child: Text(locale.wallet_view_all),
-                                  ),
-                                  child: (summary?.recentTransactions.isNotEmpty ??
-                                          false)
-                                      ? Column(
-                                          children: summary!.recentTransactions
-                                              .map(
-                                                (item) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 10,
-                                                      ),
-                                                  child: WalletTransactionTile(
-                                                    item: item,
-                                                    amountText:
-                                                        _formatSignedCurrency(
-                                                          context,
-                                                          item.amount,
-                                                          item.isIncoming,
-                                                        ),
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        )
-                                      : _EmptyWalletSection(
-                                          icon: Icons.receipt_long_outlined,
-                                          title:
-                                              locale.wallet_transactions_empty_title,
-                                          subtitle: locale
-                                              .wallet_transactions_empty_subtitle,
-                                        ),
-                                ),
-                                const SizedBox(height: 10),
-                                WalletSectionShell(
-                                  title: locale.wallet_payment_methods,
-                                  trailing: TextButton.icon(
-                                    onPressed: _openCreatePaymentMethodPage,
-                                    icon: const Icon(Icons.add_rounded, size: 18),
-                                    label: Text(locale.wallet_add_method),
-                                  ),
-                                  child: paymentMethods.isNotEmpty
-                                      ? Column(
-                                          children: paymentMethods
-                                              .map(
-                                                (item) => Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        bottom: 10,
-                                                      ),
-                                                  child: Stack(
-                                                    children: [
-                                                      WalletPaymentMethodTile(
-                                                        item: item,
-                                                      ),
-                                                      PositionedDirectional(
-                                                        top: 8,
-                                                        end: 8,
-                                                        child: IconButton(
-                                                          onPressed: state
-                                                                      .activePaymentMethodId ==
-                                                                  item.id
-                                                              ? null
-                                                              : () =>
-                                                                  _showPaymentMethodActions(
-                                                                    item,
-                                                                  ),
-                                                          icon: state
-                                                                      .activePaymentMethodId ==
-                                                                  item.id
-                                                              ? const SizedBox(
-                                                                  width: 18,
-                                                                  height: 18,
-                                                                  child:
-                                                                      CustomProgressIndicator.compact(
-                                                                        size:
-                                                                            18,
-                                                                      ),
-                                                                )
-                                                              : const Icon(
-                                                                  Icons
-                                                                      .more_horiz_rounded,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              )
-                                              .toList(),
-                                        )
-                                      : _EmptyWalletSection(
-                                          icon:
-                                              Icons.account_balance_wallet_outlined,
-                                          title:
-                                              locale.wallet_methods_empty_title,
-                                          subtitle: locale
-                                              .wallet_methods_empty_subtitle,
-                                        ),
-                                ),
-                                const SizedBox(height: 10),
-                                if ((summary?.pendingBalance ?? 0) > 0 ||
-                                    paymentMethods.any((item) => !item.isVerified))
-                                  WalletSectionShell(
-                                    title: locale.wallet_alerts,
-                                    child: Column(
-                                      children: [
-                                        if ((summary?.pendingBalance ?? 0) > 0)
-                                          _InlineWalletAlert(
-                                            icon: Icons.lock_clock_rounded,
-                                            title: locale
-                                                .wallet_alert_payout_title,
-                                            subtitle: locale
-                                                .wallet_alert_payout_subtitle,
-                                          ),
-                                        if (paymentMethods.any(
-                                          (item) => !item.isVerified,
-                                        ))
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                              top: 10,
-                                            ),
-                                            child: _InlineWalletAlert(
-                                              icon: Icons.verified_user_outlined,
-                                              title: locale
-                                                  .wallet_alert_verification_title,
-                                              subtitle: locale
-                                                  .wallet_alert_verification_subtitle,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
+                    child: WalletScreenContent(
+                      state: state,
+                      viewModel: _viewModel,
+                      onRefresh: _viewModel.refreshWallet,
+                      onOpenTransactions: _openTransactionsPage,
+                      onOpenWithdrawals: _openWithdrawalsPage,
+                      onOpenCreatePaymentMethod: _openCreatePaymentMethodPage,
+                      onOpenWithdrawal: _openWithdrawalPage,
+                      onShowPaymentMethodActions: _showPaymentMethodActionsById,
+                      formatCurrency: (value) => _formatCurrency(context, value),
+                      formatSignedCurrency: (value, isIncoming) =>
+                          _formatSignedCurrency(context, value, isIncoming),
+                    ),
                   ),
                 ],
               ),
@@ -387,17 +122,24 @@ class _WalletScreenState extends State<WalletScreen> {
   }
 
   Future<void> _openWithdrawalPage(double availableBalance) async {
-    final request = await Navigator.of(
-      context,
-    ).push<DriverWalletCreateWithdrawalRequestEntity>(
-      MaterialPageRoute(
-        builder: (_) => WalletWithdrawalFormScreen(
-          viewModel: _viewModel,
-          availableBalance: availableBalance,
-          primaryMethod: _viewModel.primaryPaymentMethod,
-        ),
-      ),
-    );
+    final blockMessage = _withdrawalBlockMessage(context);
+    if (!_viewModel.canRequestWithdrawal) {
+      if (blockMessage != null) {
+        CustomSnackbar.showError(context: context, message: blockMessage);
+      }
+      return;
+    }
+
+    final request = await Navigator.of(context)
+        .push<DriverWalletCreateWithdrawalRequestEntity>(
+          MaterialPageRoute(
+            builder: (_) => WalletWithdrawalFormScreen(
+              viewModel: _viewModel,
+              availableBalance: availableBalance,
+              primaryMethod: _viewModel.primaryPaymentMethod,
+            ),
+          ),
+        );
     if (request == null || !mounted) return;
 
     final success = await _viewModel.createWithdrawal(request);
@@ -412,16 +154,15 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _showCreatePaymentMethodDialog() async {
     final request = await Navigator.of(context, rootNavigator: true)
         .push<DriverPayoutMethodUpsertRequestEntity>(
-      MaterialPageRoute(
-        builder: (_) =>
-            WalletPaymentMethodFormScreen(viewModel: _viewModel),
-      ),
-    );
+          MaterialPageRoute(
+            builder: (_) =>
+                WalletPaymentMethodFormScreen(viewModel: _viewModel),
+          ),
+        );
     if (request == null || !mounted) return;
 
     final success = await _viewModel.createPaymentMethod(request);
-    if (!mounted) return;
-    if (!success) return;
+    if (!mounted || !success) return;
 
     CustomSnackbar.showSuccess(
       context: context,
@@ -434,18 +175,17 @@ class _WalletScreenState extends State<WalletScreen> {
   ) async {
     final request = await Navigator.of(context, rootNavigator: true)
         .push<DriverPayoutMethodUpsertRequestEntity>(
-      MaterialPageRoute(
-        builder: (_) => WalletPaymentMethodFormScreen(
-          viewModel: _viewModel,
-          existingMethod: method,
-        ),
-      ),
-    );
+          MaterialPageRoute(
+            builder: (_) => WalletPaymentMethodFormScreen(
+              viewModel: _viewModel,
+              existingMethod: method,
+            ),
+          ),
+        );
     if (request == null || !mounted) return;
 
     final success = await _viewModel.updatePaymentMethod(method.id, request);
-    if (!mounted) return;
-    if (!success) return;
+    if (!mounted || !success) return;
 
     CustomSnackbar.showSuccess(
       context: context,
@@ -453,7 +193,9 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
-  Future<void> _showPaymentMethodActions(DriverPayoutMethodEntity method) async {
+  Future<void> _showPaymentMethodActions(
+    DriverPayoutMethodEntity method,
+  ) async {
     await showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -516,7 +258,9 @@ class _WalletScreenState extends State<WalletScreen> {
                     ),
                   );
                   if (confirmed != true || !screenContext.mounted) return;
-                  final success = await _viewModel.deletePaymentMethod(method.id);
+                  final success = await _viewModel.deletePaymentMethod(
+                    method.id,
+                  );
                   if (!screenContext.mounted || !success) return;
                   CustomSnackbar.showSuccess(
                     context: screenContext,
@@ -531,11 +275,21 @@ class _WalletScreenState extends State<WalletScreen> {
     );
   }
 
+  Future<void> _showPaymentMethodActionsById(String methodId) async {
+    DriverPayoutMethodEntity? method;
+    for (final item in _viewModel.paymentMethods) {
+      if (item.id == methodId) {
+        method = item;
+        break;
+      }
+    }
+    if (method == null) return;
+    await _showPaymentMethodActions(method);
+  }
+
   Future<void> _openTransactionsPage() async {
     final screenContext = context;
-    if (_viewModel.state.transactions.isEmpty) {
-      await _viewModel.loadTransactions(refresh: true);
-    }
+    await _viewModel.ensureTransactionsLoaded();
     if (!screenContext.mounted) return;
 
     await Navigator.of(screenContext, rootNavigator: true).push(
@@ -547,9 +301,7 @@ class _WalletScreenState extends State<WalletScreen> {
 
   Future<void> _openWithdrawalsPage() async {
     final screenContext = context;
-    if (_viewModel.state.withdrawals.isEmpty) {
-      await _viewModel.loadWithdrawals(refresh: true);
-    }
+    await _viewModel.ensureWithdrawalsLoaded();
     if (!screenContext.mounted) return;
 
     await Navigator.of(screenContext, rootNavigator: true).push(
@@ -562,139 +314,17 @@ class _WalletScreenState extends State<WalletScreen> {
   Future<void> _openCreatePaymentMethodPage() async {
     await _showCreatePaymentMethodDialog();
   }
-}
 
-class _WalletLoadingSkeleton extends StatelessWidget {
-  const _WalletLoadingSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colorScheme;
-    return SkeletonStateWidget(
-      child: ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-        children: [
-          Container(
-            height: 220,
-            decoration: BoxDecoration(
-              color: colors.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(30),
-            ),
-          ),
-          const SizedBox(height: 18),
-          ...List.generate(
-            4,
-            (index) => Padding(
-              padding: const EdgeInsets.only(bottom: 18),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 120,
-                    height: 18,
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    height: index == 2 ? 220 : 120,
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyWalletSection extends StatelessWidget {
-  const _EmptyWalletSection({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 240,
-      child: Center(
-        child: EmptyStateWidget(
-          title: title,
-          description: subtitle,
-          icon: icon,
-        ),
-      ),
-    );
-  }
-}
-
-class _InlineWalletAlert extends StatelessWidget {
-  const _InlineWalletAlert({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: colors.outlineVariant.withValues(alpha: 0.45)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: colors.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(icon, color: colors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colors.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+  String? _withdrawalBlockMessage(BuildContext context) {
+    switch (_viewModel.withdrawalBlockReason) {
+      case WalletWithdrawalBlockReason.none:
+        return null;
+      case WalletWithdrawalBlockReason.noPrimaryMethod:
+        return context.localization.wallet_withdraw_blocked_no_primary;
+      case WalletWithdrawalBlockReason.codBlocked:
+        return context.localization.wallet_withdraw_blocked_cod;
+      case WalletWithdrawalBlockReason.noBalance:
+        return context.localization.wallet_withdraw_blocked_no_balance;
+    }
   }
 }

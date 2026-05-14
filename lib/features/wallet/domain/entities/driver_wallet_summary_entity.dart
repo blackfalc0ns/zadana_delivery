@@ -7,6 +7,8 @@ class DriverWalletSummaryEntity {
     required this.currentBalance,
     required this.availableToWithdraw,
     required this.pendingBalance,
+    required this.codOwedBalance,
+    required this.netWithdrawable,
     required this.todayEarnings,
     required this.weekEarnings,
     required this.monthEarnings,
@@ -18,6 +20,8 @@ class DriverWalletSummaryEntity {
   final double currentBalance;
   final double availableToWithdraw;
   final double pendingBalance;
+  final double codOwedBalance;
+  final double netWithdrawable;
   final double todayEarnings;
   final double weekEarnings;
   final double monthEarnings;
@@ -29,6 +33,8 @@ class DriverWalletSummaryEntity {
       currentBalance == 0 &&
       availableToWithdraw == 0 &&
       pendingBalance == 0 &&
+      codOwedBalance == 0 &&
+      netWithdrawable == 0 &&
       todayEarnings == 0 &&
       weekEarnings == 0 &&
       monthEarnings == 0 &&

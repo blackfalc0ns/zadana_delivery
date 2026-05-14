@@ -61,6 +61,8 @@ extension DriverWalletSummaryMapper on DriverWalletSummaryModelDto {
       currentBalance: currentBalance,
       availableToWithdraw: availableToWithdraw,
       pendingBalance: pendingBalance,
+      codOwedBalance: codOwedBalance,
+      netWithdrawable: netWithdrawable,
       todayEarnings: todayEarnings,
       weekEarnings: weekEarnings,
       monthEarnings: monthEarnings,

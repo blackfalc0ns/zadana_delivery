@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/constants/app_constants.dart';
@@ -37,15 +38,21 @@ class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
 
   bool get _isEntryMode => widget.otp.trim().isEmpty && widget.onSubmit != null;
 
+  Future<void> _showKeyboard() async {
+    if (!mounted || _isSubmitting || !_isEntryMode) return;
+    FocusScope.of(context).requestFocus(_focusNode);
+    await SystemChannels.textInput.invokeMethod<void>('TextInput.show');
+  }
+
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
     _focusNode = FocusNode();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_isEntryMode && mounted) {
-        _focusNode.requestFocus();
-      }
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!_isEntryMode) return;
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+      await _showKeyboard();
     });
   }
 
@@ -82,74 +89,83 @@ class _PickupOtpSheetContentState extends State<PickupOtpSheetContent> {
     }
 
     _controller.clear();
-    _focusNode.requestFocus();
     setState(() => _isSubmitting = false);
+    await _showKeyboard();
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
     final scheme = context.colorScheme;
-    return SheetContainer(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SheetHandle(),
-          const SizedBox(height: 18),
-          Text(
-            locale.order_details_pickup_code_title,
-            textAlign: TextAlign.center,
-            style: getBoldStyle(
-              fontFamily: FontConstant.cairo,
-              fontSize: FontSize.size18,
-              color: scheme.onSurface,
-            ),
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(widget.sheetContext).bottom,
+      ),
+      child: SheetContainer(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SheetHandle(),
+              const SizedBox(height: 18),
+              Text(
+                locale.order_details_pickup_code_title,
+                textAlign: TextAlign.center,
+                style: getBoldStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size18,
+                  color: scheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                locale.order_details_pickup_code_subtitle,
+                textAlign: TextAlign.center,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  color: scheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 18),
+              if (_isEntryMode)
+                CustomerOtpField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  enabled: !_isSubmitting,
+                  onChanged: (value) {
+                    if (value.trim().length == AppConstants.otpLength) {
+                      _submitIfPossible();
+                    }
+                  },
+                )
+              else
+                GestureDetector(
+                  onTap: widget.onCopyTap,
+                  child: OtpValueCard(otp: widget.otp),
+                ),
+              if (widget.onResend != null) ...[
+                const SizedBox(height: 14),
+                OrderDetailsResendOtpAction(onResend: widget.onResend!),
+              ],
+              if (widget.onConfirm != null) ...[
+                const SizedBox(height: 18),
+                SheetConfirmButton(
+                  label: locale.order_details_confirm_pickup,
+                  onPressed: widget.onConfirm!,
+                ),
+              ] else if (_isEntryMode) ...[
+                const SizedBox(height: 18),
+                SheetConfirmButton(
+                  label: locale.order_details_confirm_pickup,
+                  onPressed: _submitIfPossible,
+                ),
+              ],
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(
-            locale.order_details_pickup_code_subtitle,
-            textAlign: TextAlign.center,
-            style: getRegularStyle(
-              fontFamily: FontConstant.cairo,
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(height: 18),
-          if (_isEntryMode)
-            CustomerOtpField(
-              controller: _controller,
-              focusNode: _focusNode,
-              enabled: !_isSubmitting,
-              onChanged: (value) {
-                if (value.trim().length == AppConstants.otpLength) {
-                  _submitIfPossible();
-                }
-              },
-            )
-          else
-            GestureDetector(
-              onTap: widget.onCopyTap,
-              child: OtpValueCard(otp: widget.otp),
-            ),
-          if (widget.onResend != null) ...[
-            const SizedBox(height: 14),
-            OrderDetailsResendOtpAction(onResend: widget.onResend!),
-          ],
-          if (widget.onConfirm != null) ...[
-            const SizedBox(height: 18),
-            SheetConfirmButton(
-              label: locale.order_details_confirm_pickup,
-              onPressed: widget.onConfirm!,
-            ),
-          ] else if (_isEntryMode) ...[
-            const SizedBox(height: 18),
-            SheetConfirmButton(
-              label: locale.order_details_confirm_pickup,
-              onPressed: _submitIfPossible,
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

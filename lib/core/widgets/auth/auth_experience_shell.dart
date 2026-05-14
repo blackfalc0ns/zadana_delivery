@@ -96,7 +96,7 @@ class AuthExperienceShell extends StatelessWidget {
                           child: body,
                         ),
                         if (footer != null) ...[
-                          const SizedBox(height: Spacing.base),
+    
                           Center(child: footer),
                         ],
                       ],

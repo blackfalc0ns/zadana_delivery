@@ -14,6 +14,7 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         val channelId = resolveChannelId(notification)
         notification.setExtender { builder: NotificationCompat.Builder ->
             builder
+                .setSmallIcon(R.drawable.ic_notification_small)
                 .setChannelId(channelId)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

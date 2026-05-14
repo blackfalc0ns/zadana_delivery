@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
@@ -19,18 +22,24 @@ void driverLocalNotificationBackgroundTap(NotificationResponse response) {
 class DriverLocalNotificationService {
   DriverLocalNotificationService(this._routerService);
 
+  static const String _notificationImageAssetPath =
+      'assets/images/notification_logo.png';
+  static const String _androidNotificationIcon = 'ic_notification_small';
+
   final DriverNotificationRouterService _routerService;
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
   bool _isInitialized = false;
   Map<String, dynamic>? _initialLaunchPayload;
+  Future<String?>? _iosAttachmentPathFuture;
+  Future<Uint8List?>? _androidLargeIconBytesFuture;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
 
     const initializationSettings = InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      android: AndroidInitializationSettings(_androidNotificationIcon),
       iOS: DarwinInitializationSettings(),
     );
 
@@ -82,13 +91,20 @@ class DriverLocalNotificationService {
           channelId,
           _androidChannelName(channelId),
           channelDescription: _androidChannelDescription(channelId),
+          icon: _androidNotificationIcon,
+          largeIcon: await _resolveAndroidLargeIcon(),
+          styleInformation: await _resolveAndroidStyle(
+            title: title,
+            body: body,
+          ),
           importance: Importance.max,
           priority: Priority.max,
           visibility: NotificationVisibility.public,
           category: AndroidNotificationCategory.message,
           ticker: 'zadana_driver_notification',
         ),
-        iOS: const DarwinNotificationDetails(
+        iOS: DarwinNotificationDetails(
+          attachments: await _resolveIosAttachments(),
           presentAlert: true,
           presentBadge: true,
           presentBanner: true,
@@ -183,5 +199,104 @@ class DriverLocalNotificationService {
       return 'Urgent driver order, support, and account alerts.';
     }
     return 'General driver wallet, account, and assignment updates.';
+  }
+
+  Future<StyleInformation?> _resolveAndroidStyle({
+    required String title,
+    String? body,
+  }) async {
+    if (kIsWeb || !Platform.isAndroid) {
+      return null;
+    }
+
+    final largeIcon = await _resolveAndroidLargeIcon();
+    if (largeIcon == null) {
+      return null;
+    }
+
+    return BigPictureStyleInformation(
+      largeIcon,
+      contentTitle: title,
+      summaryText: body,
+      largeIcon: largeIcon,
+    );
+  }
+
+  Future<AndroidBitmap<Object>?> _resolveAndroidLargeIcon() async {
+    final bytes = await _resolveNotificationImageBytes();
+    if (bytes == null || bytes.isEmpty) {
+      return null;
+    }
+
+    return ByteArrayAndroidBitmap(bytes);
+  }
+
+  Future<List<DarwinNotificationAttachment>> _resolveIosAttachments() async {
+    final attachmentPath = await _resolveIosAttachmentPath();
+    if (attachmentPath == null || attachmentPath.isEmpty) {
+      return const <DarwinNotificationAttachment>[];
+    }
+
+    return <DarwinNotificationAttachment>[
+      DarwinNotificationAttachment(attachmentPath),
+    ];
+  }
+
+  Future<String?> _resolveIosAttachmentPath() {
+    final existing = _iosAttachmentPathFuture;
+    if (existing != null) {
+      return existing;
+    }
+
+    final future = _copyNotificationImageToTemp();
+    _iosAttachmentPathFuture = future;
+    return future;
+  }
+
+  Future<String?> _copyNotificationImageToTemp() async {
+    if (kIsWeb || !(Platform.isIOS || Platform.isMacOS)) {
+      return null;
+    }
+
+    try {
+      final bytes = await _resolveNotificationImageBytes();
+      if (bytes == null || bytes.isEmpty) {
+        return null;
+      }
+      final temporaryDirectory = await getTemporaryDirectory();
+      final file = File(
+        '${temporaryDirectory.path}${Platform.pathSeparator}notification_logo.png',
+      );
+      await file.writeAsBytes(bytes, flush: true);
+      return file.path;
+    } catch (error) {
+      debugPrint(
+        '[DriverLocalNotification] Failed to prepare iOS notification attachment: $error',
+      );
+      return null;
+    }
+  }
+
+  Future<Uint8List?> _resolveNotificationImageBytes() {
+    final existing = _androidLargeIconBytesFuture;
+    if (existing != null) {
+      return existing;
+    }
+
+    final future = _loadNotificationImageBytes();
+    _androidLargeIconBytesFuture = future;
+    return future;
+  }
+
+  Future<Uint8List?> _loadNotificationImageBytes() async {
+    try {
+      final byteData = await rootBundle.load(_notificationImageAssetPath);
+      return byteData.buffer.asUint8List();
+    } catch (error) {
+      debugPrint(
+        '[DriverLocalNotification] Failed to load notification image asset: $error',
+      );
+      return null;
+    }
   }
 }

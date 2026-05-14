@@ -95,10 +95,15 @@ class _LoginScreenState extends State<LoginScreen> {
         listener: (context, state) {
           final response = state.response;
           if (state.isSuccess && response != null) {
+            final targetRoute = _resolveSuccessRoute(response);
             context.pushNamedAndRemoveUntil(
-              _resolveSuccessRoute(response),
+              targetRoute,
               rootNavigator: true,
               predicate: (route) => false,
+              arguments: _resolveSuccessRouteArguments(
+                route: targetRoute,
+                response: response,
+              ),
             );
             return;
           }
@@ -194,5 +199,18 @@ class _LoginScreenState extends State<LoginScreen> {
       return AppRoutes.driverProfileCompletion;
     }
     return AppRoutes.mainShell;
+  }
+
+  Object? _resolveSuccessRouteArguments({
+    required String route,
+    required LoginResponseEntity response,
+  }) {
+    switch (route) {
+      case AppRoutes.accountPendingApproval:
+      case AppRoutes.accountBlocked:
+        return response.driverStatus;
+      default:
+        return null;
+    }
   }
 }

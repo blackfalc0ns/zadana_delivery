@@ -23,6 +23,19 @@ import 'package:zadana_delivery/features/wallet/domain/usecase/update_driver_wal
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_event.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_state.dart';
 
+enum WalletWithdrawalBlockReason { none, noPrimaryMethod, codBlocked, noBalance }
+
+enum WalletHeroState { ready, addPrimaryMethod, codBlocked, noWithdrawable }
+
+enum WalletAlertState { none, codBlocked, pendingPayout, verificationRequired }
+
+enum WalletPaymentMethodsState {
+  empty,
+  verificationRequired,
+  hasPrimaryMethod,
+  completed,
+}
+
 class WalletViewModel extends Cubit<WalletState> {
   WalletViewModel(
     this._getDriverWalletSummaryUseCase,
@@ -38,7 +51,16 @@ class WalletViewModel extends Cubit<WalletState> {
   ) : super(const WalletState()) {
     _walletUpdatedSubscription = driverRealtimeService.driverWalletUpdated
         .listen((_) {
-          unawaited(_refreshWallet(forceRefresh: true));
+          unawaited(_refreshWalletCollections(forceRefresh: true));
+        });
+    _walletNotificationSubscription = driverRealtimeService.notifications
+        .listen((payload) {
+          final screen =
+              payload['screen']?.toString().trim().toLowerCase() ?? '';
+          final event = payload['event']?.toString().trim().toLowerCase() ?? '';
+          if (screen == 'wallet' || event.startsWith('wallet.')) {
+            unawaited(_refreshWalletCollections(forceRefresh: true));
+          }
         });
   }
 
@@ -59,6 +81,8 @@ class WalletViewModel extends Cubit<WalletState> {
   final GetDriverWalletWithdrawalsUseCase _getDriverWalletWithdrawalsUseCase;
   late final StreamSubscription<Map<String, dynamic>>
   _walletUpdatedSubscription;
+  late final StreamSubscription<Map<String, dynamic>>
+  _walletNotificationSubscription;
 
   DriverWalletSummaryEntity? get summary => state.summary;
 
@@ -71,7 +95,85 @@ class WalletViewModel extends Cubit<WalletState> {
     for (final method in paymentMethods) {
       if (method.isPrimary) return method;
     }
-    return paymentMethods.isEmpty ? null : paymentMethods.first;
+    return null;
+  }
+
+  bool get hasPrimaryPaymentMethod => primaryPaymentMethod != null;
+
+  double get netWithdrawable =>
+      summary?.netWithdrawable ?? summary?.availableToWithdraw ?? 0;
+
+  double get codOwedBalance => summary?.codOwedBalance ?? 0;
+
+  bool get hasOutstandingCodDebt => codOwedBalance > 0;
+
+  bool get canRequestWithdrawal =>
+      netWithdrawable > 0 && !hasOutstandingCodDebt && hasPrimaryPaymentMethod;
+
+  double get withdrawableAmount =>
+      summary?.netWithdrawable ?? summary?.availableToWithdraw ?? 0;
+
+  bool get isWalletEmpty => summary?.isEmpty ?? false;
+
+  bool get hasAlerts =>
+      (summary?.pendingBalance ?? 0) > 0 ||
+      (summary?.codOwedBalance ?? 0) > 0 ||
+      paymentMethods.any((item) => !item.isVerified);
+
+  List<DriverWalletTransactionEntity> get recentTransactionsPreview =>
+      summary?.recentTransactions.take(3).toList(growable: false) ??
+      const <DriverWalletTransactionEntity>[];
+
+  WalletWithdrawalBlockReason get withdrawalBlockReason {
+    if (!hasPrimaryPaymentMethod) {
+      return WalletWithdrawalBlockReason.noPrimaryMethod;
+    }
+    if (hasOutstandingCodDebt) {
+      return WalletWithdrawalBlockReason.codBlocked;
+    }
+    if (netWithdrawable <= 0) {
+      return WalletWithdrawalBlockReason.noBalance;
+    }
+    return WalletWithdrawalBlockReason.none;
+  }
+
+  WalletHeroState get heroState {
+    switch (withdrawalBlockReason) {
+      case WalletWithdrawalBlockReason.none:
+        return WalletHeroState.ready;
+      case WalletWithdrawalBlockReason.noPrimaryMethod:
+        return WalletHeroState.addPrimaryMethod;
+      case WalletWithdrawalBlockReason.codBlocked:
+        return WalletHeroState.codBlocked;
+      case WalletWithdrawalBlockReason.noBalance:
+        return WalletHeroState.noWithdrawable;
+    }
+  }
+
+  WalletAlertState get alertState {
+    if ((summary?.codOwedBalance ?? 0) > 0) {
+      return WalletAlertState.codBlocked;
+    }
+    if (paymentMethods.any((item) => !item.isVerified)) {
+      return WalletAlertState.verificationRequired;
+    }
+    if ((summary?.pendingBalance ?? 0) > 0) {
+      return WalletAlertState.pendingPayout;
+    }
+    return WalletAlertState.none;
+  }
+
+  WalletPaymentMethodsState get paymentMethodsState {
+    if (paymentMethods.isEmpty) {
+      return WalletPaymentMethodsState.empty;
+    }
+    if (paymentMethods.any((item) => !item.isVerified)) {
+      return WalletPaymentMethodsState.verificationRequired;
+    }
+    if (paymentMethods.any((item) => item.isPrimary)) {
+      return WalletPaymentMethodsState.hasPrimaryMethod;
+    }
+    return WalletPaymentMethodsState.completed;
   }
 
   bool get showGlobalError =>
@@ -141,12 +243,6 @@ class WalletViewModel extends Cubit<WalletState> {
             clearFailure: true,
           ),
         );
-        if (state.transactions.isNotEmpty) {
-          await loadTransactions(refresh: true);
-        }
-        if (state.withdrawals.isNotEmpty) {
-          await loadWithdrawals(refresh: true);
-        }
         emit(state.copyWith(isRefreshing: false));
       case ApiErrorResult():
         emit(
@@ -157,6 +253,14 @@ class WalletViewModel extends Cubit<WalletState> {
           ),
         );
     }
+  }
+
+  Future<void> _refreshWalletCollections({required bool forceRefresh}) async {
+    await _refreshWallet(forceRefresh: forceRefresh);
+    await Future.wait<void>([
+      _loadTransactionsPage(page: 1, refresh: true),
+      _loadWithdrawalsPage(page: 1, refresh: true),
+    ]);
   }
 
   Future<bool> createPaymentMethod(
@@ -177,7 +281,8 @@ class WalletViewModel extends Cubit<WalletState> {
     String id,
     DriverPayoutMethodUpsertRequestEntity request,
   ) {
-    return doIntent(WalletUpdatePaymentMethodEvent(id, request)) as Future<bool>;
+    return doIntent(WalletUpdatePaymentMethodEvent(id, request))
+        as Future<bool>;
   }
 
   Future<bool> _updatePaymentMethod(
@@ -203,21 +308,13 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<bool> _deletePaymentMethod(String id) async {
-    emit(
-      state.copyWith(
-        activePaymentMethodId: id,
-        clearFailure: true,
-      ),
-    );
+    emit(state.copyWith(activePaymentMethodId: id, clearFailure: true));
     final result = await _deleteDriverWalletPaymentMethodUseCase.call(id);
     switch (result) {
       case ApiSuccessResult():
         await _refreshSummaryAndMethods();
         emit(
-          state.copyWith(
-            clearActivePaymentMethodId: true,
-            clearFailure: true,
-          ),
+          state.copyWith(clearActivePaymentMethodId: true, clearFailure: true),
         );
         return true;
       case ApiErrorResult():
@@ -236,17 +333,9 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<bool> _makePrimary(String id) async {
-    emit(
-      state.copyWith(
-        activePaymentMethodId: id,
-        clearFailure: true,
-      ),
-    );
+    emit(state.copyWith(activePaymentMethodId: id, clearFailure: true));
     final result = await _makeDriverWalletPaymentMethodPrimaryUseCase.call(id);
-    return _handlePaymentMethodMutationResult(
-      result,
-      clearLoadingIdOnly: true,
-    );
+    return _handlePaymentMethodMutationResult(result, clearLoadingIdOnly: true);
   }
 
   Future<bool> createWithdrawal(
@@ -262,16 +351,8 @@ class WalletViewModel extends Cubit<WalletState> {
     final result = await _createDriverWalletWithdrawalUseCase.call(request);
     switch (result) {
       case ApiSuccessResult():
-        await _refreshSummaryAndMethods();
-        if (state.withdrawals.isNotEmpty) {
-          await loadWithdrawals(refresh: true);
-        }
-        emit(
-          state.copyWith(
-            isSubmittingWithdrawal: false,
-            clearFailure: true,
-          ),
-        );
+        await _refreshWalletCollections(forceRefresh: true);
+        emit(state.copyWith(isSubmittingWithdrawal: false, clearFailure: true));
         return true;
       case ApiErrorResult():
         emit(
@@ -285,7 +366,8 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<void> loadTransactions({bool refresh = false}) {
-    return doIntent(WalletLoadTransactionsEvent(refresh: refresh)) as Future<void>;
+    return doIntent(WalletLoadTransactionsEvent(refresh: refresh))
+        as Future<void>;
   }
 
   Future<void> _loadTransactions(bool refresh) async {
@@ -297,13 +379,19 @@ class WalletViewModel extends Cubit<WalletState> {
     return doIntent(const WalletLoadMoreTransactionsEvent()) as Future<void>;
   }
 
+  Future<void> ensureTransactionsLoaded() async {
+    if (state.transactions.isNotEmpty) return;
+    await loadTransactions(refresh: true);
+  }
+
   Future<void> _loadMoreTransactions() async {
     if (!hasTransactionsMore || state.isLoadingMoreTransactions) return;
     await _loadTransactionsPage(page: state.transactionsPage, refresh: false);
   }
 
   Future<void> loadWithdrawals({bool refresh = false}) {
-    return doIntent(WalletLoadWithdrawalsEvent(refresh: refresh)) as Future<void>;
+    return doIntent(WalletLoadWithdrawalsEvent(refresh: refresh))
+        as Future<void>;
   }
 
   Future<void> _loadWithdrawals(bool refresh) async {
@@ -313,6 +401,11 @@ class WalletViewModel extends Cubit<WalletState> {
 
   Future<void> loadMoreWithdrawals() {
     return doIntent(const WalletLoadMoreWithdrawalsEvent()) as Future<void>;
+  }
+
+  Future<void> ensureWithdrawalsLoaded() async {
+    if (state.withdrawals.isNotEmpty) return;
+    await loadWithdrawals(refresh: true);
   }
 
   Future<void> _loadMoreWithdrawals() async {
@@ -333,9 +426,7 @@ class WalletViewModel extends Cubit<WalletState> {
       ),
     );
 
-    final result = await _getDriverWalletTransactionsUseCase.call(
-      page: page,
-    );
+    final result = await _getDriverWalletTransactionsUseCase.call(page: page);
     switch (result) {
       case ApiSuccessResult(data: final page):
         _applyTransactionsPage(page, refresh: refresh);
@@ -363,9 +454,7 @@ class WalletViewModel extends Cubit<WalletState> {
       ),
     );
 
-    final result = await _getDriverWalletWithdrawalsUseCase.call(
-      page: page,
-    );
+    final result = await _getDriverWalletWithdrawalsUseCase.call(page: page);
     switch (result) {
       case ApiSuccessResult(data: final page):
         _applyWithdrawalsPage(page, refresh: refresh);
@@ -419,7 +508,12 @@ class WalletViewModel extends Cubit<WalletState> {
   Future<void> _refreshSummaryAndMethods() async {
     final summaryResult = await _getDriverWalletSummaryUseCase.call();
     if (summaryResult case ApiSuccessResult(data: final summary)) {
-      emit(state.copyWith(summary: summary, paymentMethods: summary.paymentMethods));
+      emit(
+        state.copyWith(
+          summary: summary,
+          paymentMethods: summary.paymentMethods,
+        ),
+      );
       return;
     }
 
@@ -438,11 +532,11 @@ class WalletViewModel extends Cubit<WalletState> {
         isTransactionsLoading: false,
         isLoadingMoreTransactions: false,
         transactions: refresh
-            ? page.items
-            : <DriverWalletTransactionEntity>[
+            ? _deduplicateTransactions(page.items)
+            : _deduplicateTransactions(<DriverWalletTransactionEntity>[
                 ...state.transactions,
                 ...page.items,
-              ],
+              ]),
         transactionsPage: page.page + 1,
         transactionsTotalCount: page.totalCount,
         clearFailure: true,
@@ -459,11 +553,11 @@ class WalletViewModel extends Cubit<WalletState> {
         isWithdrawalsLoading: false,
         isLoadingMoreWithdrawals: false,
         withdrawals: refresh
-            ? page.items
-            : <DriverWalletWithdrawalRequestEntity>[
+            ? _deduplicateWithdrawals(page.items)
+            : _deduplicateWithdrawals(<DriverWalletWithdrawalRequestEntity>[
                 ...state.withdrawals,
                 ...page.items,
-              ],
+              ]),
         withdrawalsPage: page.page + 1,
         withdrawalsTotalCount: page.totalCount,
         clearFailure: true,
@@ -474,6 +568,31 @@ class WalletViewModel extends Cubit<WalletState> {
   @override
   Future<void> close() async {
     await _walletUpdatedSubscription.cancel();
+    await _walletNotificationSubscription.cancel();
     return super.close();
+  }
+
+  List<DriverWalletTransactionEntity> _deduplicateTransactions(
+    List<DriverWalletTransactionEntity> items,
+  ) {
+    final seenIds = <String>{};
+    final uniqueItems = <DriverWalletTransactionEntity>[];
+    for (final item in items) {
+      if (!seenIds.add(item.id)) continue;
+      uniqueItems.add(item);
+    }
+    return uniqueItems;
+  }
+
+  List<DriverWalletWithdrawalRequestEntity> _deduplicateWithdrawals(
+    List<DriverWalletWithdrawalRequestEntity> items,
+  ) {
+    final seenIds = <String>{};
+    final uniqueItems = <DriverWalletWithdrawalRequestEntity>[];
+    for (final item in items) {
+      if (!seenIds.add(item.id)) continue;
+      uniqueItems.add(item);
+    }
+    return uniqueItems;
   }
 }

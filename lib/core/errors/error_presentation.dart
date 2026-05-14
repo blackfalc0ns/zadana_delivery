@@ -87,6 +87,12 @@ class ErrorMessagePresenter {
   ];
 
   static String snackBarMessage(BuildContext context, ApiException exception) {
+    final mappedErrorCode = _knownErrorCodeMessage(
+      context,
+      exception.errorCode,
+    );
+    if (mappedErrorCode != null) return mappedErrorCode;
+
     final safeMessage = safeBackendMessage(exception);
     if (safeMessage != null) return safeMessage;
     return localizedMessage(context, exception.errorType);
@@ -176,5 +182,21 @@ class ErrorMessagePresenter {
   static bool _looksTechnical(String message) {
     final normalized = message.trim().toLowerCase();
     return _technicalPatterns.any(normalized.contains);
+  }
+
+  static String? _knownErrorCodeMessage(
+    BuildContext context,
+    String? errorCode,
+  ) {
+    switch (errorCode?.trim().toUpperCase()) {
+      case 'DRIVER_PAYOUT_METHOD_REQUIRED':
+        return context.localization.wallet_withdraw_blocked_no_primary;
+      case 'DRIVER_COD_DEBT_NOT_SETTLED':
+        return context.localization.wallet_withdraw_blocked_cod;
+      case 'INSUFFICIENT_WITHDRAWABLE_BALANCE':
+        return context.localization.wallet_withdraw_blocked_no_balance;
+      default:
+        return null;
+    }
   }
 }

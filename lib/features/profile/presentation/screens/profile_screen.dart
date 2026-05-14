@@ -101,7 +101,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _handleAction(ProfileActionType type) async {
     switch (type) {
       case ProfileActionType.accountStatus:
-        return _open(AppRoutes.accountPendingApproval);
+        final profile = _cubit.state.profile;
+        return _open(
+          profile?.isBlocked == true
+              ? AppRoutes.accountBlocked
+              : AppRoutes.accountPendingApproval,
+        );
       case ProfileActionType.personalInfo:
         return _open(AppRoutes.profileEdit);
       case ProfileActionType.vehicleInfo:

@@ -14,12 +14,16 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_cubit.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
+import 'package:zadana_delivery/features/auth/session/presentation/widgets/auth_status_notification_button.dart';
 
 class AccountPendingApprovalScreen extends StatefulWidget {
-  const AccountPendingApprovalScreen({super.key});
+  const AccountPendingApprovalScreen({super.key, this.initialStatus});
+
+  final DriverAccountStatusEntity? initialStatus;
 
   @override
   State<AccountPendingApprovalScreen> createState() =>
@@ -62,7 +66,7 @@ class _AccountPendingApprovalScreenState
           if (state.logoutSucceeded && state.targetRoute == AppRoutes.login) {
             CustomSnackbar.showInfo(
               context: context,
-              message: context.localization.profile_logout_success,
+              message: locale.profile_logout_success,
             );
             context.pushNamedAndRemoveUntil(
               AppRoutes.login,
@@ -72,9 +76,30 @@ class _AccountPendingApprovalScreenState
           }
         },
         builder: (context, state) {
+          final resolvedStatus = state.accountStatus ?? widget.initialStatus;
+          final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+          final reviewMessage = _resolveReviewMessage(
+            resolvedStatus,
+            isArabic: isArabic,
+          );
+          final needsProfileUpdate = _needsProfileUpdate(
+            status: resolvedStatus,
+            reviewMessage: reviewMessage,
+          );
+
           return Scaffold(
+            backgroundColor: Colors.white,
             body: Stack(
               children: [
+                Positioned(
+                  top: -40,
+                  right: isArabic ? null : -30,
+                  left: isArabic ? -30 : null,
+                  child: _SoftOrb(
+                    size: 150,
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                  ),
+                ),
                 AbsorbPointer(
                   absorbing: state.isLoggingOut,
                   child: SafeArea(
@@ -88,163 +113,102 @@ class _AccountPendingApprovalScreenState
                           Row(
                             children: [
                               const Spacer(),
-                              _NotificationButton(
-                                count: 1,
+                              AuthStatusNotificationButton(
                                 onTap: () =>
                                     context.pushNamed(AppRoutes.notifications),
                               ),
                             ],
                           ),
                           Expanded(
-                            child: Center(
-                              child: SingleChildScrollView(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    SizedBox(
-                                      width: 120,
-                                      height: 120,
-                                      child: Lottie.asset(
-                                        Assets.blueLoading,
-                                        repeat: true,
-                                        fit: BoxFit.contain,
-                                      ),
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(),
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: Spacing.sm),
+                                  const _PendingHero(),
+                                  const SizedBox(height: Spacing.md),
+                                  _StatusPill(
+                                    text: needsProfileUpdate
+                                        ? locale.auth_pending_update_required
+                                        : locale
+                                              .auth_pending_under_review_badge,
+                                  ),
+                                  const SizedBox(height: Spacing.md),
+                                  Text(
+                                    locale.auth_pending_title,
+                                    textAlign: TextAlign.center,
+                                    style: getBoldStyle(
+                                      fontFamily: FontConstant.cairo,
+                                      fontSize: FontSize.size24,
+                                      color: color.onSurface,
                                     ),
+                                  ),
+                                  const SizedBox(height: Spacing.xs),
+                                  Text(
+                                    needsProfileUpdate
+                                        ? locale
+                                              .auth_pending_update_short_description
+                                        : locale
+                                              .auth_pending_review_short_description,
+                                    textAlign: TextAlign.center,
+                                    style: getRegularStyle(
+                                      fontFamily: FontConstant.cairo,
+                                      fontSize: FontSize.size14,
+                                      color: color.onSurfaceVariant,
+                                    ),
+                                  ),
+                                  if (reviewMessage.isNotEmpty) ...[
                                     const SizedBox(height: Spacing.md),
-                                    SizedBox(
-                                      height: 155,
-                                      child: SvgPicture.asset(
-                                        Assets.fastDelivery,
-                                      ),
-                                    ),
-                                    const SizedBox(height: Spacing.lg),
-                                    Text(
-                                      locale.auth_pending_title,
-                                      textAlign: TextAlign.center,
-                                      style: getBoldStyle(
-                                        fontFamily: FontConstant.cairo,
-                                        fontSize: FontSize.size24,
-                                        color: color.onSurface,
-                                      ),
-                                    ),
-                                    const SizedBox(height: Spacing.sm),
-                                    Text(
-                                      locale.auth_pending_description,
-                                      textAlign: TextAlign.center,
-                                      style: getRegularStyle(
-                                        fontFamily: FontConstant.cairo,
-                                        fontSize: FontSize.size14,
-                                        color: color.onSurfaceVariant,
-                                      ),
-                                    ),
-                                    const SizedBox(height: Spacing.lg),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        color: color.surfaceContainerLow,
-                                        borderRadius: BorderRadius.circular(22),
-                                        border: Border.all(
-                                          color: color.primary.withValues(
-                                            alpha: 0.14,
-                                          ),
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: color.shadow.withValues(
-                                              alpha: 0.06,
-                                            ),
-                                            blurRadius: 16,
-                                            offset: const Offset(0, 8),
-                                          ),
-                                        ],
-                                      ),
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 42,
-                                            height: 42,
-                                            decoration: BoxDecoration(
-                                              color: color.primary.withValues(
-                                                alpha: 0.10,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
-                                            ),
-                                            child: Icon(
-                                              Icons
-                                                  .notifications_active_outlined,
-                                              color: color.primary,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          Expanded(
-                                            child: Text(
-                                              locale
-                                                  .auth_pending_notification_hint,
-                                              style: getRegularStyle(
-                                                fontFamily: FontConstant.cairo,
-                                                fontSize: FontSize.size13,
-                                                color: color.onSurface,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: Spacing.base),
-                                    Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(16),
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          colors: [
-                                            AppColors.secondary.withValues(
-                                              alpha: 0.14,
-                                            ),
-                                            AppColors.secondary.withValues(
-                                              alpha: 0.06,
-                                            ),
-                                          ],
-                                        ),
-                                        borderRadius: BorderRadius.circular(22),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.access_time_filled_rounded,
-                                            color: AppColors.secondary,
-                                          ),
-                                          const SizedBox(width: 10),
-                                          Expanded(
-                                            child: Text(
-                                              locale.auth_pending_eta_hint,
-                                              style: getMediumStyle(
-                                                fontFamily: FontConstant.cairo,
-                                                fontSize: FontSize.size13,
-                                                color: color.onSurface,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(height: Spacing.xl),
-                                    AppButton.filled(
-                                      text: locale.auth_logout_account,
-                                      onPressed: () => _cubit.doIntent(
-                                        const AuthGateLogoutRequestedEvent(),
-                                      ),
-                                      color: color.error,
-                                      height: 54,
-                                      borderRadius: 18,
+                                    _InfoCard(
+                                      icon: Icons.info_outline_rounded,
+                                      title: locale.auth_pending_note_title,
+                                      message: reviewMessage,
+                                      tint: AppColors.secondary,
+                                      background: AppColors.secondary
+                                          .withValues(alpha: 0.08),
                                     ),
                                   ],
-                                ),
+                                  const SizedBox(height: Spacing.md),
+                                  _InfoCard(
+                                    icon: Icons.notifications_active_rounded,
+                                    title:
+                                        locale.auth_pending_notifications_title,
+                                    message: needsProfileUpdate
+                                        ? locale
+                                              .auth_pending_notifications_update_message
+                                        : locale
+                                              .auth_pending_notifications_review_message,
+                                    tint: AppColors.primary,
+                                    background: color.surfaceContainerLow,
+                                  ),
+                                ],
                               ),
                             ),
+                          ),
+                          const SizedBox(height: Spacing.md),
+                          AppButton.filled(
+                            text: needsProfileUpdate
+                                ? locale.auth_pending_update_details
+                                : locale.auth_pending_update_details,
+                            onPressed: () => context.pushNamed(
+                              AppRoutes.driverProfileCompletion,
+                            ),
+                            color: needsProfileUpdate
+                                ? AppColors.secondary
+                                : AppColors.primary,
+                            height: 54,
+                            borderRadius: 18,
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                          AppButton.outlined(
+                            text: locale.auth_logout_account,
+                            onPressed: () => _cubit.doIntent(
+                              const AuthGateLogoutRequestedEvent(),
+                            ),
+                            color: color.error,
+                            textColor: color.error,
+                            height: 50,
+                            borderRadius: 18,
                           ),
                         ],
                       ),
@@ -266,66 +230,214 @@ class _AccountPendingApprovalScreenState
       ),
     );
   }
+
+  bool _needsProfileUpdate({
+    required DriverAccountStatusEntity? status,
+    required String reviewMessage,
+  }) {
+    final normalizedReview = reviewMessage.trim().toLowerCase();
+    final normalizedVerification = status?.normalizedVerificationStatus ?? '';
+
+    if (normalizedVerification == 'needsdocuments') {
+      return true;
+    }
+
+    return [
+      'تعديل',
+      'رفع',
+      'صوره',
+      'صورة',
+      'مستند',
+      'بيانات',
+      'document',
+      'photo',
+      'image',
+      'upload',
+      'update',
+      'edit',
+      'resubmit',
+    ].any(normalizedReview.contains);
+  }
+
+  String _resolveReviewMessage(
+    DriverAccountStatusEntity? status, {
+    required bool isArabic,
+  }) {
+    if (status == null) return '';
+
+    for (final candidate in [
+      if (isArabic) status.reviewNoteAr else status.reviewNoteEn,
+      status.reviewNote,
+      if (isArabic) status.messageAr else status.messageEn,
+      if (isArabic)
+        status.restrictionMessageAr
+      else
+        status.restrictionMessageEn,
+      status.restrictionMessage,
+      status.message,
+      status.suspensionReason,
+    ]) {
+      final normalized = candidate?.trim() ?? '';
+      if (normalized.isNotEmpty) {
+        return normalized;
+      }
+    }
+
+    return '';
+  }
 }
 
-class _NotificationButton extends StatelessWidget {
-  const _NotificationButton({required this.count, required this.onTap});
+class _PendingHero extends StatelessWidget {
+  const _PendingHero();
 
-  final int count;
-  final VoidCallback onTap;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          Container(
+            width: 178,
+            height: 178,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.primary.withValues(alpha: 0.05),
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 90,
+                height: 90,
+                child: Lottie.asset(Assets.blueLoading),
+              ),
+              const SizedBox(height: Spacing.xs),
+              SizedBox(
+                height: 86,
+                child: SvgPicture.asset(Assets.fastDelivery),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.text});
+
+  final String text;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Material(
-          color: color.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(18),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(18),
-            onTap: onTap,
-            child: Container(
-              width: 54,
-              height: 54,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18),
-                border: Border.all(
-                  color: color.outlineVariant.withValues(alpha: 0.45),
-                ),
-              ),
-              child: Icon(
-                Icons.notifications_none_rounded,
-                color: color.onSurface,
-              ),
-            ),
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: getBoldStyle(
+          fontFamily: FontConstant.cairo,
+          fontSize: FontSize.size13,
+          color: color.onSurface,
         ),
-        if (count > 0)
-          Positioned(
-            top: -4,
-            right: -2,
-            child: Container(
-              width: 22,
-              height: 22,
-              alignment: Alignment.center,
-              decoration: const BoxDecoration(
-                color: AppColors.error,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                '$count',
-                style: getBoldStyle(
-                  fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size11,
-                  color: Colors.white,
+      ),
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.tint,
+    required this.background,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final Color tint;
+  final Color background;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: tint.withValues(alpha: 0.14)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: tint.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: tint),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: getBoldStyle(
+                    fontFamily: FontConstant.cairo,
+                    fontSize: FontSize.size14,
+                    color: color.onSurface,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: getRegularStyle(
+                    fontFamily: FontConstant.cairo,
+                    fontSize: FontSize.size13,
+                    color: color.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ),
-      ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SoftOrb extends StatelessWidget {
+  const _SoftOrb({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(shape: BoxShape.circle, color: color),
+      ),
     );
   }
 }

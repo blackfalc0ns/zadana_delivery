@@ -1,5 +1,6 @@
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_compliance_document_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_rejection_policy_entity.dart';
 
 class DriverUnifiedProfileEntity {
   const DriverUnifiedProfileEntity({
@@ -34,6 +35,7 @@ class DriverUnifiedProfileEntity {
     required this.completionPercent,
     required this.missingRequirements,
     required this.canSubmitForReview,
+    required this.rejectionPolicy,
   });
 
   final String fullName;
@@ -67,6 +69,7 @@ class DriverUnifiedProfileEntity {
   final int completionPercent;
   final List<String> missingRequirements;
   final bool canSubmitForReview;
+  final DriverRejectionPolicyEntity rejectionPolicy;
 
   String get normalizedVehicleType => DriverVehicleType.normalize(vehicleType);
   String get normalizedVerificationStatus =>
@@ -91,7 +94,8 @@ class DriverUnifiedProfileEntity {
       normalizedAccountStatus == 'suspended' ||
       normalizedAccountStatus == 'inactive' ||
       normalizedAccountStatus == 'rejected' ||
-      normalizedVerificationStatus == 'rejected';
+      normalizedVerificationStatus == 'rejected' ||
+      rejectionPolicy.isFrozen;
 
   DriverComplianceDocumentEntity? documentByType(String documentType) {
     final normalizedType = documentType.trim().toLowerCase();

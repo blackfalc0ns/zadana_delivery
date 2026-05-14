@@ -17,6 +17,9 @@
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="zadana_driver_general_notifications" />
         <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_notification_small" />
+        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA1XNcpZlXAgDtKVmC3vMi_V4_f3O4tLes" />
         <activity

@@ -110,11 +110,15 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       case OrderDetailsRejectOfferEvent():
         return _rejectOffer(event.assignmentId, reason: event.reason);
       case OrderDetailsMarkPickedUpEvent():
-        return _runAction(() => _markOrderPickedUpUseCase.call(event.orderId));
+        return _runAction(
+          () => _markOrderPickedUpUseCase.call(event.orderId),
+          onSuccessRefreshHome: false,
+        );
       case OrderDetailsMarkOnTheWayEvent():
         return _runAction(
           () => _markOrderOnTheWayUseCase.call(event.orderId),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsMarkDeliveredEvent():
         return _runAction(
@@ -123,6 +127,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             request: event.request,
           ),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsMarkDeliveryFailedEvent():
         return _runAction(
@@ -131,11 +136,13 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             request: event.request,
           ),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsUpdateArrivalStateEvent():
         return _runAction(
           () => _markArrivalState(event.orderId, event.arrivalState),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsVerifyDeliveryOtpEvent():
         return _runAction(
@@ -144,6 +151,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             otpCode: event.otpCode,
           ),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsVerifyPickupOtpEvent():
         return _runAction(
@@ -152,16 +160,19 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             otpCode: event.otpCode,
           ),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsResendDeliveryOtpEvent():
         return _runAction(
           () => _resendDeliveryOtpUseCase.call(event.assignmentId),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsResendPickupOtpEvent():
         return _runAction(
           () => _resendPickupOtpUseCase.call(event.assignmentId),
           onSuccessRefreshAssignment: true,
+          onSuccessRefreshHome: false,
         );
       case OrderDetailsReportIssueEvent():
         return _runSupportCaseAction(
@@ -284,7 +295,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       final assignmentIdValue = _activeAssignmentId;
       if (assignmentIdValue == null) return;
       unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
-      unawaited(_refreshDriverHomeUseCase.call());
     });
 
     _arrivalStateSubscription = _driverRealtimeService.arrivalStateChanged.listen((
@@ -299,7 +309,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       final assignmentIdValue = _activeAssignmentId;
       if (assignmentIdValue == null) return;
       unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
-      unawaited(_refreshDriverHomeUseCase.call());
     });
 
     _assignmentUpdatedSubscription = _driverRealtimeService.assignmentUpdated
@@ -327,7 +336,6 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
                 clearFailure: true,
               ),
             );
-            unawaited(_refreshDriverHomeUseCase.call());
           } catch (error) {
             _log('Failed to parse assignment update payload: $error');
             unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
@@ -478,6 +486,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
   Future<bool> _runAction(
     Future<ApiResult<OrderDetailsActionResultEntity>> Function() action, {
     bool onSuccessRefreshAssignment = false,
+    bool onSuccessRefreshHome = true,
   }) async {
     emit(
       state.copyWith(
@@ -499,7 +508,9 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
                 : _resolveLocalizedMessage(localizedMessage),
           ),
         );
-        await _refreshDriverHomeUseCase.call();
+        if (onSuccessRefreshHome) {
+          await _refreshDriverHomeUseCase.call();
+        }
         if (onSuccessRefreshAssignment && _activeAssignmentId != null) {
           await _loadAssignmentDetails(_activeAssignmentId!, silent: true);
         }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -12,12 +13,11 @@ class OrderDeliverySuccessScreen extends StatelessWidget {
 
   final String? message;
 
-  void _close(BuildContext context) {
-    final trimmedMessage = (message ?? '').trim();
-    Navigator.of(context).pop(<String, dynamic>{
-      'action': 'accept',
-      if (trimmedMessage.isNotEmpty) 'message': trimmedMessage,
-    });
+  void _goHome(BuildContext context) {
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).pushNamedAndRemoveUntil(AppRoutes.driverHome, (route) => false);
   }
 
   @override
@@ -30,7 +30,7 @@ class OrderDeliverySuccessScreen extends StatelessWidget {
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        _close(context);
+        _goHome(context);
       },
       child: Scaffold(
         body: SafeArea(
@@ -96,7 +96,7 @@ class OrderDeliverySuccessScreen extends StatelessWidget {
                 const Spacer(),
                 AppButton.filled(
                   text: locale.order_delivery_success_button,
-                  onPressed: () => _close(context),
+                  onPressed: () => _goHome(context),
 
                   height: 56,
                   borderRadius: 20,

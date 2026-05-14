@@ -84,12 +84,14 @@ class DriverHomeOperationalStatusModelDto {
     required this.reviewNote,
     required this.suspensionReason,
     required this.message,
+    required this.policyIsFrozen,
     this.canGoAvailable,
   });
 
   factory DriverHomeOperationalStatusModelDto.fromJson(
     Map<String, dynamic> json,
   ) {
+    final rejectionPolicy = _asMap(json['rejectionPolicy']);
     return DriverHomeOperationalStatusModelDto(
       driverId: json['driverId']?.toString() ?? '',
       gateStatus: json['gateStatus']?.toString() ?? '',
@@ -107,11 +109,14 @@ class DriverHomeOperationalStatusModelDto {
       weeklyRejections: _asInt(json['weeklyRejections']),
       enforcementLevel: json['enforcementLevel']?.toString() ?? '',
       canReceiveOffers: _asBool(json['canReceiveOffers']),
-      restrictionMessage: json['restrictionMessage']?.toString(),
+      restrictionMessage:
+          json['restrictionMessage']?.toString() ??
+          rejectionPolicy['restrictionMessage']?.toString(),
       reviewedAtUtc: json['reviewedAtUtc']?.toString(),
       reviewNote: json['reviewNote']?.toString(),
       suspensionReason: json['suspensionReason']?.toString(),
       message: json['message']?.toString() ?? '',
+      policyIsFrozen: rejectionPolicy['isFrozen'] == true,
     );
   }
 
@@ -134,6 +139,7 @@ class DriverHomeOperationalStatusModelDto {
   final String? reviewNote;
   final String? suspensionReason;
   final String message;
+  final bool policyIsFrozen;
 }
 
 class DriverHomeOfferModelDto {

@@ -126,12 +126,11 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     super.dispose();
   }
 
-  Future<void> _showDecision({
+  Future<bool> _showDecision({
     required String title,
     required String message,
     required String confirmLabel,
     required Color confirmColor,
-    required OrderDeliveryStage nextStage,
   }) async {
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -140,18 +139,25 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       confirmLabel: confirmLabel,
       confirmColor: confirmColor,
     );
-    if (confirmed) _controller.updateStage(nextStage);
+    return confirmed;
   }
 
   void _acceptOrder() async {
     final locale = context.localization;
-    await _showDecision(
+    final confirmed = await _showDecision(
       title: locale.order_details_accept_dialog_title,
       message: locale.order_details_accept_dialog_message(widget.order.title),
       confirmLabel: locale.order_details_accept_dialog_confirm,
       confirmColor: context.colorScheme.primary,
-      nextStage: OrderDeliveryStage.accepted,
     );
+    if (!confirmed || !mounted) return;
+
+    final accepted = await _cubit.doIntent(
+      OrderDetailsAcceptOfferEvent(_controller.assignmentId),
+    );
+    if (!mounted || !accepted) return;
+
+    _controller.updateStage(OrderDeliveryStage.accepted);
   }
 
   Future<void> _rejectOrder() async {
@@ -684,6 +690,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             onFinish: _finish,
             onRefresh: _refreshOrderDetails,
             onOpenSupportComposer: _openSupportComposer,
+            onResendPickupOtp: _resendPickupOtp,
           );
         },
       ),

@@ -9,11 +9,13 @@ class WalletSectionShell extends StatelessWidget {
     required this.title,
     required this.child,
     this.trailing,
+    this.subtitle,
   });
 
   final String title;
   final Widget child;
   final Widget? trailing;
+  final String? subtitle;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +27,34 @@ class WalletSectionShell extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                title,
-                style: getBoldStyle(
-                  fontFamily: FontConstant.cairo,
-                  fontSize: FontSize.size17,
-                  color: color.onSurface,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: getBoldStyle(
+                      fontFamily: FontConstant.cairo,
+                      fontSize: FontSize.size16,
+                      color: color.onSurface,
+                    ),
+                  ),
+                  if ((subtitle ?? '').trim().isNotEmpty) ...[
+                    const SizedBox(height: 3),
+                    Text(
+                      subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: getRegularStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size11,
+                        color: color.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
               ),
             ),
-            ?trailing,
+            if (trailing != null) ...[const SizedBox(width: 12), trailing!],
           ],
         ),
         const SizedBox(height: 12),

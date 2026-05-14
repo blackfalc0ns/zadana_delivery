@@ -223,22 +223,21 @@ class DriverRealtimeService {
         _assignmentUpdatedController.add(payload);
       });
 
-      connection.on(
-        NetworkConstants.driverOrderSupportCaseChangedEvent,
-        (arguments) {
-          final payload = _normalizeMap(_extractFirstArgument(arguments));
-          if (payload.isEmpty) {
-            _log('Support case stream event ignored: payload is empty');
-            return;
-          }
-          _log(
-            'Support case stream event received: '
-            'supportCaseId=${payload['supportCaseId'] ?? payload['caseId'] ?? 'n/a'}, '
-            'orderId=${payload['orderId'] ?? 'n/a'}',
-          );
-          _supportCaseChangedController.add(payload);
-        },
-      );
+      connection.on(NetworkConstants.driverOrderSupportCaseChangedEvent, (
+        arguments,
+      ) {
+        final payload = _normalizeMap(_extractFirstArgument(arguments));
+        if (payload.isEmpty) {
+          _log('Support case stream event ignored: payload is empty');
+          return;
+        }
+        _log(
+          'Support case stream event received: '
+          'supportCaseId=${payload['supportCaseId'] ?? payload['caseId'] ?? 'n/a'}, '
+          'orderId=${payload['orderId'] ?? 'n/a'}',
+        );
+        _supportCaseChangedController.add(payload);
+      });
 
       connection.on(NetworkConstants.driverHomeUpdatedEvent, (arguments) {
         final payload = _normalizeMap(_extractFirstArgument(arguments));
@@ -380,7 +379,11 @@ class DriverRealtimeService {
 
     final map = _normalizeMap(payload);
     if (map.isEmpty) return const <String, dynamic>{};
-    if (map.containsKey('type') || map.containsKey('titleAr')) {
+    if (map.containsKey('type') ||
+        map.containsKey('titleAr') ||
+        map.containsKey('screen') ||
+        map.containsKey('event') ||
+        map.containsKey('withdrawalId')) {
       return map;
     }
 
