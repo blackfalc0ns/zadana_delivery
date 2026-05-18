@@ -8,6 +8,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 
 import 'app_navigator_service.dart';
 import 'driver_local_notification_service.dart';
@@ -616,6 +618,21 @@ class DriverNotificationBootstrapService {
       '[DriverNotificationBootstrap] Foreground push queued for in-app banner. '
       '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload, title: displayContent.title, body: displayContent.body)}',
     );
+
+    // Trigger home refresh when the push notification is likely a delivery offer.
+    // SignalR may not deliver the ReceiveDeliveryOffer event reliably on Android,
+    // so we use the OneSignal push as a fallback signal.
+    final notificationType = DriverNotificationPayloadResolver.resolveType(normalizedPayload)?.toLowerCase() ?? '';
+    final notificationEvent = DriverNotificationPayloadResolver.resolveEvent(normalizedPayload)?.toLowerCase() ?? '';
+    if (notificationType == 'driver-offer' || notificationEvent.contains('dispatch.offer_new')) {
+      debugPrint(
+        '[DriverNotificationBootstrap] Offer push detected; notifying home data source to refresh.',
+      );
+      try {
+        final homeDataSource = getIt<DriverHomeRemoteDataSource>();
+        unawaited(homeDataSource.notifyOfferPushReceived());
+      } catch (_) {}
+    }
   }
 
   Future<void> _installNativeAndroidForegroundFallbackIfAvailable() async {

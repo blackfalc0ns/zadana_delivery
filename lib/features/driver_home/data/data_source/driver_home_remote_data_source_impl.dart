@@ -11,6 +11,7 @@ import 'package:zadana_delivery/core/errors/api_exception_mapper.dart';
 import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
+import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_home/data/models/driver_home_model_dto.dart';
@@ -20,10 +21,13 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   DriverHomeRemoteDataSourceImpl(this._apiServices)
     : _homeController = StreamController<DriverHomeModelDto>.broadcast(
         onListen: _connectSignalRIfNeeded,
-      );
+      ) {
+    _bridgeGlobalRealtimeEvents();
+  }
 
   static const Duration _delayedOfferRefresh = Duration(milliseconds: 1200);
   static const Duration _initialHomeRefreshDebounce = Duration(seconds: 3);
+  static const Duration _staleConnectionThreshold = Duration(seconds: 30);
   static const Duration _homeRefreshThrottleWindow = Duration(
     milliseconds: 900,
   );
@@ -45,12 +49,73 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   Future<DriverHomeModelDto>? _homeFetchInFlight;
   DateTime? _lastHomeFetchedAt;
   DateTime? _lastHomeRefreshStartedAt;
+  DateTime? _lastSignalREventAt;
   HubConnection? _hubConnection;
   bool _isConnecting = false;
   bool _disconnectRequested = false;
   DateTime? _retryAfter;
   Timer? _reconnectTimer;
   static DriverHomeRemoteDataSourceImpl? _instanceForStreamCallback;
+
+  /// Bridges events from the global [DriverRealtimeService] into this data
+  /// source. This ensures that even if the home-specific SignalR connection is
+  /// stale or not receiving events, the home screen still gets updated when the
+  /// global connection receives ReceiveDriverHomeUpdated or ReceiveDeliveryOffer.
+  void _bridgeGlobalRealtimeEvents() {
+    try {
+      final realtimeService = getIt<DriverRealtimeService>();
+
+      realtimeService.driverHomeUpdated.listen((payload) {
+        _lastSignalREventAt = DateTime.now();
+        _log('Global bridge: ReceiveDriverHomeUpdated received');
+        if (payload.isEmpty) return;
+        try {
+          final home = DriverHomeModelDto.fromJson(payload);
+          _log(
+            'Global bridge: emitting home update — '
+            'homeState=${home.homeState}, hasOffer=${home.currentOffer != null}',
+          );
+          emitHome(home);
+        } catch (_) {
+          _log('Global bridge: could not parse home payload; refreshing');
+          unawaited(_refreshHomeFromApi());
+        }
+      });
+
+      realtimeService.deliveryOffers.listen((payload) {
+        _lastSignalREventAt = DateTime.now();
+        _log(
+          'Global bridge: ReceiveDeliveryOffer received — '
+          'assignmentId=${payload['assignmentId'] ?? 'n/a'}',
+        );
+        final emitted = _emitOfferFromDeliveryOfferEvent(payload);
+        if (!emitted) {
+          _log('Global bridge: offer could not be emitted directly; refreshing');
+        }
+        unawaited(_refreshHomeFromApi());
+      });
+
+      realtimeService.assignmentUpdated.listen((payload) {
+        _lastSignalREventAt = DateTime.now();
+        _log(
+          'Global bridge: ReceiveAssignmentUpdated received — '
+          'assignmentId=${payload['assignmentId'] ?? 'n/a'}',
+        );
+        if (payload.isNotEmpty && !_assignmentUpdatedStreamController.isClosed) {
+          _assignmentUpdatedStreamController.add(payload);
+        }
+        final emitted = _emitHomeFromAssignmentUpdatedEvent(payload);
+        if (!emitted) {
+          _log('Global bridge: assignment update could not be applied; refreshing');
+          unawaited(_refreshHomeFromApi());
+        }
+      });
+
+      _log('Global DriverRealtimeService bridge established');
+    } catch (error) {
+      _log('Global bridge setup failed (service not registered yet): $error');
+    }
+  }
 
   static void _connectSignalRIfNeeded() {
     debugPrint(
@@ -259,6 +324,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         .build();
 
     connection.on(NetworkConstants.driverDeliveryOfferEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -279,6 +345,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     });
 
     connection.on(NetworkConstants.driverNotificationEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -287,6 +354,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     });
 
     connection.on(NetworkConstants.driverOrderStatusChangedEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -305,6 +373,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     });
 
     connection.on(NetworkConstants.driverArrivalStateChangedEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -324,6 +393,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
     // ⭐ Listen for ReceiveAssignmentUpdated — full assignment DTO from backend
     connection.on(NetworkConstants.driverAssignmentUpdatedEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -346,6 +416,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     });
 
     connection.on(NetworkConstants.driverHomeUpdatedEvent, (arguments) {
+      _lastSignalREventAt = DateTime.now();
       final payload = (arguments?.isNotEmpty ?? false)
           ? arguments!.first
           : null;
@@ -371,6 +442,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     });
 
     connection.onreconnected(({String? connectionId}) {
+      _lastSignalREventAt = DateTime.now();
       _logConnectionStatus(
         'RECONNECTED',
         hubPath: hubPath,
@@ -400,6 +472,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     try {
       await connection.start();
       _hubConnection = connection;
+      _lastSignalREventAt = DateTime.now();
       _retryAfter = null;
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
@@ -460,6 +533,56 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       _reconnectTimer = null;
       unawaited(_ensureSignalRConnected());
     });
+  }
+
+  @override
+  Future<void> ensureRealtimeConnected() async {
+    if (!_homeController.hasListener) {
+      _log('ensureRealtimeConnected skipped: no active home listeners');
+      return;
+    }
+    final existing = _hubConnection;
+    if (existing != null &&
+        existing.state == HubConnectionState.Connected) {
+      // If we received a SignalR event recently, the connection is alive.
+      final lastEvent = _lastSignalREventAt;
+      if (lastEvent != null &&
+          DateTime.now().difference(lastEvent) < _staleConnectionThreshold) {
+        _log(
+          'ensureRealtimeConnected: connection alive, last event '
+          '${DateTime.now().difference(lastEvent).inSeconds}s ago',
+        );
+        return;
+      }
+      // No recent events — connection is likely stale. Force reconnect.
+      _log('ensureRealtimeConnected: no recent events, forcing reconnect');
+      _hubConnection = null;
+      try {
+        await existing.stop();
+      } catch (_) {}
+    }
+    await _ensureSignalRConnected();
+  }
+
+  @override
+  Future<void> notifyOfferPushReceived() async {
+    _log('Offer push received via OneSignal; refreshing home to pick up offer');
+    await _refreshHomeFromApi();
+    // Retry quickly — the backend may not have persisted the offer yet.
+    for (final delay in const [
+      Duration(milliseconds: 800),
+      Duration(milliseconds: 2000),
+      Duration(milliseconds: 4000),
+    ]) {
+      await Future<void>.delayed(delay);
+      final hasOffer = _latestHome?.currentOffer != null;
+      if (hasOffer) {
+        _log('Offer found after retry; stopping further retries');
+        break;
+      }
+      _log('Retrying home refresh after offer push (delay=${delay.inMilliseconds}ms)');
+      await _refreshHomeFromApi();
+    }
   }
 
   @override

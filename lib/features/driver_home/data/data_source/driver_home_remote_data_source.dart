@@ -19,5 +19,13 @@ abstract class DriverHomeRemoteDataSource {
   Stream<Map<String, dynamic>> get orderStatusChangedStream;
   Stream<Map<String, dynamic>> get arrivalStateChangedStream;
 
+  /// Ensures the home realtime SignalR connection is active.
+  /// Should be called on app resume to recover from silently dropped connections.
+  Future<void> ensureRealtimeConnected();
+
+  /// Called when a delivery-offer push notification arrives via OneSignal.
+  /// Forces a home refresh to pick up the offer that SignalR may have missed.
+  Future<void> notifyOfferPushReceived();
+
   Future<void> disconnectRealtime();
 }

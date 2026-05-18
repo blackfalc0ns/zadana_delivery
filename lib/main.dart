@@ -1,8 +1,8 @@
 import 'dart:async';
-
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_generator.dart';
 import 'package:zadana_delivery/config/theme/app_theme.dart';
@@ -15,6 +15,7 @@ import 'package:zadana_delivery/core/services/driver_notification_overlay_servic
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -60,6 +61,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     unawaited(getIt<DriverRealtimeService>().handleAppLifecycleState(state));
+    if (state == AppLifecycleState.resumed) {
+      unawaited(_handleAppResumed());
+    }
+  }
+
+  Future<void> _handleAppResumed() async {
+    final homeDataSource = getIt<DriverHomeRemoteDataSource>();
+    await homeDataSource.ensureRealtimeConnected();
+    // Check if a delivery-offer push arrived while Flutter was detached.
+    try {
+      const channel = MethodChannel('zadana_delivery/native_notifications');
+      final timestamp = await channel.invokeMethod<int>('consumeOfferPushTimestamp') ?? 0;
+      if (timestamp > 0) {
+        final age = DateTime.now().millisecondsSinceEpoch - timestamp;
+        // Only act on it if it arrived within the last 2 minutes.
+        if (age < 120000) {
+          unawaited(homeDataSource.notifyOfferPushReceived());
+        }
+      }
+    } catch (_) {}
   }
 
   Future<void> _bootstrapNotificationServicesAfterUiReady() async {

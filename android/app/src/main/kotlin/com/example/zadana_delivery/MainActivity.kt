@@ -48,6 +48,12 @@ class MainActivity : FlutterActivity() {
                         result.success(installed)
                     }
 
+                    "consumeOfferPushTimestamp" -> {
+                        val timestamp = MainApplication.lastOfferPushReceivedAt
+                        MainApplication.lastOfferPushReceivedAt = 0L
+                        result.success(timestamp)
+                    }
+
                     else -> result.notImplemented()
                 }
             }

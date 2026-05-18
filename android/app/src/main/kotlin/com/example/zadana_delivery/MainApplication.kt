@@ -21,6 +21,14 @@ class MainApplication : Application() {
                     "Native foreground fallback displaying OneSignal notification: " +
                         (event.notification.title ?: "<no-title>"),
                 )
+                // Track that an offer notification arrived while Flutter may be detached.
+                val additionalData = event.notification.additionalData
+                val notificationType = additionalData?.optString("type", "") ?: ""
+                val notificationEvent = additionalData?.optString("event", "") ?: ""
+                if (notificationType == "driver-offer" || notificationEvent.contains("dispatch.offer_new")) {
+                    lastOfferPushReceivedAt = System.currentTimeMillis()
+                    Log.d(LOG_TAG, "Offer push tracked at $lastOfferPushReceivedAt")
+                }
                 event.notification.display()
             }
         }
@@ -90,5 +98,13 @@ class MainApplication : Application() {
         private const val LOG_TAG = "DriverNotifications"
         const val HEADS_UP_CHANNEL_ID = "zadana_heads_up_notifications"
         const val GENERAL_CHANNEL_ID = "zadana_driver_general_notifications"
+
+        /**
+         * Timestamp (millis) of the last offer push notification received natively.
+         * Flutter reads and clears this on resume to trigger a home refresh.
+         */
+        @Volatile
+        @JvmStatic
+        var lastOfferPushReceivedAt: Long = 0L
     }
 }
