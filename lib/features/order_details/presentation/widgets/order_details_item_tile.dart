@@ -58,14 +58,14 @@ class _ItemImageBox extends StatelessWidget {
       height: 54,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.success.withValues(alpha: 0.10),
+   
         borderRadius: BorderRadius.circular(14),
       ),
       child: resolvedImageUrl.isEmpty
           ? const Image(image: AssetImage(Assets.notFound), fit: BoxFit.cover)
           : CachedNetworkImage(
               imageUrl: resolvedImageUrl,
-              fit: BoxFit.cover,
+             
               placeholder: (_, _) => const _ItemImagePlaceholder(),
               errorWidget: (_, _, _) => const Image(
                 image: AssetImage(Assets.notFound),
@@ -105,6 +105,9 @@ class _OrderItemDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final displaySize = (item.displaySize ?? '').trim();
+    final storeName = (item.storeName ?? '').trim();
+    final hasSubtitle = displaySize.isNotEmpty || storeName.isNotEmpty;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -125,6 +128,22 @@ class _OrderItemDetails extends StatelessWidget {
             _ItemQuantityBadge(quantity: item.quantity),
           ],
         ),
+        if (hasSubtitle) ...[
+          const SizedBox(height: 3),
+          Text(
+            [
+              if (displaySize.isNotEmpty) displaySize,
+              if (storeName.isNotEmpty) storeName,
+            ].join(' • '),
+            style: getRegularStyle(
+              fontFamily: FontConstant.cairo,
+              fontSize: FontSize.size11,
+              color: colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
       ],
     );
   }

@@ -129,6 +129,9 @@ class DriverOrderItemPreview {
     this.unitPrice,
     this.lineTotal,
     this.imageUrl,
+    this.displaySize,
+    this.unit,
+    this.storeName,
   });
 
   final String name;
@@ -137,4 +140,7 @@ class DriverOrderItemPreview {
   final double? unitPrice;
   final double? lineTotal;
   final String? imageUrl;
+  final String? displaySize;
+  final String? unit;
+  final String? storeName;
 }

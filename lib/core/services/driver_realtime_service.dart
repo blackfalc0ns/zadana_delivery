@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/widgets.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
@@ -61,12 +62,14 @@ class DriverRealtimeService {
   Future<void> handleAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
       _log('App resumed; ensuring SignalR connection is active');
+      // ensureConnected is called here but also sequenced from main.dart's
+      // _handleAppResumed — the guard (_isConnecting) prevents double work.
       await ensureConnected();
       return;
     }
 
-    if (state == AppLifecycleState.detached) {
-      _log('App detached; clearing pending reconnect timer');
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
+      _log('App ${state.name}; clearing pending reconnect timer');
       _reconnectTimer?.cancel();
       _reconnectTimer = null;
     }
@@ -355,10 +358,19 @@ class DriverRealtimeService {
       throw const SocketException('Missing API host');
     }
 
-    final lookup = await InternetAddress.lookup(host);
+    final lookup = await compute(
+      _dnsLookup,
+      host,
+    ).timeout(const Duration(seconds: 3), onTimeout: () => <String>[]);
     if (lookup.isEmpty) {
       throw SocketException('Failed host lookup: $host');
     }
+  }
+
+  /// Runs DNS lookup on a separate isolate to avoid blocking the UI thread.
+  static Future<List<String>> _dnsLookup(String host) async {
+    final results = await InternetAddress.lookup(host);
+    return results.map((r) => r.address).toList();
   }
 
   dynamic _extractFirstArgument(List<Object?>? arguments) {

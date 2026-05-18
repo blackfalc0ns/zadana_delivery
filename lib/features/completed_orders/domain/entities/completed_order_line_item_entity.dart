@@ -7,10 +7,12 @@ class CompletedOrderLineItem {
     required this.quantity,
     required this.unitPrice,
     required this.lineTotal,
+    this.imageUrl,
   });
 
   final String name;
   final int quantity;
   final double unitPrice;
   final double lineTotal;
+  final String? imageUrl;
 }

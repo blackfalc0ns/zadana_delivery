@@ -60,19 +60,29 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    unawaited(getIt<DriverRealtimeService>().handleAppLifecycleState(state));
     if (state == AppLifecycleState.resumed) {
-      unawaited(_handleAppResumed());
+      // Schedule resume work after a short delay to let the UI thread settle
+      // and avoid ANR from parallel DNS lookups + SignalR reconnections.
+      Future<void>.delayed(
+        const Duration(milliseconds: 600),
+        _handleAppResumed,
+      );
+    } else {
+      unawaited(getIt<DriverRealtimeService>().handleAppLifecycleState(state));
     }
   }
 
   Future<void> _handleAppResumed() async {
+    // Reconnect sequentially: global realtime first, then home-specific,
+    // to avoid two parallel DNS lookups blocking the main isolate.
+    await getIt<DriverRealtimeService>().ensureConnected();
     final homeDataSource = getIt<DriverHomeRemoteDataSource>();
     await homeDataSource.ensureRealtimeConnected();
     // Check if a delivery-offer push arrived while Flutter was detached.
     try {
       const channel = MethodChannel('zadana_delivery/native_notifications');
-      final timestamp = await channel.invokeMethod<int>('consumeOfferPushTimestamp') ?? 0;
+      final timestamp =
+          await channel.invokeMethod<int>('consumeOfferPushTimestamp') ?? 0;
       if (timestamp > 0) {
         final age = DateTime.now().millisecondsSinceEpoch - timestamp;
         // Only act on it if it arrived within the last 2 minutes.

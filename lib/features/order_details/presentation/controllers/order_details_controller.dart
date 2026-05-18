@@ -127,6 +127,10 @@ class OrderDetailsController extends ChangeNotifier {
 
   String get paymentMethodCode => order.paymentMethod;
 
+  /// Server-localized payment method label (e.g. "الدفع عند الاستلام").
+  /// Falls back to empty string if not available.
+  String get paymentMethodLabel => _details?.paymentMethodLabel ?? '';
+
   bool get showStoreRouteFirst =>
       stage.index < OrderDeliveryStage.onTheWay.index;
 
@@ -219,6 +223,9 @@ class OrderDetailsController extends ChangeNotifier {
               unitPrice: item.unitPrice,
               lineTotal: item.lineTotal,
               imageUrl: item.imageUrl,
+              displaySize: item.displaySize,
+              unit: item.unit,
+              storeName: item.storeName,
             ),
           )
           .toList(growable: false),

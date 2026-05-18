@@ -610,10 +610,19 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
       throw const SocketException('Missing API host');
     }
 
-    final lookup = await InternetAddress.lookup(host);
+    final lookup = await compute(
+      _dnsLookup,
+      host,
+    ).timeout(const Duration(seconds: 3), onTimeout: () => <String>[]);
     if (lookup.isEmpty) {
       throw SocketException('Failed host lookup: $host');
     }
+  }
+
+  /// Runs DNS lookup on a separate isolate to avoid blocking the UI thread.
+  static Future<List<String>> _dnsLookup(String host) async {
+    final results = await InternetAddress.lookup(host);
+    return results.map((r) => r.address).toList();
   }
 
   Future<void> _handleNotificationPayload(dynamic payload) async {

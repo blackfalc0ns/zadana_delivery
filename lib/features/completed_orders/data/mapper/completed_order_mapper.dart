@@ -52,6 +52,7 @@ extension CompletedOrderItemModelMapper on CompletedOrderItemModelDto {
       quantity: quantity,
       unitPrice: unitPrice,
       lineTotal: lineTotal,
+      imageUrl: imageUrl,
     );
   }
 }

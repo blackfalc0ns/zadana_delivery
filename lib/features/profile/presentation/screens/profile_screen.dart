@@ -309,38 +309,48 @@ class _ProfileScreenState extends State<ProfileScreen> {
         Widget option({
           required String code,
           required String title,
+          required String flagAsset,
           required Future<void> Function() onTap,
         }) {
           final isSelected = currentCode == code;
-          return ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            tileColor: isSelected
-                ? sheetColor.primary.withValues(alpha: 0.10)
-                : Colors.transparent,
-            leading: Icon(
-              Icons.language_rounded,
-              color: isSelected
-                  ? sheetColor.primary
-                  : sheetColor.onSurfaceVariant,
-            ),
-            title: Text(
-              title,
-              style: TextStyle(
-                color: sheetColor.onSurface,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-              ),
-            ),
-            trailing: isSelected
-                ? Icon(Icons.check_rounded, color: sheetColor.primary)
-                : null,
+          return InkWell(
+            borderRadius: BorderRadius.circular(16),
             onTap: () async {
               Navigator.of(sheetContext).pop();
               await onTap();
               if (mounted) setState(() {});
             },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+              child: Row(
+                children: [
+                  if (isSelected)
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: sheetColor.primary,
+                      size: 24,
+                    )
+                  else
+                    Icon(
+                      Icons.circle_outlined,
+                      color: sheetColor.outlineVariant,
+                      size: 24,
+                    ),
+                  const Spacer(),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: sheetColor.onSurface,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(flagAsset, style: const TextStyle(fontSize: 22)),
+                ],
+              ),
+            ),
           );
         }
 
@@ -362,24 +372,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  locale.select_language,
-                  style: TextStyle(
-                    color: sheetColor.onSurface,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
+                Center(
+                  child: Text(
+                    locale.select_language,
+                    style: TextStyle(
+                      color: sheetColor.onSurface,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                option(
-                  code: 'ar',
-                  title: locale.arabic,
-                  onTap: localeCubit.setArabic,
+                const SizedBox(height: 16),
+                Divider(
+                  height: 1,
+                  color: sheetColor.outlineVariant.withValues(alpha: 0.4),
                 ),
                 const SizedBox(height: 8),
                 option(
+                  code: 'ar',
+                  title: locale.arabic,
+                  flagAsset: '🇸🇦',
+                  onTap: localeCubit.setArabic,
+                ),
+                Divider(
+                  height: 1,
+                  color: sheetColor.outlineVariant.withValues(alpha: 0.3),
+                ),
+                option(
                   code: 'en',
                   title: locale.english,
+                  flagAsset: '🇬🇧',
                   onTap: localeCubit.setEnglish,
                 ),
               ],

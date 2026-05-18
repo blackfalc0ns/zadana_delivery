@@ -4,7 +4,9 @@ class OrderAssignmentDetailsModelDto {
     required this.orderId,
     required this.orderNumber,
     required this.assignmentStatus,
+    required this.assignmentStatusLabel,
     required this.homeState,
+    required this.homeStateLabel,
     required this.allowedActions,
     required this.vendorName,
     required this.pickupAddress,
@@ -17,14 +19,18 @@ class OrderAssignmentDetailsModelDto {
     required this.deliveryLongitude,
     required this.customerPhone,
     required this.paymentMethod,
+    required this.paymentMethodLabel,
     required this.totalAmount,
     required this.codAmount,
     required this.pickupOtpRequired,
     required this.pickupOtpStatus,
+    required this.pickupOtpStatusLabel,
     required this.deliveryOtpRequired,
     required this.deliveryOtpStatus,
+    required this.deliveryOtpStatusLabel,
     required this.pickupOtpCode,
     required this.driverArrivalState,
+    required this.driverArrivalStateLabel,
     required this.orderItems,
   });
 
@@ -34,7 +40,9 @@ class OrderAssignmentDetailsModelDto {
       orderId: json['orderId']?.toString() ?? '',
       orderNumber: json['orderNumber']?.toString() ?? '',
       assignmentStatus: json['assignmentStatus']?.toString() ?? '',
+      assignmentStatusLabel: json['assignmentStatusLabel']?.toString() ?? '',
       homeState: json['homeState']?.toString() ?? '',
+      homeStateLabel: json['homeStateLabel']?.toString() ?? '',
       allowedActions: _asList(
         json['allowedActions'],
       ).map((item) => item.toString()).toList(growable: false),
@@ -49,14 +57,19 @@ class OrderAssignmentDetailsModelDto {
       deliveryLongitude: _asDouble(json['deliveryLongitude']),
       customerPhone: json['customerPhone']?.toString() ?? '',
       paymentMethod: json['paymentMethod']?.toString() ?? '',
+      paymentMethodLabel: json['paymentMethodLabel']?.toString() ?? '',
       totalAmount: _asDouble(json['totalAmount']),
       codAmount: _asDouble(json['codAmount']),
       pickupOtpRequired: _asBool(json['pickupOtpRequired']),
       pickupOtpStatus: json['pickupOtpStatus']?.toString() ?? '',
+      pickupOtpStatusLabel: json['pickupOtpStatusLabel']?.toString() ?? '',
       deliveryOtpRequired: _asBool(json['deliveryOtpRequired']),
       deliveryOtpStatus: json['deliveryOtpStatus']?.toString() ?? '',
+      deliveryOtpStatusLabel: json['deliveryOtpStatusLabel']?.toString() ?? '',
       pickupOtpCode: json['pickupOtpCode']?.toString(),
       driverArrivalState: json['driverArrivalState']?.toString() ?? '',
+      driverArrivalStateLabel:
+          json['driverArrivalStateLabel']?.toString() ?? '',
       orderItems: _asList(json['orderItems'])
           .map((item) => OrderAssignmentItemModelDto.fromJson(_asMap(item)))
           .toList(growable: false),
@@ -67,7 +80,9 @@ class OrderAssignmentDetailsModelDto {
   final String orderId;
   final String orderNumber;
   final String assignmentStatus;
+  final String assignmentStatusLabel;
   final String homeState;
+  final String homeStateLabel;
   final List<String> allowedActions;
   final String vendorName;
   final String pickupAddress;
@@ -80,14 +95,18 @@ class OrderAssignmentDetailsModelDto {
   final double deliveryLongitude;
   final String customerPhone;
   final String paymentMethod;
+  final String paymentMethodLabel;
   final double totalAmount;
   final double codAmount;
   final bool pickupOtpRequired;
   final String pickupOtpStatus;
+  final String pickupOtpStatusLabel;
   final bool deliveryOtpRequired;
   final String deliveryOtpStatus;
+  final String deliveryOtpStatusLabel;
   final String? pickupOtpCode;
   final String driverArrivalState;
+  final String driverArrivalStateLabel;
   final List<OrderAssignmentItemModelDto> orderItems;
 }
 
@@ -98,6 +117,9 @@ class OrderAssignmentItemModelDto {
     required this.unitPrice,
     required this.lineTotal,
     required this.imageUrl,
+    required this.displaySize,
+    required this.unit,
+    required this.storeName,
   });
 
   factory OrderAssignmentItemModelDto.fromJson(Map<String, dynamic> json) {
@@ -112,6 +134,9 @@ class OrderAssignmentItemModelDto {
           json['thumbnailUrl']?.toString() ??
           json['photoUrl']?.toString() ??
           '',
+      displaySize: json['displaySize']?.toString() ?? '',
+      unit: json['unit']?.toString() ?? '',
+      storeName: json['storeName']?.toString() ?? '',
     );
   }
 
@@ -120,6 +145,9 @@ class OrderAssignmentItemModelDto {
   final double unitPrice;
   final double lineTotal;
   final String imageUrl;
+  final String displaySize;
+  final String unit;
+  final String storeName;
 }
 
 Map<String, dynamic> _asMap(dynamic value) {
