@@ -109,7 +109,7 @@ class _ItemImageBox extends StatelessWidget {
           ? const Image(image: AssetImage(Assets.notFound), fit: BoxFit.cover)
           : CachedNetworkImage(
               imageUrl: resolvedImageUrl,
-              fit: BoxFit.cover,
+
               placeholder: (_, _) => const _ItemImagePlaceholder(),
               errorWidget: (_, _, _) => const Image(
                 image: AssetImage(Assets.notFound),
@@ -125,18 +125,15 @@ class _ItemImagePlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  
-     
-   Center(
-        child: SizedBox(
-          width: 14,
-          height: 14,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.primary,
-          ),
+    return const Center(
+      child: SizedBox(
+        width: 14,
+        height: 14,
+        child: CircularProgressIndicator(
+          strokeWidth: 2,
+          color: AppColors.primary,
         ),
-      );
-    
+      ),
+    );
   }
 }

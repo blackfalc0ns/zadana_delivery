@@ -13,6 +13,7 @@ extension OrderAssignmentDetailsModelMapper on OrderAssignmentDetailsModelDto {
       homeStateLabel: homeStateLabel,
       allowedActions: allowedActions,
       vendorName: vendorName,
+      vendorImageUrl: vendorImageUrl,
       pickupAddress: pickupAddress,
       pickupLatitude: pickupLatitude,
       pickupLongitude: pickupLongitude,

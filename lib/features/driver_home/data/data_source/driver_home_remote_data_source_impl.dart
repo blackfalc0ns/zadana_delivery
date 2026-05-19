@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -29,7 +28,7 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   static const Duration _initialHomeRefreshDebounce = Duration(seconds: 3);
   static const Duration _staleConnectionThreshold = Duration(seconds: 30);
   static const Duration _homeRefreshThrottleWindow = Duration(
-    milliseconds: 900,
+    milliseconds: 2000,
   );
   static const Duration _signalRRetryCooldown = Duration(seconds: 30);
   static const Duration _signalRRetryDelay = Duration(seconds: 5);
@@ -305,7 +304,6 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   Future<void> _connectToNotificationsHub(String token) async {
     const hubPath = NetworkConstants.notificationsHub;
-    await _ensureHostReachable();
     final hubUrl = _resolveHubUrl(hubPath, accessToken: token);
     _logConnectionStatus('CONNECTING', hubPath: hubPath, details: hubUrl);
     final connection = HubConnectionBuilder()
@@ -508,10 +506,6 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
     _log('Refreshing /drivers/home after initial SignalR connect');
     await _refreshHomeFromApi();
-    Future<void>.delayed(_delayedOfferRefresh, () {
-      _log('Running delayed home refresh after initial SignalR connect');
-      return _refreshHomeFromApi();
-    });
   }
 
   void _scheduleReconnect([Duration delay = _signalRRetryDelay]) {
@@ -602,27 +596,6 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
     } catch (error) {
       _log('Home realtime disconnect ignored an error: $error');
     }
-  }
-
-  Future<void> _ensureHostReachable() async {
-    final host = Uri.parse(NetworkConstants.baseUrl).host;
-    if (host.isEmpty) {
-      throw const SocketException('Missing API host');
-    }
-
-    final lookup = await compute(
-      _dnsLookup,
-      host,
-    ).timeout(const Duration(seconds: 3), onTimeout: () => <String>[]);
-    if (lookup.isEmpty) {
-      throw SocketException('Failed host lookup: $host');
-    }
-  }
-
-  /// Runs DNS lookup on a separate isolate to avoid blocking the UI thread.
-  static Future<List<String>> _dnsLookup(String host) async {
-    final results = await InternetAddress.lookup(host);
-    return results.map((r) => r.address).toList();
   }
 
   Future<void> _handleNotificationPayload(dynamic payload) async {

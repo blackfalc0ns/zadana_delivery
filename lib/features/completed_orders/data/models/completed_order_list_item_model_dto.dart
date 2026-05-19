@@ -5,6 +5,7 @@ class CompletedOrderListItemModelDto {
   const CompletedOrderListItemModelDto({
     this.id = '',
     this.merchantName = '',
+    this.merchantImageUrl,
     this.customerName = '',
     this.completedAtUtc = '',
     this.status = '',
@@ -24,6 +25,8 @@ class CompletedOrderListItemModelDto {
   final String id;
   @JsonKey(fromJson: _stringFromJson)
   final String merchantName;
+  @JsonKey(fromJson: _nullableStringFromJson)
+  final String? merchantImageUrl;
   @JsonKey(fromJson: _stringFromJson)
   final String customerName;
   @JsonKey(fromJson: _stringFromJson)

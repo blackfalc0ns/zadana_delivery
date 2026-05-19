@@ -9,6 +9,7 @@ class CompletedOrder with CompletedOrderCollectionMixin {
   const CompletedOrder({
     required this.id,
     required this.merchantName,
+    this.merchantImageUrl,
     required this.customerName,
     required this.completedAt,
     required this.status,
@@ -23,6 +24,7 @@ class CompletedOrder with CompletedOrderCollectionMixin {
 
   final String id;
   final String merchantName;
+  final String? merchantImageUrl;
   final String customerName;
   final DateTime completedAt;
   final CompletedOrderStatus status;

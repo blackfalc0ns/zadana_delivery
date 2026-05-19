@@ -5,6 +5,7 @@ import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/constants/assets.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/formatters/price_formatter.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 
 class OrderItemTile extends StatelessWidget {
@@ -105,9 +106,13 @@ class _OrderItemDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = context.colorScheme;
+    final locale = context.localization;
     final displaySize = (item.displaySize ?? '').trim();
     final storeName = (item.storeName ?? '').trim();
     final hasSubtitle = displaySize.isNotEmpty || storeName.isNotEmpty;
+    final unitPrice = item.unitPrice ?? 0;
+    final lineTotal = item.lineTotal ?? 0;
+    final hasPrice = lineTotal > 0 || unitPrice > 0;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -142,6 +147,19 @@ class _OrderItemDetails extends StatelessWidget {
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+          ),
+        ],
+        if (hasPrice) ...[
+          const SizedBox(height: 4),
+          Text(
+            unitPrice > 0 && item.quantity > 1
+                ? '${PriceFormatter.formatPrice(lineTotal)} ${locale.currency} (${PriceFormatter.formatPrice(unitPrice)} × ${item.quantity})'
+                : '${PriceFormatter.formatPrice(lineTotal)} ${locale.currency}',
+            style: getMediumStyle(
+              fontFamily: FontConstant.cairo,
+              fontSize: FontSize.size11,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ],

@@ -73,11 +73,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> _handleAppResumed() async {
-    // Reconnect sequentially: global realtime first, then home-specific,
-    // to avoid two parallel DNS lookups blocking the main isolate.
-    await getIt<DriverRealtimeService>().ensureConnected();
-    final homeDataSource = getIt<DriverHomeRemoteDataSource>();
-    await homeDataSource.ensureRealtimeConnected();
+    // Fire-and-forget: reconnect in the background to avoid blocking the UI.
+    unawaited(
+      Future<void>(() async {
+        await getIt<DriverRealtimeService>().ensureConnected();
+        final homeDataSource = getIt<DriverHomeRemoteDataSource>();
+        await homeDataSource.ensureRealtimeConnected();
+      }),
+    );
     // Check if a delivery-offer push arrived while Flutter was detached.
     try {
       const channel = MethodChannel('zadana_delivery/native_notifications');
@@ -87,6 +90,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         final age = DateTime.now().millisecondsSinceEpoch - timestamp;
         // Only act on it if it arrived within the last 2 minutes.
         if (age < 120000) {
+          final homeDataSource = getIt<DriverHomeRemoteDataSource>();
           unawaited(homeDataSource.notifyOfferPushReceived());
         }
       }

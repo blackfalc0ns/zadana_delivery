@@ -7,6 +7,7 @@ class CompletedOrderDetailsModelDto {
     this.assignmentId,
     this.orderNumber = '',
     this.merchantName = '',
+    this.merchantImageUrl,
     this.merchantPhone,
     this.customerName = '',
     this.customerPhone,
@@ -34,6 +35,8 @@ class CompletedOrderDetailsModelDto {
   final String orderNumber;
   @JsonKey(fromJson: _stringFromJson)
   final String merchantName;
+  @JsonKey(fromJson: _nullableStringFromJson)
+  final String? merchantImageUrl;
   @JsonKey(fromJson: _nullableStringFromJson)
   final String? merchantPhone;
   @JsonKey(fromJson: _stringFromJson)

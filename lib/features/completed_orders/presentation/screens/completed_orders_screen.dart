@@ -136,9 +136,11 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                 children: [
                   Column(
                     children: [
-                      CustomAppBar.modern(
+                      CustomAppBar(
                         title: locale.completed_orders_title,
-                        onBackPressed: () => Navigator.of(context).maybePop(),
+                        showBackButton: false,
+                        showShadow: false,
+                        titleFontSize: FontSize.size18,
                       ),
                       if (state.isRefreshing)
                         const Padding(

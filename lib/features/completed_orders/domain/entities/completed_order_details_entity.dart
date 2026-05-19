@@ -11,6 +11,7 @@ class CompletedOrderDetails with CompletedOrderCollectionMixin {
     required this.assignmentId,
     required this.orderNumber,
     required this.merchantName,
+    this.merchantImageUrl,
     required this.merchantPhone,
     required this.customerName,
     required this.customerPhone,
@@ -31,6 +32,7 @@ class CompletedOrderDetails with CompletedOrderCollectionMixin {
   final String? assignmentId;
   final String orderNumber;
   final String merchantName;
+  final String? merchantImageUrl;
   final String? merchantPhone;
   final String customerName;
   final String? customerPhone;

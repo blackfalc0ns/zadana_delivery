@@ -6,6 +6,7 @@ extension CompletedOrderListItemModelMapper on CompletedOrderListItemModelDto {
     return CompletedOrder(
       id: id,
       merchantName: merchantName,
+      merchantImageUrl: merchantImageUrl,
       customerName: customerName,
       completedAt: DateTime.tryParse(completedAtUtc)?.toLocal() ?? DateTime(0),
       status: _mapStatus(status),
@@ -27,6 +28,7 @@ extension CompletedOrderDetailsModelMapper on CompletedOrderDetailsModelDto {
       assignmentId: assignmentId,
       orderNumber: orderNumber.isEmpty ? id : orderNumber,
       merchantName: merchantName,
+      merchantImageUrl: merchantImageUrl,
       merchantPhone: merchantPhone,
       customerName: customerName,
       customerPhone: customerPhone,

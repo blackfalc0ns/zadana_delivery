@@ -9,6 +9,7 @@ class OrderAssignmentDetailsModelDto {
     required this.homeStateLabel,
     required this.allowedActions,
     required this.vendorName,
+    this.vendorImageUrl = '',
     required this.pickupAddress,
     required this.pickupLatitude,
     required this.pickupLongitude,
@@ -47,6 +48,7 @@ class OrderAssignmentDetailsModelDto {
         json['allowedActions'],
       ).map((item) => item.toString()).toList(growable: false),
       vendorName: json['vendorName']?.toString() ?? '',
+      vendorImageUrl: json['vendorImageUrl']?.toString() ?? '',
       pickupAddress: json['pickupAddress']?.toString() ?? '',
       pickupLatitude: _asDouble(json['pickupLatitude']),
       pickupLongitude: _asDouble(json['pickupLongitude']),
@@ -85,6 +87,7 @@ class OrderAssignmentDetailsModelDto {
   final String homeStateLabel;
   final List<String> allowedActions;
   final String vendorName;
+  final String vendorImageUrl;
   final String pickupAddress;
   final double pickupLatitude;
   final double pickupLongitude;

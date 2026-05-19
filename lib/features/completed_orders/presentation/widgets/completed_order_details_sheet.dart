@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
@@ -194,6 +195,8 @@ class _CompletedOrderHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final locale = context.localization;
+    final merchantImage = (order.merchantImageUrl ?? '').trim();
+    final hasMerchantImage = merchantImage.isNotEmpty;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -206,18 +209,36 @@ class _CompletedOrderHero extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
+            clipBehavior: Clip.antiAlias,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: scheme.surfaceContainerLow.withValues(alpha: 0.92),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: scheme.outlineVariant.withValues(alpha: 0.3),
-              ),
+             
             ),
-            child: Text(
-              completedOrderMerchantEmoji(order.merchantName),
-              style: const TextStyle(fontSize: 24),
-            ),
+            child: hasMerchantImage
+                ? CachedNetworkImage(
+                    imageUrl: merchantImage,
+                    width: 48,
+                    height: 48,
+                   
+                    placeholder: (_, _) => Center(
+                      child: Text(
+                        completedOrderMerchantEmoji(order.merchantName),
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                    errorWidget: (_, _, _) => Center(
+                      child: Text(
+                        completedOrderMerchantEmoji(order.merchantName),
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ),
+                  )
+                : Text(
+                    completedOrderMerchantEmoji(order.merchantName),
+                    style: const TextStyle(fontSize: 24),
+                  ),
           ),
           const SizedBox(width: 10),
           Expanded(

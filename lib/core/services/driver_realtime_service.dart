@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:flutter/foundation.dart' show compute;
 import 'package:flutter/widgets.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
@@ -126,7 +124,6 @@ class DriverRealtimeService {
     _isConnecting = true;
     _disconnectRequested = false;
     try {
-      await _ensureHostReachable();
       final hubUrl = _resolveHubUrl(
         NetworkConstants.notificationsHub,
         accessToken: token,
@@ -350,27 +347,6 @@ class DriverRealtimeService {
     } catch (error) {
       _log('SignalR disconnect ignored an error: $error');
     }
-  }
-
-  Future<void> _ensureHostReachable() async {
-    final host = Uri.parse(NetworkConstants.baseUrl).host;
-    if (host.isEmpty) {
-      throw const SocketException('Missing API host');
-    }
-
-    final lookup = await compute(
-      _dnsLookup,
-      host,
-    ).timeout(const Duration(seconds: 3), onTimeout: () => <String>[]);
-    if (lookup.isEmpty) {
-      throw SocketException('Failed host lookup: $host');
-    }
-  }
-
-  /// Runs DNS lookup on a separate isolate to avoid blocking the UI thread.
-  static Future<List<String>> _dnsLookup(String host) async {
-    final results = await InternetAddress.lookup(host);
-    return results.map((r) => r.address).toList();
   }
 
   dynamic _extractFirstArgument(List<Object?>? arguments) {

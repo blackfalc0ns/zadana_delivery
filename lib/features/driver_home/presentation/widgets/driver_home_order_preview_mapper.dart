@@ -80,6 +80,7 @@ class DriverHomeOrderPreviewMapper {
       id: assignment.assignmentId,
       title: assignment.orderNumber,
       vendorName: assignment.vendorName,
+      vendorImageUrl: assignment.vendorImageUrl,
       pickupAddress: assignment.pickupAddress,
       pickupLatitude: assignment.pickupLatitude,
       pickupLongitude: assignment.pickupLongitude,

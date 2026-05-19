@@ -3,6 +3,7 @@ class DriverOrderPreview {
     required this.id,
     required this.title,
     required this.vendorName,
+    this.vendorImageUrl = '',
     required this.pickupAddress,
     required this.pickupLatitude,
     required this.pickupLongitude,
@@ -32,6 +33,7 @@ class DriverOrderPreview {
   final String id;
   final String title;
   final String vendorName;
+  final String vendorImageUrl;
   final String pickupAddress;
   final double pickupLatitude;
   final double pickupLongitude;
@@ -61,6 +63,7 @@ class DriverOrderPreview {
     String? id,
     String? title,
     String? vendorName,
+    String? vendorImageUrl,
     String? pickupAddress,
     double? pickupLatitude,
     double? pickupLongitude,
@@ -91,6 +94,7 @@ class DriverOrderPreview {
       id: id ?? this.id,
       title: title ?? this.title,
       vendorName: vendorName ?? this.vendorName,
+      vendorImageUrl: vendorImageUrl ?? this.vendorImageUrl,
       pickupAddress: pickupAddress ?? this.pickupAddress,
       pickupLatitude: pickupLatitude ?? this.pickupLatitude,
       pickupLongitude: pickupLongitude ?? this.pickupLongitude,

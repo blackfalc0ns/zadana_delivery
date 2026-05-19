@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
@@ -49,18 +50,9 @@ class CompletedOrderCard extends StatelessWidget {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F2EA),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Text(
-                      completedOrderMerchantEmoji(order.merchantName),
-                      style: const TextStyle(fontSize: 24),
-                    ),
+                  _MerchantImageBox(
+                    imageUrl: order.merchantImageUrl,
+                    merchantName: order.merchantName,
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -164,6 +156,53 @@ class CompletedOrderCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _MerchantImageBox extends StatelessWidget {
+  const _MerchantImageBox({required this.imageUrl, required this.merchantName});
+
+  final String? imageUrl;
+  final String merchantName;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedUrl = (imageUrl ?? '').trim();
+    final hasImage = resolvedUrl.isNotEmpty;
+
+    return Container(
+      width: 48,
+      height: 48,
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F2EA),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: hasImage
+          ? CachedNetworkImage(
+              imageUrl: resolvedUrl,
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
+              placeholder: (_, _) => Center(
+                child: Text(
+                  completedOrderMerchantEmoji(merchantName),
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ),
+              errorWidget: (_, _, _) => Center(
+                child: Text(
+                  completedOrderMerchantEmoji(merchantName),
+                  style: const TextStyle(fontSize: 24),
+                ),
+              ),
+            )
+          : Text(
+              completedOrderMerchantEmoji(merchantName),
+              style: const TextStyle(fontSize: 24),
+            ),
     );
   }
 }

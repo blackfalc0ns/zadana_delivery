@@ -201,6 +201,7 @@ class OrderDetailsController extends ChangeNotifier {
       orderId: details.orderId,
       title: details.orderNumber,
       vendorName: details.vendorName,
+      vendorImageUrl: details.vendorImageUrl,
       pickupAddress: details.pickupAddress,
       pickupLatitude: details.pickupLatitude,
       pickupLongitude: details.pickupLongitude,

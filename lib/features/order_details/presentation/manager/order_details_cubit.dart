@@ -38,7 +38,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     : super(const OrderDetailsState());
 
   static const String _logTag = '[OrderDetailsRealtime]';
-  static const Duration _arrivedAtVendorPollingInterval = Duration(seconds: 2);
+  static const Duration _arrivedAtVendorPollingInterval = Duration(seconds: 10);
 
   final GetOrderAssignmentDetailsUseCase _getOrderAssignmentDetailsUseCase;
   final MarkOrderArrivedAtVendorUseCase _markOrderArrivedAtVendorUseCase =

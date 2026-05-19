@@ -9,6 +9,7 @@ class OrderAssignmentDetailsEntity {
     this.homeStateLabel = '',
     required this.allowedActions,
     required this.vendorName,
+    this.vendorImageUrl = '',
     required this.pickupAddress,
     required this.pickupLatitude,
     required this.pickupLongitude,
@@ -43,6 +44,7 @@ class OrderAssignmentDetailsEntity {
   final String homeStateLabel;
   final List<String> allowedActions;
   final String vendorName;
+  final String vendorImageUrl;
   final String pickupAddress;
   final double pickupLatitude;
   final double pickupLongitude;
@@ -77,6 +79,7 @@ class OrderAssignmentDetailsEntity {
     String? homeStateLabel,
     List<String>? allowedActions,
     String? vendorName,
+    String? vendorImageUrl,
     String? pickupAddress,
     double? pickupLatitude,
     double? pickupLongitude,
@@ -113,6 +116,7 @@ class OrderAssignmentDetailsEntity {
       homeStateLabel: homeStateLabel ?? this.homeStateLabel,
       allowedActions: allowedActions ?? this.allowedActions,
       vendorName: vendorName ?? this.vendorName,
+      vendorImageUrl: vendorImageUrl ?? this.vendorImageUrl,
       pickupAddress: pickupAddress ?? this.pickupAddress,
       pickupLatitude: pickupLatitude ?? this.pickupLatitude,
       pickupLongitude: pickupLongitude ?? this.pickupLongitude,
