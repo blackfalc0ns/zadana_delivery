@@ -57,8 +57,12 @@ class LoginRepositoryImpl implements LoginRepository {
         ),
       );
       await _tokenService.saveCurrentUserId(entity.user.id);
-      await getIt<DriverNotificationSessionService>()
-          .handleSuccessfulAuthentication(entity.user.id);
+      try {
+        await getIt<DriverNotificationSessionService>()
+            .handleSuccessfulAuthentication(entity.user.id);
+      } catch (_) {
+        // Non-critical: notification/realtime setup can fail without blocking login.
+      }
 
       return LoginResponseEntity(
         tokens: entity.tokens,

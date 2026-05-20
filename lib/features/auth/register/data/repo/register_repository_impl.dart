@@ -89,8 +89,12 @@ class RegisterRepositoryImpl implements RegisterRepository {
           ),
         );
         await _tokenService.saveCurrentUserId(user.id);
-        await getIt<DriverNotificationSessionService>()
-            .handleSuccessfulAuthentication(user.id);
+        try {
+          await getIt<DriverNotificationSessionService>()
+              .handleSuccessfulAuthentication(user.id);
+        } catch (_) {
+          // Non-critical: notification/realtime setup can fail without blocking registration.
+        }
       }
 
       await _draftService.saveProfileDraft(

@@ -46,10 +46,22 @@ class DriverNotificationSessionService {
 
   Future<void> handleSuccessfulAuthentication(String userId) async {
     await _tokenService.saveCurrentUserId(userId);
-    await _runtimeServicesController.initializeDriverRuntimeServices();
-    await _bootstrapService.prepareAuthenticatedPush(userId);
-    await _deviceService.registerCurrentDeviceIfAuthenticated(force: true);
-    await _driverRealtimeService.ensureConnected();
+    try {
+      await _runtimeServicesController.initializeDriverRuntimeServices();
+    } catch (_) {
+      // Runtime services (background tracking, SignalR) may fail on iOS during
+      // first login due to BGTaskScheduler not being fully ready. This is
+      // non-critical — the home screen will retry when it bootstraps.
+    }
+    try {
+      await _bootstrapService.prepareAuthenticatedPush(userId);
+    } catch (_) {}
+    try {
+      await _deviceService.registerCurrentDeviceIfAuthenticated(force: true);
+    } catch (_) {}
+    try {
+      await _driverRealtimeService.ensureConnected();
+    } catch (_) {}
   }
 
   Future<void> handleAccessTokenRefreshed() async {
