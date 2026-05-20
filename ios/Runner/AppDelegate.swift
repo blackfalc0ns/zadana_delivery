@@ -3,7 +3,7 @@ import UIKit
 import UserNotifications
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, UNUserNotificationCenterDelegate {
+@objc class AppDelegate: FlutterAppDelegate {
   private let notificationLaunchChannelName =
     "zadana_delivery/notification_launch"
   private var pendingNotificationPayload: [String: Any]?
