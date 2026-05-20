@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/services/app_navigator_service.dart';
 import 'package:zadana_delivery/core/services/driver_local_notification_service.dart';
@@ -14,6 +15,8 @@ import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
+import 'package:zadana_delivery/core/services/trip_request_global_alert_service.dart';
+import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/repo/driver_support_repository.dart';
@@ -171,6 +174,22 @@ void registerManualDependencies(GetIt getIt) {
         getIt<DriverHomeRemoteDataSource>(),
         getIt<DriverNotificationRouterService>(),
         getIt<DriverNotificationDedupService>(),
+      ),
+    );
+  }
+
+  if (!getIt.isRegistered<TripRequestOverlayService>()) {
+    getIt.registerLazySingleton<TripRequestOverlayService>(
+      () => TripRequestOverlayService(getIt<SharedPreferences>()),
+    );
+  }
+
+  if (!getIt.isRegistered<TripRequestGlobalAlertService>()) {
+    getIt.registerLazySingleton<TripRequestGlobalAlertService>(
+      () => TripRequestGlobalAlertService(
+        getIt<TripRequestOverlayService>(),
+        getIt<DriverRealtimeService>(),
+        getIt<DriverHomeRemoteDataSource>(),
       ),
     );
   }

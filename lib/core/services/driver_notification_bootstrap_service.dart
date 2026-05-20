@@ -20,6 +20,7 @@ import 'driver_notification_overlay_service.dart';
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
 import 'token_service.dart';
+import 'trip_request_overlay_service.dart';
 
 @lazySingleton
 class DriverNotificationBootstrapService {
@@ -632,6 +633,11 @@ class DriverNotificationBootstrapService {
       try {
         final homeDataSource = getIt<DriverHomeRemoteDataSource>();
         unawaited(homeDataSource.notifyOfferPushReceived());
+      } catch (_) {}
+      // Also trigger the system overlay for background offer alerts
+      try {
+        final tripOverlay = getIt<TripRequestOverlayService>();
+        unawaited(tripOverlay.showForOffer(normalizedPayload));
       } catch (_) {}
     }
   }

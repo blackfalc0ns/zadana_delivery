@@ -5,6 +5,7 @@ abstract class NetworkConstants {
   static const String notificationsHub = '/hubs/notifications';
   static const String nativeNotificationsChannel =
       'zadana_delivery/native_notifications';
+  static const String tripOverlayChannel = 'zadana_delivery/trip_overlay';
   static const String driverDeliveryOfferEvent = 'ReceiveDeliveryOffer';
   static const String driverNotificationEvent = 'ReceiveNotification';
   static const String driverOrderStatusChangedEvent =

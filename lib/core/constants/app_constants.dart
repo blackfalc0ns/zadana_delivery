@@ -37,4 +37,7 @@ class AppConstants {
   static const double logoHeight = 52.0;
   static const double toggleHeight = 50.0;
   static const double togglePadding = 3.0;
+
+  // Trip overlay system preferences
+  static const String tripOverlayEnabledKey = 'trip_overlay_enabled';
 }

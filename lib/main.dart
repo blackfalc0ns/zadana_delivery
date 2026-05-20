@@ -17,6 +17,7 @@ import 'package:zadana_delivery/core/services/driver_notification_overlay_servic
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/core/services/trip_request_global_alert_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 
 void main() async {
@@ -49,6 +50,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       getIt<AppNavigatorService>().markReady();
       getIt<DriverNotificationOverlayService>().startListening();
+      getIt<TripRequestGlobalAlertService>().startListening();
       unawaited(_bootstrapNotificationServicesAfterUiReady());
     });
   }

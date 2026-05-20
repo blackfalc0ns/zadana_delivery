@@ -2,12 +2,15 @@ package com.example.zadana_delivery
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
     private var notificationsChannel: MethodChannel? = null
+    private var tripOverlayChannel: MethodChannel? = null
+    private var tripOverlay: TripRequestSystemOverlay? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +61,75 @@ class MainActivity : FlutterActivity() {
                 }
             }
         }
+
+        // Trip Request System Overlay channel
+        val overlay = TripRequestSystemOverlay(this)
+        tripOverlay = overlay
+
+        tripOverlayChannel = MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            TRIP_OVERLAY_CHANNEL_NAME,
+        ).apply {
+            setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "canDrawOverlays" -> {
+                        result.success(overlay.canDrawOverlays())
+                    }
+
+                    "openOverlaySettings" -> {
+                        overlay.openOverlaySettings()
+                        result.success(null)
+                    }
+
+                    "showOverlay" -> {
+                        val data = call.arguments as? Map<String, Any?> ?: emptyMap()
+                        overlay.setCallbacks(
+                            onAccept = { assignmentId ->
+                                Log.d(TAG, "Overlay accept tapped: $assignmentId")
+                                tripOverlayChannel?.invokeMethod(
+                                    "onAccept",
+                                    mapOf("assignment_id" to assignmentId)
+                                )
+                            },
+                            onReject = { assignmentId ->
+                                Log.d(TAG, "Overlay reject tapped: $assignmentId")
+                                tripOverlayChannel?.invokeMethod(
+                                    "onReject",
+                                    mapOf("assignment_id" to assignmentId)
+                                )
+                            },
+                            onTap = { assignmentId ->
+                                Log.d(TAG, "Overlay body tapped: $assignmentId")
+                                tripOverlayChannel?.invokeMethod(
+                                    "onTap",
+                                    mapOf("assignment_id" to assignmentId)
+                                )
+                                // Bring the app to foreground
+                                bringAppToForeground()
+                            },
+                        )
+                        overlay.show(data)
+                        result.success(true)
+                    }
+
+                    "hideOverlay" -> {
+                        overlay.hide()
+                        result.success(null)
+                    }
+
+                    else -> result.notImplemented()
+                }
+            }
+        }
+    }
+
+    private fun bringAppToForeground() {
+        val intent = Intent(this, MainActivity::class.java).apply {
+            action = Intent.ACTION_MAIN
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+        }
+        startActivity(intent)
     }
 
     private fun cachePendingNotificationIntent(intent: Intent?) {
@@ -100,9 +172,12 @@ class MainActivity : FlutterActivity() {
     }
 
     companion object {
+        private const val TAG = "TripOverlayActivity"
         private const val CHANNEL_NAME = "zadana_delivery/notification_launch"
         private const val NOTIFICATIONS_CHANNEL_NAME =
             "zadana_delivery/native_notifications"
+        private const val TRIP_OVERLAY_CHANNEL_NAME =
+            "zadana_delivery/trip_overlay"
 
         @Volatile
         private var pendingPayload: HashMap<String, Any?>? = null
