@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import UserNotifications
+import GoogleMaps
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -12,6 +13,7 @@ import UserNotifications
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    GMSServices.provideAPIKey("AIzaSyA1XNcpZlXAgDtKVmC3vMi_V4_f3O4tLes")
     UNUserNotificationCenter.current().delegate = self
 
     if let remoteNotification =
