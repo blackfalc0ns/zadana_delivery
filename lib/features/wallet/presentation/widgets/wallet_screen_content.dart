@@ -57,16 +57,15 @@ class WalletScreenContent extends StatelessWidget {
             const WalletAmbientBackground(),
             Column(
               children: [
-                if (state.isRefreshing)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Center(
-                      child: CustomProgressIndicator.compact(size: 22),
-                    ),
-                  ),
                 Expanded(
-                  child: summary == null && state.isLoading
-                      ? const WalletLoadingSkeleton()
+                  child: state.isRefreshing && summary == null
+                      ? const Center(
+                          child: CustomProgressIndicator(),
+                        )
+                      : summary == null && state.isLoading
+                      ? const Center(
+                          child: CustomProgressIndicator(),
+                        )
                       : RefreshIndicator(
                           onRefresh: onRefresh,
                           child: ListView(
@@ -326,44 +325,20 @@ class WalletScreenContent extends StatelessWidget {
                                                       const EdgeInsets.only(
                                                         bottom: 10,
                                                       ),
-                                                  child: Stack(
-                                                    children: [
-                                                      WalletPaymentMethodTile(
-                                                        item: item,
-                                                      ),
-                                                      PositionedDirectional(
-                                                        top: 6,
-                                                        end: 6,
-                                                        child: IconButton(
-                                                          visualDensity:
-                                                              VisualDensity
-                                                                  .compact,
-                                                          onPressed:
-                                                              state.activePaymentMethodId ==
-                                                                  item.id
-                                                              ? null
-                                                              : () =>
-                                                                    onShowPaymentMethodActions(
-                                                                      item.id,
-                                                                    ),
-                                                          icon:
-                                                              state.activePaymentMethodId ==
-                                                                  item.id
-                                                              ? const SizedBox(
-                                                                  width: 16,
-                                                                  height: 16,
-                                                                  child: CustomProgressIndicator.compact(
-                                                                    size: 16,
-                                                                  ),
-                                                                )
-                                                              : const Icon(
-                                                                  Icons
-                                                                      .more_horiz_rounded,
-                                                                  size: 18,
-                                                                ),
-                                                        ),
-                                                      ),
-                                                    ],
+                                                  child: GestureDetector(
+                                                    onTap: state.activePaymentMethodId ==
+                                                            item.id
+                                                        ? null
+                                                        : () =>
+                                                              onShowPaymentMethodActions(
+                                                                item.id,
+                                                              ),
+                                                    child: WalletPaymentMethodTile(
+                                                      item: item,
+                                                      isLoading:
+                                                          state.activePaymentMethodId ==
+                                                              item.id,
+                                                    ),
                                                   ),
                                                 ),
                                               )

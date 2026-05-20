@@ -23,6 +23,9 @@ abstract class ExternalModules {
     final dio = Dio();
 
     dio.options.baseUrl = NetworkConstants.baseUrl;
+    dio.options.connectTimeout = const Duration(seconds: 15);
+    dio.options.receiveTimeout = const Duration(seconds: 15);
+    dio.options.sendTimeout = const Duration(seconds: 15);
     dio.options.headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',

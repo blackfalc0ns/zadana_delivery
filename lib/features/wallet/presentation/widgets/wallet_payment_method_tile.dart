@@ -7,9 +7,14 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_me
 import 'package:zadana_delivery/features/wallet/presentation/wallet_ui_labels.dart';
 
 class WalletPaymentMethodTile extends StatelessWidget {
-  const WalletPaymentMethodTile({super.key, required this.item});
+  const WalletPaymentMethodTile({
+    super.key,
+    required this.item,
+    this.isLoading = false,
+  });
 
   final DriverPayoutMethodEntity item;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -24,92 +29,112 @@ class WalletPaymentMethodTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: color.outlineVariant.withValues(alpha: 0.25)),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: color.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              _iconForType(item.type),
-              color: color.primary,
-              size: 22,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: color.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  _iconForType(item.type),
+                  color: color.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        locale.walletPaymentMethodLabel(item.type),
-                        style: getBoldStyle(
-                          fontFamily: FontConstant.cairo,
-                          fontSize: FontSize.size13,
-                          color: color.onSurface,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            locale.walletPaymentMethodLabel(item.type),
+                            style: getBoldStyle(
+                              fontFamily: FontConstant.cairo,
+                              fontSize: FontSize.size13,
+                              color: color.onSurface,
+                            ),
+                          ),
                         ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 9,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: chipColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(999),
+                          ),
+                          child: Text(
+                            item.isPrimary
+                                ? locale.wallet_primary_method
+                                : item.isVerified
+                                ? locale.wallet_status_completed
+                                : locale.wallet_unverified_method,
+                            style: getBoldStyle(
+                              fontFamily: FontConstant.cairo,
+                              fontSize: FontSize.size9,
+                              color: chipColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      item.maskedLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: getBoldStyle(
+                        fontFamily: FontConstant.cairo,
+                        color: color.onSurface,
                       ),
                     ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: chipColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(999),
-                      ),
-                      child: Text(
-                        item.isPrimary
-                            ? locale.wallet_primary_method
-                            : item.isVerified
-                            ? locale.wallet_status_completed
-                            : locale.wallet_unverified_method,
-                        style: getBoldStyle(
-                          fontFamily: FontConstant.cairo,
-                          fontSize: FontSize.size9,
-                          color: chipColor,
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        _InfoPill(
+                          icon: Icons.account_circle_outlined,
+                          label: item.accountHolderName,
                         ),
-                      ),
+                        _InfoPill(
+                          icon: Icons.business_outlined,
+                          label: item.providerName,
+                        ),
+                      ],
                     ),
                   ],
                 ),
-                const SizedBox(height: 5),
-                Text(
-                  item.maskedLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: getBoldStyle(
-                    fontFamily: FontConstant.cairo,
-                    color: color.onSurface,
+              ),
+            ],
+          ),
+          if (isLoading)
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: color.surface.withValues(alpha: 0.7),
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    _InfoPill(
-                      icon: Icons.account_circle_outlined,
-                      label: item.accountHolderName,
-                    ),
-                    _InfoPill(
-                      icon: Icons.business_outlined,
-                      label: item.providerName,
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
         ],
       ),
     );

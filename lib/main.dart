@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:zadana_delivery/config/theme/app_theme.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
+import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/services/app_navigator_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_bootstrap_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_overlay_service.dart';
@@ -83,7 +85,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     );
     // Check if a delivery-offer push arrived while Flutter was detached.
     try {
-      const channel = MethodChannel('zadana_delivery/native_notifications');
+      const channel = MethodChannel(
+        NetworkConstants.nativeNotificationsChannel,
+      );
       final timestamp =
           await channel.invokeMethod<int>('consumeOfferPushTimestamp') ?? 0;
       if (timestamp > 0) {

@@ -9,6 +9,7 @@ import 'package:injectable/injectable.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 
 import 'app_navigator_service.dart';
@@ -39,7 +40,7 @@ class DriverNotificationBootstrapService {
     defaultValue: _defaultDriverOneSignalAppId,
   );
   static const MethodChannel _nativeNotificationsChannel = MethodChannel(
-    'zadana_delivery/native_notifications',
+    NetworkConstants.nativeNotificationsChannel,
   );
   static final RegExp _uuidPattern = RegExp(
     r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',

@@ -47,9 +47,20 @@ dev_dependencies:
   json_serializable: ^6.13.1
   injectable_generator: ^2.12.1
   retrofit_generator: ^10.2.3
+  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logo_dark.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/logo_dark.png"
+  adaptive_icon_padding: 16
+  remove_alpha_ios: true
+  ios_content_padding: 16
 
 flutter:
   uses-material-design: true

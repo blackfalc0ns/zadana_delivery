@@ -3,6 +3,8 @@ abstract class NetworkConstants {
   static const String authorization = 'Authorization';
   static const String bearer = "Bearer";
   static const String notificationsHub = '/hubs/notifications';
+  static const String nativeNotificationsChannel =
+      'zadana_delivery/native_notifications';
   static const String driverDeliveryOfferEvent = 'ReceiveDeliveryOffer';
   static const String driverNotificationEvent = 'ReceiveNotification';
   static const String driverOrderStatusChangedEvent =
