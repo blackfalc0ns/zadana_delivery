@@ -1,5 +1,7 @@
 import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
+import 'package:zadana_delivery/features/auth/account_status/data/mapper/driver_account_status_mapper.dart';
+import 'package:zadana_delivery/features/auth/login/domain/entities/tokens_entity.dart';
 
 import '../../domain/entities/register_request_entity.dart';
 import '../../domain/entities/register_response_entity.dart';
@@ -54,6 +56,13 @@ extension RegisterResponseDtoMapper on RegisterResponseModelDto {
     return RegisterResponseEntity(
       message: message?.trim() ?? '',
       isVerified: isVerified,
+      tokens: tokens == null
+          ? null
+          : TokensEntity(
+              accessToken: tokens!.accessToken?.trim() ?? '',
+              refreshToken: tokens!.refreshToken?.trim() ?? '',
+            ),
+      driverStatus: driverStatus?.toEntity(),
       user: dto == null
           ? null
           : RegisterUserEntity(
@@ -62,6 +71,7 @@ extension RegisterResponseDtoMapper on RegisterResponseModelDto {
               email: dto.email?.trim() ?? '',
               phone: dto.phone?.trim() ?? '',
               role: dto.role?.trim() ?? 'driver',
+              profilePhotoUrl: dto.profilePhotoUrl?.trim() ?? '',
               favoritesCount: dto.favoritesCount ?? 0,
             ),
     );

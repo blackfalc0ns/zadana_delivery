@@ -24,6 +24,7 @@ class DriverAccountStatusEntity {
     required this.messageAr,
     required this.messageEn,
     required this.policyIsFrozen,
+    this.supportCta,
   });
 
   final String driverId;
@@ -50,6 +51,7 @@ class DriverAccountStatusEntity {
   final String? messageAr;
   final String? messageEn;
   final bool policyIsFrozen;
+  final DriverAccountSupportCtaEntity? supportCta;
 
   String get primaryBlockedMessage {
     for (final candidate in [
@@ -106,4 +108,18 @@ class DriverAccountStatusEntity {
       canReceiveOffers &&
       !isPendingReview &&
       !isBlocked;
+}
+
+class DriverAccountSupportCtaEntity {
+  const DriverAccountSupportCtaEntity({
+    required this.endpoint,
+    required this.reasonType,
+    required this.labelAr,
+    required this.labelEn,
+  });
+
+  final String endpoint;
+  final String reasonType;
+  final String? labelAr;
+  final String? labelEn;
 }

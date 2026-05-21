@@ -92,6 +92,17 @@ class DriverNotificationPayloadResolver {
       customPayload?['caseId'],
       customPayload?['case_id'],
     ]);
+    payload['caseType'] = _firstNonEmptyString([
+      payload['caseType'],
+      payload['case_type'],
+      payload['type'],
+      nestedPayload?['caseType'],
+      nestedPayload?['case_type'],
+      nestedPayload?['type'],
+      customPayload?['caseType'],
+      customPayload?['case_type'],
+      customPayload?['type'],
+    ]);
     payload['withdrawalId'] = _firstNonEmptyString([
       payload['withdrawalId'],
       payload['withdrawal_id'],
@@ -131,6 +142,32 @@ class DriverNotificationPayloadResolver {
       payload['accountStatus'],
       nestedPayload?['accountStatus'],
       customPayload?['accountStatus'],
+    ]);
+    payload['targetUrl'] = _firstNonEmptyString([
+      payload['targetUrl'],
+      payload['target_url'],
+      nestedPayload?['targetUrl'],
+      nestedPayload?['target_url'],
+      customPayload?['targetUrl'],
+      customPayload?['target_url'],
+    ]);
+    payload['action'] = _firstNonEmptyString([
+      payload['action'],
+      nestedPayload?['action'],
+      customPayload?['action'],
+    ]);
+    payload['status'] = _firstNonEmptyString([
+      payload['status'],
+      nestedPayload?['status'],
+      customPayload?['status'],
+    ]);
+    payload['changedAtUtc'] = _firstNonEmptyString([
+      payload['changedAtUtc'],
+      payload['changed_at_utc'],
+      nestedPayload?['changedAtUtc'],
+      nestedPayload?['changed_at_utc'],
+      customPayload?['changedAtUtc'],
+      customPayload?['changed_at_utc'],
     ]);
 
     return payload;
@@ -196,7 +233,17 @@ class DriverNotificationPayloadResolver {
   }
 
   static String? resolveScreen(Map<String, dynamic> payload) {
-    return _firstNonEmptyString([normalize(payload)['screen']]);
+    final normalizedPayload = normalize(payload);
+    final explicitScreen = _firstNonEmptyString([normalizedPayload['screen']]);
+    if (explicitScreen != null) {
+      return explicitScreen;
+    }
+
+    if (resolveSupportCaseId(normalizedPayload) != null) {
+      return 'support_case_detail';
+    }
+
+    return null;
   }
 
   static String? resolveEvent(Map<String, dynamic> payload) {
@@ -225,6 +272,23 @@ class DriverNotificationPayloadResolver {
 
   static String? resolveSupportCaseId(Map<String, dynamic> payload) {
     return _firstNonEmptyString([normalize(payload)['supportCaseId']]);
+  }
+
+  static String? resolveSupportCaseType(Map<String, dynamic> payload) {
+    final normalizedPayload = normalize(payload);
+    final explicitType = _firstNonEmptyString([
+      normalizedPayload['caseType'],
+      normalizedPayload['type'],
+    ]);
+    if (explicitType != null) {
+      return explicitType;
+    }
+
+    final orderId = resolveOrderId(normalizedPayload);
+    if (orderId == null || orderId.trim().isEmpty) {
+      return 'driver_account';
+    }
+    return null;
   }
 
   static String? resolveWithdrawalId(Map<String, dynamic> payload) {
@@ -522,6 +586,14 @@ class DriverNotificationPayloadResolver {
     'support_case_id',
     'caseId',
     'case_id',
+    'caseType',
+    'case_type',
+    'targetUrl',
+    'target_url',
+    'action',
+    'status',
+    'changedAtUtc',
+    'changed_at_utc',
     'withdrawalId',
     'withdrawal_id',
     'documentType',

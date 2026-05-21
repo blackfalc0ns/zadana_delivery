@@ -96,6 +96,32 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
     });
   }
 
+  @override
+  Future<ApiResult<DriverUnifiedProfileEntity>> updateProfilePhoto(
+    String photoPathOrUrl,
+  ) {
+    return safeApiCall(() async {
+      final resolvedUrl = await _resolveUrl(
+        photoPathOrUrl,
+        directory: DriverUploadDirectory.profile,
+      );
+      await _remoteDataSource.updateProfilePhoto(resolvedUrl);
+      final profile = (await _remoteDataSource.getProfile()).toEntity();
+      await _syncLocalServices(profile);
+      return profile;
+    });
+  }
+
+  @override
+  Future<ApiResult<DriverUnifiedProfileEntity>> deleteProfilePhoto() {
+    return safeApiCall(() async {
+      await _remoteDataSource.deleteProfilePhoto();
+      final profile = (await _remoteDataSource.getProfile()).toEntity();
+      await _syncLocalServices(profile);
+      return profile;
+    });
+  }
+
   Future<String> _resolveUrl(
     String value, {
     required DriverUploadDirectory directory,
@@ -118,6 +144,7 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
         fullName: profile.fullName,
         email: profile.email,
         phone: profile.phone,
+        profilePhotoUrl: profile.personalPhotoUrl,
         lastIdentifier: profile.email.isNotEmpty
             ? profile.email
             : profile.phone,

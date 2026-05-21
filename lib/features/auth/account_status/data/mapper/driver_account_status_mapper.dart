@@ -28,6 +28,14 @@ extension DriverAccountStatusMapper on DriverAccountStatusModelDto {
       messageAr: messageAr,
       messageEn: messageEn,
       policyIsFrozen: policyIsFrozen,
+      supportCta: supportCta == null
+          ? null
+          : DriverAccountSupportCtaEntity(
+              endpoint: supportCta!.endpoint.trim(),
+              reasonType: supportCta!.reasonType.trim(),
+              labelAr: supportCta!.labelAr?.trim(),
+              labelEn: supportCta!.labelEn?.trim(),
+            ),
     );
   }
 }

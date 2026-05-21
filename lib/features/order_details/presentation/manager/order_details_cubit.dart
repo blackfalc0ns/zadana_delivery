@@ -105,6 +105,11 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       case OrderDetailsConsumeNotificationEvent():
         emit(state.copyWith(clearNotificationMessage: true));
         return true;
+      case OrderDetailsConsumeBlockingMessageEvent():
+        emit(
+          state.copyWith(clearBlockingMessage: true, shouldCloseScreen: false),
+        );
+        return true;
       case OrderDetailsAcceptOfferEvent():
         return _acceptOffer(event.assignmentId);
       case OrderDetailsRejectOfferEvent():
@@ -253,6 +258,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
 
     await _driverRealtimeService.initialize();
     await _driverRealtimeService.ensureConnected();
+    await _driverRealtimeService.subscribeToOrderTracking(_activeOrderId ?? '');
 
     await _notificationSubscription?.cancel();
     await _assignmentUpdatedSubscription?.cancel();
@@ -283,33 +289,53 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       );
     });
 
-    _orderStatusSubscription = _driverRealtimeService.orderStatusChanged.listen((
-      payload,
-    ) {
-      _log(
-        'Order status stream event received: orderId=${payload['orderId'] ?? 'n/a'}, '
-        'status=${payload['status'] ?? payload['newStatus'] ?? 'unknown'}',
-      );
-      final orderIdValue = payload['orderId']?.toString().trim() ?? '';
-      if (orderIdValue.isEmpty || orderIdValue != _activeOrderId) return;
-      final assignmentIdValue = _activeAssignmentId;
-      if (assignmentIdValue == null) return;
-      unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
-    });
+    _orderStatusSubscription = _driverRealtimeService.orderTrackingStatusChanged
+        .listen((payload) {
+          _log(
+            'Order tracking status stream event received: '
+            'orderId=${payload['orderId'] ?? 'n/a'}, '
+            'newStatus=${payload['newStatus'] ?? 'unknown'}, '
+            'actorRole=${payload['actorRole'] ?? 'unknown'}',
+          );
+          final orderIdValue = payload['orderId']?.toString().trim() ?? '';
+          if (orderIdValue.isEmpty || orderIdValue != _activeOrderId) return;
+          final actorRole = payload['actorRole']
+              ?.toString()
+              .trim()
+              .toLowerCase();
+          if (actorRole == 'driver') {
+            _log(
+              'Ignoring order tracking status event triggered by the driver',
+            );
+            return;
+          }
+          final newStatus = _normalizeToken(
+            payload['newStatus']?.toString() ?? '',
+          );
+          if (_isCancellationStatus(newStatus)) {
+            emit(
+              state.copyWith(
+                blockingMessage: _resolveCancellationMessage(payload),
+                shouldCloseScreen: true,
+              ),
+            );
+            return;
+          }
+          final assignmentIdValue = _activeAssignmentId;
+          if (assignmentIdValue == null) return;
+          unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
+        });
 
-    _arrivalStateSubscription = _driverRealtimeService.arrivalStateChanged.listen((
-      payload,
-    ) {
-      _log(
-        'Arrival state stream event received: orderId=${payload['orderId'] ?? 'n/a'}, '
-        'arrivalState=${payload['arrivalState'] ?? payload['state'] ?? 'unknown'}',
-      );
-      final orderIdValue = payload['orderId']?.toString().trim() ?? '';
-      if (orderIdValue.isEmpty || orderIdValue != _activeOrderId) return;
-      final assignmentIdValue = _activeAssignmentId;
-      if (assignmentIdValue == null) return;
-      unawaited(_loadAssignmentDetails(assignmentIdValue, silent: true));
-    });
+    _arrivalStateSubscription = _driverRealtimeService
+        .orderTrackingArrivalStateChanged
+        .listen((payload) {
+          _log(
+            'Order tracking arrival state event received: '
+            'orderId=${payload['orderId'] ?? 'n/a'}, '
+            'arrivalState=${payload['arrivalState'] ?? payload['state'] ?? 'unknown'}, '
+            'actorRole=${payload['actorRole'] ?? 'unknown'}',
+          );
+        });
 
     _assignmentUpdatedSubscription = _driverRealtimeService.assignmentUpdated
         .listen((payload) {
@@ -349,6 +375,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     _activeOrderId = null;
     _assignmentPollingTimer?.cancel();
     _assignmentPollingTimer = null;
+    await _driverRealtimeService.unsubscribeFromOrderTracking();
     await _notificationSubscription?.cancel();
     await _assignmentUpdatedSubscription?.cancel();
     await _orderStatusSubscription?.cancel();
@@ -357,7 +384,14 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     _assignmentUpdatedSubscription = null;
     _orderStatusSubscription = null;
     _arrivalStateSubscription = null;
-    emit(state.copyWith(clearNotificationMessage: true));
+    if (isClosed) return;
+    emit(
+      state.copyWith(
+        clearNotificationMessage: true,
+        clearBlockingMessage: true,
+        shouldCloseScreen: false,
+      ),
+    );
   }
 
   void _syncArrivedAtVendorPolling(OrderAssignmentDetailsEntity details) {
@@ -558,6 +592,18 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
 
   bool _statusIn(String value, Set<String> candidates) {
     return candidates.contains(value);
+  }
+
+  bool _isCancellationStatus(String value) {
+    return _statusIn(value, const {'cancelled', 'canceled', 'refunded'});
+  }
+
+  String _resolveCancellationMessage(Map<String, dynamic> payload) {
+    final orderNumber = payload['orderNumber']?.toString().trim() ?? '';
+    if (orderNumber.isEmpty) {
+      return 'تم إلغاء الطلب.';
+    }
+    return 'تم إلغاء الطلب رقم $orderNumber.';
   }
 
   Future<ApiResult<OrderDetailsActionResultEntity>> _markArrivalState(

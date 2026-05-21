@@ -46,7 +46,10 @@ class ProfileHeaderSurface extends StatelessWidget {
           ),
           child: Row(
             children: [
-              ProfileHeaderAvatarBadge(letter: identity.avatarLetter),
+              ProfileHeaderAvatarBadge(
+                letter: identity.avatarLetter,
+                photoUrl: identity.photoUrl,
+              ),
               const SizedBox(width: Spacing.base),
               Expanded(
                 child: ProfileHeaderText(

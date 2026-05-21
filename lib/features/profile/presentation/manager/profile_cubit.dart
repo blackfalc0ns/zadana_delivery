@@ -15,7 +15,11 @@ import 'package:zadana_delivery/features/profile/domain/entities/update_driver_p
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/get_driver_unified_profile_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_documents_usecase.dart';
-import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_personal_usecase.dart';
+import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_personal_usecase.dart'
+    show
+        DeleteDriverProfilePhotoUseCase,
+        UpdateDriverProfilePhotoUseCase,
+        UpdateDriverPersonalUseCase;
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_vehicle_usecase.dart';
 
 import '../models/profile_document_item_data.dart';
@@ -30,6 +34,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     this._updatePersonalUseCase,
     this._updateVehicleUseCase,
     this._updateDocumentsUseCase,
+    this._updateProfilePhotoUseCase,
+    this._deleteProfilePhotoUseCase,
     this._getDriverRegionsUseCase,
     this._picker,
   ) : super(const ProfileState());
@@ -39,6 +45,8 @@ class ProfileCubit extends Cubit<ProfileState> {
   final UpdateDriverPersonalUseCase _updatePersonalUseCase;
   final UpdateDriverVehicleUseCase _updateVehicleUseCase;
   final UpdateDriverDocumentsUseCase _updateDocumentsUseCase;
+  final UpdateDriverProfilePhotoUseCase _updateProfilePhotoUseCase;
+  final DeleteDriverProfilePhotoUseCase _deleteProfilePhotoUseCase;
   final GetDriverRegionsUseCase _getDriverRegionsUseCase;
   final ImagePicker _picker;
 
@@ -88,6 +96,10 @@ class ProfileCubit extends Cubit<ProfileState> {
         await _saveVehicle(event.request);
       case ProfileFormPickDocumentEvent():
         await _pickDocument(event.type);
+      case ProfileFormUpdateProfilePhotoEvent():
+        await _updateProfilePhoto(event.photoPathOrUrl);
+      case ProfileFormDeleteProfilePhotoEvent():
+        await _deleteProfilePhoto();
       case ProfileFormSaveDocumentsEvent():
         await _saveDocuments();
       case ProfileFormClearErrorEvent():
@@ -317,6 +329,62 @@ class ProfileCubit extends Cubit<ProfileState> {
               'idBack': result.data.nationalIdBackImageUrl,
               'license': result.data.licenseImageUrl,
               'vehicle': result.data.vehicleImageUrl,
+            },
+            clearFailure: true,
+          ),
+        );
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isSaving: false,
+            isSuccess: false,
+            failure: result.failure,
+          ),
+        );
+    }
+  }
+
+  Future<void> _updateProfilePhoto(String photoPathOrUrl) async {
+    emit(state.copyWith(isSaving: true, isSuccess: false, clearFailure: true));
+    final result = await _updateProfilePhotoUseCase.call(photoPathOrUrl);
+    switch (result) {
+      case ApiSuccessResult():
+        emit(
+          state.copyWith(
+            isSaving: false,
+            isSuccess: false,
+            profile: result.data,
+            documentPaths: {
+              ...state.documentPaths,
+              'portrait': result.data.personalPhotoUrl,
+            },
+            clearFailure: true,
+          ),
+        );
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isSaving: false,
+            isSuccess: false,
+            failure: result.failure,
+          ),
+        );
+    }
+  }
+
+  Future<void> _deleteProfilePhoto() async {
+    emit(state.copyWith(isSaving: true, isSuccess: false, clearFailure: true));
+    final result = await _deleteProfilePhotoUseCase.call();
+    switch (result) {
+      case ApiSuccessResult():
+        emit(
+          state.copyWith(
+            isSaving: false,
+            isSuccess: false,
+            profile: result.data,
+            documentPaths: {
+              ...state.documentPaths,
+              'portrait': result.data.personalPhotoUrl,
             },
             clearFailure: true,
           ),

@@ -26,6 +26,8 @@ class SecurityDocumentsScreen extends StatefulWidget {
 class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
   late final ProfileCubit _cubit;
   final _formKey = GlobalKey<FormState>();
+  Map<String, String> _originalDocumentPaths = const {};
+  bool _didSeedOriginalPaths = false;
 
   @override
   void initState() {
@@ -46,6 +48,13 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
       value: _cubit,
       child: BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
+          if (!_didSeedOriginalPaths && state.profile != null) {
+            _didSeedOriginalPaths = true;
+            _originalDocumentPaths = Map<String, String>.from(
+              state.documentPaths,
+            );
+          }
+
           if (state.isSuccess) {
             CustomSnackbar.showSuccess(
               context: context,
@@ -121,6 +130,9 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
 
           final uploadedCount = documents.where((item) => item.hasFile).length;
 
+          final isFormDirty = _didSeedOriginalPaths &&
+              !_mapsEqual(state.documentPaths, _originalDocumentPaths);
+
           return ProfileFormScaffold(
             title: locale.profile_security_documents_title,
             headerTitle: locale.profile_documents_uploaded_count(uploadedCount),
@@ -129,6 +141,7 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
             headerColorToken: ProfileColorToken.tertiary,
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
+            isFormDirty: isFormDirty,
             onSave: _save,
             children: [
               SecurityDocumentsFields(
@@ -159,6 +172,14 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
     }
 
     await _cubit.doIntent(const ProfileFormSaveDocumentsEvent());
+  }
+
+  bool _mapsEqual(Map<String, String> a, Map<String, String> b) {
+    if (a.length != b.length) return false;
+    for (final key in a.keys) {
+      if (a[key] != b[key]) return false;
+    }
+    return true;
   }
 
   Future<void> _showDocumentPreview(ProfileDocumentItemData item) async {

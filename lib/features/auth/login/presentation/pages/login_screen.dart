@@ -111,6 +111,20 @@ class _LoginScreenState extends State<LoginScreen> {
           final failure = state.failure;
           final exception = failure?.asException;
           if (!state.isLoading &&
+              failure != null &&
+              _shouldRouteToOtp(failure.errorMessage)) {
+            context.pushNamed(
+              AppRoutes.driverVerifyOtp,
+              rootNavigator: true,
+              arguments: <String, dynamic>{
+                'identifier': _identifierController.text.trim(),
+                'message': failure.errorMessage,
+              },
+            );
+            _cubit.clearError();
+            return;
+          }
+          if (!state.isLoading &&
               exception != null &&
               exception.errorType.showSnackBar) {
             CustomSnackbar.showError(
@@ -212,5 +226,15 @@ class _LoginScreenState extends State<LoginScreen> {
       default:
         return null;
     }
+  }
+
+  bool _shouldRouteToOtp(String message) {
+    final normalized = message.trim().toLowerCase();
+    if (normalized.isEmpty) return false;
+    return normalized.contains('not verified') ||
+        normalized.contains('email address is not verified') ||
+        normalized.contains('غير مفعل') ||
+        normalized.contains('غير مفع') ||
+        normalized.contains('لم يتم تفعيل');
   }
 }

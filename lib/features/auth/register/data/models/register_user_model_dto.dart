@@ -10,6 +10,7 @@ class RegisterUserModelDto {
     this.email,
     this.phone,
     this.role,
+    this.profilePhotoUrl,
     this.favoritesCount,
   });
 
@@ -21,6 +22,7 @@ class RegisterUserModelDto {
   final String? email;
   final String? phone;
   final String? role;
+  final String? profilePhotoUrl;
   final int? favoritesCount;
 
   Map<String, dynamic> toJson() => _$RegisterUserModelDtoToJson(this);

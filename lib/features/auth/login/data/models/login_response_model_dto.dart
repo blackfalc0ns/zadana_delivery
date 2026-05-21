@@ -56,6 +56,16 @@ class LoginResponseModelDto {
       'primaryZoneId': driverStatus.primaryZoneId,
       'zoneName': driverStatus.zoneName,
       'message': driverStatus.message,
+      'messageAr': driverStatus.messageAr,
+      'messageEn': driverStatus.messageEn,
+      'supportCta': driverStatus.supportCta == null
+          ? null
+          : {
+              'endpoint': driverStatus.supportCta!.endpoint,
+              'reasonType': driverStatus.supportCta!.reasonType,
+              'labelAr': driverStatus.supportCta!.labelAr,
+              'labelEn': driverStatus.supportCta!.labelEn,
+            },
     };
   }
 

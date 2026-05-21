@@ -252,13 +252,7 @@ class DriverNotificationBootstrapService {
       });
 
       if (OneSignal.Notifications.permission) {
-        await _prepareSubscriptionAtBootstrap(context: 'bootstrap');
-        await _deviceService.cachePushToken(
-          OneSignal.User.pushSubscription.token,
-          subscriptionId: OneSignal.User.pushSubscription.id,
-        );
-        _logCurrentSubscriptionState(context: 'bootstrap');
-        await _logUserAndSubscriptionStatus(context: 'bootstrap');
+        unawaited(_warmUpExistingPushSubscription());
       } else {
         _isNotificationPermissionDeferredUntilUiReady = true;
         debugPrint(
@@ -294,6 +288,22 @@ class DriverNotificationBootstrapService {
     }
     _isNotificationPermissionDeferredUntilUiReady = false;
     await _waitForSubscriptionReady(context: context);
+  }
+
+  Future<void> _warmUpExistingPushSubscription() async {
+    try {
+      await _prepareSubscriptionAtBootstrap(context: 'bootstrap');
+      await _deviceService.cachePushToken(
+        OneSignal.User.pushSubscription.token,
+        subscriptionId: OneSignal.User.pushSubscription.id,
+      );
+      _logCurrentSubscriptionState(context: 'bootstrap');
+      await _logUserAndSubscriptionStatus(context: 'bootstrap');
+    } catch (error) {
+      debugPrint(
+        '[DriverNotificationBootstrap] Background bootstrap warm-up failed: $error',
+      );
+    }
   }
 
   void _logCurrentSubscriptionState({required String context, String? userId}) {
@@ -624,9 +634,18 @@ class DriverNotificationBootstrapService {
     // Trigger home refresh when the push notification is likely a delivery offer.
     // SignalR may not deliver the ReceiveDeliveryOffer event reliably on Android,
     // so we use the OneSignal push as a fallback signal.
-    final notificationType = DriverNotificationPayloadResolver.resolveType(normalizedPayload)?.toLowerCase() ?? '';
-    final notificationEvent = DriverNotificationPayloadResolver.resolveEvent(normalizedPayload)?.toLowerCase() ?? '';
-    if (notificationType == 'driver-offer' || notificationEvent.contains('dispatch.offer_new')) {
+    final notificationType =
+        DriverNotificationPayloadResolver.resolveType(
+          normalizedPayload,
+        )?.toLowerCase() ??
+        '';
+    final notificationEvent =
+        DriverNotificationPayloadResolver.resolveEvent(
+          normalizedPayload,
+        )?.toLowerCase() ??
+        '';
+    if (notificationType == 'driver-offer' ||
+        notificationEvent.contains('dispatch.offer_new')) {
       debugPrint(
         '[DriverNotificationBootstrap] Offer push detected; notifying home data source to refresh.',
       );

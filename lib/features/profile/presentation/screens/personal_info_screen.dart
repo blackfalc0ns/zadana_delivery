@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/core/widgets/image_source_picker_sheet.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
@@ -28,6 +30,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   late final TextEditingController _phoneController;
   late final TextEditingController _addressController;
   bool _didSeedControllers = false;
+  bool _isFormDirty = false;
+
+  // Original values to compare against
+  String _originalName = '';
+  String _originalEmail = '';
+  String _originalPhone = '';
+  String _originalAddress = '';
 
   @override
   void initState() {
@@ -37,10 +46,21 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
     _addressController = TextEditingController();
-    _nameController.addListener(_cubit.clearError);
-    _emailController.addListener(_cubit.clearError);
-    _phoneController.addListener(_cubit.clearError);
-    _addressController.addListener(_cubit.clearError);
+    _nameController.addListener(_onFieldChanged);
+    _emailController.addListener(_onFieldChanged);
+    _phoneController.addListener(_onFieldChanged);
+    _addressController.addListener(_onFieldChanged);
+  }
+
+  void _onFieldChanged() {
+    _cubit.clearError();
+    final dirty = _nameController.text != _originalName ||
+        _emailController.text != _originalEmail ||
+        _phoneController.text != _originalPhone ||
+        _addressController.text != _originalAddress;
+    if (dirty != _isFormDirty) {
+      setState(() => _isFormDirty = dirty);
+    }
   }
 
   @override
@@ -64,6 +84,10 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           final profile = state.profile;
           if (!_didSeedControllers && profile != null) {
             _didSeedControllers = true;
+            _originalName = profile.fullName;
+            _originalEmail = profile.email;
+            _originalPhone = profile.phone;
+            _originalAddress = profile.address;
             _nameController.text = profile.fullName;
             _emailController.text = profile.email;
             _phoneController.text = profile.phone;
@@ -120,9 +144,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             headerColorToken: ProfileColorToken.primary,
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
+            isFormDirty: _isFormDirty,
             onSave: _save,
             children: [
               PersonalInfoForm(
+                profilePhotoUrl: state.profile?.personalPhotoUrl ?? '',
+                isBusy: state.isSaving || state.isLoading,
+                onChangePhoto: _changePhoto,
+                onDeletePhoto: _deletePhoto,
                 nameController: _nameController,
                 emailController: _emailController,
                 phoneController: _phoneController,
@@ -147,6 +176,41 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           address: _addressController.text,
         ),
       ),
+    );
+  }
+
+  Future<void> _changePhoto() async {
+    final source = await ImageSourcePickerSheet.show(context);
+    if (!mounted || source == null) return;
+    try {
+      final picker = getIt<ImagePicker>();
+      final image = await picker.pickImage(source: source, imageQuality: 86);
+      if (!mounted || image == null) return;
+      await _cubit.doIntent(ProfileFormUpdateProfilePhotoEvent(image.path));
+      if (!mounted) return;
+      CustomSnackbar.showSuccess(
+        context: context,
+        message: Localizations.localeOf(context).languageCode == 'ar'
+            ? 'تم تحديث صورة البروفايل'
+            : 'Profile photo updated',
+      );
+    } catch (_) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context: context,
+        message: context.localization.driver_profile_picker_error,
+      );
+    }
+  }
+
+  Future<void> _deletePhoto() async {
+    await _cubit.doIntent(const ProfileFormDeleteProfilePhotoEvent());
+    if (!mounted || _cubit.state.failure != null) return;
+    CustomSnackbar.showSuccess(
+      context: context,
+      message: Localizations.localeOf(context).languageCode == 'ar'
+          ? 'تم حذف صورة البروفايل'
+          : 'Profile photo removed',
     );
   }
 }

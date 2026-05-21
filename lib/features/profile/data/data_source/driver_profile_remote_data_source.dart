@@ -17,4 +17,8 @@ abstract class DriverProfileRemoteDataSource {
   Future<DriverUnifiedProfileModelDto> updateDocuments(
     UpdateDriverDocumentsRequestModelDto request,
   );
+
+  Future<void> updateProfilePhoto(String profilePhotoUrl);
+
+  Future<void> deleteProfilePhoto();
 }

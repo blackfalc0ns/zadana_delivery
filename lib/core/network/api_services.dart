@@ -25,6 +25,12 @@ abstract class ApiServices {
   @POST(EndPoints.driverLogin)
   Future<dynamic> loginDriver(@Body() Map<String, dynamic> request);
 
+  @POST(EndPoints.driverVerifyOtp)
+  Future<dynamic> verifyDriverOtp(@Body() Map<String, dynamic> request);
+
+  @POST(EndPoints.driverResendOtp)
+  Future<dynamic> resendDriverOtp(@Body() Map<String, dynamic> request);
+
   @POST(EndPoints.driverForgotPassword)
   Future<dynamic> forgotDriverPassword(@Body() Map<String, dynamic> request);
 
@@ -39,6 +45,12 @@ abstract class ApiServices {
 
   @GET(EndPoints.driverProfile)
   Future<dynamic> getDriverProfile();
+
+  @PUT(EndPoints.driverProfilePhoto)
+  Future<dynamic> updateDriverProfilePhoto(@Body() Map<String, dynamic> request);
+
+  @DELETE(EndPoints.driverProfilePhoto)
+  Future<dynamic> deleteDriverProfilePhoto();
 
   @GET(EndPoints.driverStatus)
   Future<dynamic> getDriverStatus();

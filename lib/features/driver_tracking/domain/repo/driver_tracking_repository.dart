@@ -11,5 +11,7 @@ abstract class DriverTrackingRepository {
 
   Future<void> pushDriverLocation();
 
+  Future<void> syncAppLifecycleState(bool isForeground);
+
   Stream<DriverTrackingStateEntity> watchState();
 }

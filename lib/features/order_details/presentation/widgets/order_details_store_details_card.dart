@@ -7,7 +7,6 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_order_preview.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_action_buttons.dart';
 import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_detail_card.dart';
-import 'package:zadana_delivery/features/order_details/presentation/widgets/order_details_info_tile.dart';
 
 class StoreDetailsCard extends StatelessWidget {
   const StoreDetailsCard({
@@ -63,13 +62,6 @@ class StoreDetailsCard extends StatelessWidget {
               CircleCallButton(onTap: onCall),
             ],
           ),
-          const SizedBox(height: 8),
-          InfoTile(
-            icon: Icons.pin_drop_rounded,
-            label: locale.order_details_store_address_label,
-            value: order.pickupAddress,
-            accent: AppColors.secondary,
-          ),
         ],
       ),
     );
@@ -96,7 +88,7 @@ class _VendorImageBox extends StatelessWidget {
         imageUrl: imageUrl,
         width: 44,
         height: 44,
-       
+        fit: BoxFit.cover,
         placeholder: (_, _) => Icon(
           Icons.storefront_rounded,
           color: AppColors.primary.withValues(alpha: 0.5),

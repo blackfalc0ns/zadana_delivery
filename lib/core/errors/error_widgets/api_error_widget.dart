@@ -87,6 +87,7 @@ class ApiErrorWidget extends StatelessWidget {
       case ApiErrorType.locationServiceDisabled:
       case ApiErrorType.locationPermissionDenied:
       case ApiErrorType.locationPermissionDeniedForever:
+      case ApiErrorType.locationPermissionNeedsSettings:
         return GenericErrorWidget(
           errorType: exception.errorType,
           serverMessage: ErrorMessagePresenter.safeBackendMessage(exception),

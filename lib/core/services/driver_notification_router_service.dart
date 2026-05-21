@@ -40,6 +40,10 @@ class DriverNotificationRouterService {
     if (normalizedPayload.isEmpty) {
       return;
     }
+    debugPrint(
+      '[DriverNotificationRouter] Queued pending payload '
+      '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload)}',
+    );
     _pendingPayload = normalizedPayload;
     await resumePendingNavigationIfPossible();
   }
@@ -71,6 +75,11 @@ class DriverNotificationRouterService {
     }
 
     if (!_isNavigationUnlocked || _isRouting) {
+      debugPrint(
+        '[DriverNotificationRouter] Deferred navigation from $source '
+        'unlocked=$_isNavigationUnlocked routing=$_isRouting '
+        '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload)}',
+      );
       _pendingPayload = normalizedPayload;
       return;
     }
@@ -104,6 +113,11 @@ class DriverNotificationRouterService {
     _isRouting = true;
     try {
       final screen = DriverNotificationPayloadResolver.resolveScreen(payload);
+      debugPrint(
+        '[DriverNotificationRouter] Routing payload from $source '
+        'screen=${screen ?? '<null>'} '
+        '${DriverNotificationPayloadResolver.resolveDebugSummary(payload)}',
+      );
       switch (screen) {
         case 'home':
           await _navigatorService.resetToNamedWhenReady(
@@ -129,9 +143,14 @@ class DriverNotificationRouterService {
           if ((caseId ?? '').trim().isEmpty) {
             break;
           }
+          final caseType =
+              DriverNotificationPayloadResolver.resolveSupportCaseType(payload);
           await _navigatorService.pushNamedWhenReady(
             AppRoutes.driverSupportCaseDetails,
-            arguments: <String, dynamic>{'caseId': caseId},
+            arguments: <String, dynamic>{
+              'caseId': caseId,
+              if ((caseType ?? '').trim().isNotEmpty) 'caseType': caseType,
+            },
           );
           return;
         case 'wallet':

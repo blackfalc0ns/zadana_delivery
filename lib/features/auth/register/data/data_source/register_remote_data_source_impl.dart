@@ -34,6 +34,8 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
     final rawTokens = map['tokens'];
     final normalizedTokens = rawTokens is Map
         ? Map<String, dynamic>.from(rawTokens)
+        : rawTokens == null
+        ? null
         : <String, dynamic>{
             'accessToken': map['accessToken']?.toString(),
             'refreshToken': map['refreshToken']?.toString(),
@@ -48,26 +50,31 @@ class RegisterRemoteDataSourceImpl implements RegisterRemoteDataSource {
             'email': map['email']?.toString(),
             'phone': map['phone']?.toString(),
             'role': map['role']?.toString() ?? 'Driver',
+            'profilePhotoUrl': map['profilePhotoUrl']?.toString(),
             'favoritesCount': map['favoritesCount'],
           };
 
     return {
-      'tokens': RegisterTokensModelDto.fromJson({
-        'accessToken': normalizedTokens['accessToken']?.toString(),
-        'refreshToken': normalizedTokens['refreshToken']?.toString(),
-      }).toJson(),
+      'tokens': normalizedTokens == null
+          ? null
+          : RegisterTokensModelDto.fromJson({
+              'accessToken': normalizedTokens['accessToken']?.toString(),
+              'refreshToken': normalizedTokens['refreshToken']?.toString(),
+            }).toJson(),
       'user': RegisterUserModelDto.fromJson({
         'id': normalizedUser['id']?.toString(),
         'fullName': normalizedUser['fullName']?.toString(),
         'email': normalizedUser['email']?.toString(),
         'phone': normalizedUser['phone']?.toString(),
         'role': normalizedUser['role']?.toString() ?? 'Driver',
+        'profilePhotoUrl': normalizedUser['profilePhotoUrl']?.toString(),
         'favoritesCount': normalizedUser['favoritesCount'] is int
             ? normalizedUser['favoritesCount']
             : 0,
       }).toJson(),
       'message': map['message']?.toString(),
       'isVerified': map['isVerified'] is bool ? map['isVerified'] : true,
+      'driverStatus': map['driverStatus'],
     };
   }
 

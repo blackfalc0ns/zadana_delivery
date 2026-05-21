@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:developer' as developer;
+import 'dart:io';
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
@@ -7,6 +10,7 @@ import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
@@ -14,10 +18,12 @@ import 'package:zadana_delivery/core/utils/constants.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/entities/driver_tracking_state_entity.dart';
 
+@LazySingleton(as: DriverTrackingRemoteDataSource)
 class DriverTrackingRemoteDataSourceImpl
     implements DriverTrackingRemoteDataSource {
   DriverTrackingRemoteDataSourceImpl(this._permissionService);
 
+  static const String _logTag = 'DriverTracking';
   static const String _trackingChannelId = 'driver_tracking_channel';
   static const String _trackingChannelName = 'Driver Tracking';
   static const String _trackingChannelDescription =
@@ -44,7 +50,6 @@ class DriverTrackingRemoteDataSourceImpl
         onStart: _driverTrackingServiceEntrypoint,
         autoStart: false,
         isForegroundMode: true,
-        autoStartOnBoot: false,
         notificationChannelId: _trackingChannelId,
         initialNotificationTitle: 'Zadana Delivery',
         initialNotificationContent: 'Sharing your location during delivery',
@@ -60,12 +65,28 @@ class DriverTrackingRemoteDataSourceImpl
     _backgroundService.on('tracking_state').listen((event) {
       final map = _normalizeMap(event);
       if (map.isEmpty) return;
+      _logTracking(
+        'tracking_state event'
+        ' isTracking=${map['isTracking']}'
+        ' orderId=${map['activeOrderId'] ?? '-'}'
+        ' phase=${map['activePhase'] ?? '-'}'
+        ' lat=${map['lastSentLatitude'] ?? '-'}'
+        ' lng=${map['lastSentLongitude'] ?? '-'}'
+        ' acc=${map['lastSentAccuracyMeters'] ?? '-'}'
+        ' sentAt=${map['lastSentAt'] ?? '-'}'
+        ' failure=${map['failure'] ?? '-'}',
+      );
       _stateController.add(_stateFromMap(map));
     });
 
     _backgroundService.on('tracking_error').listen((event) {
       final map = _normalizeMap(event);
       if (map.isEmpty) return;
+      _logTracking(
+        'tracking_error event'
+        ' orderId=${map['activeOrderId'] ?? '-'}'
+        ' failure=${map['failure'] ?? '-'}',
+      );
       _stateController.add(_stateFromMap(map));
     });
 
@@ -79,9 +100,24 @@ class DriverTrackingRemoteDataSourceImpl
   }
 
   @override
+  Future<void> syncAppLifecycleState(bool isForeground) async {
+    await initialize();
+    _backgroundService.invoke('syncAppLifecycleState', {
+      'isForeground': isForeground,
+    });
+  }
+
+  @override
   Future<void> startTracking(DriverTrackingCommandEntity command) async {
     await initialize();
-    await _permissionService.checkAndRequestBackgroundPermission();
+    _logTracking(
+      'startTracking requested'
+      ' orderId=${command.orderId}'
+      ' phase=${command.phase}'
+      ' fg=${command.foregroundIntervalSeconds}s'
+      ' bg=${command.backgroundIntervalSeconds}s',
+    );
+    await _permissionService.checkAndRequestPermission();
 
     final isRunning = await _backgroundService.isRunning();
     if (!isRunning) {
@@ -95,6 +131,7 @@ class DriverTrackingRemoteDataSourceImpl
   @override
   Future<void> stopTracking() async {
     await initialize();
+    _logTracking('stopTracking requested');
     _backgroundService.invoke('stopTracking');
   }
 
@@ -171,6 +208,25 @@ DateTime? _asDateTime(dynamic value) {
   return DateTime.tryParse(raw);
 }
 
+LocationSettings buildTrackingLocationSettings(
+  DriverTrackingCommandEntity activeCommand,
+) {
+  final accuracy = activeCommand.useHighAccuracy
+      ? LocationAccuracy.high
+      : LocationAccuracy.medium;
+
+  if (Platform.isIOS) {
+    return AppleSettings(
+      accuracy: accuracy,
+      distanceFilter: 10,
+      activityType: ActivityType.automotiveNavigation,
+      showBackgroundLocationIndicator: true,
+    );
+  }
+
+  return LocationSettings(accuracy: accuracy, distanceFilter: 10);
+}
+
 @pragma('vm:entry-point')
 Future<bool> _driverTrackingIosBackground(ServiceInstance service) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -196,13 +252,16 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
   );
 
   StreamSubscription<Position>? positionSubscription;
+  Timer? pushTimer;
   DriverTrackingCommandEntity? command;
   Position? latestEligiblePosition;
   DateTime? lastSentAt;
   double? lastSentLatitude;
   double? lastSentLongitude;
   double? lastSentAccuracyMeters;
+  DateTime? lastMovementDetectedAt;
   bool isTracking = false;
+  bool isForeground = true;
 
   Future<String?> readAccessToken() async {
     final isSaved =
@@ -241,7 +300,7 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
     final previousSentAt = lastSentAt;
     final previousLatitude = lastSentLatitude;
     final previousLongitude = lastSentLongitude;
-    final accuracy = position.accuracy.toDouble();
+    final accuracy = _resolveAccuracyMeters(position);
 
     if (accuracy > 100) {
       if (previousSentAt == null) return true;
@@ -263,7 +322,18 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
       position.longitude,
     );
 
-    return movedMeters >= 10;
+    if (movedMeters >= 5) {
+      lastMovementDetectedAt = DateTime.now();
+      return true;
+    }
+
+    final stationarySince = lastMovementDetectedAt ?? previousSentAt;
+    if (stationarySince == null) {
+      return true;
+    }
+
+    return DateTime.now().difference(stationarySince) >=
+        const Duration(seconds: 30);
   }
 
   Future<void> pushPosition(Position position, {bool force = false}) async {
@@ -276,24 +346,42 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
     }
 
     latestEligiblePosition = position;
+    final accuracyMeters = _resolveAccuracyMeters(position);
 
     try {
       dio.options.headers['Authorization'] = 'Bearer $token';
+      _logTracking(
+        'pushPosition request'
+        ' force=$force'
+        ' lat=${position.latitude}'
+        ' lng=${position.longitude}'
+        ' acc=$accuracyMeters'
+        ' phase=${command?.phase ?? '-'}'
+        ' orderId=${command?.orderId ?? '-'}',
+      );
       await dio.post<dynamic>(
         EndPoints.driverLocation,
         data: {
           'latitude': position.latitude,
           'longitude': position.longitude,
-          'accuracyMeters': position.accuracy.toDouble(),
+          'accuracyMeters': accuracyMeters,
         },
       );
 
       lastSentLatitude = position.latitude;
       lastSentLongitude = position.longitude;
-      lastSentAccuracyMeters = position.accuracy.toDouble();
+      lastSentAccuracyMeters = accuracyMeters;
       lastSentAt = DateTime.now();
+      _logTracking(
+        'pushPosition success'
+        ' sentAt=${lastSentAt!.toIso8601String()}'
+        ' lat=$lastSentLatitude'
+        ' lng=$lastSentLongitude'
+        ' acc=$lastSentAccuracyMeters',
+      );
       await emitState();
     } catch (error) {
+      _logTracking('pushPosition failure error=$error');
       await emitError(error.toString());
     }
   }
@@ -303,6 +391,8 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
     if (activeCommand == null || !isTracking) return;
 
     await positionSubscription?.cancel();
+    pushTimer?.cancel();
+    pushTimer = null;
 
     if (service is AndroidServiceInstance) {
       await (service).setForegroundNotificationInfo(
@@ -313,37 +403,58 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
 
     try {
       final currentPosition = await Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
-          accuracy: activeCommand.useHighAccuracy
-              ? LocationAccuracy.high
-              : LocationAccuracy.medium,
-          distanceFilter: 10,
-        ),
+        locationSettings: buildTrackingLocationSettings(activeCommand),
+      );
+      latestEligiblePosition = currentPosition;
+      _logPositionSample(
+        source: 'initial-current-position',
+        position: currentPosition,
       );
       await pushPosition(currentPosition, force: true);
     } catch (_) {}
 
+    final interval = Duration(
+      seconds: isForeground
+          ? activeCommand.foregroundIntervalSeconds
+          : activeCommand.backgroundIntervalSeconds,
+    );
+    pushTimer = Timer.periodic(interval, (_) async {
+      Position? position = latestEligiblePosition;
+      position ??= await _safeGetCurrentPosition(activeCommand);
+      if (position == null) {
+        _logTracking('periodic tick skipped: no current position available');
+        await emitError(
+          'Unable to resolve current location for periodic tracking update.',
+        );
+        return;
+      }
+      latestEligiblePosition = position;
+      _logPositionSample(source: 'periodic-tick', position: position);
+      await pushPosition(position, force: true);
+    });
+
     positionSubscription =
         Geolocator.getPositionStream(
-          locationSettings: LocationSettings(
-            accuracy: activeCommand.useHighAccuracy
-                ? LocationAccuracy.high
-                : LocationAccuracy.medium,
-            distanceFilter: 10,
-          ),
+          locationSettings: buildTrackingLocationSettings(activeCommand),
         ).listen((position) async {
           latestEligiblePosition = position;
-
-          final previousSentAt = lastSentAt;
-          final minimumInterval = Duration(
-            seconds: activeCommand.intervalSeconds,
-          );
-          if (previousSentAt != null &&
-              DateTime.now().difference(previousSentAt) < minimumInterval) {
+          _logPositionSample(source: 'position-stream', position: position);
+          final previousLatitude = lastSentLatitude;
+          final previousLongitude = lastSentLongitude;
+          if (previousLatitude == null || previousLongitude == null) {
+            lastMovementDetectedAt = DateTime.now();
             return;
           }
 
-          await pushPosition(position);
+          final movedMeters = Geolocator.distanceBetween(
+            previousLatitude,
+            previousLongitude,
+            position.latitude,
+            position.longitude,
+          );
+          if (movedMeters >= 5) {
+            lastMovementDetectedAt = DateTime.now();
+          }
         });
   }
 
@@ -356,14 +467,41 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
     command = DriverTrackingCommandEntity(
       orderId: map['orderId']?.toString() ?? '',
       phase: map['phase']?.toString() ?? '',
-      intervalSeconds: (map['intervalSeconds'] as num?)?.toInt() ?? 15,
+      foregroundIntervalSeconds:
+          (map['foregroundIntervalSeconds'] as num?)?.toInt() ?? 5,
+      backgroundIntervalSeconds:
+          (map['backgroundIntervalSeconds'] as num?)?.toInt() ?? 10,
       useHighAccuracy: map['useHighAccuracy'] == true,
+    );
+    _logTracking(
+      'configureTracking'
+      ' orderId=${command?.orderId ?? '-'}'
+      ' phase=${command?.phase ?? '-'}'
+      ' fg=${command?.foregroundIntervalSeconds}s'
+      ' bg=${command?.backgroundIntervalSeconds}s'
+      ' highAccuracy=${command?.useHighAccuracy}',
     );
     await emitState();
   });
 
+  service.on('syncAppLifecycleState').listen((payload) async {
+    final map = payload == null
+        ? const <String, dynamic>{}
+        : Map<String, dynamic>.from(Map<dynamic, dynamic>.from(payload as Map));
+    final nextIsForeground = map['isForeground'] == true;
+    if (isForeground == nextIsForeground) {
+      return;
+    }
+    isForeground = nextIsForeground;
+    _logTracking('syncAppLifecycleState isForeground=$isForeground');
+    if (isTracking) {
+      await restartLocationStream();
+    }
+  });
+
   service.on('startTracking').listen((_) async {
     isTracking = true;
+    _logTracking('startTracking');
     await restartLocationStream();
   });
 
@@ -375,11 +513,48 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
 
   service.on('stopTracking').listen((_) async {
     isTracking = false;
+    _logTracking('stopTracking');
     command = null;
     latestEligiblePosition = null;
     await positionSubscription?.cancel();
     positionSubscription = null;
+    pushTimer?.cancel();
+    pushTimer = null;
     await emitState();
     await service.stopSelf();
   });
+}
+
+double _resolveAccuracyMeters(Position position) {
+  return math.max(position.accuracy.abs().toDouble(), 1);
+}
+
+Future<Position?> _safeGetCurrentPosition(
+  DriverTrackingCommandEntity activeCommand,
+) async {
+  try {
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: buildTrackingLocationSettings(activeCommand),
+    );
+    _logPositionSample(source: 'fallback-current-position', position: position);
+    return position;
+  } catch (_) {
+    return null;
+  }
+}
+
+void _logTracking(String message) {
+  developer.log(message, name: DriverTrackingRemoteDataSourceImpl._logTag);
+}
+
+void _logPositionSample({required String source, required Position position}) {
+  _logTracking(
+    '$source'
+    ' lat=${position.latitude}'
+    ' lng=${position.longitude}'
+    ' acc=${_resolveAccuracyMeters(position)}'
+    ' speed=${position.speed}'
+    ' heading=${position.heading}'
+    ' ts=${position.timestamp.toIso8601String()}',
+  );
 }

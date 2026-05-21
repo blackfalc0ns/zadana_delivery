@@ -15,6 +15,7 @@ extension AuthSessionUserDtoMapper on AuthSessionUserModelDto {
       email: email.trim(),
       phone: phone.trim(),
       role: role.trim(),
+      profilePhotoUrl: profilePhotoUrl.trim(),
       favoritesCount: favoritesCount,
     );
   }

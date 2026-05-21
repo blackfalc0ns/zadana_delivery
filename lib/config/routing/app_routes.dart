@@ -1,6 +1,7 @@
 abstract class AppRoutes {
   static const String authGate = '/auth-gate';
   static const String login = '/login';
+  static const String driverVerifyOtp = '/driver-verify-otp';
   static const String signUp = '/sign-up';
   static const String forgetPassword = '/forget-password';
   static const String resetPassword = '/reset-password';
@@ -16,6 +17,8 @@ abstract class AppRoutes {
   static const String profile = '/profile';
   static const String notifications = '/notifications';
   static const String supportHelp = '/support-help';
+  static const String driverAccountSupportAppeal =
+      '/driver-account-support-appeal';
   static const String driverSupportCases = '/driver-support-cases';
   static const String driverSupportCaseDetails = '/driver-support-case-details';
   static const String privacy = '/privacy';

@@ -58,7 +58,8 @@ class SignUpForm extends StatelessWidget {
             controller: emailController,
             label: locale.label_email,
             hintText: locale.hint_email,
-            validator: (value) => Validations.validateEmail(context, value),
+            validator: (value) =>
+                Validations.validateDriverRegistrationEmail(context, value),
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
             enabled: !isSubmitting,

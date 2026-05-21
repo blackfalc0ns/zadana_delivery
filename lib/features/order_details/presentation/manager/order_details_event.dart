@@ -36,6 +36,10 @@ class OrderDetailsConsumeNotificationEvent extends OrderDetailsEvent {
   const OrderDetailsConsumeNotificationEvent();
 }
 
+class OrderDetailsConsumeBlockingMessageEvent extends OrderDetailsEvent {
+  const OrderDetailsConsumeBlockingMessageEvent();
+}
+
 class OrderDetailsAcceptOfferEvent extends OrderDetailsEvent {
   const OrderDetailsAcceptOfferEvent(this.assignmentId);
 

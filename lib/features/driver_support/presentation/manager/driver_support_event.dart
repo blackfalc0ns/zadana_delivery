@@ -11,10 +11,15 @@ class DriverSupportLoadCasesEvent extends DriverSupportEvent {
 }
 
 class DriverSupportLoadCaseDetailsEvent extends DriverSupportEvent {
-  const DriverSupportLoadCaseDetailsEvent(this.caseId, {this.refresh = false});
+  const DriverSupportLoadCaseDetailsEvent(
+    this.caseId, {
+    this.refresh = false,
+    this.caseType,
+  });
 
   final String caseId;
   final bool refresh;
+  final String? caseType;
 }
 
 class DriverSupportSendMessageEvent extends DriverSupportEvent {

@@ -10,6 +10,9 @@ class TokenService {
     required SharedPreferences sharedPreferences,
   }) : _prefs = prefs,
        _sharedPreferences = sharedPreferences;
+
+  static const String _nativePrefsAccessTokenKey = 'accessToken';
+  static const String _nativePrefsRefreshTokenKey = 'refreshToken';
   final FlutterSecureStorage _prefs;
   final SharedPreferences _sharedPreferences;
   // ---------------- ACCESS TOKEN ----------------
@@ -19,6 +22,7 @@ class TokenService {
 
   Future<void> saveAccessToken(String token) async {
     await _sharedPreferences.setBool(AppConstants.isAccessTokenSaved, true);
+    await _sharedPreferences.setString(_nativePrefsAccessTokenKey, token);
     await _prefs.write(key: AppConstants.accessToken, value: token);
   }
 
@@ -29,6 +33,7 @@ class TokenService {
 
   Future<void> deleteToken() async {
     await _sharedPreferences.setBool(AppConstants.isAccessTokenSaved, false);
+    await _sharedPreferences.remove(_nativePrefsAccessTokenKey);
     await _prefs.delete(key: AppConstants.accessToken);
   }
 
@@ -39,6 +44,7 @@ class TokenService {
 
   Future<void> saveRefreshToken(String token) async {
     await _sharedPreferences.setBool(AppConstants.isRefreshTokenSaved, true);
+    await _sharedPreferences.setString(_nativePrefsRefreshTokenKey, token);
     await _prefs.write(key: AppConstants.refreshToken, value: token);
   }
 
@@ -49,7 +55,35 @@ class TokenService {
 
   Future<void> deleteRefreshToken() async {
     await _sharedPreferences.setBool(AppConstants.isRefreshTokenSaved, false);
+    await _sharedPreferences.remove(_nativePrefsRefreshTokenKey);
     await _prefs.delete(key: AppConstants.refreshToken);
+  }
+
+  Future<void> syncNativeTokenMirror() async {
+    final accessToken = await _prefs.read(key: AppConstants.accessToken);
+    final refreshToken = await _prefs.read(key: AppConstants.refreshToken);
+
+    if ((accessToken ?? '').trim().isNotEmpty) {
+      await _sharedPreferences.setBool(AppConstants.isAccessTokenSaved, true);
+      await _sharedPreferences.setString(
+        _nativePrefsAccessTokenKey,
+        accessToken!.trim(),
+      );
+    } else {
+      await _sharedPreferences.setBool(AppConstants.isAccessTokenSaved, false);
+      await _sharedPreferences.remove(_nativePrefsAccessTokenKey);
+    }
+
+    if ((refreshToken ?? '').trim().isNotEmpty) {
+      await _sharedPreferences.setBool(AppConstants.isRefreshTokenSaved, true);
+      await _sharedPreferences.setString(
+        _nativePrefsRefreshTokenKey,
+        refreshToken!.trim(),
+      );
+    } else {
+      await _sharedPreferences.setBool(AppConstants.isRefreshTokenSaved, false);
+      await _sharedPreferences.remove(_nativePrefsRefreshTokenKey);
+    }
   }
 
   Future<void> clearTokens() async {

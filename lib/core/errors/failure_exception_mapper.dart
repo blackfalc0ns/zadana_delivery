@@ -94,6 +94,8 @@ class FailureExceptionMapper {
         return ApiErrorType.locationPermissionDenied;
       case 'location_permission_denied_forever':
         return ApiErrorType.locationPermissionDeniedForever;
+      case 'location_permission_needs_settings':
+        return ApiErrorType.locationPermissionNeedsSettings;
       case 'error_other':
       case 'other':
         return ApiErrorType.other;

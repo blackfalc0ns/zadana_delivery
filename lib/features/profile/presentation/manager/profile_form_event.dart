@@ -34,6 +34,16 @@ class ProfileFormPickDocumentEvent extends ProfileFormEvent {
   final ProfileDocumentType type;
 }
 
+class ProfileFormUpdateProfilePhotoEvent extends ProfileFormEvent {
+  const ProfileFormUpdateProfilePhotoEvent(this.photoPathOrUrl);
+
+  final String photoPathOrUrl;
+}
+
+class ProfileFormDeleteProfilePhotoEvent extends ProfileFormEvent {
+  const ProfileFormDeleteProfilePhotoEvent();
+}
+
 class ProfileFormSaveDocumentsEvent extends ProfileFormEvent {
   const ProfileFormSaveDocumentsEvent();
 }

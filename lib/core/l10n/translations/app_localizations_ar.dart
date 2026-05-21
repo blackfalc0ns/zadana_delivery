@@ -1292,6 +1292,48 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_login_section_badge => 'حساب السائق';
 
   @override
+  String get auth_verify_otp_hero_badge => 'التحقق';
+
+  @override
+  String get auth_verify_otp_hero_title => 'أدخل كود التفعيل';
+
+  @override
+  String get auth_verify_otp_hero_subtitle =>
+      'لن يكتمل تفعيل الحساب قبل تأكيد الكود المرسل إلى بريدك الإلكتروني.';
+
+  @override
+  String get auth_verify_otp_section_badge => 'OTP';
+
+  @override
+  String get auth_verify_otp_section_title => 'التحقق من حساب المندوب';
+
+  @override
+  String get auth_verify_otp_section_description =>
+      'راجع بريدك الإلكتروني وأدخل الكود المكوّن من 4 أرقام للمتابعة.';
+
+  @override
+  String get auth_verify_otp_identifier_label => 'البريد الإلكتروني';
+
+  @override
+  String get auth_verify_otp_code_hint => 'أدخل الكود من 4 أرقام';
+
+  @override
+  String get auth_verify_otp_code_helper => 'الكود لازم يكون 4 أرقام فقط.';
+
+  @override
+  String get auth_verify_otp_resend_action => 'إعادة إرسال';
+
+  @override
+  String get auth_verify_otp_resending => 'جارٍ الإرسال...';
+
+  @override
+  String get auth_verify_otp_back_to_login => 'العودة لتسجيل الدخول';
+
+  @override
+  String get auth_verify_otp_missing_tokens =>
+      'لم يتم استلام بيانات تسجيل الدخول بعد التحقق.';
+
+  @override
   String get auth_signup_hero_badge => 'انضم إلى فريق السائقين';
 
   @override
@@ -1662,6 +1704,225 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get auth_pending_notifications_review_message =>
       'سيصلك إشعار أول ما تتم المراجعة.';
+
+  @override
+  String get auth_pending_support_title => 'الدعم';
+
+  @override
+  String get auth_pending_support_message =>
+      'لو محتاج تستفسر عن حالة الحساب أو تبعت شكوى، تقدر تكلم الدعم مباشرة من هنا.';
+
+  @override
+  String get driver_account_support_title => 'دعم حساب المندوب';
+
+  @override
+  String get driver_account_support_subtitle =>
+      'أرسل طلب دعم مباشر بخصوص المراجعة أو الإيقاف أو الحظر أو أي مشكلة تمنع استخدام الحساب.';
+
+  @override
+  String get driver_account_support_identifier_label => 'البريد أو رقم الجوال';
+
+  @override
+  String get driver_account_support_identifier_hint =>
+      'أدخل البريد أو رقم الجوال';
+
+  @override
+  String get driver_account_support_reason_label => 'سبب الطلب';
+
+  @override
+  String get driver_account_support_message_label => 'الرسالة';
+
+  @override
+  String get driver_account_support_message_hint =>
+      'اشرح المشكلة أو الطلب بشكل واضح';
+
+  @override
+  String get driver_account_support_attach_files => 'إرفاق ملفات';
+
+  @override
+  String get driver_account_support_attach_more_files => 'إرفاق ملفات إضافية';
+
+  @override
+  String get driver_account_support_submit => 'إرسال طلب الدعم';
+
+  @override
+  String get driver_account_support_reason_required => 'اختر سبب طلب الدعم';
+
+  @override
+  String get driver_account_support_empty_reasons =>
+      'لا توجد أسباب متاحة حاليًا. اسحب للتحديث ثم حاول مرة أخرى.';
+
+  @override
+  String get driver_account_support_pick_files_error =>
+      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+
+  @override
+  String get driver_account_support_upload_files_error =>
+      'تعذر رفع الملفات المرفقة. حاول مرة أخرى.';
+
+  @override
+  String get driver_support_case_entry_title => 'تفاصيل الشكوى';
+
+  @override
+  String get driver_support_case_entry_retry => 'إعادة تحميل الشكوى';
+
+  @override
+  String get driver_support_cases_title => 'الشكاوى والنزاعات';
+
+  @override
+  String get driver_support_cases_empty_title => 'لا توجد طلبات دعم حتى الآن';
+
+  @override
+  String get driver_support_cases_empty_subtitle =>
+      'أي شكوى أو نزاع أو طلب دعم حساب ترسله سيظهر هنا مباشرة.';
+
+  @override
+  String get driver_support_case_order_number => 'رقم الطلب';
+
+  @override
+  String get driver_support_case_reference => 'مرجع القضية';
+
+  @override
+  String get driver_support_case_type_report => 'بلاغ تشغيلي';
+
+  @override
+  String get driver_support_case_type_dispute => 'نزاع مالي';
+
+  @override
+  String get driver_support_case_type_account => 'دعم الحساب';
+
+  @override
+  String get driver_support_case_status_submitted => 'تم الاستلام';
+
+  @override
+  String get driver_support_case_status_in_review => 'قيد المراجعة';
+
+  @override
+  String get driver_support_case_status_awaiting_evidence => 'بانتظار الإثبات';
+
+  @override
+  String get driver_support_case_status_approved => 'تمت الموافقة';
+
+  @override
+  String get driver_support_case_status_rejected => 'مرفوضة';
+
+  @override
+  String get driver_support_case_status_resolved => 'تم الحل';
+
+  @override
+  String get driver_support_case_details_title => 'تفاصيل الشكوى';
+
+  @override
+  String get driver_support_case_description_title => 'الوصف';
+
+  @override
+  String get driver_support_case_admin_note_title => 'ملاحظة الإدارة';
+
+  @override
+  String get driver_support_case_decision_notes_title => 'ملاحظات القرار';
+
+  @override
+  String get driver_support_case_attachments_title => 'المرفقات';
+
+  @override
+  String get driver_support_case_recent_activity_title => 'آخر النشاطات';
+
+  @override
+  String get driver_support_case_add_follow_up_title => 'إضافة متابعة';
+
+  @override
+  String get driver_support_follow_up_reason => 'سبب المتابعة';
+
+  @override
+  String get driver_support_follow_up_message => 'الرسالة';
+
+  @override
+  String get driver_support_follow_up_message_hint =>
+      'اكتب أي تفاصيل جديدة أو توضيح إضافي';
+
+  @override
+  String get driver_support_attach_files => 'إرفاق ملفات';
+
+  @override
+  String get driver_support_attach_more_files => 'إرفاق ملفات إضافية';
+
+  @override
+  String get driver_support_send_follow_up => 'إرسال المتابعة';
+
+  @override
+  String get driver_support_follow_up_required_error =>
+      'اختر سبب المتابعة واكتب الرسالة';
+
+  @override
+  String get driver_support_pick_files_error =>
+      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+
+  @override
+  String get driver_support_attachment_file_name => 'مرفق.jpg';
+
+  @override
+  String get driver_support_upload_files_error =>
+      'تعذر رفع الملفات المرفقة. حاول مرة أخرى.';
+
+  @override
+  String get driver_support_open_attachment_error => 'تعذر فتح الملف المرفق.';
+
+  @override
+  String get driver_support_not_available => '--';
+
+  @override
+  String get driver_support_case_reason => 'السبب';
+
+  @override
+  String get driver_support_case_last_update => 'آخر تحديث';
+
+  @override
+  String get driver_support_case_queue => 'القسم';
+
+  @override
+  String get driver_support_case_priority_low => 'منخفضة';
+
+  @override
+  String get driver_support_case_priority_medium => 'متوسطة';
+
+  @override
+  String get driver_support_case_priority_high => 'عالية';
+
+  @override
+  String get driver_support_case_priority_critical => 'حرجة';
+
+  @override
+  String get driver_support_reason_customer_unavailable => 'العميل غير متاح';
+
+  @override
+  String get driver_support_reason_wrong_address => 'العنوان غير صحيح';
+
+  @override
+  String get driver_support_reason_payout_issue => 'مشكلة في المستحقات';
+
+  @override
+  String get driver_support_reason_damaged_package => 'الشحنة تالفة';
+
+  @override
+  String get driver_support_follow_up_reason_general => 'متابعة عامة';
+
+  @override
+  String get driver_support_follow_up_reason_additional_info => 'إضافة تفاصيل';
+
+  @override
+  String get driver_support_follow_up_reason_proof_submitted => 'إرسال إثبات';
+
+  @override
+  String get driver_support_attachment => 'مرفق';
+
+  @override
+  String get driver_support_activity_case_opened => 'تم فتح القضية';
+
+  @override
+  String get driver_support_activity_follow_up_added => 'تمت إضافة متابعة';
+
+  @override
+  String get driver_support_activity_driver_replied => 'رد المندوب';
 
   @override
   String get auth_pending_update_details => 'تحديث البيانات';

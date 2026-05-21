@@ -20,6 +20,7 @@ class ProfileFormScaffold extends StatelessWidget {
     required this.onSave,
     required this.children,
     this.actionText,
+    this.isFormDirty = true,
   });
 
   final String title;
@@ -32,6 +33,7 @@ class ProfileFormScaffold extends StatelessWidget {
   final VoidCallback onSave;
   final List<Widget> children;
   final String? actionText;
+  final bool isFormDirty;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +65,7 @@ class ProfileFormScaffold extends StatelessWidget {
                     text:
                         actionText ??
                         context.localization.profile_update_action,
-                    onPressed: isSaving ? null : onSave,
+                    onPressed: isSaving || !isFormDirty ? null : onSave,
                     height: 52,
                     borderRadius: 18,
                   ),

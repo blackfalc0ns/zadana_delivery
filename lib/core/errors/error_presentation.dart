@@ -39,6 +39,7 @@ extension ApiErrorTypePresentationX on ApiErrorType {
       case ApiErrorType.locationServiceDisabled:
       case ApiErrorType.locationPermissionDenied:
       case ApiErrorType.locationPermissionDeniedForever:
+      case ApiErrorType.locationPermissionNeedsSettings:
         return false;
     }
   }
@@ -169,6 +170,8 @@ class ErrorMessagePresenter {
       case ApiErrorType.locationPermissionDenied:
         return l10n.location_permission_denied;
       case ApiErrorType.locationPermissionDeniedForever:
+        return l10n.location_permission_denied_forever;
+      case ApiErrorType.locationPermissionNeedsSettings:
         return l10n.location_permission_denied_forever;
       case ApiErrorType.unknown:
         return l10n.error_unknown;

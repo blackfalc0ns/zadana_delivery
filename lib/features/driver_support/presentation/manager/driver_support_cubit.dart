@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
@@ -9,7 +10,7 @@ import 'package:zadana_delivery/features/driver_support/domain/usecase/get_drive
 import 'package:zadana_delivery/features/driver_support/domain/usecase/send_driver_support_case_message_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_event.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_state.dart';
-
+@injectable
 class DriverSupportCubit extends Cubit<DriverSupportState> {
   DriverSupportCubit(
     this._getCasesUseCase,
@@ -26,7 +27,13 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
               '';
 
           if (selectedCaseId.isNotEmpty && selectedCaseId == payloadCaseId) {
-            unawaited(_loadCaseDetails(selectedCaseId, refresh: true));
+            unawaited(
+              _loadCaseDetails(
+                selectedCaseId,
+                refresh: true,
+                caseType: state.selectedCase?.type,
+              ),
+            );
             return;
           }
 
@@ -47,7 +54,11 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
       case DriverSupportLoadCasesEvent():
         return _loadCases(refresh: event.refresh);
       case DriverSupportLoadCaseDetailsEvent():
-        return _loadCaseDetails(event.caseId, refresh: event.refresh);
+        return _loadCaseDetails(
+          event.caseId,
+          refresh: event.refresh,
+          caseType: event.caseType,
+        );
       case DriverSupportSendMessageEvent():
         return _sendMessage(
           orderId: event.orderId,
@@ -95,7 +106,11 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
     }
   }
 
-  Future<bool> _loadCaseDetails(String caseId, {bool refresh = false}) async {
+  Future<bool> _loadCaseDetails(
+    String caseId, {
+    bool refresh = false,
+    String? caseType,
+  }) async {
     emit(
       state.copyWith(
         isLoading: !refresh,
@@ -103,7 +118,10 @@ class DriverSupportCubit extends Cubit<DriverSupportState> {
         clearFailure: true,
       ),
     );
-    final result = await _getCaseDetailsUseCase.call(caseId);
+    final result = await _getCaseDetailsUseCase.call(
+      caseId,
+      caseType: caseType,
+    );
     switch (result) {
       case ApiSuccessResult():
         emit(

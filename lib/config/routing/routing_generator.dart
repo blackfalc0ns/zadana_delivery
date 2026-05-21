@@ -4,6 +4,7 @@ import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shel
 import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/presentation/pages/forgot_password_screen.dart';
 import 'package:zadana_delivery/features/auth/login/presentation/pages/login_screen.dart';
+import 'package:zadana_delivery/features/auth/otp/presentation/screens/driver_verify_otp_screen.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/models/register_account_draft.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/pages/driver_profile_completion_screen.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/pages/sign_up_screen.dart';
@@ -12,6 +13,8 @@ import 'package:zadana_delivery/features/auth/session/presentation/pages/account
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_pending_approval_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/models/driver_account_support_appeal_args.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_account_support_appeal_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_detail_entry_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_details_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_cases_screen.dart';
@@ -37,6 +40,22 @@ class RouteGenerator {
         return _pageRoute(
           settings,
           LoginScreen(initialIdentifier: initialIdentifier),
+        );
+      case AppRoutes.driverVerifyOtp:
+        final args = settings.arguments;
+        if (args is! Map<String, dynamic>) {
+          return unDefinedRoute(settings.name);
+        }
+        final identifier = args['identifier']?.toString().trim() ?? '';
+        if (identifier.isEmpty) {
+          return unDefinedRoute(settings.name);
+        }
+        return _pageRoute(
+          settings,
+          DriverVerifyOtpScreen(
+            identifier: identifier,
+            initialMessage: args['message']?.toString(),
+          ),
         );
       case AppRoutes.signUp:
         return _pageRoute(settings, const SignUpScreen());
@@ -88,16 +107,27 @@ class RouteGenerator {
         return _pageRoute(settings, const NotificationsScreen());
       case AppRoutes.supportHelp:
         return _pageRoute(settings, const SupportHelpScreen());
+      case AppRoutes.driverAccountSupportAppeal:
+        return _pageRoute(
+          settings,
+          DriverAccountSupportAppealScreen(
+            args: settings.arguments as DriverAccountSupportAppealArgs?,
+          ),
+        );
       case AppRoutes.driverSupportCases:
         return _pageRoute(settings, const DriverSupportCasesScreen());
       case AppRoutes.driverSupportCaseDetails:
         final args = settings.arguments;
         if (args is Map<String, dynamic>) {
           final caseId = args['caseId']?.toString().trim() ?? '';
+          final caseType = args['caseType']?.toString().trim();
           if (caseId.isNotEmpty) {
             return _pageRoute(
               settings,
-              DriverSupportCaseDetailEntryScreen(caseId: caseId),
+              DriverSupportCaseDetailEntryScreen(
+                caseId: caseId,
+                caseType: caseType,
+              ),
             );
           }
         }

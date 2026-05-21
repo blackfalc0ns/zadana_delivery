@@ -8,6 +8,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
@@ -516,10 +517,11 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
 
   Future<void> _startOnlineRuntimeServices() async {
     try {
-      await _locationPermissionService.ensureForegroundPermission();
+      await _locationPermissionService.ensureBackgroundPermission();
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
       await _loadCurrentLocation();
-    } on LocationServiceException catch (_) {
+    } on LocationServiceException catch (error) {
+      _emitLocationPermissionFailure(error);
       return;
     } catch (_) {
       return;
@@ -539,11 +541,32 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     try {
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
       if (home.operationalStatus.isAvailable) {
+        await _locationPermissionService.ensureBackgroundPermission();
         await _loadCurrentLocation();
       }
+    } on LocationServiceException catch (error) {
+      _emitLocationPermissionFailure(error);
     } catch (_) {
       // Keep the screen usable even if runtime services fail to start.
     }
+  }
+
+  void _emitLocationPermissionFailure(LocationServiceException error) {
+    _emitIfOpen(
+      state.copyWith(
+        failure: Failure(
+          errorMessage: error.message,
+          code: switch (error.type) {
+            LocationErrorType.serviceDisabled => 'location_service_disabled',
+            LocationErrorType.permissionDenied => 'location_permission_denied',
+            LocationErrorType.permissionDeniedForever =>
+              'location_permission_denied_forever',
+            LocationErrorType.permissionNeedsSettings =>
+              'location_permission_needs_settings',
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _refreshHomeAfterAvailabilityChange() async {

@@ -67,7 +67,8 @@ class TripRequestGlobalAlertService with WidgetsBindingObserver {
   Future<void> _handleDeliveryOffer(Map<String, dynamic> payload) async {
     if (payload.isEmpty) return;
 
-    final assignmentId = payload['assignmentId']?.toString() ??
+    final assignmentId =
+        payload['assignmentId']?.toString() ??
         payload['assignment_id']?.toString() ??
         '';
 

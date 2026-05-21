@@ -99,6 +99,7 @@ class ProfileScreenContent extends StatelessWidget {
       email: email,
       phone: phone,
       avatarLetter: fullName.substring(0, 1).toUpperCase(),
+      photoUrl: profile?.personalPhotoUrl.trim() ?? '',
     );
   }
 

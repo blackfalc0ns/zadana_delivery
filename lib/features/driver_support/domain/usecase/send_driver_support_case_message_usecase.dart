@@ -9,13 +9,15 @@ class SendDriverSupportCaseMessageUseCase {
   final DriverSupportRepository _repository;
 
   Future<ApiResult<DriverSupportCaseEntity>> call({
-    required String orderId,
+    String? orderId,
     required String caseId,
+    String? caseType,
     required DriverSupportCaseMessageRequestEntity request,
   }) {
     return _repository.sendMessage(
       orderId: orderId,
       caseId: caseId,
+      caseType: caseType,
       request: request,
     );
   }

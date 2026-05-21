@@ -6,8 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/errors/api_error_type.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_cubit.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_event.dart';
@@ -34,6 +36,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
   late final DriverHomeCubit _cubit;
   GoogleMapController? _mapController;
   bool _isRedirectingToBlocked = false;
+  bool _isLocationPermissionDialogVisible = false;
 
   @override
   void initState() {
@@ -219,6 +222,9 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     }
 
     if (state.failure != null && state.home != null) {
+      if (_shouldPromptForLocationSettings(state)) {
+        unawaited(_showLocationPermissionDialog());
+      }
       CustomSnackbar.showError(
         context: context,
         message: ErrorMessagePresenter.snackBarMessage(
@@ -227,6 +233,57 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         ),
       );
       _cubit.doIntent(const DriverHomeClearErrorEvent());
+    }
+  }
+
+  bool _shouldPromptForLocationSettings(DriverHomeState state) {
+    if (_isLocationPermissionDialogVisible) {
+      return false;
+    }
+
+    final errorType = state.failure?.asException.errorType;
+    return errorType == ApiErrorType.locationPermissionDenied ||
+        errorType == ApiErrorType.locationPermissionDeniedForever ||
+        errorType == ApiErrorType.locationPermissionNeedsSettings;
+  }
+
+  Future<void> _showLocationPermissionDialog() async {
+    if (!mounted || _isLocationPermissionDialogVisible) return;
+    _isLocationPermissionDialogVisible = true;
+
+    try {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) {
+          final color = Theme.of(dialogContext).colorScheme;
+          return AlertDialog(
+            title: Text(dialogContext.localization.location_permission_denied),
+            content: Text(
+              'To keep delivery tracking running in the background, please allow location access all the time from your device settings.',
+              style: TextStyle(color: color.onSurfaceVariant),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop();
+                },
+                child: Text(
+                  MaterialLocalizations.of(dialogContext).cancelButtonLabel,
+                ),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.of(dialogContext).pop();
+                  await getIt<LocationPermissionService>().openAppSettings();
+                },
+                child: const Text('Open Settings'),
+              ),
+            ],
+          );
+        },
+      );
+    } finally {
+      _isLocationPermissionDialogVisible = false;
     }
   }
 

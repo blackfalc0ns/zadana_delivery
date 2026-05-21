@@ -35,6 +35,7 @@ class MainApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        appContext = applicationContext
         createNotificationChannels()
     }
 
@@ -106,5 +107,9 @@ class MainApplication : Application() {
         @Volatile
         @JvmStatic
         var lastOfferPushReceivedAt: Long = 0L
+
+        @Volatile
+        @JvmStatic
+        var appContext: android.content.Context? = null
     }
 }

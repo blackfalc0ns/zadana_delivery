@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
 import 'package:zadana_delivery/core/services/app_navigator_service.dart';
@@ -13,6 +14,7 @@ import 'package:zadana_delivery/core/services/driver_notification_router_service
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
+import 'package:zadana_delivery/core/services/file_upload_service.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/core/services/trip_request_global_alert_service.dart';
@@ -20,12 +22,15 @@ import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart'
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/repo/driver_support_repository.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/create_driver_account_appeal_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/create_driver_order_dispute_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/domain/usecase/create_public_driver_account_appeal_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_case_details_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_cases_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_reasons_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/report_driver_order_issue_usecase.dart';
 import 'package:zadana_delivery/features/driver_support/domain/usecase/send_driver_support_case_message_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_account_support_appeal_cubit.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source_impl.dart';
@@ -309,6 +314,20 @@ void registerManualDependencies(GetIt getIt) {
     );
   }
 
+  if (!getIt.isRegistered<CreateDriverAccountAppealUseCase>()) {
+    getIt.registerFactory<CreateDriverAccountAppealUseCase>(
+      () => CreateDriverAccountAppealUseCase(getIt<DriverSupportRepository>()),
+    );
+  }
+
+  if (!getIt.isRegistered<CreatePublicDriverAccountAppealUseCase>()) {
+    getIt.registerFactory<CreatePublicDriverAccountAppealUseCase>(
+      () => CreatePublicDriverAccountAppealUseCase(
+        getIt<DriverSupportRepository>(),
+      ),
+    );
+  }
+
   if (!getIt.isRegistered<GetDriverSupportCasesUseCase>()) {
     getIt.registerFactory<GetDriverSupportCasesUseCase>(
       () => GetDriverSupportCasesUseCase(getIt<DriverSupportRepository>()),
@@ -342,6 +361,18 @@ void registerManualDependencies(GetIt getIt) {
         getIt<GetDriverSupportCaseDetailsUseCase>(),
         getIt<SendDriverSupportCaseMessageUseCase>(),
         getIt<DriverRealtimeService>(),
+      ),
+    );
+  }
+
+  if (!getIt.isRegistered<DriverAccountSupportAppealCubit>()) {
+    getIt.registerFactory<DriverAccountSupportAppealCubit>(
+      () => DriverAccountSupportAppealCubit(
+        getIt<ImagePicker>(),
+        getIt<FileUploadService>(),
+        getIt<GetDriverSupportReasonsUseCase>(),
+        getIt<CreateDriverAccountAppealUseCase>(),
+        getIt<CreatePublicDriverAccountAppealUseCase>(),
       ),
     );
   }

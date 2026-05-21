@@ -23,10 +23,11 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   ) : super(const NotificationsState()) {
     _notificationSubscription = getIt<DriverRealtimeService>().notifications
         .listen((_) {
-          unawaited(_refreshUnreadCount());
-          if (state.hasLoadedOnce && !state.isLoading) {
-            unawaited(_loadNotifications(refresh: true));
-          }
+          _handleRealtimeNotificationRefresh();
+        });
+    _supportCaseChangedSubscription =
+        getIt<DriverRealtimeService>().supportCaseChanged.listen((_) {
+          _handleRealtimeNotificationRefresh();
         });
   }
 
@@ -37,6 +38,8 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   final GetDriverNotificationsUnreadCountUseCase
   _getDriverNotificationsUnreadCountUseCase;
   late final StreamSubscription<Map<String, dynamic>> _notificationSubscription;
+  late final StreamSubscription<Map<String, dynamic>>
+  _supportCaseChangedSubscription;
 
   List<DriverNotificationEntity> get items =>
       state.notifications?.items ?? const <DriverNotificationEntity>[];
@@ -240,6 +243,13 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     return items.where((item) => !item.isRead).length;
   }
 
+  void _handleRealtimeNotificationRefresh() {
+    unawaited(_refreshUnreadCount());
+    if (state.hasLoadedOnce && !state.isLoading) {
+      unawaited(_loadNotifications(refresh: true));
+    }
+  }
+
   void _clearError() {
     if (state.failure == null) return;
     emit(state.copyWith(clearFailure: true));
@@ -248,6 +258,7 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   @override
   Future<void> close() async {
     await _notificationSubscription.cancel();
+    await _supportCaseChangedSubscription.cancel();
     return super.close();
   }
 }

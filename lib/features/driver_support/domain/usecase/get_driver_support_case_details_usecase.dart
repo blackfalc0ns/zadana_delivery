@@ -7,7 +7,10 @@ class GetDriverSupportCaseDetailsUseCase {
 
   final DriverSupportRepository _repository;
 
-  Future<ApiResult<DriverSupportCaseEntity>> call(String caseId) {
-    return _repository.getCaseDetails(caseId);
+  Future<ApiResult<DriverSupportCaseEntity>> call(
+    String caseId, {
+    String? caseType,
+  }) {
+    return _repository.getCaseDetails(caseId, caseType: caseType);
   }
 }

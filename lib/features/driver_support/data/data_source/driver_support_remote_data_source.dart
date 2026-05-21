@@ -1,3 +1,4 @@
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_case_model_dto.dart';
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_cases_page_model_dto.dart';
 import 'package:zadana_delivery/features/driver_support/data/models/driver_support_reason_dto.dart';
@@ -19,13 +20,26 @@ abstract class DriverSupportRemoteDataSource {
     int pageSize = 20,
   });
 
-  Future<DriverSupportCaseModelDto> getCaseDetails(String caseId);
+  Future<DriverSupportCaseModelDto> getCaseDetails(
+    String caseId, {
+    String? caseType,
+  });
 
   Future<List<DriverSupportReasonDto>> getReasons(String type);
 
   Future<DriverSupportCaseModelDto> sendMessage({
-    required String orderId,
+    String? orderId,
     required String caseId,
+    String? caseType,
+    required DriverSupportCaseMessageRequestEntity request,
+  });
+
+  Future<LocalizedMessage> createAccountAppeal({
+    required DriverSupportCaseMessageRequestEntity request,
+  });
+
+  Future<LocalizedMessage> createPublicAccountAppeal({
+    required String identifier,
     required DriverSupportCaseMessageRequestEntity request,
   });
 }

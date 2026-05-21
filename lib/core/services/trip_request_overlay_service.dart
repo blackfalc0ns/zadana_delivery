@@ -95,10 +95,16 @@ class TripRequestOverlayService {
 
     try {
       final data = <String, dynamic>{
-        'assignment_id': _str(offerData['assignmentId'] ?? offerData['assignment_id']),
+        'assignment_id': _str(
+          offerData['assignmentId'] ?? offerData['assignment_id'],
+        ),
         'order_id': _str(offerData['orderId'] ?? offerData['order_id']),
-        'order_number': _str(offerData['orderNumber'] ?? offerData['order_number']),
-        'vendor_name': _str(offerData['vendorName'] ?? offerData['vendor_name']),
+        'order_number': _str(
+          offerData['orderNumber'] ?? offerData['order_number'],
+        ),
+        'vendor_name': _str(
+          offerData['vendorName'] ?? offerData['vendor_name'],
+        ),
         'pickup_address': _str(
           offerData['pickupAddress'] ??
               offerData['pickup_address'] ??
@@ -121,7 +127,9 @@ class TripRequestOverlayService {
         'total_amount': _toDouble(offerData['totalAmount'] ?? 0),
         'payment_method': _str(offerData['paymentMethod'] ?? ''),
         'countdown_seconds': _toInt(offerData['countdownSeconds'] ?? 30),
-        'customer_name': _str(offerData['customerName'] ?? offerData['customer_name'] ?? ''),
+        'customer_name': _str(
+          offerData['customerName'] ?? offerData['customer_name'] ?? '',
+        ),
       };
 
       final result = await _channel.invokeMethod<bool>('showOverlay', data);

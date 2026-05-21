@@ -6,8 +6,10 @@ import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
+import 'package:zadana_delivery/features/auth/account_status/domain/entities/driver_account_status_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/register_request_entity.dart';
+import 'package:zadana_delivery/features/auth/register/domain/entities/register_response_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/usecase/register_usecase.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/manager/driver_profile_completion_state.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/models/register_account_draft.dart';
@@ -339,11 +341,16 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
 
     switch (result) {
       case ApiSuccessResult():
+        final targetRoute = _resolveRegisterTargetRoute(result.data);
         emit(
           state.copyWith(
             isLoading: false,
             successMessage: result.data.message,
-            targetRoute: AppRoutes.accountPendingApproval,
+            targetRoute: targetRoute,
+            targetArguments: _resolveRegisterTargetArguments(
+              route: targetRoute,
+              result: result.data,
+            ),
             clearFailure: true,
           ),
         );
@@ -442,5 +449,48 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
       'license': draft.images['license'] ?? '',
       'vehicle': draft.images['vehicle'] ?? '',
     };
+  }
+
+  String _resolveRegisterTargetRoute(RegisterResponseEntity result) {
+    if (result.isVerified != true) {
+      return AppRoutes.driverVerifyOtp;
+    }
+
+    final DriverAccountStatusEntity? driverStatus = result.driverStatus;
+    if (driverStatus?.isPendingReview == true) {
+      return AppRoutes.accountPendingApproval;
+    }
+    if (driverStatus?.isBlocked == true) {
+      return AppRoutes.accountBlocked;
+    }
+    if (driverStatus?.shouldGoHome == true) {
+      return AppRoutes.mainShell;
+    }
+    return AppRoutes.accountPendingApproval;
+  }
+
+  Object? _resolveRegisterTargetArguments({
+    required String route,
+    required RegisterResponseEntity result,
+  }) {
+    if (route == AppRoutes.driverVerifyOtp) {
+      final fallbackIdentifier =
+          _registrationDraft?.email.trim().isNotEmpty == true
+          ? _registrationDraft!.email.trim()
+          : _registrationDraft?.phone.trim() ?? '';
+      return <String, dynamic>{
+        'identifier': result.user?.email.trim().isNotEmpty == true
+            ? result.user!.email.trim()
+            : result.user?.phone.trim().isNotEmpty == true
+            ? result.user!.phone.trim()
+            : fallbackIdentifier,
+        'message': result.message,
+      };
+    }
+    if (route == AppRoutes.accountPendingApproval ||
+        route == AppRoutes.accountBlocked) {
+      return result.driverStatus;
+    }
+    return null;
   }
 }

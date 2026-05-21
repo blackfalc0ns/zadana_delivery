@@ -13,6 +13,7 @@ class DriverProfileCompletionState {
     this.phone = '',
     this.successMessage,
     this.targetRoute,
+    this.targetArguments,
   });
 
   final bool isInitialized;
@@ -25,6 +26,7 @@ class DriverProfileCompletionState {
   final String phone;
   final String? successMessage;
   final String? targetRoute;
+  final Object? targetArguments;
 
   DriverProfileCompletionState copyWith({
     bool? isInitialized,
@@ -37,6 +39,7 @@ class DriverProfileCompletionState {
     String? phone,
     String? successMessage,
     String? targetRoute,
+    Object? targetArguments,
     bool clearFailure = false,
     bool clearSuccess = false,
     bool clearNavigation = false,
@@ -54,6 +57,9 @@ class DriverProfileCompletionState {
           ? null
           : successMessage ?? this.successMessage,
       targetRoute: clearNavigation ? null : targetRoute ?? this.targetRoute,
+      targetArguments: clearNavigation
+          ? null
+          : targetArguments ?? this.targetArguments,
     );
   }
 }

@@ -7,13 +7,16 @@ import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
-import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_event.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_state.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_cases/driver_support_case_card.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_cases/driver_support_cases_empty_state.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_cases/driver_support_cases_loading_view.dart';
 
 class DriverSupportCasesScreen extends StatefulWidget {
   const DriverSupportCasesScreen({super.key});
@@ -41,10 +44,10 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
     super.dispose();
   }
 
-  String _text(String ar, String en) => _isArabic ? ar : en;
-
   @override
   Widget build(BuildContext context) {
+    final locale = context.localization;
+
     return BlocProvider.value(
       value: _cubit,
       child: BlocConsumer<DriverSupportCubit, DriverSupportState>(
@@ -63,12 +66,12 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
 
           if (state.isLoading && items.isEmpty) {
             return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: context.colorScheme.surface,
               appBar: CustomAppBar.modern(
-                title: _text('الشكاوى والنزاعات', 'My cases'),
+                title: locale.driver_support_cases_title,
                 onBackPressed: context.pop,
               ),
-              body: const _DriverSupportCasesLoadingView(),
+              body: const DriverSupportCasesLoadingView(),
             );
           }
 
@@ -78,7 +81,7 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
               exception.errorType.showFullScreen) {
             return Scaffold(
               appBar: CustomAppBar.modern(
-                title: _text('الشكاوى والنزاعات', 'My cases'),
+                title: locale.driver_support_cases_title,
                 onBackPressed: context.pop,
               ),
               body: ApiErrorWidget(
@@ -91,9 +94,9 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
           }
 
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: context.colorScheme.surface,
             appBar: CustomAppBar.modern(
-              title: _text('الشكاوى والنزاعات', 'My cases'),
+              title: locale.driver_support_cases_title,
               onBackPressed: context.pop,
             ),
             body: RefreshIndicator(
@@ -106,21 +109,15 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
                 children: [
                   const SizedBox(height: 16),
                   if (items.isEmpty)
-                    _EmptyState(
-                      title: _text(
-                        'لا توجد شكاوى أو نزاعات حتى الآن',
-                        'No cases yet',
-                      ),
-                      subtitle: _text(
-                        'أي شكوى أو نزاع ترسله من الطلب سيظهر هنا مباشرة.',
-                        'Any issue or dispute you create from an order will appear here.',
-                      ),
+                    DriverSupportCasesEmptyState(
+                      title: locale.driver_support_cases_empty_title,
+                      subtitle: locale.driver_support_cases_empty_subtitle,
                     )
                   else
                     ...items.map(
                       (item) => Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: _CaseCard(
+                        child: DriverSupportCaseCard(
                           item: item,
                           isArabic: _isArabic,
                           onTap: () => Navigator.of(context).pushNamed(
@@ -135,360 +132,6 @@ class _DriverSupportCasesScreenState extends State<DriverSupportCasesScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _CaseCard extends StatelessWidget {
-  const _CaseCard({
-    required this.item,
-    required this.isArabic,
-    required this.onTap,
-  });
-
-  final DriverSupportCaseEntity item;
-  final bool isArabic;
-  final VoidCallback onTap;
-
-  String _labelize(String value) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return '--';
-    return normalized
-        .replaceAll('_', ' ')
-        .replaceAllMapped(
-          RegExp(r'([a-z])([A-Z])'),
-          (match) => '${match.group(1)} ${match.group(2)}',
-        );
-  }
-
-  String _localizedLabel({
-    required String? ar,
-    required String? en,
-    required String fallback,
-  }) {
-    final preferred = isArabic ? ar : en;
-    final normalized = preferred?.trim() ?? '';
-    if (normalized.isNotEmpty) return normalized;
-    return fallback;
-  }
-
-  String _caseTypeLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.typeLabelAr,
-      en: item.typeLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.type.trim().toLowerCase()) {
-      case 'driver_report':
-      case 'driverreport':
-        return isArabic ? 'بلاغ سائق' : 'Driver report';
-      case 'dispute':
-        return isArabic ? 'نزاع' : 'Dispute';
-      default:
-        return _labelize(item.type);
-    }
-  }
-
-  String _statusLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.statusLabelAr,
-      en: item.statusLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.status.trim().toLowerCase()) {
-      case 'submitted':
-        return isArabic ? 'تم الإرسال' : 'Submitted';
-      case 'in_review':
-        return isArabic ? 'قيد المراجعة' : 'In review';
-      case 'open':
-        return isArabic ? 'مفتوحة' : 'Open';
-      case 'closed':
-        return isArabic ? 'مغلقة' : 'Closed';
-      case 'resolved':
-        return isArabic ? 'تم الحل' : 'Resolved';
-      default:
-        return _labelize(item.status);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final title = item.orderNumber.isEmpty ? item.id : item.orderNumber;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-          decoration: BoxDecoration(
-            color: scheme.surfaceContainerLowest,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: scheme.outlineVariant.withValues(alpha: 0.14),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: scheme.shadow.withValues(alpha: 0.025),
-                blurRadius: 8,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isArabic ? 'رقم الطلب' : 'Order number',
-                          style: Theme.of(context).textTheme.labelLarge
-                              ?.copyWith(
-                                color: scheme.onSurfaceVariant,
-                                fontWeight: FontWeight.w700,
-                                fontSize: 12,
-                              ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          title,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.w800,
-                                fontSize: 20,
-                              ),
-                        ),
-                        const SizedBox(height: 6),
-                        Wrap(
-                          spacing: 6,
-                          runSpacing: 6,
-                          children: [
-                            _MetaPill(
-                              icon: Icons.flag_rounded,
-                              label: _statusLabel(),
-                              foreground: scheme.primary,
-                              background: scheme.primary.withValues(
-                                alpha: 0.08,
-                              ),
-                            ),
-                            _MetaPill(
-                              icon: Icons.balance_rounded,
-                              label: _caseTypeLabel(),
-                              foreground: scheme.secondary,
-                              background: scheme.secondary.withValues(
-                                alpha: 0.08,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MetaPill extends StatelessWidget {
-  const _MetaPill({
-    required this.icon,
-    required this.label,
-    required this.foreground,
-    required this.background,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color foreground;
-  final Color background;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: foreground),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: foreground,
-              fontWeight: FontWeight.w700,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.22),
-        ),
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 62,
-            height: 62,
-            decoration: BoxDecoration(
-              color: scheme.primary.withValues(alpha: 0.08),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Icon(
-              Icons.mark_email_unread_outlined,
-              color: scheme.primary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-              height: 1.4,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DriverSupportCasesLoadingView extends StatelessWidget {
-  const _DriverSupportCasesLoadingView();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SkeletonStateWidget(
-      child: ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-        children: [
-          _SkeletonBox(
-            height: 118,
-            borderRadius: 28,
-            color: scheme.outlineVariant.withValues(alpha: 0.16),
-          ),
-          const SizedBox(height: 16),
-          for (var i = 0; i < 4; i++) ...[
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: scheme.outlineVariant.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _SkeletonBox(
-                          height: 20,
-                          borderRadius: 12,
-                          color: scheme.surface,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      _SkeletonBox(
-                        width: 84,
-                        height: 30,
-                        borderRadius: 999,
-                        color: scheme.surface,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  _SkeletonBox(
-                    height: 72,
-                    borderRadius: 20,
-                    color: scheme.surface,
-                  ),
-                  const SizedBox(height: 12),
-                  _SkeletonBox(
-                    width: 170,
-                    height: 14,
-                    borderRadius: 10,
-                    color: scheme.surface,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _SkeletonBox extends StatelessWidget {
-  const _SkeletonBox({
-    this.width = double.infinity,
-    required this.height,
-    required this.borderRadius,
-    required this.color,
-  });
-
-  final double width;
-  final double height;
-  final double borderRadius;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
   }

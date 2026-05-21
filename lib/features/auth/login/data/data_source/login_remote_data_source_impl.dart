@@ -44,6 +44,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
             'email': map['email']?.toString() ?? '',
             'phone': map['phone']?.toString() ?? '',
             'role': map['role']?.toString() ?? 'driver',
+            'profilePhotoUrl': map['profilePhotoUrl']?.toString() ?? '',
             'favoritesCount': 0,
           };
 
@@ -58,6 +59,7 @@ class LoginRemoteDataSourceImpl implements LoginRemoteDataSource {
         'email': normalizedUser['email']?.toString() ?? '',
         'phone': normalizedUser['phone']?.toString() ?? '',
         'role': normalizedUser['role']?.toString() ?? 'driver',
+        'profilePhotoUrl': normalizedUser['profilePhotoUrl']?.toString() ?? '',
         'favoritesCount': normalizedUser['favoritesCount'] is int
             ? normalizedUser['favoritesCount']
             : 0,

@@ -23,15 +23,191 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import org.json.JSONObject
 
 /**
  * Native system overlay that displays an incoming trip request above all apps.
  * Uses TYPE_APPLICATION_OVERLAY to show even when the app is backgrounded.
  */
+private data class OverlayData(
+    val assignmentId: String,
+    val vendorName: String,
+    val pickupAddress: String,
+    val deliveryAddress: String,
+    val distanceKm: Double,
+    val eta: String,
+    val payout: Double,
+    val totalAmount: Double,
+    val paymentMethod: String,
+    val countdownSeconds: Int,
+    val customerName: String,
+)
+
 class TripRequestSystemOverlay(private val context: Context) {
 
     companion object {
         private const val TAG = "TripOverlay"
+
+        fun showOfferOverlayFromPush(context: Context, payload: JSONObject?) {
+            if (payload == null) {
+                Log.d(TAG, "Native push overlay skipped: payload is null")
+                return
+            }
+
+            val data = buildOverlayMapFromPushPayload(payload)
+            val assignmentId = data["assignment_id"]?.toString()?.trim().orEmpty()
+            if (assignmentId.isEmpty()) {
+                Log.d(TAG, "Native push overlay skipped: missing assignment id")
+                return
+            }
+
+            Handler(Looper.getMainLooper()).post {
+                val overlay = TripRequestSystemOverlay(context.applicationContext)
+                val nativeActionClient =
+                    NativeTripOfferActionClient(context.applicationContext)
+                overlay.setCallbacks(
+                    onAccept = { currentAssignmentId ->
+                        Log.d(TAG, "Native push overlay accept tapped: $currentAssignmentId")
+                        nativeActionClient.acceptOffer(currentAssignmentId)
+                    },
+                    onReject = { currentAssignmentId ->
+                        Log.d(TAG, "Native push overlay reject tapped: $currentAssignmentId")
+                        nativeActionClient.rejectOffer(currentAssignmentId)
+                    },
+                    onTap = { currentAssignmentId ->
+                        Log.d(TAG, "Native push overlay body tapped: $currentAssignmentId")
+                        overlay.bringAppToForeground()
+                    },
+                )
+                overlay.show(data)
+            }
+        }
+
+        private fun buildOverlayMapFromPushPayload(payload: JSONObject): Map<String, Any?> {
+            val dataObject = payload.optJSONObject("dataObject")
+                ?: payload.optJSONObject("data")
+                ?: payload.optJSONObject("payload")
+
+            fun firstString(vararg values: String?): String {
+                for (value in values) {
+                    val normalized = value?.trim().orEmpty()
+                    if (normalized.isNotEmpty()) {
+                        return normalized
+                    }
+                }
+                return ""
+            }
+
+            fun firstDouble(vararg values: Any?): Double {
+                for (value in values) {
+                    when (value) {
+                        is Number -> return value.toDouble()
+                        is String -> value.toDoubleOrNull()?.let { return it }
+                    }
+                }
+                return 0.0
+            }
+
+            fun firstInt(vararg values: Any?): Int {
+                for (value in values) {
+                    when (value) {
+                        is Number -> return value.toInt()
+                        is String -> value.toIntOrNull()?.let { return it }
+                    }
+                }
+                return 30
+            }
+
+            fun jsonString(source: JSONObject?, key: String): String? {
+                if (source == null || !source.has(key)) return null
+                return source.optString(key, null)
+            }
+
+            fun jsonValue(source: JSONObject?, key: String): Any? {
+                if (source == null || !source.has(key)) return null
+                return source.opt(key)
+            }
+
+            return mapOf(
+                "assignment_id" to firstString(
+                    jsonString(payload, "assignmentId"),
+                    jsonString(payload, "assignment_id"),
+                    jsonString(dataObject, "assignmentId"),
+                    jsonString(dataObject, "assignment_id"),
+                    jsonString(payload, "referenceId"),
+                ),
+                "order_id" to firstString(
+                    jsonString(payload, "orderId"),
+                    jsonString(payload, "order_id"),
+                    jsonString(dataObject, "orderId"),
+                    jsonString(dataObject, "order_id"),
+                ),
+                "order_number" to firstString(
+                    jsonString(payload, "orderNumber"),
+                    jsonString(payload, "order_number"),
+                    jsonString(dataObject, "orderNumber"),
+                    jsonString(dataObject, "order_number"),
+                ),
+                "vendor_name" to firstString(
+                    jsonString(payload, "vendorName"),
+                    jsonString(payload, "vendor_name"),
+                    jsonString(dataObject, "vendorName"),
+                    jsonString(dataObject, "vendor_name"),
+                ),
+                "pickup_address" to firstString(
+                    jsonString(payload, "pickupAddress"),
+                    jsonString(payload, "pickup_address"),
+                    jsonString(payload, "vendorAddress"),
+                    jsonString(dataObject, "pickupAddress"),
+                    jsonString(dataObject, "pickup_address"),
+                    jsonString(dataObject, "vendorAddress"),
+                ),
+                "delivery_address" to firstString(
+                    jsonString(payload, "deliveryAddress"),
+                    jsonString(payload, "delivery_address"),
+                    jsonString(payload, "customerAddress"),
+                    jsonString(dataObject, "deliveryAddress"),
+                    jsonString(dataObject, "delivery_address"),
+                    jsonString(dataObject, "customerAddress"),
+                ),
+                "distance_km" to firstDouble(
+                    jsonValue(payload, "estimatedDistanceKm"),
+                    jsonValue(payload, "distanceKm"),
+                    jsonValue(dataObject, "estimatedDistanceKm"),
+                    jsonValue(dataObject, "distanceKm"),
+                ),
+                "eta" to firstString(
+                    jsonString(payload, "estimatedEta"),
+                    jsonString(payload, "eta"),
+                    jsonString(dataObject, "estimatedEta"),
+                    jsonString(dataObject, "eta"),
+                ),
+                "payout" to firstDouble(
+                    jsonValue(payload, "payout"),
+                    jsonValue(payload, "deliveryFee"),
+                    jsonValue(dataObject, "payout"),
+                    jsonValue(dataObject, "deliveryFee"),
+                ),
+                "total_amount" to firstDouble(
+                    jsonValue(payload, "totalAmount"),
+                    jsonValue(dataObject, "totalAmount"),
+                ),
+                "payment_method" to firstString(
+                    jsonString(payload, "paymentMethod"),
+                    jsonString(dataObject, "paymentMethod"),
+                ),
+                "countdown_seconds" to firstInt(
+                    jsonValue(payload, "countdownSeconds"),
+                    jsonValue(dataObject, "countdownSeconds"),
+                ),
+                "customer_name" to firstString(
+                    jsonString(payload, "customerName"),
+                    jsonString(payload, "customer_name"),
+                    jsonString(dataObject, "customerName"),
+                    jsonString(dataObject, "customer_name"),
+                ),
+            )
+        }
     }
 
     private val windowManager: WindowManager =
@@ -64,6 +240,22 @@ class TripRequestSystemOverlay(private val context: Context) {
         }
     }
 
+    private fun parseOverlayData(data: Map<String, Any?>): OverlayData {
+        return OverlayData(
+            assignmentId = data["assignment_id"]?.toString() ?: "",
+            vendorName = data["vendor_name"]?.toString() ?: "",
+            pickupAddress = data["pickup_address"]?.toString() ?: "",
+            deliveryAddress = data["delivery_address"]?.toString() ?: "",
+            distanceKm = (data["distance_km"] as? Number)?.toDouble() ?: 0.0,
+            eta = data["eta"]?.toString() ?: "",
+            payout = (data["payout"] as? Number)?.toDouble() ?: 0.0,
+            totalAmount = (data["total_amount"] as? Number)?.toDouble() ?: 0.0,
+            paymentMethod = data["payment_method"]?.toString() ?: "",
+            countdownSeconds = (data["countdown_seconds"] as? Number)?.toInt() ?: 30,
+            customerName = data["customer_name"]?.toString() ?: "",
+        )
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     fun show(data: Map<String, Any?>) {
         if (!canDrawOverlays()) {
@@ -74,35 +266,24 @@ class TripRequestSystemOverlay(private val context: Context) {
         // Dismiss any existing overlay first
         hide()
 
-        val assignmentId = data["assignment_id"]?.toString() ?: ""
-        val vendorName = data["vendor_name"]?.toString() ?: ""
-        val pickupAddress = data["pickup_address"]?.toString() ?: ""
-        val deliveryAddress = data["delivery_address"]?.toString() ?: ""
-        val distanceKm = (data["distance_km"] as? Number)?.toDouble() ?: 0.0
-        val eta = data["eta"]?.toString() ?: ""
-        val payout = (data["payout"] as? Number)?.toDouble() ?: 0.0
-        val totalAmount = (data["total_amount"] as? Number)?.toDouble() ?: 0.0
-        val paymentMethod = data["payment_method"]?.toString() ?: ""
-        val countdownSeconds = (data["countdown_seconds"] as? Number)?.toInt() ?: 30
-        val customerName = data["customer_name"]?.toString() ?: ""
-
-        currentAssignmentId = assignmentId
+        val overlayData = parseOverlayData(data)
+        currentAssignmentId = overlayData.assignmentId
 
         val density = context.resources.displayMetrics.density
 
         // Build the overlay layout
         val rootLayout = buildOverlayLayout(
             density = density,
-            vendorName = vendorName,
-            pickupAddress = pickupAddress,
-            deliveryAddress = deliveryAddress,
-            distanceKm = distanceKm,
-            eta = eta,
-            payout = payout,
-            totalAmount = totalAmount,
-            paymentMethod = paymentMethod,
-            countdownSeconds = countdownSeconds,
-            customerName = customerName,
+            vendorName = overlayData.vendorName,
+            pickupAddress = overlayData.pickupAddress,
+            deliveryAddress = overlayData.deliveryAddress,
+            distanceKm = overlayData.distanceKm,
+            eta = overlayData.eta,
+            payout = overlayData.payout,
+            totalAmount = overlayData.totalAmount,
+            paymentMethod = overlayData.paymentMethod,
+            countdownSeconds = overlayData.countdownSeconds,
+            customerName = overlayData.customerName,
         )
 
         val layoutParams = WindowManager.LayoutParams(
@@ -126,7 +307,7 @@ class TripRequestSystemOverlay(private val context: Context) {
         try {
             windowManager.addView(rootLayout, layoutParams)
             overlayView = rootLayout
-            Log.d(TAG, "Overlay shown for assignment: $assignmentId")
+            Log.d(TAG, "Overlay shown for assignment: ${overlayData.assignmentId}")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to show overlay", e)
         }
@@ -144,6 +325,22 @@ class TripRequestSystemOverlay(private val context: Context) {
             }
             overlayView = null
         }
+    }
+
+    fun bringAppToForeground() {
+        val launchIntent =
+            context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
+                addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or
+                        Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
+                        Intent.FLAG_ACTIVITY_SINGLE_TOP,
+                )
+            }
+        if (launchIntent == null) {
+            Log.w(TAG, "Unable to bring app to foreground: launch intent missing")
+            return
+        }
+        context.startActivity(launchIntent)
     }
 
     fun setCallbacks(
@@ -337,7 +534,11 @@ class TripRequestSystemOverlay(private val context: Context) {
                 cornerRadius = dp(12).toFloat()
             }
             setOnClickListener {
-                onReject?.invoke(currentAssignmentId)
+                if (onReject != null) {
+                    onReject?.invoke(currentAssignmentId)
+                } else {
+                    bringAppToForeground()
+                }
                 hide()
             }
         }
@@ -358,7 +559,11 @@ class TripRequestSystemOverlay(private val context: Context) {
                 cornerRadius = dp(12).toFloat()
             }
             setOnClickListener {
-                onAccept?.invoke(currentAssignmentId)
+                if (onAccept != null) {
+                    onAccept?.invoke(currentAssignmentId)
+                } else {
+                    bringAppToForeground()
+                }
                 hide()
             }
         }
@@ -374,7 +579,11 @@ class TripRequestSystemOverlay(private val context: Context) {
         // Tap on the overlay body (not buttons) opens the app
         root.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                onTap?.invoke(currentAssignmentId)
+                if (onTap != null) {
+                    onTap?.invoke(currentAssignmentId)
+                } else {
+                    bringAppToForeground()
+                }
                 hide()
             }
             false

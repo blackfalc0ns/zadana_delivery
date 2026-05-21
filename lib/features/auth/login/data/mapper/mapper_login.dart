@@ -32,6 +32,7 @@ extension LoginResponseDtoMapper on LoginResponseModelDto {
         email: resolvedUser.email,
         phone: resolvedUser.phone,
         role: resolvedUser.role,
+        profilePhotoUrl: resolvedUser.profilePhotoUrl,
         favoritesCount: resolvedUser.favoritesCount,
       ),
       message: message,

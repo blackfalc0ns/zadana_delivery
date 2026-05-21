@@ -37,6 +37,18 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   String _selectedCityName = '';
   String _selectedRegionName = '';
   bool _didSeedControllers = false;
+  bool _isFormDirty = false;
+
+  // Original values to compare against
+  String _originalVehicleType = DriverVehicleType.car;
+  String _originalNationalId = '';
+  String _originalLicense = '';
+  String _originalNationalIdExpiry = '';
+  String _originalDriverLicenseExpiry = '';
+  String _originalVehicleLicenseNumber = '';
+  String _originalVehicleLicenseExpiry = '';
+  String _originalCityId = '';
+  String _originalRegionCode = '';
 
   @override
   void initState() {
@@ -49,12 +61,32 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     _driverLicenseExpiryController = TextEditingController();
     _vehicleLicenseNumberController = TextEditingController();
     _vehicleLicenseExpiryController = TextEditingController();
-    _nationalIdController.addListener(_cubit.clearError);
-    _licenseController.addListener(_cubit.clearError);
-    _nationalIdExpiryController.addListener(_cubit.clearError);
-    _driverLicenseExpiryController.addListener(_cubit.clearError);
-    _vehicleLicenseNumberController.addListener(_cubit.clearError);
-    _vehicleLicenseExpiryController.addListener(_cubit.clearError);
+    _nationalIdController.addListener(_onFieldChanged);
+    _licenseController.addListener(_onFieldChanged);
+    _nationalIdExpiryController.addListener(_onFieldChanged);
+    _driverLicenseExpiryController.addListener(_onFieldChanged);
+    _vehicleLicenseNumberController.addListener(_onFieldChanged);
+    _vehicleLicenseExpiryController.addListener(_onFieldChanged);
+  }
+
+  void _onFieldChanged() {
+    _cubit.clearError();
+    _checkDirty();
+  }
+
+  void _checkDirty() {
+    final dirty = _vehicleType != _originalVehicleType ||
+        _nationalIdController.text != _originalNationalId ||
+        _licenseController.text != _originalLicense ||
+        _nationalIdExpiryController.text != _originalNationalIdExpiry ||
+        _driverLicenseExpiryController.text != _originalDriverLicenseExpiry ||
+        _vehicleLicenseNumberController.text != _originalVehicleLicenseNumber ||
+        _vehicleLicenseExpiryController.text != _originalVehicleLicenseExpiry ||
+        _selectedCityId != _originalCityId ||
+        _selectedRegionCode != _originalRegionCode;
+    if (dirty != _isFormDirty) {
+      setState(() => _isFormDirty = dirty);
+    }
   }
 
   @override
@@ -99,6 +131,17 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             _selectedRegionCode = profile.region;
             _selectedCityName = profile.displayCityName;
             _selectedRegionName = profile.displayRegionName;
+
+            // Save original values
+            _originalVehicleType = _vehicleType;
+            _originalNationalId = _nationalIdController.text;
+            _originalLicense = _licenseController.text;
+            _originalNationalIdExpiry = _nationalIdExpiryController.text;
+            _originalDriverLicenseExpiry = _driverLicenseExpiryController.text;
+            _originalVehicleLicenseNumber = _vehicleLicenseNumberController.text;
+            _originalVehicleLicenseExpiry = _vehicleLicenseExpiryController.text;
+            _originalCityId = _selectedCityId;
+            _originalRegionCode = _selectedRegionCode;
           }
 
           if (state.isSuccess) {
@@ -157,6 +200,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             headerColorToken: ProfileColorToken.secondary,
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
+            isFormDirty: _isFormDirty,
             onSave: _save,
             children: [
               VehicleInfoFields(
@@ -185,6 +229,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                     _selectedRegionName = regionCity.regionName;
                   });
                   _cubit.clearError();
+                  _checkDirty();
                 },
                 onPickDate: _pickDate,
               ),
@@ -198,6 +243,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   void _selectType(String value) {
     setState(() => _vehicleType = value);
     _cubit.clearError();
+    _checkDirty();
   }
 
   Future<void> _save() async {

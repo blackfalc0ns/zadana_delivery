@@ -11,5 +11,7 @@ abstract class DriverTrackingRemoteDataSource {
 
   Future<void> pushDriverLocation();
 
+  Future<void> syncAppLifecycleState(bool isForeground);
+
   Stream<DriverTrackingStateEntity> watchState();
 }

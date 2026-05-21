@@ -24,6 +24,8 @@ class _AuthStatusNotificationButtonState
     extends State<AuthStatusNotificationButton> {
   late final GetDriverNotificationsUnreadCountUseCase _getUnreadCountUseCase;
   late final StreamSubscription<Map<String, dynamic>> _notificationSubscription;
+  late final StreamSubscription<Map<String, dynamic>>
+  _supportCaseChangedSubscription;
   int _count = 0;
 
   @override
@@ -34,12 +36,17 @@ class _AuthStatusNotificationButtonState
         .listen((_) {
           unawaited(_refreshUnreadCount());
         });
+    _supportCaseChangedSubscription =
+        getIt<DriverRealtimeService>().supportCaseChanged.listen((_) {
+          unawaited(_refreshUnreadCount());
+        });
     unawaited(_refreshUnreadCount());
   }
 
   @override
   void dispose() {
     unawaited(_notificationSubscription.cancel());
+    unawaited(_supportCaseChangedSubscription.cancel());
     super.dispose();
   }
 

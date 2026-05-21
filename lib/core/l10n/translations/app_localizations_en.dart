@@ -1319,6 +1319,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_login_section_badge => 'Driver account';
 
   @override
+  String get auth_verify_otp_hero_badge => 'Verification';
+
+  @override
+  String get auth_verify_otp_hero_title => 'Enter verification code';
+
+  @override
+  String get auth_verify_otp_hero_subtitle =>
+      'Your account will stay pending until you confirm the code sent to your email.';
+
+  @override
+  String get auth_verify_otp_section_badge => 'OTP';
+
+  @override
+  String get auth_verify_otp_section_title => 'Verify driver account';
+
+  @override
+  String get auth_verify_otp_section_description =>
+      'Review your email and enter the 4-digit code to continue.';
+
+  @override
+  String get auth_verify_otp_identifier_label => 'Email';
+
+  @override
+  String get auth_verify_otp_code_hint => 'Enter 4-digit code';
+
+  @override
+  String get auth_verify_otp_code_helper =>
+      'The code must contain 4 digits only.';
+
+  @override
+  String get auth_verify_otp_resend_action => 'Resend';
+
+  @override
+  String get auth_verify_otp_resending => 'Resending...';
+
+  @override
+  String get auth_verify_otp_back_to_login => 'Back to login';
+
+  @override
+  String get auth_verify_otp_missing_tokens =>
+      'No login tokens were returned after verification.';
+
+  @override
   String get auth_signup_hero_badge => 'Join the driver team';
 
   @override
@@ -1694,6 +1737,230 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get auth_pending_notifications_review_message =>
       'You will be notified once reviewed.';
+
+  @override
+  String get auth_pending_support_title => 'Support';
+
+  @override
+  String get auth_pending_support_message =>
+      'If you need to ask about your account status or send an appeal, you can contact support directly from here.';
+
+  @override
+  String get driver_account_support_title => 'Driver account support';
+
+  @override
+  String get driver_account_support_subtitle =>
+      'Send a direct support appeal about review, suspension, bans, or any issue preventing account access.';
+
+  @override
+  String get driver_account_support_identifier_label => 'Email or phone';
+
+  @override
+  String get driver_account_support_identifier_hint => 'Enter email or phone';
+
+  @override
+  String get driver_account_support_reason_label => 'Request reason';
+
+  @override
+  String get driver_account_support_message_label => 'Message';
+
+  @override
+  String get driver_account_support_message_hint =>
+      'Explain the issue or request clearly';
+
+  @override
+  String get driver_account_support_attach_files => 'Attach files';
+
+  @override
+  String get driver_account_support_attach_more_files => 'Attach more files';
+
+  @override
+  String get driver_account_support_submit => 'Send support request';
+
+  @override
+  String get driver_account_support_reason_required =>
+      'Choose a support request reason';
+
+  @override
+  String get driver_account_support_empty_reasons =>
+      'No reasons are available right now. Pull to refresh and try again.';
+
+  @override
+  String get driver_account_support_pick_files_error =>
+      'Unable to open the image picker. Please try again.';
+
+  @override
+  String get driver_account_support_upload_files_error =>
+      'Unable to upload the attached files. Please try again.';
+
+  @override
+  String get driver_support_case_entry_title => 'Support case';
+
+  @override
+  String get driver_support_case_entry_retry => 'Retry loading support case';
+
+  @override
+  String get driver_support_cases_title => 'Cases and disputes';
+
+  @override
+  String get driver_support_cases_empty_title => 'No support requests yet';
+
+  @override
+  String get driver_support_cases_empty_subtitle =>
+      'Any issue, dispute, or account support request you submit will appear here.';
+
+  @override
+  String get driver_support_case_order_number => 'Order number';
+
+  @override
+  String get driver_support_case_reference => 'Case reference';
+
+  @override
+  String get driver_support_case_type_report => 'Operational report';
+
+  @override
+  String get driver_support_case_type_dispute => 'Financial dispute';
+
+  @override
+  String get driver_support_case_type_account => 'Account support';
+
+  @override
+  String get driver_support_case_status_submitted => 'Submitted';
+
+  @override
+  String get driver_support_case_status_in_review => 'In review';
+
+  @override
+  String get driver_support_case_status_awaiting_evidence =>
+      'Awaiting evidence';
+
+  @override
+  String get driver_support_case_status_approved => 'Approved';
+
+  @override
+  String get driver_support_case_status_rejected => 'Rejected';
+
+  @override
+  String get driver_support_case_status_resolved => 'Resolved';
+
+  @override
+  String get driver_support_case_details_title => 'Case details';
+
+  @override
+  String get driver_support_case_description_title => 'Description';
+
+  @override
+  String get driver_support_case_admin_note_title => 'Admin note';
+
+  @override
+  String get driver_support_case_decision_notes_title => 'Decision notes';
+
+  @override
+  String get driver_support_case_attachments_title => 'Attachments';
+
+  @override
+  String get driver_support_case_recent_activity_title => 'Recent activity';
+
+  @override
+  String get driver_support_case_add_follow_up_title => 'Add follow-up';
+
+  @override
+  String get driver_support_follow_up_reason => 'Follow-up reason';
+
+  @override
+  String get driver_support_follow_up_message => 'Message';
+
+  @override
+  String get driver_support_follow_up_message_hint =>
+      'Add any new details or clarification';
+
+  @override
+  String get driver_support_attach_files => 'Attach files';
+
+  @override
+  String get driver_support_attach_more_files => 'Attach more files';
+
+  @override
+  String get driver_support_send_follow_up => 'Send follow-up';
+
+  @override
+  String get driver_support_follow_up_required_error =>
+      'Choose a follow-up reason and enter a message';
+
+  @override
+  String get driver_support_pick_files_error =>
+      'Unable to open the image picker. Please try again.';
+
+  @override
+  String get driver_support_attachment_file_name => 'attachment.jpg';
+
+  @override
+  String get driver_support_upload_files_error =>
+      'Unable to upload attachments. Please try again.';
+
+  @override
+  String get driver_support_open_attachment_error =>
+      'Unable to open the attachment.';
+
+  @override
+  String get driver_support_not_available => '--';
+
+  @override
+  String get driver_support_case_reason => 'Reason';
+
+  @override
+  String get driver_support_case_last_update => 'Last update';
+
+  @override
+  String get driver_support_case_queue => 'Queue';
+
+  @override
+  String get driver_support_case_priority_low => 'Low';
+
+  @override
+  String get driver_support_case_priority_medium => 'Medium';
+
+  @override
+  String get driver_support_case_priority_high => 'High';
+
+  @override
+  String get driver_support_case_priority_critical => 'Critical';
+
+  @override
+  String get driver_support_reason_customer_unavailable =>
+      'Customer unavailable';
+
+  @override
+  String get driver_support_reason_wrong_address => 'Wrong address';
+
+  @override
+  String get driver_support_reason_payout_issue => 'Payout issue';
+
+  @override
+  String get driver_support_reason_damaged_package => 'Damaged package';
+
+  @override
+  String get driver_support_follow_up_reason_general => 'General follow-up';
+
+  @override
+  String get driver_support_follow_up_reason_additional_info =>
+      'Additional info';
+
+  @override
+  String get driver_support_follow_up_reason_proof_submitted =>
+      'Proof submitted';
+
+  @override
+  String get driver_support_attachment => 'Attachment';
+
+  @override
+  String get driver_support_activity_case_opened => 'Case opened';
+
+  @override
+  String get driver_support_activity_follow_up_added => 'Follow-up added';
+
+  @override
+  String get driver_support_activity_driver_replied => 'Driver replied';
 
   @override
   String get auth_pending_update_details => 'Update details';

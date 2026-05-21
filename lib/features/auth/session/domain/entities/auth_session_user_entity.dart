@@ -5,6 +5,7 @@ class AuthSessionUserEntity {
     required this.email,
     required this.phone,
     required this.role,
+    required this.profilePhotoUrl,
     required this.favoritesCount,
   });
 
@@ -13,5 +14,6 @@ class AuthSessionUserEntity {
   final String email;
   final String phone;
   final String role;
+  final String profilePhotoUrl;
   final int favoritesCount;
 }

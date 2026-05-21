@@ -58,6 +58,18 @@ class DriverSupportCaseEntity {
   final List<DriverSupportAttachmentEntity> attachments;
   final List<DriverSupportCaseActivityEntity> activities;
 
+  String get normalizedType => type.trim().toLowerCase();
+
+  bool get isAccountCase => normalizedType == 'driver_account';
+
+  bool get hasOrderContext => orderId.trim().isNotEmpty;
+
+  String get displayReference {
+    final normalizedOrderNumber = orderNumber.trim();
+    if (normalizedOrderNumber.isNotEmpty) return normalizedOrderNumber;
+    return id.trim();
+  }
+
   DriverSupportCaseEntity copyWith({
     String? id,
     String? orderId,

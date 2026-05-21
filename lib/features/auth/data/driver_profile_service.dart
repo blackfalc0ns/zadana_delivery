@@ -169,6 +169,7 @@ class DriverIdentity {
     this.email = '',
     this.phone = '',
     this.role = 'driver',
+    this.profilePhotoUrl = '',
     this.lastIdentifier = '',
   });
 
@@ -177,6 +178,7 @@ class DriverIdentity {
   final String email;
   final String phone;
   final String role;
+  final String profilePhotoUrl;
   final String lastIdentifier;
 
   DriverIdentity copyWith({
@@ -185,6 +187,7 @@ class DriverIdentity {
     String? email,
     String? phone,
     String? role,
+    String? profilePhotoUrl,
     String? lastIdentifier,
   }) {
     return DriverIdentity(
@@ -193,6 +196,7 @@ class DriverIdentity {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       role: role ?? this.role,
+      profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
       lastIdentifier: lastIdentifier ?? this.lastIdentifier,
     );
   }

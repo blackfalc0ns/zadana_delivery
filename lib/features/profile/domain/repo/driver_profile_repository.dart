@@ -19,4 +19,10 @@ abstract class DriverProfileRepository {
   Future<ApiResult<DriverUnifiedProfileEntity>> updateDocuments(
     UpdateDriverDocumentsRequestEntity request,
   );
+
+  Future<ApiResult<DriverUnifiedProfileEntity>> updateProfilePhoto(
+    String photoPathOrUrl,
+  );
+
+  Future<ApiResult<DriverUnifiedProfileEntity>> deleteProfilePhoto();
 }

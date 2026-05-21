@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
-import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
-import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
-import 'package:zadana_delivery/features/driver_support/domain/usecase/get_driver_support_case_details_usecase.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_event.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_state.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_details_screen.dart';
 
 class DriverSupportCaseDetailEntryScreen extends StatefulWidget {
-  const DriverSupportCaseDetailEntryScreen({super.key, required this.caseId});
+  const DriverSupportCaseDetailEntryScreen({
+    super.key,
+    required this.caseId,
+    this.caseType,
+  });
 
   final String caseId;
+  final String? caseType;
 
   @override
   State<DriverSupportCaseDetailEntryScreen> createState() =>
@@ -18,63 +25,70 @@ class DriverSupportCaseDetailEntryScreen extends StatefulWidget {
 
 class _DriverSupportCaseDetailEntryScreenState
     extends State<DriverSupportCaseDetailEntryScreen> {
-  late Future<DriverSupportCaseEntity?> _loadFuture;
+  late final DriverSupportCubit _cubit;
 
   @override
   void initState() {
     super.initState();
-    _loadFuture = _loadCase();
+    _cubit = getIt<DriverSupportCubit>();
+    _cubit.doIntent(
+      DriverSupportLoadCaseDetailsEvent(
+        widget.caseId,
+        caseType: widget.caseType,
+      ),
+    );
   }
 
-  Future<DriverSupportCaseEntity?> _loadCase() async {
-    final result = await getIt<GetDriverSupportCaseDetailsUseCase>().call(
-      widget.caseId,
-    );
-    switch (result) {
-      case ApiSuccessResult<DriverSupportCaseEntity>():
-        return result.data;
-      case ApiErrorResult<DriverSupportCaseEntity>():
-        return null;
-    }
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<DriverSupportCaseEntity?>(
-      future: _loadFuture,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData && snapshot.connectionState != ConnectionState.done) {
-          return Scaffold(
-            appBar: CustomAppBar.modern(
-              title: 'Support case',
-              onBackPressed: () => Navigator.of(context).maybePop(),
-            ),
-            body: const Center(child: CircularProgressIndicator()),
-          );
-        }
+    final locale = context.localization;
 
-        final supportCase = snapshot.data;
-        if (supportCase == null) {
-          return Scaffold(
-            appBar: CustomAppBar.modern(
-              title: 'Support case',
-              onBackPressed: () => Navigator.of(context).maybePop(),
-            ),
-            body: Center(
-              child: FilledButton(
-                onPressed: () {
-                  setState(() {
-                    _loadFuture = _loadCase();
-                  });
-                },
-                child: const Text('Retry loading support case'),
+    return BlocProvider.value(
+      value: _cubit,
+      child: BlocBuilder<DriverSupportCubit, DriverSupportState>(
+        builder: (context, state) {
+          if (state.isLoading && state.selectedCase == null) {
+            return Scaffold(
+              appBar: CustomAppBar.modern(
+                title: locale.driver_support_case_entry_title,
+                onBackPressed: () => Navigator.of(context).maybePop(),
               ),
-            ),
-          );
-        }
+              body: const Center(child: CircularProgressIndicator()),
+            );
+          }
 
-        return DriverSupportCaseDetailsScreen(initialCase: supportCase);
-      },
+          final supportCase = state.selectedCase;
+          if (supportCase == null) {
+            return Scaffold(
+              appBar: CustomAppBar.modern(
+                title: locale.driver_support_case_entry_title,
+                onBackPressed: () => Navigator.of(context).maybePop(),
+              ),
+              body: Center(
+                child: FilledButton(
+                  onPressed: () {
+                    _cubit.doIntent(
+                      DriverSupportLoadCaseDetailsEvent(
+                        widget.caseId,
+                        caseType: widget.caseType,
+                      ),
+                    );
+                  },
+                  child: Text(locale.driver_support_case_entry_retry),
+                ),
+              ),
+            );
+          }
+
+          return DriverSupportCaseDetailsScreen(initialCase: supportCase);
+        },
+      ),
     );
   }
 }

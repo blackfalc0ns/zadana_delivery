@@ -35,6 +35,7 @@ enum ApiErrorType {
   locationServiceDisabled,
   locationPermissionDenied,
   locationPermissionDeniedForever,
+  locationPermissionNeedsSettings,
   unknown,
   cancelled,
   other,
@@ -101,6 +102,8 @@ extension ApiErrorTypeExtension on ApiErrorType {
         return 'location_permission_denied';
       case ApiErrorType.locationPermissionDeniedForever:
         return 'location_permission_denied_forever';
+      case ApiErrorType.locationPermissionNeedsSettings:
+        return 'location_permission_needs_settings';
       case ApiErrorType.unknown:
         return 'error_unknown';
       case ApiErrorType.cancelled:

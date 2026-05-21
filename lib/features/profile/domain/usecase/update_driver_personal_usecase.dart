@@ -17,3 +17,25 @@ class UpdateDriverPersonalUseCase {
     return _repository.updatePersonal(request);
   }
 }
+
+@injectable
+class UpdateDriverProfilePhotoUseCase {
+  const UpdateDriverProfilePhotoUseCase(this._repository);
+
+  final DriverProfileRepository _repository;
+
+  Future<ApiResult<DriverUnifiedProfileEntity>> call(String photoPathOrUrl) {
+    return _repository.updateProfilePhoto(photoPathOrUrl);
+  }
+}
+
+@injectable
+class DeleteDriverProfilePhotoUseCase {
+  const DeleteDriverProfilePhotoUseCase(this._repository);
+
+  final DriverProfileRepository _repository;
+
+  Future<ApiResult<DriverUnifiedProfileEntity>> call() {
+    return _repository.deleteProfilePhoto();
+  }
+}

@@ -1,28 +1,30 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
-import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/services/file_upload_service.dart';
-import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_attachment_entity.dart';
-import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_activity_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_message_request_entity.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_cubit.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_event.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/manager/driver_support_state.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_activity_tile.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_attachment_tile.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_case_details_hero.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_case_details_loading_view.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_case_section_card.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/widgets/driver_support_case_details/driver_support_follow_up_form.dart';
 
 class DriverSupportCaseDetailsScreen extends StatefulWidget {
   const DriverSupportCaseDetailsScreen({super.key, required this.initialCase});
@@ -45,22 +47,10 @@ class _DriverSupportCaseDetailsScreenState
 
   bool get _isArabic => Localizations.localeOf(context).languageCode == 'ar';
 
-  static const List<_ReasonOption> _followUpReasons = [
-    _ReasonOption(
-      code: 'follow_up',
-      labelAr: 'متابعة عامة',
-      labelEn: 'General follow-up',
-    ),
-    _ReasonOption(
-      code: 'additional_info',
-      labelAr: 'إضافة تفاصيل',
-      labelEn: 'Additional info',
-    ),
-    _ReasonOption(
-      code: 'proof_submitted',
-      labelAr: 'إرسال إثبات',
-      labelEn: 'Proof submitted',
-    ),
+  static const List<String> _followUpReasonCodes = [
+    'follow_up',
+    'additional_info',
+    'proof_submitted',
   ];
 
   @override
@@ -69,7 +59,12 @@ class _DriverSupportCaseDetailsScreenState
     _cubit = getIt<DriverSupportCubit>();
     _messageController = TextEditingController();
     unawaited(
-      _cubit.doIntent(DriverSupportLoadCaseDetailsEvent(widget.initialCase.id)),
+      _cubit.doIntent(
+        DriverSupportLoadCaseDetailsEvent(
+          widget.initialCase.id,
+          caseType: widget.initialCase.type,
+        ),
+      ),
     );
   }
 
@@ -80,21 +75,30 @@ class _DriverSupportCaseDetailsScreenState
     super.dispose();
   }
 
-  String _text(String ar, String en) => _isArabic ? ar : en;
+  String _reasonLabel(String code) => switch (code) {
+    'follow_up' => context.localization.driver_support_follow_up_reason_general,
+    'additional_info' =>
+      context.localization.driver_support_follow_up_reason_additional_info,
+    'proof_submitted' =>
+      context.localization.driver_support_follow_up_reason_proof_submitted,
+    _ => code,
+  };
 
-  String _reasonLabel(_ReasonOption option) =>
-      _isArabic ? option.labelAr : option.labelEn;
+  String _imageFileName(XFile image) {
+    final file = File(image.path);
+    return file.uri.pathSegments.isEmpty
+        ? context.localization.driver_support_attachment_file_name
+        : file.uri.pathSegments.last;
+  }
 
   Future<void> _sendMessage(DriverSupportCaseEntity item) async {
+    final locale = context.localization;
     final message = _messageController.text.trim();
     final reasonCode = _selectedReasonCode.trim();
     if (message.isEmpty || reasonCode.isEmpty) {
       CustomSnackbar.showError(
         context: context,
-        message: _text(
-          'اختر سبب المتابعة واكتب الرسالة',
-          'Choose a follow-up reason and enter a message',
-        ),
+        message: locale.driver_support_follow_up_required_error,
       );
       return;
     }
@@ -145,10 +149,7 @@ class _DriverSupportCaseDetailsScreenState
       if (!mounted) return;
       CustomSnackbar.showError(
         context: context,
-        message: _text(
-          'تعذر فتح منتقي الصور. حاول مرة أخرى.',
-          'Unable to open the image picker. Please try again.',
-        ),
+        message: context.localization.driver_support_pick_files_error,
       );
     }
   }
@@ -163,12 +164,11 @@ class _DriverSupportCaseDetailsScreenState
           image.path,
           directory: DriverUploadDirectory.proofs,
         );
-        final file = File(image.path);
-        final fileName = file.uri.pathSegments.isEmpty
-            ? 'attachment.jpg'
-            : file.uri.pathSegments.last;
         attachments.add(
-          DriverSupportAttachmentEntity(fileName: fileName, fileUrl: url),
+          DriverSupportAttachmentEntity(
+            fileName: _imageFileName(image),
+            fileUrl: url,
+          ),
         );
       }
       return attachments;
@@ -178,10 +178,7 @@ class _DriverSupportCaseDetailsScreenState
         context: context,
         message: error is Exception
             ? error.toString().replaceFirst('Exception: ', '')
-            : _text(
-                'تعذر رفع الملفات المرفقة. حاول مرة أخرى.',
-                'Unable to upload attachments. Please try again.',
-              ),
+            : context.localization.driver_support_upload_files_error,
       );
       rethrow;
     }
@@ -209,15 +206,14 @@ class _DriverSupportCaseDetailsScreenState
     if (!mounted) return;
     CustomSnackbar.showError(
       context: context,
-      message: _text(
-        'تعذر فتح الملف المرفق.',
-        'Unable to open the attachment.',
-      ),
+      message: context.localization.driver_support_open_attachment_error,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final locale = context.localization;
+
     return BlocProvider.value(
       value: _cubit,
       child: BlocConsumer<DriverSupportCubit, DriverSupportState>(
@@ -249,12 +245,12 @@ class _DriverSupportCaseDetailsScreenState
 
           if (state.isLoading && state.selectedCase == null) {
             return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
+              backgroundColor: context.colorScheme.surface,
               appBar: CustomAppBar.modern(
-                title: _text('تفاصيل الشكوى', 'Case details'),
+                title: locale.driver_support_case_details_title,
                 onBackPressed: context.pop,
               ),
-              body: const _DriverSupportCaseDetailsLoadingView(),
+              body: const DriverSupportCaseDetailsLoadingView(),
             );
           }
 
@@ -264,13 +260,16 @@ class _DriverSupportCaseDetailsScreenState
               state.selectedCase == null) {
             return Scaffold(
               appBar: CustomAppBar.modern(
-                title: _text('تفاصيل الشكوى', 'Case details'),
+                title: locale.driver_support_case_details_title,
                 onBackPressed: context.pop,
               ),
               body: ApiErrorWidget(
                 exception: exception,
                 onRetry: () => _cubit.doIntent(
-                  DriverSupportLoadCaseDetailsEvent(widget.initialCase.id),
+                  DriverSupportLoadCaseDetailsEvent(
+                    widget.initialCase.id,
+                    caseType: widget.initialCase.type,
+                  ),
                 ),
                 onGoBack: context.pop,
               ),
@@ -278,54 +277,60 @@ class _DriverSupportCaseDetailsScreenState
           }
 
           return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surface,
+            backgroundColor: context.colorScheme.surface,
             appBar: CustomAppBar.modern(
-              title: _text('تفاصيل الشكوى', 'Case details'),
+              title: locale.driver_support_case_details_title,
               onBackPressed: context.pop,
             ),
             body: RefreshIndicator(
               onRefresh: () => _cubit.doIntent(
-                DriverSupportLoadCaseDetailsEvent(item.id, refresh: true),
+                DriverSupportLoadCaseDetailsEvent(
+                  item.id,
+                  refresh: true,
+                  caseType: item.type,
+                ),
               ),
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 22),
                 children: [
-                  _CaseDetailsHero(item: item, isArabic: _isArabic),
+                  DriverSupportCaseDetailsHero(item: item, isArabic: _isArabic),
                   const SizedBox(height: 10),
-                  _SectionCard(
-                    title: _text('الوصف', 'Description'),
+                  DriverSupportCaseSectionCard(
+                    title: locale.driver_support_case_description_title,
                     icon: Icons.description_outlined,
                     child: Text(
-                      item.message.trim().isEmpty ? '--' : item.message.trim(),
+                      item.message.trim().isEmpty
+                          ? locale.driver_support_not_available
+                          : item.message.trim(),
                     ),
                   ),
                   if ((item.adminNote ?? '').trim().isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    _SectionCard(
-                      title: _text('ملاحظة الإدارة', 'Admin note'),
+                    DriverSupportCaseSectionCard(
+                      title: locale.driver_support_case_admin_note_title,
                       icon: Icons.campaign_outlined,
                       child: Text(item.adminNote!.trim()),
                     ),
                   ],
                   if ((item.decisionNotes ?? '').trim().isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    _SectionCard(
-                      title: _text('ملاحظات القرار', 'Decision notes'),
+                    DriverSupportCaseSectionCard(
+                      title: locale.driver_support_case_decision_notes_title,
                       icon: Icons.rule_folder_outlined,
                       child: Text(item.decisionNotes!.trim()),
                     ),
                   ],
                   if (item.attachments.isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    _SectionCard(
-                      title: _text('المرفقات', 'Attachments'),
+                    DriverSupportCaseSectionCard(
+                      title: locale.driver_support_case_attachments_title,
                       icon: Icons.attach_file_rounded,
                       child: Column(
                         children: item.attachments
                             .map(
                               (attachment) => Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
-                                child: _AttachmentTile(
+                                child: DriverSupportAttachmentTile(
                                   fileName: attachment.fileName,
                                   onTap: () =>
                                       _openAttachment(attachment.fileUrl),
@@ -338,15 +343,15 @@ class _DriverSupportCaseDetailsScreenState
                   ],
                   if (item.activities.isNotEmpty) ...[
                     const SizedBox(height: 10),
-                    _SectionCard(
-                      title: _text('آخر النشاطات', 'Recent activity'),
+                    DriverSupportCaseSectionCard(
+                      title: locale.driver_support_case_recent_activity_title,
                       icon: Icons.timeline_rounded,
                       child: Column(
                         children: item.activities
                             .map(
                               (activity) => Padding(
                                 padding: const EdgeInsets.only(bottom: 10),
-                                child: _ActivityTile(
+                                child: DriverSupportActivityTile(
                                   isArabic: _isArabic,
                                   activity: activity,
                                 ),
@@ -357,98 +362,25 @@ class _DriverSupportCaseDetailsScreenState
                     ),
                   ],
                   const SizedBox(height: 10),
-                  _SectionCard(
-                    title: _text('إضافة متابعة', 'Add follow-up'),
+                  DriverSupportCaseSectionCard(
+                    title: locale.driver_support_case_add_follow_up_title,
                     icon: Icons.reply_all_rounded,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DropdownButtonFormField<String>(
-                          initialValue: _selectedReasonCode,
-                          borderRadius: BorderRadius.circular(18),
-                          decoration: InputDecoration(
-                            labelText: _text(
-                              'سبب المتابعة',
-                              'Follow-up reason',
-                            ),
-                            filled: true,
-                          ),
-                          items: _followUpReasons
-                              .map(
-                                (reason) => DropdownMenuItem<String>(
-                                  value: reason.code,
-                                  child: Text(_reasonLabel(reason)),
-                                ),
-                              )
-                              .toList(growable: false),
-                          onChanged: state.isMessageSending
-                              ? null
-                              : (value) {
-                                  setState(() {
-                                    _selectedReasonCode =
-                                        value ?? _selectedReasonCode;
-                                  });
-                                },
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: _messageController,
-                          maxLines: 4,
-                          textInputAction: TextInputAction.newline,
-                          decoration: InputDecoration(
-                            labelText: _text('الرسالة', 'Message'),
-                            alignLabelWithHint: true,
-                            hintText: _text(
-                              'اكتب أي تفاصيل جديدة أو توضيح إضافي',
-                              'Add any new details or clarification',
-                            ),
-                            filled: true,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        OutlinedButton.icon(
-                          onPressed: state.isMessageSending
-                              ? null
-                              : _pickImages,
-                          icon: const Icon(Icons.image_outlined, size: 20),
-                          label: Text(
-                            _selectedImages.isEmpty
-                                ? _text('إرفاق ملفات', 'Attach files')
-                                : _text(
-                                    'إرفاق ملفات إضافية',
-                                    'Attach more files',
-                                  ),
-                          ),
-                        ),
-                        if (_selectedImages.isNotEmpty) ...[
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: _selectedImages
-                                .map(
-                                  (image) => _SelectedAttachmentChip(
-                                    fileName:
-                                        File(
-                                          image.path,
-                                        ).uri.pathSegments.isEmpty
-                                        ? 'attachment.jpg'
-                                        : File(
-                                            image.path,
-                                          ).uri.pathSegments.last,
-                                    onRemove: () => _removeImage(image),
-                                  ),
-                                )
-                                .toList(growable: false),
-                          ),
-                        ],
-                        const SizedBox(height: 12),
-                        AppButton.filled(
-                          text: _text('إرسال المتابعة', 'Send follow-up'),
-                          isLoading: state.isMessageSending,
-                          onPressed: () => _sendMessage(item),
-                        ),
-                      ],
+                    child: DriverSupportFollowUpForm(
+                      reasonCodes: _followUpReasonCodes,
+                      selectedReasonCode: _selectedReasonCode,
+                      messageController: _messageController,
+                      selectedImages: _selectedImages,
+                      isSubmitting: state.isMessageSending,
+                      reasonLabelBuilder: _reasonLabel,
+                      fileNameBuilder: _imageFileName,
+                      onReasonChanged: (value) {
+                        setState(() {
+                          _selectedReasonCode = value ?? _selectedReasonCode;
+                        });
+                      },
+                      onPickImages: _pickImages,
+                      onRemoveImage: _removeImage,
+                      onSubmit: () => _sendMessage(item),
                     ),
                   ),
                 ],
@@ -456,674 +388,6 @@ class _DriverSupportCaseDetailsScreenState
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _ReasonOption {
-  const _ReasonOption({
-    required this.code,
-    required this.labelAr,
-    required this.labelEn,
-  });
-
-  final String code;
-  final String labelAr;
-  final String labelEn;
-}
-
-class _CaseDetailsHero extends StatelessWidget {
-  const _CaseDetailsHero({required this.item, required this.isArabic});
-
-  final DriverSupportCaseEntity item;
-  final bool isArabic;
-
-  String _text(String ar, String en) => isArabic ? ar : en;
-
-  String _formatDate(DateTime? value) {
-    if (value == null) return '--';
-    return DateFormat('dd/MM/yyyy - hh:mm a').format(value.toLocal());
-  }
-
-  String _labelize(String value) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return '--';
-    return normalized
-        .replaceAll('_', ' ')
-        .replaceAllMapped(
-          RegExp(r'([a-z])([A-Z])'),
-          (match) => '${match.group(1)} ${match.group(2)}',
-        );
-  }
-
-  String _localizedLabel({
-    required String? ar,
-    required String? en,
-    required String fallback,
-  }) {
-    final preferred = isArabic ? ar : en;
-    final normalized = preferred?.trim() ?? '';
-    if (normalized.isNotEmpty) return normalized;
-    return fallback;
-  }
-
-  String _caseTypeLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.typeLabelAr,
-      en: item.typeLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.type.trim().toLowerCase()) {
-      case 'driver_report':
-      case 'driverreport':
-        return _text('بلاغ سائق', 'Driver report');
-      case 'dispute':
-        return _text('نزاع', 'Dispute');
-      default:
-        return _labelize(item.type);
-    }
-  }
-
-  String _statusLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.statusLabelAr,
-      en: item.statusLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.status.trim().toLowerCase()) {
-      case 'submitted':
-        return _text('تم الإرسال', 'Submitted');
-      case 'in_review':
-        return _text('قيد المراجعة', 'In review');
-      case 'open':
-        return _text('مفتوحة', 'Open');
-      case 'closed':
-        return _text('مغلقة', 'Closed');
-      case 'resolved':
-        return _text('تم الحل', 'Resolved');
-      default:
-        return _labelize(item.status);
-    }
-  }
-
-  String _priorityLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.priorityLabelAr,
-      en: item.priorityLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.priority.trim().toLowerCase()) {
-      case 'low':
-        return _text('منخفضة', 'Low');
-      case 'medium':
-        return _text('متوسطة', 'Medium');
-      case 'high':
-        return _text('عالية', 'High');
-      case 'urgent':
-        return _text('عاجلة', 'Urgent');
-      default:
-        return _labelize(item.priority);
-    }
-  }
-
-  String _reasonLabel() {
-    final apiLabel = _localizedLabel(
-      ar: item.reasonLabelAr,
-      en: item.reasonLabelEn,
-      fallback: '',
-    );
-    if (apiLabel.isNotEmpty) return apiLabel;
-    switch (item.reasonCode.trim().toLowerCase()) {
-      case 'customer_unreachable':
-        return _text('العميل لا يرد', 'Customer unreachable');
-      case 'wrong_address':
-        return _text('العنوان غير صحيح', 'Wrong address');
-      case 'payment_issue':
-        return _text('مشكلة في الدفع', 'Payment issue');
-      case 'order_damaged':
-        return _text('الطلب تالف', 'Order damaged');
-      default:
-        return _labelize(item.reasonCode);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final title = item.orderNumber.isEmpty ? item.id : item.orderNumber;
-    final screenWidth = MediaQuery.sizeOf(context).width;
-    final infoCardWidth = math.max((screenWidth - 46) / 2, 132.0);
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            scheme.primary.withValues(alpha: 0.03),
-            scheme.tertiary.withValues(alpha: 0.012),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.14),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _text('رقم الطلب', 'Order number'),
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: scheme.onSurfaceVariant,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              fontSize: 21,
-              letterSpacing: -0.4,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: [
-              _HeroPill(
-                icon: Icons.balance_rounded,
-                label: _caseTypeLabel(),
-                color: scheme.tertiary,
-              ),
-              _HeroPill(
-                icon: Icons.flag_rounded,
-                label: _statusLabel(),
-                color: scheme.primary,
-              ),
-              _HeroPill(
-                icon: Icons.priority_high_rounded,
-                label: _priorityLabel(),
-                color: scheme.secondary,
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              SizedBox(
-                width: infoCardWidth,
-                child: _HeroInfoLine(
-                  label: _text('السبب', 'Reason'),
-                  value: _reasonLabel(),
-                ),
-              ),
-              SizedBox(
-                width: infoCardWidth,
-                child: _HeroInfoLine(
-                  label: _text('آخر تحديث', 'Last update'),
-                  value: _formatDate(item.updatedAt ?? item.createdAt),
-                ),
-              ),
-              if ((item.queue ?? '').trim().isNotEmpty)
-                SizedBox(
-                  width: infoCardWidth,
-                  child: _HeroInfoLine(
-                    label: _text('القسم', 'Queue'),
-                    value: _localizedLabel(
-                      ar: item.queueLabelAr,
-                      en: item.queueLabelEn,
-                      fallback: item.queue!.trim(),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroPill extends StatelessWidget {
-  const _HeroPill({
-    required this.icon,
-    required this.label,
-    required this.color,
-  });
-
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.07),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 12, color: color),
-          const SizedBox(width: 4),
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-              fontSize: 12,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroInfoLine extends StatelessWidget {
-  const _HeroInfoLine({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-      decoration: BoxDecoration(
-        color: scheme.surface.withValues(alpha: 0.72),
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            value,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurface,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({
-    required this.title,
-    required this.icon,
-    required this.child,
-  });
-
-  final String title;
-  final IconData icon;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: scheme.outlineVariant.withValues(alpha: 0.14),
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 30,
-                height: 30,
-                decoration: BoxDecoration(
-                  color: scheme.primary.withValues(alpha: 0.06),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(icon, color: scheme.primary, size: 16),
-              ),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          child,
-        ],
-      ),
-    );
-  }
-}
-
-class _AttachmentTile extends StatelessWidget {
-  const _AttachmentTile({required this.fileName, required this.onTap});
-
-  final String fileName;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: BoxDecoration(
-            color: scheme.surface,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: scheme.outlineVariant.withValues(alpha: 0.14),
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.insert_drive_file_outlined, color: scheme.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  fileName.trim().isEmpty ? 'attachment' : fileName.trim(),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Icon(Icons.open_in_new_rounded, color: scheme.onSurfaceVariant),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SelectedAttachmentChip extends StatelessWidget {
-  const _SelectedAttachmentChip({
-    required this.fileName,
-    required this.onRemove,
-  });
-
-  final String fileName;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Flexible(
-            child: Text(
-              fileName,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
-            ),
-          ),
-          const SizedBox(width: 8),
-          InkWell(
-            onTap: onRemove,
-            borderRadius: BorderRadius.circular(999),
-            child: Icon(
-              Icons.close_rounded,
-              size: 16,
-              color: scheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.isArabic, required this.activity});
-
-  final bool isArabic;
-  final DriverSupportCaseActivityEntity activity;
-
-  String _formatDate(DateTime? value) {
-    if (value == null) return '--';
-    return DateFormat('dd/MM/yyyy - hh:mm a').format(value.toLocal());
-  }
-
-  String _labelize(String value) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) return '--';
-    return normalized
-        .replaceAll('_', ' ')
-        .replaceAllMapped(
-          RegExp(r'([a-z])([A-Z])'),
-          (match) => '${match.group(1)} ${match.group(2)}',
-        );
-  }
-
-  String _localizedLabel({
-    required String? ar,
-    required String? en,
-    required String fallback,
-  }) {
-    final preferred = isArabic ? ar : en;
-    final normalized = preferred?.trim() ?? '';
-    if (normalized.isNotEmpty) return normalized;
-    return fallback;
-  }
-
-  String _activityLabel() {
-    final titleLabel = _localizedLabel(
-      ar: activity.titleAr,
-      en: activity.titleEn,
-      fallback: '',
-    );
-    if (titleLabel.isNotEmpty) return titleLabel;
-
-    final actionLabel = _localizedLabel(
-      ar: activity.typeLabelAr,
-      en: activity.typeLabelEn,
-      fallback: '',
-    );
-    if (actionLabel.isNotEmpty) return actionLabel;
-    switch (activity.type.trim().toLowerCase()) {
-      case 'submitted':
-        return isArabic ? 'تم إرسال الشكوى' : 'Case submitted';
-      case 'follow_up':
-        return isArabic ? 'تمت إضافة متابعة' : 'Follow-up added';
-      case 'driver_response':
-        return isArabic ? 'رد المندوب' : 'Driver replied';
-      default:
-        return _labelize(activity.type);
-    }
-  }
-
-  String? _actorLabel() {
-    final value = _localizedLabel(
-      ar: activity.actorRoleLabelAr,
-      en: activity.actorRoleLabelEn,
-      fallback: activity.actorName?.trim() ?? '',
-    );
-    return value.trim().isEmpty ? null : value;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final actorLabel = _actorLabel();
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: scheme.surface,
-        borderRadius: BorderRadius.circular(14),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            margin: const EdgeInsets.only(top: 5),
-            decoration: BoxDecoration(
-              color: scheme.primary,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _activityLabel(),
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: scheme.primary,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-
-                if (activity.message.trim().isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    activity.message.trim(),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      height: 1.3,
-                      fontSize: 13.5,
-                    ),
-                  ),
-                ],
-                if (actorLabel != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    actorLabel,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: scheme.primary.withValues(alpha: 0.84),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 4),
-                Text(
-                  _formatDate(activity.createdAt),
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    color: scheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DriverSupportCaseDetailsLoadingView extends StatelessWidget {
-  const _DriverSupportCaseDetailsLoadingView();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return SkeletonStateWidget(
-      child: ListView(
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 22),
-        children: [
-          _SkeletonBox(
-            height: 158,
-            borderRadius: 22,
-            color: scheme.outlineVariant.withValues(alpha: 0.16),
-          ),
-          const SizedBox(height: 10),
-          _SkeletonBox(
-            height: 104,
-            borderRadius: 22,
-            color: scheme.outlineVariant.withValues(alpha: 0.12),
-          ),
-          const SizedBox(height: 10),
-          _SkeletonBox(
-            height: 128,
-            borderRadius: 22,
-            color: scheme.outlineVariant.withValues(alpha: 0.12),
-          ),
-          const SizedBox(height: 10),
-          _SkeletonBox(
-            height: 198,
-            borderRadius: 22,
-            color: scheme.outlineVariant.withValues(alpha: 0.12),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SkeletonBox extends StatelessWidget {
-  const _SkeletonBox({
-    required this.height,
-    required this.borderRadius,
-    required this.color,
-  });
-
-  final double height;
-  final double borderRadius;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: height,
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
   }

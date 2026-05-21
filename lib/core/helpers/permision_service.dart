@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 
@@ -91,6 +93,17 @@ class LocationPermissionService {
       permission = await Geolocator.requestPermission();
     }
 
+    if (permission == LocationPermission.always) {
+      return;
+    }
+
+    if (Platform.isAndroid && permission == LocationPermission.whileInUse) {
+      throw const LocationServiceException(
+        'Android requires background location to be enabled from app settings. Please open the app settings and choose allow all the time.',
+        LocationErrorType.permissionNeedsSettings,
+      );
+    }
+
     if (permission == LocationPermission.denied) {
       throw const LocationServiceException(
         'Background location permission was denied. Please allow all-the-time access to continue tracking.',
@@ -104,6 +117,11 @@ class LocationPermissionService {
         LocationErrorType.permissionDeniedForever,
       );
     }
+
+    throw const LocationServiceException(
+      'Background location requires all-the-time access. Please choose allow all the time from app settings to continue tracking.',
+      LocationErrorType.permissionDenied,
+    );
   }
 
   Future<void> checkAndRequestPermission() async {
@@ -164,6 +182,7 @@ enum LocationErrorType {
   serviceDisabled,
   permissionDenied,
   permissionDeniedForever,
+  permissionNeedsSettings,
 }
 
 enum LocationPermissionStatus {

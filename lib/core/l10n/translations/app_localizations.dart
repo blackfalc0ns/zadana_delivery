@@ -2564,6 +2564,84 @@ abstract class AppLocalizations {
   /// **'Driver account'**
   String get auth_login_section_badge;
 
+  /// No description provided for @auth_verify_otp_hero_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get auth_verify_otp_hero_badge;
+
+  /// No description provided for @auth_verify_otp_hero_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter verification code'**
+  String get auth_verify_otp_hero_title;
+
+  /// No description provided for @auth_verify_otp_hero_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account will stay pending until you confirm the code sent to your email.'**
+  String get auth_verify_otp_hero_subtitle;
+
+  /// No description provided for @auth_verify_otp_section_badge.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP'**
+  String get auth_verify_otp_section_badge;
+
+  /// No description provided for @auth_verify_otp_section_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify driver account'**
+  String get auth_verify_otp_section_title;
+
+  /// No description provided for @auth_verify_otp_section_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Review your email and enter the 4-digit code to continue.'**
+  String get auth_verify_otp_section_description;
+
+  /// No description provided for @auth_verify_otp_identifier_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get auth_verify_otp_identifier_label;
+
+  /// No description provided for @auth_verify_otp_code_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter 4-digit code'**
+  String get auth_verify_otp_code_hint;
+
+  /// No description provided for @auth_verify_otp_code_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'The code must contain 4 digits only.'**
+  String get auth_verify_otp_code_helper;
+
+  /// No description provided for @auth_verify_otp_resend_action.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get auth_verify_otp_resend_action;
+
+  /// No description provided for @auth_verify_otp_resending.
+  ///
+  /// In en, this message translates to:
+  /// **'Resending...'**
+  String get auth_verify_otp_resending;
+
+  /// No description provided for @auth_verify_otp_back_to_login.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to login'**
+  String get auth_verify_otp_back_to_login;
+
+  /// No description provided for @auth_verify_otp_missing_tokens.
+  ///
+  /// In en, this message translates to:
+  /// **'No login tokens were returned after verification.'**
+  String get auth_verify_otp_missing_tokens;
+
   /// No description provided for @auth_signup_hero_badge.
   ///
   /// In en, this message translates to:
@@ -3217,6 +3295,420 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You will be notified once reviewed.'**
   String get auth_pending_notifications_review_message;
+
+  /// No description provided for @auth_pending_support_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get auth_pending_support_title;
+
+  /// No description provided for @auth_pending_support_message.
+  ///
+  /// In en, this message translates to:
+  /// **'If you need to ask about your account status or send an appeal, you can contact support directly from here.'**
+  String get auth_pending_support_message;
+
+  /// No description provided for @driver_account_support_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver account support'**
+  String get driver_account_support_title;
+
+  /// No description provided for @driver_account_support_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a direct support appeal about review, suspension, bans, or any issue preventing account access.'**
+  String get driver_account_support_subtitle;
+
+  /// No description provided for @driver_account_support_identifier_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email or phone'**
+  String get driver_account_support_identifier_label;
+
+  /// No description provided for @driver_account_support_identifier_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter email or phone'**
+  String get driver_account_support_identifier_hint;
+
+  /// No description provided for @driver_account_support_reason_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Request reason'**
+  String get driver_account_support_reason_label;
+
+  /// No description provided for @driver_account_support_message_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get driver_account_support_message_label;
+
+  /// No description provided for @driver_account_support_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain the issue or request clearly'**
+  String get driver_account_support_message_hint;
+
+  /// No description provided for @driver_account_support_attach_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files'**
+  String get driver_account_support_attach_files;
+
+  /// No description provided for @driver_account_support_attach_more_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach more files'**
+  String get driver_account_support_attach_more_files;
+
+  /// No description provided for @driver_account_support_submit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send support request'**
+  String get driver_account_support_submit;
+
+  /// No description provided for @driver_account_support_reason_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a support request reason'**
+  String get driver_account_support_reason_required;
+
+  /// No description provided for @driver_account_support_empty_reasons.
+  ///
+  /// In en, this message translates to:
+  /// **'No reasons are available right now. Pull to refresh and try again.'**
+  String get driver_account_support_empty_reasons;
+
+  /// No description provided for @driver_account_support_pick_files_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the image picker. Please try again.'**
+  String get driver_account_support_pick_files_error;
+
+  /// No description provided for @driver_account_support_upload_files_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to upload the attached files. Please try again.'**
+  String get driver_account_support_upload_files_error;
+
+  /// No description provided for @driver_support_case_entry_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Support case'**
+  String get driver_support_case_entry_title;
+
+  /// No description provided for @driver_support_case_entry_retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry loading support case'**
+  String get driver_support_case_entry_retry;
+
+  /// No description provided for @driver_support_cases_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Cases and disputes'**
+  String get driver_support_cases_title;
+
+  /// No description provided for @driver_support_cases_empty_title.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests yet'**
+  String get driver_support_cases_empty_title;
+
+  /// No description provided for @driver_support_cases_empty_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Any issue, dispute, or account support request you submit will appear here.'**
+  String get driver_support_cases_empty_subtitle;
+
+  /// No description provided for @driver_support_case_order_number.
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get driver_support_case_order_number;
+
+  /// No description provided for @driver_support_case_reference.
+  ///
+  /// In en, this message translates to:
+  /// **'Case reference'**
+  String get driver_support_case_reference;
+
+  /// No description provided for @driver_support_case_type_report.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational report'**
+  String get driver_support_case_type_report;
+
+  /// No description provided for @driver_support_case_type_dispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial dispute'**
+  String get driver_support_case_type_dispute;
+
+  /// No description provided for @driver_support_case_type_account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account support'**
+  String get driver_support_case_type_account;
+
+  /// No description provided for @driver_support_case_status_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get driver_support_case_status_submitted;
+
+  /// No description provided for @driver_support_case_status_in_review.
+  ///
+  /// In en, this message translates to:
+  /// **'In review'**
+  String get driver_support_case_status_in_review;
+
+  /// No description provided for @driver_support_case_status_awaiting_evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting evidence'**
+  String get driver_support_case_status_awaiting_evidence;
+
+  /// No description provided for @driver_support_case_status_approved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get driver_support_case_status_approved;
+
+  /// No description provided for @driver_support_case_status_rejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get driver_support_case_status_rejected;
+
+  /// No description provided for @driver_support_case_status_resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get driver_support_case_status_resolved;
+
+  /// No description provided for @driver_support_case_details_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Case details'**
+  String get driver_support_case_details_title;
+
+  /// No description provided for @driver_support_case_description_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get driver_support_case_description_title;
+
+  /// No description provided for @driver_support_case_admin_note_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin note'**
+  String get driver_support_case_admin_note_title;
+
+  /// No description provided for @driver_support_case_decision_notes_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision notes'**
+  String get driver_support_case_decision_notes_title;
+
+  /// No description provided for @driver_support_case_attachments_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get driver_support_case_attachments_title;
+
+  /// No description provided for @driver_support_case_recent_activity_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent activity'**
+  String get driver_support_case_recent_activity_title;
+
+  /// No description provided for @driver_support_case_add_follow_up_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add follow-up'**
+  String get driver_support_case_add_follow_up_title;
+
+  /// No description provided for @driver_support_follow_up_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up reason'**
+  String get driver_support_follow_up_reason;
+
+  /// No description provided for @driver_support_follow_up_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get driver_support_follow_up_message;
+
+  /// No description provided for @driver_support_follow_up_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any new details or clarification'**
+  String get driver_support_follow_up_message_hint;
+
+  /// No description provided for @driver_support_attach_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files'**
+  String get driver_support_attach_files;
+
+  /// No description provided for @driver_support_attach_more_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach more files'**
+  String get driver_support_attach_more_files;
+
+  /// No description provided for @driver_support_send_follow_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Send follow-up'**
+  String get driver_support_send_follow_up;
+
+  /// No description provided for @driver_support_follow_up_required_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a follow-up reason and enter a message'**
+  String get driver_support_follow_up_required_error;
+
+  /// No description provided for @driver_support_pick_files_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the image picker. Please try again.'**
+  String get driver_support_pick_files_error;
+
+  /// No description provided for @driver_support_attachment_file_name.
+  ///
+  /// In en, this message translates to:
+  /// **'attachment.jpg'**
+  String get driver_support_attachment_file_name;
+
+  /// No description provided for @driver_support_upload_files_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to upload attachments. Please try again.'**
+  String get driver_support_upload_files_error;
+
+  /// No description provided for @driver_support_open_attachment_error.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the attachment.'**
+  String get driver_support_open_attachment_error;
+
+  /// No description provided for @driver_support_not_available.
+  ///
+  /// In en, this message translates to:
+  /// **'--'**
+  String get driver_support_not_available;
+
+  /// No description provided for @driver_support_case_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get driver_support_case_reason;
+
+  /// No description provided for @driver_support_case_last_update.
+  ///
+  /// In en, this message translates to:
+  /// **'Last update'**
+  String get driver_support_case_last_update;
+
+  /// No description provided for @driver_support_case_queue.
+  ///
+  /// In en, this message translates to:
+  /// **'Queue'**
+  String get driver_support_case_queue;
+
+  /// No description provided for @driver_support_case_priority_low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get driver_support_case_priority_low;
+
+  /// No description provided for @driver_support_case_priority_medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get driver_support_case_priority_medium;
+
+  /// No description provided for @driver_support_case_priority_high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get driver_support_case_priority_high;
+
+  /// No description provided for @driver_support_case_priority_critical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get driver_support_case_priority_critical;
+
+  /// No description provided for @driver_support_reason_customer_unavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer unavailable'**
+  String get driver_support_reason_customer_unavailable;
+
+  /// No description provided for @driver_support_reason_wrong_address.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong address'**
+  String get driver_support_reason_wrong_address;
+
+  /// No description provided for @driver_support_reason_payout_issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout issue'**
+  String get driver_support_reason_payout_issue;
+
+  /// No description provided for @driver_support_reason_damaged_package.
+  ///
+  /// In en, this message translates to:
+  /// **'Damaged package'**
+  String get driver_support_reason_damaged_package;
+
+  /// No description provided for @driver_support_follow_up_reason_general.
+  ///
+  /// In en, this message translates to:
+  /// **'General follow-up'**
+  String get driver_support_follow_up_reason_general;
+
+  /// No description provided for @driver_support_follow_up_reason_additional_info.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional info'**
+  String get driver_support_follow_up_reason_additional_info;
+
+  /// No description provided for @driver_support_follow_up_reason_proof_submitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof submitted'**
+  String get driver_support_follow_up_reason_proof_submitted;
+
+  /// No description provided for @driver_support_attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get driver_support_attachment;
+
+  /// No description provided for @driver_support_activity_case_opened.
+  ///
+  /// In en, this message translates to:
+  /// **'Case opened'**
+  String get driver_support_activity_case_opened;
+
+  /// No description provided for @driver_support_activity_follow_up_added.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up added'**
+  String get driver_support_activity_follow_up_added;
+
+  /// No description provided for @driver_support_activity_driver_replied.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver replied'**
+  String get driver_support_activity_driver_replied;
 
   /// No description provided for @auth_pending_update_details.
   ///

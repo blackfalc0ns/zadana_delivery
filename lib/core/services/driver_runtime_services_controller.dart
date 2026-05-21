@@ -1,6 +1,8 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/repo/driver_tracking_repository.dart';
 
+@lazySingleton
 class DriverRuntimeServicesController {
   DriverRuntimeServicesController(
     this._driverTrackingRepository,

@@ -57,6 +57,20 @@ import '../../features/auth/logout/data/repo/logout_repository_impl.dart'
     as _i767;
 import '../../features/auth/logout/domain/repo/logout_repository.dart' as _i751;
 import '../../features/auth/logout/domain/usecase/logout_usecase.dart' as _i78;
+import '../../features/auth/otp/data/data_source/driver_verify_otp_remote_data_source.dart'
+    as _i548;
+import '../../features/auth/otp/data/data_source/driver_verify_otp_remote_data_source_impl.dart'
+    as _i798;
+import '../../features/auth/otp/data/repo/driver_verify_otp_repository_impl.dart'
+    as _i801;
+import '../../features/auth/otp/domain/repo/driver_verify_otp_repository.dart'
+    as _i338;
+import '../../features/auth/otp/domain/usecase/resend_driver_otp_usecase.dart'
+    as _i324;
+import '../../features/auth/otp/domain/usecase/verify_driver_otp_usecase.dart'
+    as _i371;
+import '../../features/auth/otp/presentation/manager/driver_verify_otp_view_model.dart'
+    as _i191;
 import '../../features/auth/register/data/data_source/driver_zones_remote_data_source.dart'
     as _i897;
 import '../../features/auth/register/data/data_source/driver_zones_remote_data_source_impl.dart'
@@ -149,6 +163,14 @@ import '../../features/driver_support/data/repo/driver_support_repository_impl.d
     as _i369;
 import '../../features/driver_support/domain/repo/driver_support_repository.dart'
     as _i755;
+import '../../features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart'
+    as _i498;
+import '../../features/driver_tracking/data/data_source/driver_tracking_remote_data_source_impl.dart'
+    as _i402;
+import '../../features/driver_tracking/data/repo/driver_tracking_repository_impl.dart'
+    as _i228;
+import '../../features/driver_tracking/domain/repo/driver_tracking_repository.dart'
+    as _i649;
 import '../../features/notifications/data/data_source/notifications_remote_data_source.dart'
     as _i173;
 import '../../features/notifications/data/data_source/notifications_remote_data_source_impl.dart'
@@ -218,6 +240,8 @@ import '../services/language_interceptor.dart' as _i32;
 import '../services/language_service.dart' as _i819;
 import '../services/token_interceptor.dart' as _i1056;
 import '../services/token_service.dart' as _i227;
+import '../services/trip_request_global_alert_service.dart' as _i497;
+import '../services/trip_request_overlay_service.dart' as _i952;
 
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
@@ -269,11 +293,24 @@ extension GetItInjectableX on _i174.GetIt {
       () => externalModules.provideOsmDio(gh<_i528.PrettyDioLogger>()),
       instanceName: 'osmDio',
     );
+    gh.lazySingleton<_i498.DriverTrackingRemoteDataSource>(
+      () => _i402.DriverTrackingRemoteDataSourceImpl(
+        gh<_i367.LocationPermissionService>(),
+      ),
+    );
     gh.lazySingleton<_i585.DriverNotificationRouterService>(
       () => _i585.DriverNotificationRouterService(
         gh<_i179.AppNavigatorService>(),
         gh<_i889.DriverNotificationDedupService>(),
       ),
+    );
+    gh.lazySingleton<_i649.DriverTrackingRepository>(
+      () => _i228.DriverTrackingRepositoryImpl(
+        gh<_i498.DriverTrackingRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i952.TripRequestOverlayService>(
+      () => _i952.TripRequestOverlayService(gh<_i460.SharedPreferences>()),
     );
     gh.factory<_i227.TokenService>(
       () => _i227.TokenService(
@@ -290,13 +327,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i227.TokenService>(),
       ),
     );
-    gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
-      () => _i1015.DriverNotificationOverlayService(
-        gh<_i179.AppNavigatorService>(),
-        gh<_i585.DriverNotificationRouterService>(),
-        gh<_i889.DriverNotificationDedupService>(),
-        gh<_i794.DriverRealtimeService>(),
-      ),
+    gh.lazySingleton<_i794.DriverRealtimeService>(
+      () => _i794.DriverRealtimeService(gh<_i227.TokenService>()),
     );
     gh.lazySingleton<_i430.DriverLocalNotificationService>(
       () => _i430.DriverLocalNotificationService(
@@ -307,6 +339,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i1056.TokenInterceptor(
         gh<_i227.TokenService>(),
         gh<_i820.AuthRefreshService>(),
+      ),
+    );
+    gh.lazySingleton<_i88.DriverRuntimeServicesController>(
+      () => _i88.DriverRuntimeServicesController(
+        gh<_i649.DriverTrackingRepository>(),
+        gh<_i794.DriverRealtimeService>(),
       ),
     );
     gh.factory<_i32.LanguageInterceptor>(
@@ -327,15 +365,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i819.LanguageService>(),
       ),
     );
-    gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
-      () => _i223.DriverNotificationBootstrapService(
+    gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
+      () => _i1015.DriverNotificationOverlayService(
         gh<_i179.AppNavigatorService>(),
-        gh<_i430.DriverLocalNotificationService>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-        gh<_i368.DriverNotificationLaunchPayloadService>(),
-        gh<_i1015.DriverNotificationOverlayService>(),
         gh<_i585.DriverNotificationRouterService>(),
-        gh<_i227.TokenService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+        gh<_i794.DriverRealtimeService>(),
       ),
     );
     gh.factory<_i804.ApiServices>(() => _i804.ApiServices(gh<_i361.Dio>()));
@@ -353,6 +388,17 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i454.ResetPasswordRemoteDataSource>(
       () => _i17.ResetPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
+    gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
+      () => _i223.DriverNotificationBootstrapService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i430.DriverLocalNotificationService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i368.DriverNotificationLaunchPayloadService>(),
+        gh<_i1015.DriverNotificationOverlayService>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i227.TokenService>(),
+      ),
     );
     gh.factory<_i173.NotificationsRemoteDataSource>(
       () => _i2.NotificationsRemoteDataSourceImpl(gh<_i804.ApiServices>()),
@@ -389,6 +435,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.lazySingleton<_i102.FileUploadService>(
       () => externalModules.provideFileUploadService(gh<_i804.ApiServices>()),
+    );
+    gh.factory<_i548.DriverVerifyOtpRemoteDataSource>(
+      () => _i798.DriverVerifyOtpRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
     gh.factory<_i899.ForgotPasswordRepository>(
       () => _i573.ForgotPasswordRepositoryImpl(
@@ -448,6 +497,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i341.NotificationsRepository>(
       () => _i166.NotificationsRepositoryImpl(
         gh<_i173.NotificationsRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i497.TripRequestGlobalAlertService>(
+      () => _i497.TripRequestGlobalAlertService(
+        gh<_i952.TripRequestOverlayService>(),
+        gh<_i794.DriverRealtimeService>(),
+        gh<_i458.DriverHomeRemoteDataSource>(),
       ),
     );
     gh.lazySingleton<_i803.DriverHomeRepository>(
@@ -532,6 +588,13 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i656.OrderDetailsRepository>(),
       ),
     );
+    gh.factory<_i338.DriverVerifyOtpRepository>(
+      () => _i801.DriverVerifyOtpRepositoryImpl(
+        gh<_i548.DriverVerifyOtpRemoteDataSource>(),
+        gh<_i227.TokenService>(),
+        gh<_i550.DriverIdentityService>(),
+      ),
+    );
     gh.factory<_i725.AcceptDriverOfferUseCase>(
       () => _i725.AcceptDriverOfferUseCase(gh<_i803.DriverHomeRepository>()),
     );
@@ -561,6 +624,16 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i1047.UpdateDriverPersonalUseCase>(
       () => _i1047.UpdateDriverPersonalUseCase(
+        gh<_i540.DriverProfileRepository>(),
+      ),
+    );
+    gh.factory<_i1047.UpdateDriverProfilePhotoUseCase>(
+      () => _i1047.UpdateDriverProfilePhotoUseCase(
+        gh<_i540.DriverProfileRepository>(),
+      ),
+    );
+    gh.factory<_i1047.DeleteDriverProfilePhotoUseCase>(
+      () => _i1047.DeleteDriverProfilePhotoUseCase(
         gh<_i540.DriverProfileRepository>(),
       ),
     );
@@ -610,6 +683,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i817.LoginUseCase>(
       () => _i817.LoginUseCase(gh<_i137.LoginRepository>()),
     );
+    gh.factory<_i324.ResendDriverOtpUseCase>(
+      () => _i324.ResendDriverOtpUseCase(gh<_i338.DriverVerifyOtpRepository>()),
+    );
+    gh.factory<_i371.VerifyDriverOtpUseCase>(
+      () => _i371.VerifyDriverOtpUseCase(gh<_i338.DriverVerifyOtpRepository>()),
+    );
     gh.factory<_i569.DriverHomeCubit>(
       () => _i569.DriverHomeCubit(
         gh<_i802.WatchDriverHomeUseCase>(),
@@ -631,6 +710,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i340.RegisterRegionsCubit>(
       () => _i340.RegisterRegionsCubit(gh<_i985.GetDriverRegionsUseCase>()),
     );
+    gh.factory<_i191.DriverVerifyOtpViewModel>(
+      () => _i191.DriverVerifyOtpViewModel(
+        gh<_i371.VerifyDriverOtpUseCase>(),
+        gh<_i324.ResendDriverOtpUseCase>(),
+      ),
+    );
+    gh.factory<_i808.LoginViewModel>(
+      () => _i808.LoginViewModel(gh<_i817.LoginUseCase>()),
+    );
     gh.factory<_i735.ProfileCubit>(
       () => _i735.ProfileCubit(
         gh<_i339.GetDriverUnifiedProfileUseCase>(),
@@ -638,12 +726,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i1047.UpdateDriverPersonalUseCase>(),
         gh<_i458.UpdateDriverVehicleUseCase>(),
         gh<_i373.UpdateDriverDocumentsUseCase>(),
+        gh<_i1047.UpdateDriverProfilePhotoUseCase>(),
+        gh<_i1047.DeleteDriverProfilePhotoUseCase>(),
         gh<_i985.GetDriverRegionsUseCase>(),
         gh<_i183.ImagePicker>(),
       ),
-    );
-    gh.factory<_i808.LoginViewModel>(
-      () => _i808.LoginViewModel(gh<_i817.LoginUseCase>()),
     );
     return this;
   }

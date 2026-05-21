@@ -22,6 +22,23 @@ abstract class Validations {
     return null;
   }
 
+  static String? validateDriverRegistrationEmail(
+    BuildContext context,
+    String? email,
+  ) {
+    final normalized = email?.trim() ?? '';
+    final baseValidation = validateEmail(context, normalized);
+    if (baseValidation != null) {
+      return baseValidation;
+    }
+    if (!normalized.toLowerCase().endsWith('.com')) {
+      return Localizations.localeOf(context).languageCode == 'ar'
+          ? 'البريد الإلكتروني يجب أن ينتهي بـ .com'
+          : 'Email must end with .com';
+    }
+    return null;
+  }
+
   static String? validateEmailOrPhone(BuildContext context, String? value) {
     final input = value?.trim() ?? '';
     if (input.isEmpty) {
@@ -99,10 +116,11 @@ abstract class Validations {
   }
 
   static String? validOtp(BuildContext context, String? value) {
-    if (value == null || value.isEmpty) {
+    final normalized = value?.trim() ?? '';
+    if (normalized.isEmpty) {
       return AppLocalizations.of(context)!.verification_code_required;
     }
-    if (value.length < 4) {
+    if (normalized.length != 4) {
       return AppLocalizations.of(context)!.verification_code_invalid;
     }
     return null;

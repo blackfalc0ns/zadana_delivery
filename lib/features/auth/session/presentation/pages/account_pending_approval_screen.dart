@@ -19,6 +19,7 @@ import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/widgets/auth_status_notification_button.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/models/driver_account_support_appeal_args.dart';
 
 class AccountPendingApprovalScreen extends StatefulWidget {
   const AccountPendingApprovalScreen({super.key, this.initialStatus});
@@ -80,6 +81,11 @@ class _AccountPendingApprovalScreenState
           final isArabic = Localizations.localeOf(context).languageCode == 'ar';
           final reviewMessage = _resolveReviewMessage(
             resolvedStatus,
+            isArabic: isArabic,
+          );
+          final supportLabel = _resolveSupportLabel(
+            resolvedStatus,
+            locale: locale,
             isArabic: isArabic,
           );
           final needsProfileUpdate = _needsProfileUpdate(
@@ -189,7 +195,7 @@ class _AccountPendingApprovalScreenState
                           AppButton.filled(
                             text: needsProfileUpdate
                                 ? locale.auth_pending_update_details
-                                : locale.auth_pending_update_details,
+                                : locale.auth_pending_review_details,
                             onPressed: () => context.pushNamed(
                               AppRoutes.driverProfileCompletion,
                             ),
@@ -197,6 +203,25 @@ class _AccountPendingApprovalScreenState
                                 ? AppColors.secondary
                                 : AppColors.primary,
                             height: 54,
+                            borderRadius: 18,
+                          ),
+                          const SizedBox(height: Spacing.sm),
+                          AppButton.outlined(
+                            text: supportLabel,
+                            onPressed: () => context.pushNamed(
+                              AppRoutes.driverAccountSupportAppeal,
+                              arguments: DriverAccountSupportAppealArgs(
+                                initialReasonCode:
+                                    resolvedStatus?.supportCta?.reasonType ??
+                                    _resolveAccountSupportReasonCode(
+                                      resolvedStatus,
+                                    ),
+                                buttonLabel: supportLabel,
+                              ),
+                            ),
+                            color: AppColors.primary,
+                            textColor: AppColors.primary,
+                            height: 50,
                             borderRadius: 18,
                           ),
                           const SizedBox(height: Spacing.sm),
@@ -284,6 +309,33 @@ class _AccountPendingApprovalScreenState
     }
 
     return '';
+  }
+
+  String _resolveSupportLabel(
+    DriverAccountStatusEntity? status, {
+    required dynamic locale,
+    required bool isArabic,
+  }) {
+    final cta = status?.supportCta;
+    final preferred = isArabic ? cta?.labelAr : cta?.labelEn;
+    final normalized = preferred?.trim() ?? '';
+    if (normalized.isNotEmpty) {
+      return normalized;
+    }
+    return locale.auth_contact_support;
+  }
+
+  String _resolveAccountSupportReasonCode(DriverAccountStatusEntity? status) {
+    final verification = status?.normalizedVerificationStatus ?? '';
+    final gate = status?.normalizedGateStatus ?? '';
+
+    if (verification == 'needsdocuments' || gate == 'needsdocuments') {
+      return 'documents_required';
+    }
+    if (verification == 'underreview' || gate == 'underreview') {
+      return 'under_review';
+    }
+    return 'other';
   }
 }
 

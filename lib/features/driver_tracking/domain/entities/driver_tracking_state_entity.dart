@@ -56,20 +56,23 @@ class DriverTrackingCommandEntity {
   const DriverTrackingCommandEntity({
     required this.orderId,
     required this.phase,
-    required this.intervalSeconds,
+    required this.foregroundIntervalSeconds,
+    required this.backgroundIntervalSeconds,
     required this.useHighAccuracy,
   });
 
   final String orderId;
   final String phase;
-  final int intervalSeconds;
+  final int foregroundIntervalSeconds;
+  final int backgroundIntervalSeconds;
   final bool useHighAccuracy;
 
   Map<String, dynamic> toMap() {
     return {
       'orderId': orderId,
       'phase': phase,
-      'intervalSeconds': intervalSeconds,
+      'foregroundIntervalSeconds': foregroundIntervalSeconds,
+      'backgroundIntervalSeconds': backgroundIntervalSeconds,
       'useHighAccuracy': useHighAccuracy,
     };
   }

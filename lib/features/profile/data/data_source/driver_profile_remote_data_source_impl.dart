@@ -41,6 +41,26 @@ class DriverProfileRemoteDataSourceImpl
   }
 
   @override
+  Future<void> updateProfilePhoto(String profilePhotoUrl) async {
+    try {
+      await _apiServices.updateDriverProfilePhoto(<String, dynamic>{
+        'profilePhotoUrl': profilePhotoUrl.trim(),
+      });
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<void> deleteProfilePhoto() async {
+    try {
+      await _apiServices.deleteDriverProfilePhoto();
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
   Future<DriverUnifiedProfileModelDto> updatePersonal(
     UpdateDriverPersonalRequestModelDto request,
   ) async {

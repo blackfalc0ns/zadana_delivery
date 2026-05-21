@@ -64,18 +64,15 @@ class RegisterRepositoryImpl implements RegisterRepository {
         ),
       );
 
-      final accessToken = response.tokens?.accessToken?.trim() ?? '';
-      final refreshToken = response.tokens?.refreshToken?.trim() ?? '';
-
-      if (accessToken.isNotEmpty) {
-        await _tokenService.saveAccessToken(accessToken);
-      }
-      if (refreshToken.isNotEmpty) {
-        await _tokenService.saveRefreshToken(refreshToken);
-      }
-
       final entity = response.toEntity();
       final user = entity.user;
+      final accessToken = entity.tokens?.accessToken.trim() ?? '';
+      final refreshToken = entity.tokens?.refreshToken.trim() ?? '';
+      final requiresOtpVerification =
+          !entity.isVerified ||
+          accessToken.isEmpty ||
+          refreshToken.isEmpty ||
+          _messageRequiresOtpVerification(entity.message);
 
       if (user != null) {
         await _identityService.saveIdentity(
@@ -85,15 +82,24 @@ class RegisterRepositoryImpl implements RegisterRepository {
             email: user.email,
             phone: user.phone,
             role: user.role,
+            profilePhotoUrl: user.profilePhotoUrl,
             lastIdentifier: user.email.isNotEmpty ? user.email : user.phone,
           ),
         );
-        await _tokenService.saveCurrentUserId(user.id);
-        try {
-          await getIt<DriverNotificationSessionService>()
-              .handleSuccessfulAuthentication(user.id);
-        } catch (_) {
-          // Non-critical: notification/realtime setup can fail without blocking registration.
+        if (!requiresOtpVerification) {
+          if (accessToken.isNotEmpty) {
+            await _tokenService.saveAccessToken(accessToken);
+          }
+          if (refreshToken.isNotEmpty) {
+            await _tokenService.saveRefreshToken(refreshToken);
+          }
+          await _tokenService.saveCurrentUserId(user.id);
+          try {
+            await getIt<DriverNotificationSessionService>()
+                .handleSuccessfulAuthentication(user.id);
+          } catch (_) {
+            // Non-critical: notification/realtime setup can fail without blocking registration.
+          }
         }
       }
 
@@ -124,9 +130,23 @@ class RegisterRepositoryImpl implements RegisterRepository {
 
       return RegisterResponseEntity(
         message: entity.message,
-        isVerified: entity.isVerified,
+        isVerified: entity.isVerified && !requiresOtpVerification,
         user: entity.user,
+        tokens: entity.tokens,
+        driverStatus: entity.driverStatus,
       );
     });
+  }
+
+  bool _messageRequiresOtpVerification(String message) {
+    final normalized = message.trim().toLowerCase();
+    if (normalized.isEmpty) return false;
+    return normalized.contains('not verified') ||
+        normalized.contains('email address is not verified') ||
+        normalized.contains('email is not verified') ||
+        normalized.contains('unverified email') ||
+        normalized.contains('غير مفعل') ||
+        normalized.contains('غير مفعّل') ||
+        normalized.contains('لم يتم تفعيل');
   }
 }

@@ -12,6 +12,7 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
     override fun onNotificationReceived(event: INotificationReceivedEvent) {
         val notification = event.notification
         val channelId = resolveChannelId(notification)
+        maybeShowNativeOfferOverlay(notification.additionalData)
         notification.setExtender { builder: NotificationCompat.Builder ->
             builder
                 .setSmallIcon(R.drawable.ic_notification_small)
@@ -20,6 +21,27 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
         }
+    }
+
+    private fun maybeShowNativeOfferOverlay(additionalData: JSONObject?) {
+        if (additionalData == null) {
+            return
+        }
+
+        val eventType = additionalData.optString("event", "").trim().lowercase()
+        val payloadType = additionalData.optString("type", "").trim().lowercase()
+        val isOfferNotification =
+            payloadType == "driver-offer" || eventType.contains("dispatch.offer_new")
+        if (!isOfferNotification) {
+            return
+        }
+
+        val appContext = MainApplication.appContext
+        if (appContext == null) {
+            return
+        }
+
+        TripRequestSystemOverlay.showOfferOverlayFromPush(appContext, additionalData)
     }
 
     private fun resolveChannelId(notification: IDisplayableMutableNotification): String {

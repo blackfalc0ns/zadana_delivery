@@ -24,6 +24,7 @@ class DriverAccountStatusModelDto {
     required this.messageAr,
     required this.messageEn,
     required this.policyIsFrozen,
+    required this.supportCta,
   });
 
   factory DriverAccountStatusModelDto.fromJson(Map<String, dynamic> json) {
@@ -55,6 +56,9 @@ class DriverAccountStatusModelDto {
       messageAr: json['messageAr']?.toString(),
       messageEn: json['messageEn']?.toString(),
       policyIsFrozen: rejectionPolicy['isFrozen'] == true,
+      supportCta: DriverAccountSupportCtaModelDto.fromJsonOrNull(
+        json['supportCta'],
+      ),
     );
   }
 
@@ -82,10 +86,35 @@ class DriverAccountStatusModelDto {
   final String? messageAr;
   final String? messageEn;
   final bool policyIsFrozen;
+  final DriverAccountSupportCtaModelDto? supportCta;
 
   static Map<String, dynamic> _readMap(dynamic value) {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);
     return const <String, dynamic>{};
   }
+}
+
+class DriverAccountSupportCtaModelDto {
+  const DriverAccountSupportCtaModelDto({
+    required this.endpoint,
+    required this.reasonType,
+    required this.labelAr,
+    required this.labelEn,
+  });
+
+  factory DriverAccountSupportCtaModelDto.fromJsonOrNull(dynamic json) {
+    final map = DriverAccountStatusModelDto._readMap(json);
+    return DriverAccountSupportCtaModelDto(
+      endpoint: map['endpoint']?.toString() ?? '',
+      reasonType: map['reasonType']?.toString() ?? '',
+      labelAr: map['labelAr']?.toString(),
+      labelEn: map['labelEn']?.toString(),
+    );
+  }
+
+  final String endpoint;
+  final String reasonType;
+  final String? labelAr;
+  final String? labelEn;
 }

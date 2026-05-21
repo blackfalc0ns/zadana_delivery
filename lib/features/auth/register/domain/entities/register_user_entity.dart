@@ -5,6 +5,7 @@ class RegisterUserEntity {
     required this.email,
     required this.phone,
     required this.role,
+    this.profilePhotoUrl = '',
     this.favoritesCount = 0,
   });
 
@@ -13,5 +14,6 @@ class RegisterUserEntity {
   final String email;
   final String phone;
   final String role;
+  final String profilePhotoUrl;
   final int favoritesCount;
 }

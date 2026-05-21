@@ -29,6 +29,20 @@ class LoginRepositoryImpl implements LoginRepository {
   Future<ApiResult<LoginResponseEntity>> login(LoginRequestEntity request) {
     return safeApiCall(() async {
       final result = await _remoteDataSource.login(request.toDto());
+      final entity = result.toEntity();
+      final driverStatus = entity.driverStatus;
+
+      if (!result.isVerified &&
+          driverStatus?.isPendingReview != true &&
+          driverStatus?.isBlocked != true) {
+        throw ApiException(
+          errorType: ApiErrorType.unauthorized,
+          message: result.message.trim().isNotEmpty
+              ? result.message.trim()
+              : 'Your email address is not verified yet.',
+        );
+      }
+
       final accessToken = result.tokens.accessToken.trim();
       final refreshToken = result.tokens.refreshToken.trim();
 
@@ -44,8 +58,6 @@ class LoginRepositoryImpl implements LoginRepository {
       await _tokenService.saveAccessToken(accessToken);
       await _tokenService.saveRefreshToken(refreshToken);
 
-      final entity = result.toEntity();
-
       await _identityService.saveIdentity(
         DriverIdentity(
           id: entity.user.id,
@@ -53,6 +65,7 @@ class LoginRepositoryImpl implements LoginRepository {
           email: entity.user.email,
           phone: entity.user.phone,
           role: entity.user.role,
+          profilePhotoUrl: entity.user.profilePhotoUrl,
           lastIdentifier: request.identifier.trim(),
         ),
       );
@@ -69,7 +82,7 @@ class LoginRepositoryImpl implements LoginRepository {
         user: entity.user,
         message: entity.message,
         isVerified: entity.isVerified,
-        driverStatus: entity.driverStatus,
+        driverStatus: driverStatus,
       );
     });
   }

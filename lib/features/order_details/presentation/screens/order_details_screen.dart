@@ -57,6 +57,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   bool _isPickupOtpSheetOpen = false;
   bool _isCustomerOtpSheetOpen = false;
   bool _isSupportComposerOpen = false;
+  bool _isBlockingDialogOpen = false;
   bool _hasOpenedDeliverySuccess = false;
   BuildContext? _pickupOtpSheetContext;
   String? _pendingCompletionMessage;
@@ -118,7 +119,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
   @override
   void dispose() {
-    unawaited(_cubit.doIntent(const OrderDetailsDeactivateRealtimeEvent()));
     _cubit.close();
     if (_didInitializeController) {
       _controller.dispose();
@@ -471,6 +471,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
   }
 
+  Future<void> _showBlockingOrderDialog(String message) async {
+    if (_isBlockingDialogOpen) return;
+    _isBlockingDialogOpen = true;
+    try {
+      await showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('تم تحديث حالة الطلب'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('حسناً'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      _isBlockingDialogOpen = false;
+    }
+  }
+
   String _supportStatusLabel(bool isArabic) {
     return switch (_controller.stage) {
       OrderDeliveryStage.pending => isArabic ? 'قيد الانتظار' : 'Pending',
@@ -585,7 +608,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         listenWhen: (previous, current) =>
             previous.details != current.details ||
             previous.failure != current.failure ||
-            previous.notificationMessage != current.notificationMessage,
+            previous.notificationMessage != current.notificationMessage ||
+            previous.blockingMessage != current.blockingMessage ||
+            previous.shouldCloseScreen != current.shouldCloseScreen,
         listener: (context, state) {
           final details = state.details;
           if (details != null) {
@@ -620,6 +645,21 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             unawaited(
               _cubit.doIntent(const OrderDetailsConsumeNotificationEvent()),
             );
+          }
+
+          final blockingMessage = state.blockingMessage?.trim() ?? '';
+          if (state.shouldCloseScreen && blockingMessage.isNotEmpty) {
+            final navigator = Navigator.of(context);
+            WidgetsBinding.instance.addPostFrameCallback((_) async {
+              if (!mounted) return;
+              await _showBlockingOrderDialog(blockingMessage);
+              if (!mounted) return;
+              await _cubit.doIntent(
+                const OrderDetailsConsumeBlockingMessageEvent(),
+              );
+              if (!mounted) return;
+              navigator.maybePop();
+            });
           }
 
           final exception = state.failure?.asException;
@@ -1311,54 +1351,6 @@ class _OrderSupportComposerState extends State<_OrderSupportComposer> {
       ],
     );
   }
-
-  // Widget _buildSummaryStrip(ColorScheme scheme) {
-  //   return Container(
-  //     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-  //     decoration: BoxDecoration(
-  //       color: scheme.surface,
-  //       borderRadius: BorderRadius.circular(18),
-  //       border: Border.all(
-  //         color: scheme.outlineVariant.withValues(alpha: 0.18),
-  //       ),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: scheme.shadow.withValues(alpha: 0.04),
-  //           blurRadius: 18,
-  //           offset: const Offset(0, 8),
-  //         ),
-  //       ],
-  //     ),
-  //     child: Row(
-  //       children: [
-  //         Expanded(
-  //           child: Text(
-  //             widget.totalAmountText,
-  //             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-  //               color: scheme.primary,
-  //               fontWeight: FontWeight.w800,
-  //             ),
-  //           ),
-  //         ),
-  //         Container(
-  //           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-  //           decoration: BoxDecoration(
-  //             color: const Color(0xFFFCECD8),
-  //             borderRadius: BorderRadius.circular(999),
-  //           ),
-  //           child: Text(
-  //             widget.statusLabel,
-  //             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-  //               color: const Color(0xFFDD8A1F),
-  //               fontWeight: FontWeight.w800,
-  //               fontSize: 13,
-  //             ),
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {

@@ -17,8 +17,10 @@ import 'package:zadana_delivery/core/services/driver_notification_overlay_servic
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/core/services/trip_request_global_alert_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
+import 'package:zadana_delivery/features/driver_tracking/domain/repo/driver_tracking_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +42,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  static const Duration _notificationBootstrapDelay = Duration(
+    milliseconds: 250,
+  );
+  static const Duration _sessionRestoreDelay = Duration(milliseconds: 900);
+  static const Duration _permissionPromptDelay = Duration(milliseconds: 1600);
+
   late final LocaleCubit _localeCubit;
 
   @override
@@ -51,6 +59,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       getIt<AppNavigatorService>().markReady();
       getIt<DriverNotificationOverlayService>().startListening();
       getIt<TripRequestGlobalAlertService>().startListening();
+      unawaited(getIt<TokenService>().syncNativeTokenMirror());
       unawaited(_bootstrapNotificationServicesAfterUiReady());
     });
   }
@@ -65,6 +74,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      unawaited(getIt<DriverTrackingRepository>().syncAppLifecycleState(true));
       // Schedule resume work after a short delay to let the UI thread settle
       // and avoid ANR from parallel DNS lookups + SignalR reconnections.
       Future<void>.delayed(
@@ -72,6 +82,14 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         _handleAppResumed,
       );
     } else {
+      if (state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.hidden ||
+          state == AppLifecycleState.paused ||
+          state == AppLifecycleState.detached) {
+        unawaited(
+          getIt<DriverTrackingRepository>().syncAppLifecycleState(false),
+        );
+      }
       unawaited(getIt<DriverRealtimeService>().handleAppLifecycleState(state));
     }
   }
@@ -104,11 +122,32 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   }
 
   Future<void> _bootstrapNotificationServicesAfterUiReady() async {
-    await getIt<DriverNotificationBootstrapService>().initialize();
-    await getIt<DriverNotificationSessionService>()
-        .restoreAuthenticatedSessionIfPossible();
-    await getIt<DriverNotificationBootstrapService>()
-        .requestNotificationPermissionAfterUiReady();
+    await Future<void>.delayed(_notificationBootstrapDelay);
+
+    try {
+      await getIt<DriverNotificationBootstrapService>().initialize();
+    } catch (_) {
+      return;
+    }
+
+    unawaited(_restoreNotificationSessionInBackground());
+    unawaited(_requestNotificationPermissionInBackground());
+  }
+
+  Future<void> _restoreNotificationSessionInBackground() async {
+    await Future<void>.delayed(_sessionRestoreDelay);
+    try {
+      await getIt<DriverNotificationSessionService>()
+          .restoreAuthenticatedSessionIfPossible();
+    } catch (_) {}
+  }
+
+  Future<void> _requestNotificationPermissionInBackground() async {
+    await Future<void>.delayed(_permissionPromptDelay);
+    try {
+      await getIt<DriverNotificationBootstrapService>()
+          .requestNotificationPermissionAfterUiReady();
+    } catch (_) {}
   }
 
   @override

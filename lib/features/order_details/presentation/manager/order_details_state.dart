@@ -8,6 +8,8 @@ class OrderDetailsState {
     this.details,
     this.failure,
     this.notificationMessage,
+    this.blockingMessage,
+    this.shouldCloseScreen = false,
   });
 
   final bool isLoading;
@@ -15,6 +17,8 @@ class OrderDetailsState {
   final OrderAssignmentDetailsEntity? details;
   final Failure? failure;
   final String? notificationMessage;
+  final String? blockingMessage;
+  final bool shouldCloseScreen;
 
   OrderDetailsState copyWith({
     bool? isLoading,
@@ -22,8 +26,11 @@ class OrderDetailsState {
     OrderAssignmentDetailsEntity? details,
     Failure? failure,
     String? notificationMessage,
+    String? blockingMessage,
+    bool? shouldCloseScreen,
     bool clearFailure = false,
     bool clearNotificationMessage = false,
+    bool clearBlockingMessage = false,
   }) {
     return OrderDetailsState(
       isLoading: isLoading ?? this.isLoading,
@@ -33,6 +40,10 @@ class OrderDetailsState {
       notificationMessage: clearNotificationMessage
           ? null
           : notificationMessage ?? this.notificationMessage,
+      blockingMessage: clearBlockingMessage
+          ? null
+          : blockingMessage ?? this.blockingMessage,
+      shouldCloseScreen: shouldCloseScreen ?? this.shouldCloseScreen,
     );
   }
 }

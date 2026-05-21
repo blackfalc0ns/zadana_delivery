@@ -3,6 +3,7 @@ abstract class NetworkConstants {
   static const String authorization = 'Authorization';
   static const String bearer = "Bearer";
   static const String notificationsHub = '/hubs/notifications';
+  static const String orderTrackingHub = '/hubs/order-tracking';
   static const String nativeNotificationsChannel =
       'zadana_delivery/native_notifications';
   static const String tripOverlayChannel = 'zadana_delivery/trip_overlay';
@@ -12,11 +13,17 @@ abstract class NetworkConstants {
       'ReceiveOrderStatusChanged';
   static const String driverOrderSupportCaseChangedEvent =
       'ReceiveOrderSupportCaseChanged';
+  static const String driverSupportCaseChangedEvent =
+      'ReceiveDriverSupportCaseChanged';
   static const String driverArrivalStateChangedEvent =
       'ReceiveDriverArrivalStateChanged';
   static const String driverAssignmentUpdatedEvent = 'ReceiveAssignmentUpdated';
   static const String driverHomeUpdatedEvent = 'ReceiveDriverHomeUpdated';
   static const String driverWalletUpdatedEvent = 'ReceiveDriverWalletUpdated';
+  static const String orderTrackingStatusChangedEvent =
+      'ReceiveOrderTrackingStatusChanged';
+  static const String orderTrackingArrivalStateEvent =
+      'ReceiveOrderTrackingArrivalState';
   static const String driverOfferNotificationType = 'driver-offer';
 }
 
@@ -24,11 +31,14 @@ abstract class EndPoints {
   static const String fileUpload = '/files/upload';
   static const String driverRegister = '/drivers/register';
   static const String driverLogin = '/drivers/auth/login';
+  static const String driverVerifyOtp = '/drivers/auth/verify-otp';
+  static const String driverResendOtp = '/drivers/auth/resend-otp';
   static const String driverForgotPassword = '/drivers/auth/forgot-password';
   static const String driverResetPassword = '/drivers/auth/reset-password';
   static const String driverRefreshToken = '/drivers/auth/refresh-token';
   static const String driverLogout = '/drivers/auth/logout';
   static const String driverProfile = '/drivers/auth/me';
+  static const String driverProfilePhoto = '/drivers/auth/me/profile-photo';
   static const String driverStatus = '/drivers/me/status';
   static const String driverHome = '/drivers/home';
   static const String driverAvailability = '/drivers/me/availability';
@@ -74,6 +84,10 @@ abstract class EndPoints {
   static const String driverSupportCases = '/drivers/support/cases';
   static const String driverSupportCaseDetails =
       '/drivers/support/cases/{caseId}';
+  static const String driverSupportAccountCases =
+      '/drivers/support/account-cases';
+  static const String driverSupportAccountCaseDetails =
+      '/drivers/support/account-cases/{caseId}';
   static const String driverSupportReasons = '/drivers/support/reasons/{type}';
   static const String driverOrderReportIssue =
       '/drivers/support/orders/{orderId}/report-issue';
@@ -81,6 +95,12 @@ abstract class EndPoints {
       '/drivers/support/orders/{orderId}/dispute';
   static const String driverSupportCaseMessages =
       '/drivers/support/orders/{orderId}/cases/{caseId}/messages';
+  static const String driverSupportAccountCaseMessages =
+      '/drivers/support/account-cases/{caseId}/messages';
+  static const String driverSupportAccountAppeals =
+      '/drivers/support/account-appeals';
+  static const String driverAccountSupportAppeals =
+      '/drivers/account-support/appeals';
   static const String driverUnifiedProfile = '/drivers/me/profile';
   static const String driverProfilePersonal = '/drivers/me/profile/personal';
   static const String driverProfileVehicle = '/drivers/me/profile/vehicle';

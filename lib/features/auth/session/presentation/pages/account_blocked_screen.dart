@@ -19,6 +19,7 @@ import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_event.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/manager/auth_gate_state.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/widgets/auth_status_notification_button.dart';
+import 'package:zadana_delivery/features/driver_support/presentation/models/driver_account_support_appeal_args.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_rejection_policy_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/get_driver_unified_profile_usecase.dart';
@@ -80,6 +81,7 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
         },
         builder: (context, state) {
           final resolvedStatus = state.accountStatus ?? widget.initialStatus;
+          final isArabic = Localizations.localeOf(context).languageCode == 'ar';
           return FutureBuilder<DriverUnifiedProfileEntity?>(
             future: _profileFuture,
             builder: (context, snapshot) {
@@ -196,8 +198,9 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                                 width: 42,
                                                 height: 42,
                                                 decoration: BoxDecoration(
-                                                  color: color.error
-                                                      .withValues(alpha: 0.10),
+                                                  color: color.error.withValues(
+                                                    alpha: 0.10,
+                                                  ),
                                                   borderRadius:
                                                       BorderRadius.circular(14),
                                                 ),
@@ -227,7 +230,8 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                             ],
                                           ),
                                         ),
-                                        if (rejectionPolicy?.hasData == true) ...[
+                                        if (rejectionPolicy?.hasData ==
+                                            true) ...[
                                           const SizedBox(height: Spacing.base),
                                           _RejectionPolicySummaryCard(
                                             policy: rejectionPolicy!,
@@ -280,9 +284,31 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
                                         ),
                                         const SizedBox(height: Spacing.xl),
                                         AppButton.filled(
-                                          text: locale.auth_contact_support,
+                                          text: _supportLabel(
+                                            resolvedStatus,
+                                            isArabic: isArabic,
+                                            fallback:
+                                                locale.auth_contact_support,
+                                          ),
                                           onPressed: () => context.pushNamed(
-                                            AppRoutes.supportHelp,
+                                            AppRoutes
+                                                .driverAccountSupportAppeal,
+                                            arguments:
+                                                DriverAccountSupportAppealArgs(
+                                                  initialReasonCode:
+                                                      resolvedStatus
+                                                          ?.supportCta
+                                                          ?.reasonType ??
+                                                      _resolveSupportReasonCode(
+                                                        resolvedStatus,
+                                                      ),
+                                                  buttonLabel: _supportLabel(
+                                                    resolvedStatus,
+                                                    isArabic: isArabic,
+                                                    fallback: locale
+                                                        .auth_contact_support,
+                                                  ),
+                                                ),
                                           ),
                                           color: color.error,
                                           height: 54,
@@ -370,6 +396,35 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
     if (enforcementLevel.isEmpty) return '';
 
     return 'Status: $enforcementLevel';
+  }
+
+  String _supportLabel(
+    DriverAccountStatusEntity? status, {
+    required bool isArabic,
+    required String fallback,
+  }) {
+    final preferred = isArabic
+        ? status?.supportCta?.labelAr
+        : status?.supportCta?.labelEn;
+    final normalized = preferred?.trim() ?? '';
+    if (normalized.isNotEmpty) return normalized;
+    return fallback;
+  }
+
+  String _resolveSupportReasonCode(DriverAccountStatusEntity? status) {
+    final gate = status?.normalizedGateStatus ?? '';
+    final account = status?.normalizedAccountStatus ?? '';
+
+    if (gate == 'loginlocked') {
+      return 'login_locked';
+    }
+    if (gate == 'banned' || account == 'blocked') {
+      return 'account_banned';
+    }
+    if (gate == 'suspended' || account == 'suspended') {
+      return 'account_suspended';
+    }
+    return 'other';
   }
 }
 

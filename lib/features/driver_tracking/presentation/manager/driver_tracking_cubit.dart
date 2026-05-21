@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/core/di/di.dart';
@@ -34,6 +35,7 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   }
 
   final WatchDriverHomeUseCase _watchDriverHomeUseCase;
+  // ignore: unused_field
   final StartDriverTrackingUseCase _startDriverTrackingUseCase;
   final StopDriverTrackingUseCase _stopDriverTrackingUseCase;
   final SyncDriverTrackingStatusUseCase _syncDriverTrackingStatusUseCase;
@@ -41,6 +43,7 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   final DriverTrackingRepository _repository;
   final DriverRuntimeServicesController _driverRuntimeServicesController =
       getIt<DriverRuntimeServicesController>();
+  static const String _logTag = 'DriverTrackingCubit';
 
   late final StreamSubscription<DriverHomeEntity> _homeSubscription;
   late final StreamSubscription<DriverTrackingStateEntity>
@@ -91,6 +94,14 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
 
   Future<void> _syncAssignment(DriverHomeAssignmentEntity? assignment) async {
     final command = _resolveCommand(assignment);
+    _log(
+      '_syncAssignment'
+      ' assignmentStatus=${assignment?.status ?? '-'}'
+      ' orderId=${assignment?.orderId ?? '-'}'
+      ' hasCommand=${command != null}'
+      ' fg=${command?.foregroundIntervalSeconds ?? '-'}'
+      ' bg=${command?.backgroundIntervalSeconds ?? '-'}',
+    );
     emit(
       state.copyWith(
         isStarting: command != null,
@@ -102,6 +113,7 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
     );
 
     if (command == null) {
+      _log('No active tracking command. Stopping tracking if needed.');
       if (_driverRuntimeServicesController.isInitialized) {
         await _stopDriverTrackingUseCase.call();
       }
@@ -122,24 +134,46 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
       return;
     }
 
-    await _syncDriverTrackingStatusUseCase.call(command);
-    await _startDriverTrackingUseCase.call(command);
-    emit(
-      state.copyWith(
-        isTracking: true,
-        isStarting: false,
-        isStopping: false,
-        activeOrderId: command.orderId,
-        activePhase: command.phase,
-      ),
-    );
+    try {
+      _log(
+        'Starting/syncing tracking'
+        ' orderId=${command.orderId}'
+        ' phase=${command.phase}',
+      );
+      await _syncDriverTrackingStatusUseCase.call(command);
+      emit(
+        state.copyWith(
+          isTracking: true,
+          isStarting: false,
+          isStopping: false,
+          activeOrderId: command.orderId,
+          activePhase: command.phase,
+          clearFailure: true,
+        ),
+      );
+    } catch (error) {
+      _log('Tracking sync failed: $error');
+      emit(
+        state.copyWith(
+          isTracking: false,
+          isStarting: false,
+          isStopping: false,
+          activeOrderId: command.orderId,
+          activePhase: command.phase,
+          failure: error.toString(),
+        ),
+      );
+    }
   }
 
   Future<bool> _ensureRuntimeServicesInitialized() async {
     try {
+      _log('Ensuring runtime services are initialized');
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
+      _log('Runtime services initialized successfully');
       return true;
     } catch (error) {
+      _log('Runtime services initialization failed: $error');
       emit(
         state.copyWith(
           isStarting: false,
@@ -152,6 +186,17 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   }
 
   void _applyTrackingState(DriverTrackingStateEntity trackingState) {
+    _log(
+      '_applyTrackingState'
+      ' isTracking=${trackingState.isTracking}'
+      ' orderId=${trackingState.activeOrderId ?? '-'}'
+      ' phase=${trackingState.activePhase ?? '-'}'
+      ' lat=${trackingState.lastSentLatitude?.toString() ?? '-'}'
+      ' lng=${trackingState.lastSentLongitude?.toString() ?? '-'}'
+      ' acc=${trackingState.lastSentAccuracyMeters?.toString() ?? '-'}'
+      ' sentAt=${trackingState.lastSentAt?.toIso8601String() ?? '-'}'
+      ' failure=${trackingState.failure ?? '-'}',
+    );
     emit(
       state.copyWith(
         isTracking: trackingState.isTracking,
@@ -185,7 +230,8 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
       return DriverTrackingCommandEntity(
         orderId: assignment.orderId,
         phase: assignment.status,
-        intervalSeconds: 10,
+        foregroundIntervalSeconds: 5,
+        backgroundIntervalSeconds: 10,
         useHighAccuracy: true,
       );
     }
@@ -196,8 +242,9 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
       return DriverTrackingCommandEntity(
         orderId: assignment.orderId,
         phase: assignment.status,
-        intervalSeconds: 15,
-        useHighAccuracy: false,
+        foregroundIntervalSeconds: 5,
+        backgroundIntervalSeconds: 10,
+        useHighAccuracy: true,
       );
     }
 
@@ -209,5 +256,9 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
     await _homeSubscription.cancel();
     await _trackingSubscription.cancel();
     return super.close();
+  }
+
+  void _log(String message) {
+    developer.log(message, name: _logTag);
   }
 }

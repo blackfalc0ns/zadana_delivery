@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/core/models/localized_message.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/driver_support/data/data_source/driver_support_remote_data_source.dart';
 import 'package:zadana_delivery/features/driver_support/domain/entities/driver_support_case_entity.dart';
@@ -56,9 +57,15 @@ class DriverSupportRepositoryImpl implements DriverSupportRepository {
   }
 
   @override
-  Future<ApiResult<DriverSupportCaseEntity>> getCaseDetails(String caseId) {
+  Future<ApiResult<DriverSupportCaseEntity>> getCaseDetails(
+    String caseId, {
+    String? caseType,
+  }) {
     return safeApiCall(() async {
-      final response = await _remoteDataSource.getCaseDetails(caseId);
+      final response = await _remoteDataSource.getCaseDetails(
+        caseId,
+        caseType: caseType,
+      );
       return response.toEntity();
     });
   }
@@ -73,17 +80,41 @@ class DriverSupportRepositoryImpl implements DriverSupportRepository {
 
   @override
   Future<ApiResult<DriverSupportCaseEntity>> sendMessage({
-    required String orderId,
+    String? orderId,
     required String caseId,
+    String? caseType,
     required DriverSupportCaseMessageRequestEntity request,
   }) {
     return safeApiCall(() async {
       final response = await _remoteDataSource.sendMessage(
         orderId: orderId,
         caseId: caseId,
+        caseType: caseType,
         request: request,
       );
       return response.toEntity();
+    });
+  }
+
+  @override
+  Future<ApiResult<LocalizedMessage>> createAccountAppeal({
+    required DriverSupportCaseMessageRequestEntity request,
+  }) {
+    return safeApiCall(() async {
+      return _remoteDataSource.createAccountAppeal(request: request);
+    });
+  }
+
+  @override
+  Future<ApiResult<LocalizedMessage>> createPublicAccountAppeal({
+    required String identifier,
+    required DriverSupportCaseMessageRequestEntity request,
+  }) {
+    return safeApiCall(() async {
+      return _remoteDataSource.createPublicAccountAppeal(
+        identifier: identifier,
+        request: request,
+      );
     });
   }
 }

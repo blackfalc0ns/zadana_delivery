@@ -234,6 +234,7 @@ class _DriverProfileCompletionScreenState
                 targetRoute,
                 rootNavigator: true,
                 predicate: (route) => false,
+                arguments: state.targetArguments,
               );
             },
             builder: (context, state) {
