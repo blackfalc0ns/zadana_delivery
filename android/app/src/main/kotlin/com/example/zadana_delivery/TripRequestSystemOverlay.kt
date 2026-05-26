@@ -18,8 +18,6 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
-import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -369,32 +367,42 @@ class TripRequestSystemOverlay(private val context: Context) {
     ): View {
         val dp = { value: Int -> (value * density).toInt() }
 
+        // App colors from colors.dart
+        val colorPrimary = Color.parseColor("#007A92")
+        val colorPrimaryDark = Color.parseColor("#005F72")
+        val colorSecondary = Color.parseColor("#E48215")
+        val colorError = Color.parseColor("#E53935")
+        val colorSuccess = Color.parseColor("#4CAF50")
+        val colorTextPrimary = Color.parseColor("#212121")
+        val colorTextSecondary = Color.parseColor("#757575")
+        val colorSurface = Color.WHITE
+        val colorDivider = Color.parseColor("#E0E0E0")
+
         // Root container
         val root = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(dp(16), dp(16), dp(16), dp(24))
+            setPadding(dp(20), dp(16), dp(20), dp(28))
             background = GradientDrawable().apply {
-                setColor(Color.WHITE)
+                setColor(colorSurface)
                 cornerRadii = floatArrayOf(
-                    dp(24).toFloat(), dp(24).toFloat(),
-                    dp(24).toFloat(), dp(24).toFloat(),
+                    dp(28).toFloat(), dp(28).toFloat(),
+                    dp(28).toFloat(), dp(28).toFloat(),
                     0f, 0f, 0f, 0f
                 )
             }
-            elevation = dp(8).toFloat()
+            elevation = dp(12).toFloat()
         }
 
         // Handle bar
         val handleBar = View(context).apply {
-            val handleBg = GradientDrawable().apply {
-                setColor(Color.parseColor("#DDDDDD"))
+            background = GradientDrawable().apply {
+                setColor(colorDivider)
                 cornerRadius = dp(3).toFloat()
             }
-            background = handleBg
         }
         val handleParams = LinearLayout.LayoutParams(dp(40), dp(5)).apply {
             gravity = Gravity.CENTER_HORIZONTAL
-            bottomMargin = dp(12)
+            bottomMargin = dp(14)
         }
         root.addView(handleBar, handleParams)
 
@@ -406,8 +414,8 @@ class TripRequestSystemOverlay(private val context: Context) {
 
         val titleText = TextView(context).apply {
             text = "🚗 طلب توصيل جديد"
-            setTextColor(Color.parseColor("#1A1A2E"))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+            setTextColor(colorTextPrimary)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
             typeface = Typeface.DEFAULT_BOLD
         }
         titleRow.addView(
@@ -417,9 +425,14 @@ class TripRequestSystemOverlay(private val context: Context) {
 
         val countdownText = TextView(context).apply {
             text = "${countdownSeconds}s"
-            setTextColor(Color.parseColor("#E94560"))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextColor(colorSecondary)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
+            setPadding(dp(8), dp(4), dp(8), dp(4))
+            background = GradientDrawable().apply {
+                setColor(Color.parseColor("#FFF3E0"))
+                cornerRadius = dp(8).toFloat()
+            }
         }
         titleRow.addView(countdownText, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -429,7 +442,7 @@ class TripRequestSystemOverlay(private val context: Context) {
         root.addView(titleRow, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply { bottomMargin = dp(8) })
+        ).apply { bottomMargin = dp(10) })
 
         // Progress bar for countdown
         val progressBar = ProgressBar(
@@ -440,36 +453,52 @@ class TripRequestSystemOverlay(private val context: Context) {
             progressDrawable = context.resources.getDrawable(
                 android.R.drawable.progress_horizontal, null
             ).mutate().apply {
-                setTint(Color.parseColor("#E94560"))
+                setTint(colorPrimary)
             }
         }
         root.addView(progressBar, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT, dp(4)
-        ).apply { bottomMargin = dp(12) })
+            LinearLayout.LayoutParams.MATCH_PARENT, dp(3)
+        ).apply { bottomMargin = dp(14) })
 
         // Vendor name
         if (vendorName.isNotEmpty()) {
             val vendorText = TextView(context).apply {
                 text = "📍 $vendorName"
-                setTextColor(Color.parseColor("#333333"))
+                setTextColor(colorTextPrimary)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
                 typeface = Typeface.DEFAULT_BOLD
             }
             root.addView(vendorText, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(4) })
+            ).apply { bottomMargin = dp(6) })
         }
 
         // Pickup address
         if (pickupAddress.isNotEmpty()) {
+            val pickupRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val pickupDot = View(context).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(colorPrimary)
+                }
+            }
+            pickupRow.addView(pickupDot, LinearLayout.LayoutParams(dp(8), dp(8)).apply {
+                marginEnd = dp(8)
+            })
             val pickupText = TextView(context).apply {
-                text = "🟢 $pickupAddress"
-                setTextColor(Color.parseColor("#555555"))
+                text = pickupAddress
+                setTextColor(colorTextSecondary)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
                 maxLines = 2
             }
-            root.addView(pickupText, LinearLayout.LayoutParams(
+            pickupRow.addView(pickupText, LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            ))
+            root.addView(pickupRow, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply { bottomMargin = dp(4) })
@@ -477,16 +506,32 @@ class TripRequestSystemOverlay(private val context: Context) {
 
         // Delivery address
         if (deliveryAddress.isNotEmpty()) {
+            val deliveryRow = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+            }
+            val deliveryDot = View(context).apply {
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(colorSecondary)
+                }
+            }
+            deliveryRow.addView(deliveryDot, LinearLayout.LayoutParams(dp(8), dp(8)).apply {
+                marginEnd = dp(8)
+            })
             val deliveryText = TextView(context).apply {
-                text = "🔴 $deliveryAddress"
-                setTextColor(Color.parseColor("#555555"))
+                text = deliveryAddress
+                setTextColor(colorTextSecondary)
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
                 maxLines = 2
             }
-            root.addView(deliveryText, LinearLayout.LayoutParams(
+            deliveryRow.addView(deliveryText, LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            ))
+            root.addView(deliveryRow, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(8) })
+            ).apply { bottomMargin = dp(10) })
         }
 
         // Info row: distance + ETA + payout
@@ -496,24 +541,24 @@ class TripRequestSystemOverlay(private val context: Context) {
         }
 
         if (distanceKm > 0) {
-            val distText = buildInfoChip("📏 ${"%.1f".format(distanceKm)} كم", density)
+            val distText = buildInfoChip("📏 ${"%.1f".format(distanceKm)} كم", density, colorPrimary)
             infoRow.addView(distText)
         }
 
         if (eta.isNotEmpty()) {
-            val etaText = buildInfoChip("⏱ $eta", density)
+            val etaText = buildInfoChip("⏱ $eta", density, colorPrimary)
             infoRow.addView(etaText)
         }
 
         if (payout > 0) {
-            val payoutText = buildInfoChip("💰 ${"%.1f".format(payout)} ر.س", density)
+            val payoutText = buildInfoChip("💰 ${"%.1f".format(payout)} ر.س", density, colorSecondary)
             infoRow.addView(payoutText)
         }
 
         root.addView(infoRow, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply { bottomMargin = dp(16) })
+        ).apply { bottomMargin = dp(18) })
 
         // Buttons row: Reject + Accept
         val buttonsRow = LinearLayout(context).apply {
@@ -524,14 +569,15 @@ class TripRequestSystemOverlay(private val context: Context) {
         // Reject button
         val rejectBtn = TextView(context).apply {
             text = "✕ رفض"
-            setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextColor(colorError)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setPadding(dp(24), dp(14), dp(24), dp(14))
+            setPadding(dp(20), dp(14), dp(20), dp(14))
             background = GradientDrawable().apply {
-                setColor(Color.parseColor("#E94560"))
-                cornerRadius = dp(12).toFloat()
+                setColor(Color.parseColor("#FFEBEE"))
+                setStroke(dp(1), colorError)
+                cornerRadius = dp(14).toFloat()
             }
             setOnClickListener {
                 if (onReject != null) {
@@ -544,32 +590,31 @@ class TripRequestSystemOverlay(private val context: Context) {
         }
         buttonsRow.addView(rejectBtn, LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-        ).apply { marginEnd = dp(8) })
+        ).apply { marginEnd = dp(10) })
 
         // Accept button
         val acceptBtn = TextView(context).apply {
             text = "✓ قبول"
             setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
             gravity = Gravity.CENTER
-            setPadding(dp(24), dp(14), dp(24), dp(14))
+            setPadding(dp(20), dp(14), dp(20), dp(14))
             background = GradientDrawable().apply {
-                setColor(Color.parseColor("#0F3460"))
-                cornerRadius = dp(12).toFloat()
+                setColor(colorPrimary)
+                cornerRadius = dp(14).toFloat()
             }
             setOnClickListener {
                 if (onAccept != null) {
                     onAccept?.invoke(currentAssignmentId)
-                } else {
-                    bringAppToForeground()
                 }
+                bringAppToForeground()
                 hide()
             }
         }
         buttonsRow.addView(acceptBtn, LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-        ).apply { marginStart = dp(8) })
+        ).apply { marginStart = dp(10) })
 
         root.addView(buttonsRow, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
@@ -612,16 +657,24 @@ class TripRequestSystemOverlay(private val context: Context) {
         return root
     }
 
-    private fun buildInfoChip(text: String, density: Float): TextView {
+    private fun buildInfoChip(text: String, density: Float, accentColor: Int): TextView {
         val dp = { value: Int -> (value * density).toInt() }
+        // Create a lighter version of the accent color for background
+        val red = Color.red(accentColor)
+        val green = Color.green(accentColor)
+        val blue = Color.blue(accentColor)
+        val chipBgColor = Color.argb(25, red, green, blue)
+
         return TextView(context).apply {
             this.text = text
             setTextColor(Color.parseColor("#333333"))
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+            typeface = Typeface.DEFAULT_BOLD
             setPadding(dp(10), dp(6), dp(10), dp(6))
             background = GradientDrawable().apply {
-                setColor(Color.parseColor("#F0F0F0"))
+                setColor(chipBgColor)
                 cornerRadius = dp(8).toFloat()
+                setStroke(1, Color.argb(40, red, green, blue))
             }
             val params = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,

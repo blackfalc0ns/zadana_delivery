@@ -29,6 +29,14 @@ class DriverSupportCaseEntity {
     this.closedAt,
     this.attachments = const <DriverSupportAttachmentEntity>[],
     this.activities = const <DriverSupportCaseActivityEntity>[],
+    this.waitingOnRole,
+    this.waitingOnRoleLabel,
+    this.allowedActions = const <String>[],
+    this.costBearer,
+    this.approvedRefundAmount,
+    this.initiatorRole,
+    this.initiatorRoleLabel,
+    this.customerVisibleNote,
   });
 
   final String id;
@@ -57,12 +65,35 @@ class DriverSupportCaseEntity {
   final DateTime? closedAt;
   final List<DriverSupportAttachmentEntity> attachments;
   final List<DriverSupportCaseActivityEntity> activities;
+  final String? waitingOnRole;
+  final String? waitingOnRoleLabel;
+  final List<String> allowedActions;
+  final String? costBearer;
+  final double? approvedRefundAmount;
+  final String? initiatorRole;
+  final String? initiatorRoleLabel;
+  final String? customerVisibleNote;
 
   String get normalizedType => type.trim().toLowerCase();
 
   bool get isAccountCase => normalizedType == 'driver_account';
 
   bool get hasOrderContext => orderId.trim().isNotEmpty;
+
+  bool get isAwaitingDriverResponse =>
+      (waitingOnRole ?? '').trim().toLowerCase() == 'driver';
+
+  bool get canReply => allowedActions.contains('reply');
+
+  bool get isDriverCostBearer =>
+      (costBearer ?? '').trim().toLowerCase() == 'driver';
+
+  bool get isClosed {
+    final normalizedStatus = status.trim().toLowerCase();
+    return normalizedStatus == 'resolved' ||
+        normalizedStatus == 'rejected' ||
+        normalizedStatus == 'approved';
+  }
 
   String get displayReference {
     final normalizedOrderNumber = orderNumber.trim();
@@ -97,6 +128,14 @@ class DriverSupportCaseEntity {
     DateTime? closedAt,
     List<DriverSupportAttachmentEntity>? attachments,
     List<DriverSupportCaseActivityEntity>? activities,
+    String? waitingOnRole,
+    String? waitingOnRoleLabel,
+    List<String>? allowedActions,
+    String? costBearer,
+    double? approvedRefundAmount,
+    String? initiatorRole,
+    String? initiatorRoleLabel,
+    String? customerVisibleNote,
   }) {
     return DriverSupportCaseEntity(
       id: id ?? this.id,
@@ -125,6 +164,14 @@ class DriverSupportCaseEntity {
       closedAt: closedAt ?? this.closedAt,
       attachments: attachments ?? this.attachments,
       activities: activities ?? this.activities,
+      waitingOnRole: waitingOnRole ?? this.waitingOnRole,
+      waitingOnRoleLabel: waitingOnRoleLabel ?? this.waitingOnRoleLabel,
+      allowedActions: allowedActions ?? this.allowedActions,
+      costBearer: costBearer ?? this.costBearer,
+      approvedRefundAmount: approvedRefundAmount ?? this.approvedRefundAmount,
+      initiatorRole: initiatorRole ?? this.initiatorRole,
+      initiatorRoleLabel: initiatorRoleLabel ?? this.initiatorRoleLabel,
+      customerVisibleNote: customerVisibleNote ?? this.customerVisibleNote,
     );
   }
 }

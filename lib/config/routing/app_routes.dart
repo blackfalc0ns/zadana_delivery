@@ -16,6 +16,7 @@ abstract class AppRoutes {
   static const String wallet = '/wallet';
   static const String profile = '/profile';
   static const String notifications = '/notifications';
+  static const String notificationPreferences = '/notification-preferences';
   static const String supportHelp = '/support-help';
   static const String driverAccountSupportAppeal =
       '/driver-account-support-appeal';

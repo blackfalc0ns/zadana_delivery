@@ -1,6 +1,8 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/wallet/domain/repo/wallet_repository.dart';
 
+@injectable
 class DeleteDriverWalletPaymentMethodUseCase {
   const DeleteDriverWalletPaymentMethodUseCase(this._repository);
 

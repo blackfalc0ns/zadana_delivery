@@ -1,7 +1,9 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transactions_page_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/repo/wallet_repository.dart';
 
+@injectable
 class GetDriverWalletTransactionsUseCase {
   const GetDriverWalletTransactionsUseCase(this._repository);
 

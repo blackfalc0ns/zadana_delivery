@@ -1,8 +1,10 @@
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
+import 'package:zadana_delivery/core/services/device_id_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
 import 'package:zadana_delivery/core/services/file_upload_service.dart';
+import 'package:zadana_delivery/core/services/registration_upload_token_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
 
@@ -28,30 +30,48 @@ class RegisterRepositoryImpl implements RegisterRepository {
   final DriverIdentityService _identityService;
   final DriverProfileDraftService _draftService;
 
+  DeviceIdService get _deviceIdService => getIt<DeviceIdService>();
+  RegistrationUploadTokenService get _registrationUploadTokenService =>
+      getIt<RegistrationUploadTokenService>();
+
   @override
   Future<ApiResult<RegisterResponseEntity>> register(
     RegisterRequestEntity request,
   ) {
     return safeApiCall(() async {
-      final nationalIdFrontImageUrl = await _uploadService.uploadFile(
+      final deviceId = await _deviceIdService.getOrCreateDeviceId();
+
+      final nationalIdFrontImageUrl =
+          await _uploadService.uploadRegistrationFile(
         request.nationalIdFrontImagePath,
         directory: DriverUploadDirectory.nationalId,
+        deviceId: deviceId,
+        tokenService: _registrationUploadTokenService,
       );
-      final nationalIdBackImageUrl = await _uploadService.uploadFile(
+      final nationalIdBackImageUrl =
+          await _uploadService.uploadRegistrationFile(
         request.nationalIdBackImagePath,
         directory: DriverUploadDirectory.nationalId,
+        deviceId: deviceId,
+        tokenService: _registrationUploadTokenService,
       );
-      final licenseImageUrl = await _uploadService.uploadFile(
+      final licenseImageUrl = await _uploadService.uploadRegistrationFile(
         request.licenseImagePath,
         directory: DriverUploadDirectory.license,
+        deviceId: deviceId,
+        tokenService: _registrationUploadTokenService,
       );
-      final vehicleImageUrl = await _uploadService.uploadFile(
+      final vehicleImageUrl = await _uploadService.uploadRegistrationFile(
         request.vehicleImagePath,
         directory: DriverUploadDirectory.vehicle,
+        deviceId: deviceId,
+        tokenService: _registrationUploadTokenService,
       );
-      final personalPhotoUrl = await _uploadService.uploadFile(
+      final personalPhotoUrl = await _uploadService.uploadRegistrationFile(
         request.personalPhotoPath,
         directory: DriverUploadDirectory.profile,
+        deviceId: deviceId,
+        tokenService: _registrationUploadTokenService,
       );
 
       final response = await _remoteDataSource.register(
@@ -127,6 +147,9 @@ class RegisterRepositoryImpl implements RegisterRepository {
           },
         ),
       );
+
+      // Registration upload token is no longer needed after registration.
+      _registrationUploadTokenService.clear();
 
       return RegisterResponseEntity(
         message: entity.message,

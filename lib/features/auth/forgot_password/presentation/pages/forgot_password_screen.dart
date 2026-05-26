@@ -11,6 +11,7 @@ import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/auth/auth_experience_shell.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/core/widgets/turnstile_challenge_widget.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/domain/entities/forgot_password_request_entity.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/presentation/manager/forgot_password_event.dart';
 import 'package:zadana_delivery/features/auth/forgot_password/presentation/manager/forgot_password_state.dart';
@@ -29,6 +30,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _identifierController = TextEditingController();
   late final ForgotPasswordViewModel _cubit;
 
+  /// Cloudflare Turnstile token. Empty string means CAPTCHA is disabled.
+  String? _turnstileToken;
+
+  // TODO: Load this from remote config or environment variable.
+  // Empty string disables CAPTCHA (for staging/dev).
+  static const String _turnstileSiteKey = '';
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +53,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
+
+    // If CAPTCHA is enabled and token not yet obtained, wait.
+    if (_turnstileSiteKey.isNotEmpty && (_turnstileToken ?? '').isEmpty) {
+      CustomSnackbar.showError(
+        context: context,
+        message: 'يرجى إكمال التحقق أولاً',
+      );
+      return;
+    }
 
     await _submitWithCurrentValue();
   }
@@ -64,6 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ForgotPasswordSubmitEvent(
         ForgotPasswordRequestEntity(
           identifier: _identifierController.text.trim(),
+          botChallengeToken: _turnstileToken,
         ),
       ),
     );
@@ -144,6 +162,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         controller: _identifierController,
                         validator: (value) =>
                             Validations.validateEmailOrPhone(context, value),
+                      ),
+                      const SizedBox(height: 16),
+                      TurnstileChallengeWidget(
+                        siteKey: _turnstileSiteKey,
+                        onTokenObtained: (token) {
+                          setState(() => _turnstileToken = token);
+                        },
                       ),
                       const SizedBox(height: 20),
                       AppButton.filled(

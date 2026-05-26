@@ -318,6 +318,7 @@ class _MissionSummary extends StatelessWidget {
           _MissionHeader(
             title: assignment.vendorName,
             subtitle: assignment.deliveryAddress,
+            imageUrl: assignment.vendorImageUrl,
           ),
           const SizedBox(height: 12),
           if ((assignment.pickupOtpCode ?? '').trim().isNotEmpty) ...[
@@ -441,10 +442,15 @@ class _StatusStrip extends StatelessWidget {
 }
 
 class _MissionHeader extends StatelessWidget {
-  const _MissionHeader({required this.title, required this.subtitle});
+  const _MissionHeader({
+    required this.title,
+    required this.subtitle,
+    this.imageUrl = '',
+  });
 
   final String title;
   final String subtitle;
+  final String imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -483,11 +489,26 @@ class _MissionHeader extends StatelessWidget {
             color: scheme.primary.withValues(alpha: 0.10),
             borderRadius: BorderRadius.circular(14),
           ),
-          child: Icon(
-            Icons.storefront_rounded,
-            color: scheme.primary,
-            size: 22,
-          ),
+          child: imageUrl.isNotEmpty
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.network(
+                    imageUrl,
+                    width: 42,
+                    height: 42,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Icon(
+                      Icons.storefront_rounded,
+                      color: scheme.primary,
+                      size: 22,
+                    ),
+                  ),
+                )
+              : Icon(
+                  Icons.storefront_rounded,
+                  color: scheme.primary,
+                  size: 22,
+                ),
         ),
       ],
     );

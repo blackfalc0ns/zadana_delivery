@@ -11,12 +11,14 @@ import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/accept_driver_offer_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/reject_driver_offer_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/update_driver_availability_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/watch_driver_home_usecase.dart';
+import 'package:zadana_delivery/features/driver_tracking/domain/usecase/push_driver_location_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_event.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/manager/driver_home_state.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/screens/driver_home_marker_factory.dart';
@@ -32,6 +34,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     this._updateDriverAvailabilityUseCase,
     this._acceptDriverOfferUseCase,
     this._rejectDriverOfferUseCase,
+    this._pushDriverLocationUseCase,
   ) : super(const DriverHomeState()) {
     _homeSubscription = _watchDriverHomeUseCase.call().listen(_onHomeUpdated);
   }
@@ -55,6 +58,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
   final UpdateDriverAvailabilityUseCase _updateDriverAvailabilityUseCase;
   final AcceptDriverOfferUseCase _acceptDriverOfferUseCase;
   final RejectDriverOfferUseCase _rejectDriverOfferUseCase;
+  final PushDriverLocationUseCase _pushDriverLocationUseCase;
   final LocationPermissionService _locationPermissionService =
       getIt<LocationPermissionService>();
   final DriverRuntimeServicesController _driverRuntimeServicesController =
@@ -246,6 +250,32 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
   }
 
   Future<bool> _toggleAvailability(bool isAvailable) async {
+    // When going online, ensure GPS is accessible. If not, show a location
+    // permission failure and prevent the availability toggle.
+    if (isAvailable) {
+      try {
+        await _locationPermissionService.ensureForegroundPermission();
+      } on LocationServiceException catch (error) {
+        _emitLocationPermissionFailure(error);
+        return false;
+      } catch (_) {
+        _emitIfOpen(
+          state.copyWith(
+            failure: const Failure(
+              errorMessage:
+                  'Unable to access GPS. Location accuracy is required to receive orders.',
+              code: 'location_unavailable',
+            ),
+          ),
+        );
+        return false;
+      }
+
+      // Request overlay permission so the driver receives delivery offer
+      // alerts even when the app is in the background.
+      await _ensureOverlayPermission();
+    }
+
     _emitIfOpen(
       state.copyWith(
         isAvailabilityUpdating: true,
@@ -351,6 +381,16 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       ),
     );
 
+    // Attempt to push the latest location before accepting the offer.
+    // The backend uses the driver's last known location to calculate actual
+    // distance to the merchant. We don't block acceptance on failure.
+    try {
+      await _pushDriverLocationUseCase.call();
+    } catch (_) {
+      // Location push failed — proceed with acceptance anyway.
+      // The backend will use whatever last location it has on record.
+    }
+
     final result = await _acceptDriverOfferUseCase.call(assignmentId);
     switch (result) {
       case ApiSuccessResult():
@@ -395,6 +435,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
             orderNumber: currentOffer.orderNumber,
             status: 'Accepted',
             vendorName: currentOffer.vendorName,
+            vendorImageUrl: '',
             pickupAddress: currentOffer.pickupAddress,
             deliveryAddress: currentOffer.deliveryAddress,
             pickupLatitude: currentOffer.pickupLatitude,
@@ -525,6 +566,26 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       return;
     } catch (_) {
       return;
+    }
+
+    // Request overlay permission so the driver can receive delivery offer
+    // alerts even when the app is in the background.
+    await _ensureOverlayPermission();
+  }
+
+  /// Requests the "Display over other apps" permission.
+  /// Opens the system settings page if not already granted.
+  /// This is non-fatal — the driver can still go online without it,
+  /// but won't see overlay alerts in the background.
+  Future<void> _ensureOverlayPermission() async {
+    try {
+      final overlayService = getIt<TripRequestOverlayService>();
+      final hasOverlay = await overlayService.hasPermission();
+      if (!hasOverlay) {
+        await overlayService.requestPermission();
+      }
+    } catch (_) {
+      // Non-critical: overlay permission failure should not block going online.
     }
   }
 

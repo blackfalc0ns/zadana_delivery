@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/services/driver_runtime_services_controller.dart';
 import 'package:zadana_delivery/features/driver_home/domain/entities/driver_home_entity.dart';
@@ -15,6 +16,7 @@ import 'package:zadana_delivery/features/driver_tracking/domain/usecase/sync_dri
 import 'package:zadana_delivery/features/driver_tracking/presentation/manager/driver_tracking_event.dart';
 import 'package:zadana_delivery/features/driver_tracking/presentation/manager/driver_tracking_state.dart';
 
+@injectable
 class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   DriverTrackingCubit(
     this._watchDriverHomeUseCase,
@@ -25,6 +27,7 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
     this._repository,
   ) : super(const DriverTrackingState()) {
     _homeSubscription = _watchDriverHomeUseCase.call().listen((home) {
+      _syncAvailabilityLocationPush(home);
       unawaited(
         doIntent(DriverTrackingAssignmentChangedEvent(home.currentAssignment)),
       );
@@ -44,10 +47,14 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
   final DriverRuntimeServicesController _driverRuntimeServicesController =
       getIt<DriverRuntimeServicesController>();
   static const String _logTag = 'DriverTrackingCubit';
+  static const Duration _availableLocationInterval = Duration(seconds: 30);
+  static const int _locationPushMaxRetries = 2;
 
   late final StreamSubscription<DriverHomeEntity> _homeSubscription;
   late final StreamSubscription<DriverTrackingStateEntity>
   _trackingSubscription;
+  Timer? _availableLocationTimer;
+  bool _isDriverAvailable = false;
 
   Future<void> doIntent(DriverTrackingEvent event) async {
     switch (event) {
@@ -222,11 +229,14 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
     final status = assignment.status.trim().toLowerCase().replaceAll('_', '');
     if (status.contains('delivered') ||
         status.contains('deliveryfailed') ||
-        status.contains('cancel')) {
+        status.contains('cancel') ||
+        status.contains('pickedup')) {
+      // PickedUp: driver has collected the order from the store.
+      // No need to track until the driver starts delivery (OnTheWay).
       return null;
     }
 
-    if (status.contains('pickedup') || status.contains('ontheway')) {
+    if (status.contains('ontheway') || status.contains('arrivedatcustomer')) {
       return DriverTrackingCommandEntity(
         orderId: assignment.orderId,
         phase: assignment.status,
@@ -236,9 +246,7 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
       );
     }
 
-    if (status.contains('accepted') ||
-        status.contains('arrivedatvendor') ||
-        status.contains('arrivedatcustomer')) {
+    if (status.contains('accepted') || status.contains('arrivedatvendor')) {
       return DriverTrackingCommandEntity(
         orderId: assignment.orderId,
         phase: assignment.status,
@@ -253,9 +261,73 @@ class DriverTrackingCubit extends Cubit<DriverTrackingState> {
 
   @override
   Future<void> close() async {
+    _availableLocationTimer?.cancel();
     await _homeSubscription.cancel();
     await _trackingSubscription.cancel();
     return super.close();
+  }
+
+  /// Starts or stops periodic location pushes based on driver availability.
+  /// When the driver is available but has no active assignment, we push
+  /// location every [_availableLocationInterval] so the backend always has
+  /// a recent position for distance calculation when an offer is accepted.
+  void _syncAvailabilityLocationPush(DriverHomeEntity home) {
+    final isAvailable = home.operationalStatus.isAvailable;
+    final hasAssignment = home.currentAssignment != null;
+
+    // If the driver has an active assignment, the normal tracking handles it.
+    final shouldPushWhileIdle = isAvailable && !hasAssignment;
+
+    if (shouldPushWhileIdle && !_isDriverAvailable) {
+      _isDriverAvailable = true;
+      _startAvailableLocationTimer();
+    } else if (!shouldPushWhileIdle && _isDriverAvailable) {
+      _isDriverAvailable = false;
+      _stopAvailableLocationTimer();
+    }
+  }
+
+  void _startAvailableLocationTimer() {
+    _availableLocationTimer?.cancel();
+    _log('Starting periodic location push for available driver');
+    // Push immediately, then periodically.
+    unawaited(_pushLocationWithRetry());
+    _availableLocationTimer = Timer.periodic(
+      _availableLocationInterval,
+      (_) => unawaited(_pushLocationWithRetry()),
+    );
+  }
+
+  void _stopAvailableLocationTimer() {
+    _log('Stopping periodic location push (driver no longer idle-available)');
+    _availableLocationTimer?.cancel();
+    _availableLocationTimer = null;
+  }
+
+  /// Pushes the driver's location with simple retry on failure.
+  Future<void> _pushLocationWithRetry() async {
+    if (!_driverRuntimeServicesController.isInitialized) {
+      try {
+        await _driverRuntimeServicesController
+            .initializeDriverRuntimeServices();
+      } catch (_) {
+        _log('Cannot push available location: runtime services not ready');
+        return;
+      }
+    }
+
+    for (var attempt = 0; attempt <= _locationPushMaxRetries; attempt++) {
+      try {
+        await _pushDriverLocationUseCase.call();
+        _log('Available location push succeeded (attempt=$attempt)');
+        return;
+      } catch (error) {
+        _log('Available location push failed (attempt=$attempt): $error');
+        if (attempt < _locationPushMaxRetries) {
+          await Future<void>.delayed(const Duration(seconds: 3));
+        }
+      }
+    }
   }
 
   void _log(String message) {

@@ -198,6 +198,18 @@ class ErrorMessagePresenter {
         return context.localization.wallet_withdraw_blocked_cod;
       case 'INSUFFICIENT_WITHDRAWABLE_BALANCE':
         return context.localization.wallet_withdraw_blocked_no_balance;
+      case 'MAX_OPEN_CASES_EXCEEDED':
+        final isArabic =
+            Localizations.localeOf(context).languageCode == 'ar';
+        return isArabic
+            ? 'وصلت للحد الأقصى من البلاغات المفتوحة. أغلق بلاغاً موجوداً أولاً.'
+            : 'You have reached the maximum open cases limit. Close an existing case first.';
+      case 'ORDER_SUPPORT_CASE_ALREADY_EXISTS':
+        final isArabic =
+            Localizations.localeOf(context).languageCode == 'ar';
+        return isArabic
+            ? 'يوجد بلاغ مفتوح بالفعل لهذا الطلب'
+            : 'A support case already exists for this order';
       default:
         return null;
     }

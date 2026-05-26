@@ -18,6 +18,7 @@ import 'package:zadana_delivery/features/driver_support/presentation/screens/dri
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_detail_entry_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_case_details_screen.dart';
 import 'package:zadana_delivery/features/driver_support/presentation/screens/driver_support_cases_screen.dart';
+import 'package:zadana_delivery/features/notifications/presentation/screens/notification_preferences_screen.dart';
 import 'package:zadana_delivery/features/notifications/presentation/screens/notifications_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/assignment_detail_entry_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_delivery_success_screen.dart';
@@ -105,6 +106,8 @@ class RouteGenerator {
         return _pageRoute(settings, AppShellScreen(initialIndex: initialIndex));
       case AppRoutes.notifications:
         return _pageRoute(settings, const NotificationsScreen());
+      case AppRoutes.notificationPreferences:
+        return _pageRoute(settings, const NotificationPreferencesScreen());
       case AppRoutes.supportHelp:
         return _pageRoute(settings, const SupportHelpScreen());
       case AppRoutes.driverAccountSupportAppeal:

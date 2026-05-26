@@ -91,6 +91,7 @@ extension DriverHomeAssignmentModelMapper on DriverHomeAssignmentModelDto {
       orderNumber: orderNumber,
       status: status,
       vendorName: vendorName,
+      vendorImageUrl: vendorImageUrl,
       pickupAddress: pickupAddress,
       deliveryAddress: deliveryAddress,
       pickupLatitude: pickupLatitude,

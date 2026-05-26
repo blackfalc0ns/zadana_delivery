@@ -28,6 +28,8 @@ abstract class NetworkConstants {
 }
 
 abstract class EndPoints {
+  static const String registrationUploadTokenIssue =
+      '/registration-upload-tokens/issue';
   static const String fileUpload = '/files/upload';
   static const String driverRegister = '/drivers/register';
   static const String driverLogin = '/drivers/auth/login';

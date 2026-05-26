@@ -4,7 +4,9 @@ import 'dart:developer' as developer;
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:injectable/injectable.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
+import 'package:zadana_delivery/core/services/app_navigator_service.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
@@ -20,11 +22,13 @@ class TripRequestGlobalAlertService with WidgetsBindingObserver {
     this._overlayService,
     this._realtimeService,
     this._homeDataSource,
+    this._navigatorService,
   );
 
   final TripRequestOverlayService _overlayService;
   final DriverRealtimeService _realtimeService;
   final DriverHomeRemoteDataSource _homeDataSource;
+  final AppNavigatorService _navigatorService;
 
   static const MethodChannel _channel = MethodChannel(
     NetworkConstants.tripOverlayChannel,
@@ -103,6 +107,15 @@ class TripRequestGlobalAlertService with WidgetsBindingObserver {
             developer.log(
               'Offer accepted via overlay: $assignmentId',
               name: 'TripGlobalAlert',
+            );
+            // Refresh home so the accepted order appears in the UI
+            unawaited(_homeDataSource.getHome().then(_homeDataSource.emitHome));
+            // Navigate to order details screen
+            unawaited(
+              _navigatorService.pushNamedWhenReady(
+                AppRoutes.orderDetails,
+                arguments: <String, dynamic>{'assignmentId': assignmentId},
+              ),
             );
           } catch (error) {
             developer.log(

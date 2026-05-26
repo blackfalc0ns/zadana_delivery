@@ -13,4 +13,12 @@ abstract class NotificationsRemoteDataSource {
   Future<NotificationActionResponseModelDto> markAllAsRead();
 
   Future<NotificationUnreadCountResponseModelDto> getUnreadCount();
+
+  Future<NotificationActionResponseModelDto> deleteNotification(String id);
+
+  Future<NotificationActionResponseModelDto> deleteAllNotifications();
+
+  Future<Map<String, dynamic>> getPreferences();
+
+  Future<Map<String, dynamic>> updatePreferences(Map<String, dynamic> body);
 }

@@ -25,3 +25,23 @@ class NotificationsMarkAllReadEvent extends NotificationsEvent {
 class NotificationsRefreshUnreadCountEvent extends NotificationsEvent {
   const NotificationsRefreshUnreadCountEvent();
 }
+
+class NotificationsDeleteEvent extends NotificationsEvent {
+  const NotificationsDeleteEvent(this.id);
+
+  final String id;
+}
+
+class NotificationsDeleteAllEvent extends NotificationsEvent {
+  const NotificationsDeleteAllEvent();
+}
+
+class NotificationsLoadPreferencesEvent extends NotificationsEvent {
+  const NotificationsLoadPreferencesEvent();
+}
+
+class NotificationsUpdatePreferencesEvent extends NotificationsEvent {
+  const NotificationsUpdatePreferencesEvent(this.body);
+
+  final Map<String, dynamic> body;
+}

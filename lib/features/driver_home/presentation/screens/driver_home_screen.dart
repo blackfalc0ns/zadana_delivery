@@ -224,6 +224,8 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     if (state.failure != null && state.home != null) {
       if (_shouldPromptForLocationSettings(state)) {
         unawaited(_showLocationPermissionDialog());
+        _cubit.doIntent(const DriverHomeClearErrorEvent());
+        return;
       }
       CustomSnackbar.showError(
         context: context,
@@ -256,27 +258,41 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
         context: context,
         builder: (dialogContext) {
           final color = Theme.of(dialogContext).colorScheme;
+          final isArabic =
+              Localizations.localeOf(dialogContext).languageCode == 'ar';
           return AlertDialog(
-            title: Text(dialogContext.localization.location_permission_denied),
+            title: Text(
+              isArabic
+                  ? 'مطلوب إذن الموقع الدائم'
+                  : 'Background Location Required',
+            ),
             content: Text(
-              'To keep delivery tracking running in the background, please allow location access all the time from your device settings.',
-              style: TextStyle(color: color.onSurfaceVariant),
+              isArabic
+                  ? 'لتتبع التوصيل في الخلفية، يرجى السماح بالوصول للموقع "طوال الوقت" من إعدادات التطبيق.\n\n'
+                    '١. اضغط "فتح الإعدادات"\n'
+                    '٢. اختر "الأذونات"\n'
+                    '٣. اختر "الموقع"\n'
+                    '٤. اختر "السماح طوال الوقت"'
+                  : 'To keep delivery tracking running in the background, please allow location access "All the time" from your device settings.\n\n'
+                    '1. Tap "Open Settings"\n'
+                    '2. Select "Permissions"\n'
+                    '3. Select "Location"\n'
+                    '4. Choose "Allow all the time"',
+              style: TextStyle(color: color.onSurfaceVariant, height: 1.5),
             ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(dialogContext).pop();
                 },
-                child: Text(
-                  MaterialLocalizations.of(dialogContext).cancelButtonLabel,
-                ),
+                child: Text(isArabic ? 'لاحقاً' : 'Later'),
               ),
               FilledButton(
                 onPressed: () async {
                   Navigator.of(dialogContext).pop();
                   await getIt<LocationPermissionService>().openAppSettings();
                 },
-                child: const Text('Open Settings'),
+                child: Text(isArabic ? 'فتح الإعدادات' : 'Open Settings'),
               ),
             ],
           );

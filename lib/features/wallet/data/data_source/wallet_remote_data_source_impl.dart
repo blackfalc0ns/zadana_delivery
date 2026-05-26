@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/errors/api_exception_mapper.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/features/wallet/data/data_source/wallet_remote_data_source.dart';
@@ -8,6 +9,7 @@ import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_transa
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawal_request_model_dto.dart';
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawals_page_model_dto.dart';
 
+@LazySingleton(as: WalletRemoteDataSource)
 class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
   const WalletRemoteDataSourceImpl(this._apiServices);
 

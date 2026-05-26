@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
+import 'package:zadana_delivery/core/network/retry_with_backoff.dart';
 import 'package:zadana_delivery/core/services/file_upload_service.dart';
 import 'package:zadana_delivery/core/services/language_interceptor.dart';
 import 'package:zadana_delivery/features/auth/data/driver_profile_service.dart';
@@ -33,6 +34,7 @@ abstract class ExternalModules {
 
     dio.interceptors.add(languageInterceptor);
     dio.interceptors.add(tokenInterceptor);
+    dio.interceptors.add(RetryWithBackoffInterceptor());
     dio.interceptors.add(prettyDioLogger);
 
     return dio;
@@ -96,8 +98,8 @@ abstract class ExternalModules {
       DriverProfileDraftService();
 
   @lazySingleton
-  FileUploadService provideFileUploadService(ApiServices apiServices) {
-    return FileUploadService(apiServices: apiServices);
+  FileUploadService provideFileUploadService(ApiServices apiServices, Dio dio) {
+    return FileUploadService(apiServices: apiServices, dio: dio);
   }
 
   @lazySingleton

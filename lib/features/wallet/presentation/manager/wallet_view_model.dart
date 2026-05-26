@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
@@ -36,6 +37,7 @@ enum WalletPaymentMethodsState {
   completed,
 }
 
+@injectable
 class WalletViewModel extends Cubit<WalletState> {
   WalletViewModel(
     this._getDriverWalletSummaryUseCase,

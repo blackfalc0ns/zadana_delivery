@@ -1,6 +1,8 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/entities/driver_tracking_state_entity.dart';
 import 'package:zadana_delivery/features/driver_tracking/domain/repo/driver_tracking_repository.dart';
 
+@injectable
 class StartDriverTrackingUseCase {
   const StartDriverTrackingUseCase(this._repository);
 

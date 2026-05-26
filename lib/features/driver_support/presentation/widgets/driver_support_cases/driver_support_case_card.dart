@@ -160,6 +160,15 @@ class DriverSupportCaseCard extends StatelessWidget {
                                 alpha: 0.08,
                               ),
                             ),
+                            if (item.isAwaitingDriverResponse)
+                              _MetaPill(
+                                icon: Icons.reply_rounded,
+                                label: isArabic
+                                    ? 'مطلوب ردك'
+                                    : 'Response needed',
+                                foreground: const Color(0xFFD32F2F),
+                                background: const Color(0xFFFFEBEE),
+                              ),
                           ],
                         ),
                       ],

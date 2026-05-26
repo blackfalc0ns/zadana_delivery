@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 
@@ -88,18 +86,19 @@ class LocationPermissionService {
   Future<void> _ensureBackgroundPermissionInternal() async {
     await ensureForegroundPermission();
 
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.whileInUse) {
-      permission = await Geolocator.requestPermission();
-    }
+    final permission = await Geolocator.checkPermission();
 
     if (permission == LocationPermission.always) {
       return;
     }
 
-    if (Platform.isAndroid && permission == LocationPermission.whileInUse) {
+    // On Android 10+, after granting "While in use", the system won't show
+    // an "Allow all the time" prompt from requestPermission(). The user must
+    // go to app settings manually. We throw permissionNeedsSettings to trigger
+    // the settings dialog in the UI.
+    if (permission == LocationPermission.whileInUse) {
       throw const LocationServiceException(
-        'Android requires background location to be enabled from app settings. Please open the app settings and choose allow all the time.',
+        'Background location requires all-the-time access. Please open app settings and choose "Allow all the time".',
         LocationErrorType.permissionNeedsSettings,
       );
     }
@@ -120,7 +119,7 @@ class LocationPermissionService {
 
     throw const LocationServiceException(
       'Background location requires all-the-time access. Please choose allow all the time from app settings to continue tracking.',
-      LocationErrorType.permissionDenied,
+      LocationErrorType.permissionNeedsSettings,
     );
   }
 

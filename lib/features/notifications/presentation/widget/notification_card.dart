@@ -84,8 +84,8 @@ class NotificationCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: Spacing.sm),
-                            if (isUnread)
+                            if (isUnread) ...[
+                              const SizedBox(width: Spacing.sm),
                               Container(
                                 width: 11,
                                 height: 11,
@@ -104,6 +104,7 @@ class NotificationCard extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                            ],
                           ],
                         ),
                         const SizedBox(height: Spacing.xs),

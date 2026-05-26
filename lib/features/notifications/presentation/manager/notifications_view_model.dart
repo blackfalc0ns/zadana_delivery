@@ -6,10 +6,14 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/notifications/domain/entities/driver_notification_entity.dart';
+import 'package:zadana_delivery/features/notifications/domain/usecase/delete_all_driver_notifications_usecase.dart';
+import 'package:zadana_delivery/features/notifications/domain/usecase/delete_driver_notification_usecase.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/get_driver_notifications_unread_count_usecase.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/get_driver_notifications_usecase.dart';
+import 'package:zadana_delivery/features/notifications/domain/usecase/get_notification_preferences_usecase.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/mark_all_driver_notifications_read_usecase.dart';
 import 'package:zadana_delivery/features/notifications/domain/usecase/mark_driver_notification_read_usecase.dart';
+import 'package:zadana_delivery/features/notifications/domain/usecase/update_notification_preferences_usecase.dart';
 import 'package:zadana_delivery/features/notifications/presentation/manager/notifications_event.dart';
 import 'package:zadana_delivery/features/notifications/presentation/manager/notifications_state.dart';
 
@@ -20,6 +24,10 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     this._markDriverNotificationReadUseCase,
     this._markAllDriverNotificationsReadUseCase,
     this._getDriverNotificationsUnreadCountUseCase,
+    this._deleteDriverNotificationUseCase,
+    this._deleteAllDriverNotificationsUseCase,
+    this._getNotificationPreferencesUseCase,
+    this._updateNotificationPreferencesUseCase,
   ) : super(const NotificationsState()) {
     _notificationSubscription = getIt<DriverRealtimeService>().notifications
         .listen((_) {
@@ -37,6 +45,12 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   _markAllDriverNotificationsReadUseCase;
   final GetDriverNotificationsUnreadCountUseCase
   _getDriverNotificationsUnreadCountUseCase;
+  final DeleteDriverNotificationUseCase _deleteDriverNotificationUseCase;
+  final DeleteAllDriverNotificationsUseCase
+  _deleteAllDriverNotificationsUseCase;
+  final GetNotificationPreferencesUseCase _getNotificationPreferencesUseCase;
+  final UpdateNotificationPreferencesUseCase
+  _updateNotificationPreferencesUseCase;
   late final StreamSubscription<Map<String, dynamic>> _notificationSubscription;
   late final StreamSubscription<Map<String, dynamic>>
   _supportCaseChangedSubscription;
@@ -88,6 +102,14 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
         return _markAllAsRead();
       case NotificationsRefreshUnreadCountEvent():
         return _refreshUnreadCount();
+      case NotificationsDeleteEvent():
+        return _deleteNotification(event.id);
+      case NotificationsDeleteAllEvent():
+        return _deleteAllNotifications();
+      case NotificationsLoadPreferencesEvent():
+        return _loadPreferences();
+      case NotificationsUpdatePreferencesEvent():
+        return _updatePreferences(event.body);
     }
   }
 
@@ -243,6 +265,22 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     return items.where((item) => !item.isRead).length;
   }
 
+  Future<bool> deleteNotification(String id) {
+    return doIntent(NotificationsDeleteEvent(id));
+  }
+
+  Future<bool> deleteAllNotifications() {
+    return doIntent(const NotificationsDeleteAllEvent());
+  }
+
+  Future<bool> loadPreferences() {
+    return doIntent(const NotificationsLoadPreferencesEvent());
+  }
+
+  Future<bool> updatePreferences(Map<String, dynamic> body) {
+    return doIntent(NotificationsUpdatePreferencesEvent(body));
+  }
+
   void _handleRealtimeNotificationRefresh() {
     unawaited(_refreshUnreadCount());
     if (state.hasLoadedOnce && !state.isLoading) {
@@ -253,6 +291,128 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   void _clearError() {
     if (state.failure == null) return;
     emit(state.copyWith(clearFailure: true));
+  }
+
+  Future<bool> _deleteNotification(String id) async {
+    final currentNotifications = state.notifications;
+    if (currentNotifications == null) return false;
+
+    emit(
+      state.copyWith(
+        isNotificationActionLoading: true,
+        activeNotificationId: id,
+        clearFailure: true,
+      ),
+    );
+
+    final result = await _deleteDriverNotificationUseCase.call(id);
+    switch (result) {
+      case ApiSuccessResult():
+        final updatedItems = currentNotifications.items
+            .where((item) => item.id != id)
+            .toList(growable: false);
+        final syncedUnreadCount = await _syncUnreadCount(
+          _countUnread(updatedItems),
+        );
+
+        emit(
+          state.copyWith(
+            isNotificationActionLoading: false,
+            clearActiveNotificationId: true,
+            notifications: currentNotifications.copyWith(
+              items: updatedItems,
+              unreadCount: syncedUnreadCount,
+            ),
+            unreadCount: syncedUnreadCount,
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isNotificationActionLoading: false,
+            clearActiveNotificationId: true,
+            failure: result.failure,
+          ),
+        );
+        return false;
+    }
+  }
+
+  Future<bool> _deleteAllNotifications() async {
+    emit(state.copyWith(isDeletingAll: true, clearFailure: true));
+
+    final result = await _deleteAllDriverNotificationsUseCase.call();
+    switch (result) {
+      case ApiSuccessResult():
+        final currentNotifications = state.notifications;
+        emit(
+          state.copyWith(
+            isDeletingAll: false,
+            notifications: currentNotifications?.copyWith(
+              items: const <DriverNotificationEntity>[],
+              unreadCount: 0,
+            ),
+            unreadCount: 0,
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(isDeletingAll: false, failure: result.failure));
+        return false;
+    }
+  }
+
+  Future<bool> _loadPreferences() async {
+    emit(state.copyWith(isPreferencesLoading: true, clearFailure: true));
+
+    final result = await _getNotificationPreferencesUseCase.call();
+    switch (result) {
+      case ApiSuccessResult(data: final prefs):
+        emit(
+          state.copyWith(
+            isPreferencesLoading: false,
+            preferences: prefs,
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isPreferencesLoading: false,
+            failure: result.failure,
+          ),
+        );
+        return false;
+    }
+  }
+
+  Future<bool> _updatePreferences(Map<String, dynamic> body) async {
+    emit(state.copyWith(isPreferencesLoading: true, clearFailure: true));
+
+    final result = await _updateNotificationPreferencesUseCase.call(body);
+    switch (result) {
+      case ApiSuccessResult(data: final prefs):
+        emit(
+          state.copyWith(
+            isPreferencesLoading: false,
+            preferences: prefs,
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isPreferencesLoading: false,
+            failure: result.failure,
+          ),
+        );
+        return false;
+    }
   }
 
   @override

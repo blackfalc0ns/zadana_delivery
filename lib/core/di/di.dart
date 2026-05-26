@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
-import 'package:zadana_delivery/core/di/manual_registrations.dart';
 import 'di.config.dart';
 
 final getIt = GetIt.instance;
@@ -10,5 +9,4 @@ final getIt = GetIt.instance;
 )
 Future<void> configureDependencies() async {
   await getIt.init();
-  registerManualDependencies(getIt);
 }

@@ -106,6 +106,7 @@ class DriverNotificationDeviceService {
       'deviceName': _resolveDeviceName(),
       'appVersion': packageInfo.version,
       'locale': locale,
+      'notificationsEnabled': pushEnabled,
       'dispatchPushEnabled': pushEnabled,
       'assignmentPushEnabled': pushEnabled,
       'supportPushEnabled': pushEnabled,
@@ -189,35 +190,89 @@ class DriverNotificationDeviceService {
     }
   }
 
-  Future<void> _syncPushPreferencesIfAuthenticated(bool enabled) async {
+  /// Updates device notification preferences on the server.
+  /// Returns the response body on success, or `null` on failure.
+  Future<Map<String, dynamic>?> updateDevicePreferences(
+    Map<String, dynamic> preferences,
+  ) async {
     final accessToken = await _tokenService.getToken();
     if ((accessToken ?? '').trim().isEmpty) {
-      return;
+      return null;
     }
 
+    final deviceId = await _getOrCreateDeviceId();
     final body = <String, dynamic>{
-      'deviceId': await _getOrCreateDeviceId(),
+      'deviceId': deviceId,
       if (_pushToken.isNotEmpty) 'deviceToken': _pushToken,
+      ...preferences,
+    };
+
+    try {
+      final response = await _dio.put<dynamic>(
+        '${EndPoints.driverNotificationDevices}/preferences',
+        data: body,
+      );
+      _lastRegistrationSignature = null;
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data as Map);
+      }
+      return body;
+    } on DioException catch (error) {
+      debugPrint(
+        '[DriverNotificationDevice] updateDevicePreferences failed: '
+        '${error.message}',
+      );
+      rethrow;
+    }
+  }
+
+  /// Fetches the current device preferences from the server.
+  /// Returns the response body on success, or `null` on failure.
+  Future<Map<String, dynamic>?> getDevicePreferences() async {
+    final accessToken = await _tokenService.getToken();
+    if ((accessToken ?? '').trim().isEmpty) {
+      return null;
+    }
+
+    final deviceId = await _getOrCreateDeviceId();
+    final queryParams = <String, dynamic>{
+      'deviceId': deviceId,
+      if (_pushToken.isNotEmpty) 'deviceToken': _pushToken,
+    };
+
+    try {
+      final response = await _dio.get<dynamic>(
+        '${EndPoints.driverNotificationDevices}/preferences',
+        queryParameters: queryParams,
+      );
+      if (response.data is Map) {
+        return Map<String, dynamic>.from(response.data as Map);
+      }
+      return null;
+    } on DioException catch (error) {
+      debugPrint(
+        '[DriverNotificationDevice] getDevicePreferences failed: '
+        '${error.message}',
+      );
+      rethrow;
+    }
+  }
+
+  /// Returns the device ID for external use (e.g., building preference bodies).
+  Future<String> getDeviceId() => _getOrCreateDeviceId();
+
+  /// Returns the current push token for external use.
+  String get pushToken => _pushToken;
+
+  Future<void> _syncPushPreferencesIfAuthenticated(bool enabled) async {
+    await updateDevicePreferences({
+      'notificationsEnabled': enabled,
       'dispatchPushEnabled': enabled,
       'assignmentPushEnabled': enabled,
       'supportPushEnabled': enabled,
       'walletPushEnabled': enabled,
       'accountPushEnabled': enabled,
-    };
-
-    await _performFirstSuccessfulCall(<Future<dynamic> Function()>[
-      () => _dio.put<dynamic>(EndPoints.driverNotificationDevices, data: body),
-      () => _dio.put<dynamic>(
-        '${EndPoints.driverNotificationDevices}/preferences',
-        data: body,
-      ),
-      () => _dio.post<dynamic>(
-        '${EndPoints.driverNotificationDevices}/preferences',
-        data: body,
-      ),
-    ]);
-
-    _lastRegistrationSignature = null;
+    });
   }
 
   Future<bool> _performFirstSuccessfulCall(
@@ -305,9 +360,9 @@ class DriverNotificationDeviceService {
       '';
 
   String _resolvePlatform() {
-    if (kIsWeb) return 'web';
-    if (Platform.isIOS || Platform.isMacOS) return 'apns';
-    return 'fcm';
+    if (kIsWeb) return 'Web';
+    if (Platform.isIOS || Platform.isMacOS) return 'Apns';
+    return 'Fcm';
   }
 
   String _resolveDeviceName() {

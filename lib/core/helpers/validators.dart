@@ -136,17 +136,11 @@ abstract class Validations {
     if (password.length < 8) {
       missing.add(locale.password_requirement_min_length);
     }
-    if (!RegExp(r'[A-Z]').hasMatch(password)) {
-      missing.add(locale.password_requirement_uppercase);
-    }
     if (!RegExp(r'[a-z]').hasMatch(password)) {
       missing.add(locale.password_requirement_lowercase);
     }
     if (!RegExp(r'[0-9]').hasMatch(password)) {
       missing.add(locale.password_requirement_number);
-    }
-    if (!RegExp(r'[#?!@$%^&*-]').hasMatch(password)) {
-      missing.add(locale.password_requirement_special_character);
     }
 
     if (missing.isEmpty) {

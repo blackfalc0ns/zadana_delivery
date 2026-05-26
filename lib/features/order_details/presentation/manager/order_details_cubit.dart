@@ -117,6 +117,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
       case OrderDetailsMarkPickedUpEvent():
         return _runAction(
           () => _markOrderPickedUpUseCase.call(event.orderId),
+          onSuccessRefreshAssignment: true,
           onSuccessRefreshHome: false,
         );
       case OrderDetailsMarkOnTheWayEvent():

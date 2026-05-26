@@ -361,28 +361,102 @@ class _DriverSupportCaseDetailsScreenState
                       ),
                     ),
                   ],
-                  const SizedBox(height: 10),
-                  DriverSupportCaseSectionCard(
-                    title: locale.driver_support_case_add_follow_up_title,
-                    icon: Icons.reply_all_rounded,
-                    child: DriverSupportFollowUpForm(
-                      reasonCodes: _followUpReasonCodes,
-                      selectedReasonCode: _selectedReasonCode,
-                      messageController: _messageController,
-                      selectedImages: _selectedImages,
-                      isSubmitting: state.isMessageSending,
-                      reasonLabelBuilder: _reasonLabel,
-                      fileNameBuilder: _imageFileName,
-                      onReasonChanged: (value) {
-                        setState(() {
-                          _selectedReasonCode = value ?? _selectedReasonCode;
-                        });
-                      },
-                      onPickImages: _pickImages,
-                      onRemoveImage: _removeImage,
-                      onSubmit: () => _sendMessage(item),
+                  if (item.isDriverCostBearer &&
+                      item.approvedRefundAmount != null &&
+                      item.approvedRefundAmount! > 0) ...[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF3E0),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: const Color(0xFFFF9800).withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.warning_amber_rounded,
+                            color: Color(0xFFE65100),
+                            size: 22,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              _isArabic
+                                  ? 'تم تحميلك تكلفة هذه المشكلة\nالمبلغ: ${item.approvedRefundAmount!.toStringAsFixed(2)} ر.س'
+                                  : 'You have been charged for this issue\nAmount: ${item.approvedRefundAmount!.toStringAsFixed(2)} SAR',
+                              style: const TextStyle(
+                                color: Color(0xFFE65100),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                  ],
+                  if (item.isAwaitingDriverResponse) ...[
+                    const SizedBox(height: 10),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.reply_rounded,
+                            color: Color(0xFFD32F2F),
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              _isArabic
+                                  ? 'مطلوب ردك على هذا البلاغ'
+                                  : 'Your response is required',
+                              style: const TextStyle(
+                                color: Color(0xFFD32F2F),
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                  if (item.canReply) ...[
+                    const SizedBox(height: 10),
+                    DriverSupportCaseSectionCard(
+                      title: locale.driver_support_case_add_follow_up_title,
+                      icon: Icons.reply_all_rounded,
+                      child: DriverSupportFollowUpForm(
+                        reasonCodes: _followUpReasonCodes,
+                        selectedReasonCode: _selectedReasonCode,
+                        messageController: _messageController,
+                        selectedImages: _selectedImages,
+                        isSubmitting: state.isMessageSending,
+                        reasonLabelBuilder: _reasonLabel,
+                        fileNameBuilder: _imageFileName,
+                        onReasonChanged: (value) {
+                          setState(() {
+                            _selectedReasonCode = value ?? _selectedReasonCode;
+                          });
+                        },
+                        onPickImages: _pickImages,
+                        onRemoveImage: _removeImage,
+                        onSubmit: () => _sendMessage(item),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),

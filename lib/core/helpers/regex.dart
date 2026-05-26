@@ -16,8 +16,7 @@ abstract class AppRegExp {
   }
 
   static bool isPasswordValid(String password) {
-    return RegExp(
-      r"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$",
-    ).hasMatch(password);
+    // Server requirement: 8+ characters, at least one lowercase letter, at least one digit.
+    return RegExp(r'^(?=.*[a-z])(?=.*\d).{8,}$').hasMatch(password);
   }
 }

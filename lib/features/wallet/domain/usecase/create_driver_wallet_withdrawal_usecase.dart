@@ -1,8 +1,10 @@
+import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/repo/wallet_repository.dart';
 
+@injectable
 class CreateDriverWalletWithdrawalUseCase {
   const CreateDriverWalletWithdrawalUseCase(this._repository);
 

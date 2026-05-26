@@ -14,4 +14,16 @@ abstract class NotificationsRepository {
   Future<ApiResult<NotificationActionResponseEntity>> markAllAsRead();
 
   Future<ApiResult<NotificationUnreadCountEntity>> getUnreadCount();
+
+  Future<ApiResult<NotificationActionResponseEntity>> deleteNotification(
+    String id,
+  );
+
+  Future<ApiResult<NotificationActionResponseEntity>> deleteAllNotifications();
+
+  Future<ApiResult<Map<String, dynamic>>> getPreferences();
+
+  Future<ApiResult<Map<String, dynamic>>> updatePreferences(
+    Map<String, dynamic> body,
+  );
 }

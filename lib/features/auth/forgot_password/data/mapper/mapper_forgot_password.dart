@@ -5,7 +5,10 @@ import '../models/forgot_password_response_model_dto.dart';
 
 extension ForgotPasswordRequestEntityMapper on ForgotPasswordRequestEntity {
   ForgotPasswordRequestModelDto toDto() {
-    return ForgotPasswordRequestModelDto(identifier: identifier.trim());
+    return ForgotPasswordRequestModelDto(
+      identifier: identifier.trim(),
+      botChallengeToken: botChallengeToken?.trim(),
+    );
   }
 }
 

@@ -30,6 +30,14 @@ class DriverSupportCaseModelDto {
     this.closedAt,
     this.attachments = const <DriverSupportAttachmentDto>[],
     this.activities = const <DriverSupportCaseActivityDto>[],
+    this.waitingOnRole,
+    this.waitingOnRoleLabel,
+    this.allowedActions = const <String>[],
+    this.costBearer,
+    this.approvedRefundAmount,
+    this.initiatorRole,
+    this.initiatorRoleLabel,
+    this.customerVisibleNote,
   });
 
   factory DriverSupportCaseModelDto.fromJson(Map<String, dynamic> json) {
@@ -41,6 +49,21 @@ class DriverSupportCaseModelDto {
     final createdAtValue = json['createdAt'] ?? json['created_at'];
     final updatedAtValue = json['updatedAt'] ?? json['updated_at'];
     final closedAtValue = json['closedAt'] ?? json['closed_at'];
+    final waitingOnRoleValue =
+        json['waiting_on_role'] ?? json['waitingOnRole'];
+    final waitingOnRoleLabelValue =
+        json['waiting_on_role_label'] ?? json['waitingOnRoleLabel'];
+    final allowedActionsValue =
+        json['allowed_actions'] ?? json['allowedActions'];
+    final costBearerValue = json['cost_bearer'] ?? json['costBearer'];
+    final approvedRefundAmountValue =
+        json['approved_refund_amount'] ?? json['approvedRefundAmount'];
+    final initiatorRoleValue =
+        json['initiator_role'] ?? json['initiatorRole'];
+    final initiatorRoleLabelValue =
+        json['initiator_role_label'] ?? json['initiatorRoleLabel'];
+    final customerVisibleNoteValue =
+        json['customer_visible_note'] ?? json['customerVisibleNote'];
     return DriverSupportCaseModelDto(
       id: json['id']?.toString() ?? '',
       orderId: orderIdValue?.toString() ?? '',
@@ -76,6 +99,14 @@ class DriverSupportCaseModelDto {
       closedAt: _dateTimeFromJson(closedAtValue),
       attachments: _attachmentsFromJson(json['attachments']),
       activities: _activitiesFromJson(json['activities']),
+      waitingOnRole: waitingOnRoleValue?.toString(),
+      waitingOnRoleLabel: waitingOnRoleLabelValue?.toString(),
+      allowedActions: _stringListFromJson(allowedActionsValue),
+      costBearer: costBearerValue?.toString(),
+      approvedRefundAmount: _doubleFromJson(approvedRefundAmountValue),
+      initiatorRole: initiatorRoleValue?.toString(),
+      initiatorRoleLabel: initiatorRoleLabelValue?.toString(),
+      customerVisibleNote: customerVisibleNoteValue?.toString(),
     );
   }
 
@@ -105,6 +136,14 @@ class DriverSupportCaseModelDto {
   final DateTime? closedAt;
   final List<DriverSupportAttachmentDto> attachments;
   final List<DriverSupportCaseActivityDto> activities;
+  final String? waitingOnRole;
+  final String? waitingOnRoleLabel;
+  final List<String> allowedActions;
+  final String? costBearer;
+  final double? approvedRefundAmount;
+  final String? initiatorRole;
+  final String? initiatorRoleLabel;
+  final String? customerVisibleNote;
 
   DriverSupportCaseEntity toEntity() {
     return DriverSupportCaseEntity(
@@ -138,6 +177,14 @@ class DriverSupportCaseModelDto {
       activities: activities
           .map((item) => item.toEntity())
           .toList(growable: false),
+      waitingOnRole: waitingOnRole,
+      waitingOnRoleLabel: waitingOnRoleLabel,
+      allowedActions: allowedActions,
+      costBearer: costBearer,
+      approvedRefundAmount: approvedRefundAmount,
+      initiatorRole: initiatorRole,
+      initiatorRoleLabel: initiatorRoleLabel,
+      customerVisibleNote: customerVisibleNote,
     );
   }
 
@@ -164,5 +211,20 @@ class DriverSupportCaseModelDto {
   static DateTime? _dateTimeFromJson(dynamic value) {
     if (value == null) return null;
     return DateTime.tryParse(value.toString());
+  }
+
+  static List<String> _stringListFromJson(dynamic value) {
+    if (value is! List) return const <String>[];
+    return value
+        .map((item) => item?.toString() ?? '')
+        .where((item) => item.isNotEmpty)
+        .toList(growable: false);
+  }
+
+  static double? _doubleFromJson(dynamic value) {
+    if (value == null) return null;
+    if (value is double) return value;
+    if (value is num) return value.toDouble();
+    return double.tryParse(value.toString());
   }
 }

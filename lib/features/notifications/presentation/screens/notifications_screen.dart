@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zadana_delivery/config/routing/app_routes.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
@@ -73,29 +74,60 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               title: locale.notifications,
               backgroundColor: const Color(0xFFF6F8FA),
               actions: [
-                if (state.unreadCount > 0)
+                Padding(
+                  padding: const EdgeInsetsDirectional.only(end: 4),
+                  child: Center(
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed(
+                          AppRoutes.notificationPreferences,
+                        );
+                      },
+                      icon: const Icon(
+                        Icons.settings_outlined,
+                        size: 22,
+                      ),
+                      tooltip: 'Settings',
+                    ),
+                  ),
+                ),
+                if (_viewModel.items.isNotEmpty)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(end: 12),
                     child: Center(
-                      child: TextButton(
-                        onPressed: state.isMarkingAllRead
+                      child: IconButton(
+                        onPressed: state.isDeletingAll
                             ? null
                             : () async {
-                                await _viewModel.markAllAsRead();
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (ctx) => AlertDialog(
+                                    title: Text(locale.notifications),
+                                    content: const Text(
+                                      'هل أنت متأكد من حذف جميع الإشعارات؟',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(false),
+                                        child: const Text('إلغاء'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(true),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.red,
+                                        ),
+                                        child: const Text('حذف الكل'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true) {
+                                  await _viewModel.deleteAllNotifications();
+                                }
                               },
-                        style: TextButton.styleFrom(
-                          foregroundColor: const Color(0xFF0A7A92),
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 14,
-                            vertical: 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(999),
-                            side: const BorderSide(color: Color(0x140A7A92)),
-                          ),
-                        ),
-                        child: state.isMarkingAllRead
+                        icon: state.isDeletingAll
                             ? const SizedBox(
                                 width: 18,
                                 height: 18,
@@ -103,7 +135,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                   size: 18,
                                 ),
                               )
-                            : Text(locale.notifications_mark_all_read),
+                            : const Icon(
+                                Icons.delete_outline_rounded,
+                                size: 22,
+                              ),
+                        tooltip: 'Delete all',
                       ),
                     ),
                   ),
@@ -159,17 +195,58 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       padding: const EdgeInsets.only(
                                         bottom: Spacing.sm,
                                       ),
-                                      child: NotificationCard(
-                                        item: item,
-                                        isLoading: _viewModel
-                                            .isNotificationLoading(item.id),
-                                        onTap: item.isRead
-                                            ? null
-                                            : () async {
-                                                await _viewModel.markAsRead(
-                                                  item.id,
-                                                );
-                                              },
+                                      child: Dismissible(
+                                        key: ValueKey(item.id),
+                                        background: Container(
+                                          alignment:
+                                              AlignmentDirectional.centerStart,
+                                          padding:
+                                              const EdgeInsetsDirectional.only(
+                                            start: 24,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius:
+                                                BorderRadius.circular(22),
+                                          ),
+                                          child: Icon(
+                                            Icons.delete_outline_rounded,
+                                            color: Colors.red.shade400,
+                                          ),
+                                        ),
+                                        secondaryBackground: Container(
+                                          alignment:
+                                              AlignmentDirectional.centerEnd,
+                                          padding:
+                                              const EdgeInsetsDirectional.only(
+                                            end: 24,
+                                          ),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.shade50,
+                                            borderRadius:
+                                                BorderRadius.circular(22),
+                                          ),
+                                          child: Icon(
+                                            Icons.delete_outline_rounded,
+                                            color: Colors.red.shade400,
+                                          ),
+                                        ),
+                                        onDismissed: (_) {
+                                          _viewModel
+                                              .deleteNotification(item.id);
+                                        },
+                                        child: NotificationCard(
+                                          item: item,
+                                          isLoading: _viewModel
+                                              .isNotificationLoading(item.id),
+                                          onTap: item.isRead
+                                              ? null
+                                              : () async {
+                                                  await _viewModel.markAsRead(
+                                                    item.id,
+                                                  );
+                                                },
+                                        ),
                                       ),
                                     ),
                                   ),

@@ -135,6 +135,7 @@ class DriverHomeAssignmentEntity {
     required this.orderNumber,
     required this.status,
     required this.vendorName,
+    required this.vendorImageUrl,
     required this.pickupAddress,
     required this.deliveryAddress,
     required this.pickupLatitude,
@@ -158,6 +159,7 @@ class DriverHomeAssignmentEntity {
   final String orderNumber;
   final String status;
   final String vendorName;
+  final String vendorImageUrl;
   final String pickupAddress;
   final String deliveryAddress;
   final double pickupLatitude;
