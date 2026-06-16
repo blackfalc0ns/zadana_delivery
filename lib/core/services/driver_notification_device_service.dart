@@ -85,12 +85,22 @@ class DriverNotificationDeviceService {
   }) async {
     final accessToken = await _tokenService.getToken();
     final pushToken = _pushToken;
+    final subscriptionId = _pushSubscriptionId;
     if ((accessToken ?? '').trim().isEmpty || pushToken.isEmpty) {
       debugPrint(
         '[DriverNotificationDevice] Registration skipped: '
         'hasAccessToken=${(accessToken ?? '').trim().isNotEmpty} '
         'hasPushToken=${pushToken.isNotEmpty} '
-        'hasSubscriptionId=${_pushSubscriptionId.isNotEmpty}',
+        'hasSubscriptionId=${subscriptionId.isNotEmpty}',
+      );
+      return;
+    }
+
+    if (subscriptionId.isEmpty) {
+      debugPrint(
+        '[DriverNotificationDevice] Registration deferred: '
+        'pushToken is available but oneSignalSubscriptionId is still empty. '
+        'Will register once subscription ID becomes available.',
       );
       return;
     }
@@ -112,6 +122,9 @@ class DriverNotificationDeviceService {
       'supportPushEnabled': pushEnabled,
       'walletPushEnabled': pushEnabled,
       'accountPushEnabled': pushEnabled,
+      'notificationSound': 'classic',
+      if (_pushSubscriptionId.isNotEmpty)
+        'oneSignalSubscriptionId': _pushSubscriptionId,
       if (_pushSubscriptionId.isNotEmpty)
         'pushSubscriptionId': _pushSubscriptionId,
     };
@@ -166,7 +179,7 @@ class DriverNotificationDeviceService {
       'deviceId': await _getOrCreateDeviceId(),
       if (_pushToken.isNotEmpty) 'deviceToken': _pushToken,
       if (_pushSubscriptionId.isNotEmpty)
-        'pushSubscriptionId': _pushSubscriptionId,
+        'oneSignalSubscriptionId': _pushSubscriptionId,
     };
 
     final succeeded =
@@ -307,10 +320,18 @@ class DriverNotificationDeviceService {
     required String signature,
   }) async {
     debugPrint(
-      '[DriverNotificationDevice] Registering driver push device: '
-      'deviceId=$deviceId platform=${body['platform']} '
-      'subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId} '
-      'locale=$locale appVersion=$appVersion',
+      '╔══════════════════════════════════════════════════════════════╗\n'
+      '║  [PUSH REGISTER] Sending device registration to backend     ║\n'
+      '║  endpoint: ${EndPoints.driverNotificationDevices}/register\n'
+      '║  deviceId: $deviceId\n'
+      '║  platform: ${body['platform']}\n'
+      '║  oneSignalSubscriptionId: ${body['oneSignalSubscriptionId'] ?? "MISSING!"}\n'
+      '║  deviceToken: ${(_pushToken.length > 20) ? "${_pushToken.substring(0, 20)}..." : _pushToken}\n'
+      '║  locale: $locale\n'
+      '║  appVersion: $appVersion\n'
+      '║  dispatchPushEnabled: ${body['dispatchPushEnabled']}\n'
+      '║  assignmentPushEnabled: ${body['assignmentPushEnabled']}\n'
+      '╚══════════════════════════════════════════════════════════════╝',
     );
 
     final succeeded =
@@ -324,8 +345,13 @@ class DriverNotificationDeviceService {
     if (succeeded) {
       _lastRegistrationSignature = signature;
       debugPrint(
-        '[DriverNotificationDevice] Device registration succeeded for '
-        'deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
+        '[PUSH REGISTER] ✅ Device registration SUCCEEDED for '
+        'deviceId=$deviceId oneSignalSubscriptionId=${body['oneSignalSubscriptionId'] ?? "-"}.',
+      );
+    } else {
+      debugPrint(
+        '[PUSH REGISTER] ❌ Device registration FAILED for '
+        'deviceId=$deviceId oneSignalSubscriptionId=${body['oneSignalSubscriptionId'] ?? "-"}.',
       );
     }
   }

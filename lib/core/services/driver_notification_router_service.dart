@@ -160,8 +160,8 @@ class DriverNotificationRouterService {
           );
           return;
         case 'account_status':
-          await _navigatorService.resetToNamedWhenReady(
-            AppRoutes.accountPendingApproval,
+          await _navigatorService.pushNamedWhenReady(
+            AppRoutes.profile,
             arguments: payload,
           );
           return;

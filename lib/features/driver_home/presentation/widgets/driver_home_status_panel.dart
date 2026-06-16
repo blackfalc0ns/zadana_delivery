@@ -496,7 +496,7 @@ class _MissionHeader extends StatelessWidget {
                     imageUrl,
                     width: 42,
                     height: 42,
-                    fit: BoxFit.cover,
+                  
                     errorBuilder: (_, __, ___) => Icon(
                       Icons.storefront_rounded,
                       color: scheme.primary,

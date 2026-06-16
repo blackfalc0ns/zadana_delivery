@@ -29,9 +29,15 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         }
 
         val eventType = additionalData.optString("event", "").trim().lowercase()
+        val eventName = additionalData.optString("eventName", "").trim().lowercase()
         val payloadType = additionalData.optString("type", "").trim().lowercase()
+        val category = additionalData.optString("category", "").trim().lowercase()
+        val popupType = additionalData.optString("popupType", "").trim().lowercase()
         val isOfferNotification =
-            payloadType == "driver-offer" || eventType.contains("dispatch.offer_new")
+            payloadType == "driver-offer" ||
+            eventType.contains("dispatch.offer_new") ||
+            eventName.contains("dispatch.offer_new") ||
+            (category == "dispatch" && popupType == "delivery_offer")
         if (!isOfferNotification) {
             return
         }
@@ -72,11 +78,15 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         }
 
         val eventType = additionalData?.optString("event")?.trim()?.lowercase().orEmpty()
+        val eventName = additionalData?.optString("eventName")?.trim()?.lowercase().orEmpty()
         val payloadType = additionalData?.optString("type")?.trim()?.lowercase().orEmpty()
+        val category = additionalData?.optString("category")?.trim()?.lowercase().orEmpty()
 
         if (urgentEvents.any { eventType.contains(it) } ||
+            urgentEvents.any { eventName.contains(it) } ||
             payloadType.contains("offer") ||
-            payloadType.contains("suspend")
+            payloadType.contains("suspend") ||
+            (category == "dispatch")
         ) {
             return MainApplication.HEADS_UP_CHANNEL_ID
         }
@@ -87,6 +97,7 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
     companion object {
         private val urgentEvents = setOf(
             "dispatch.offer_new",
+            "dispatch.offer_expired",
             "account.suspend",
             "assignment.active_order_cancelled",
             "support.request_evidence",

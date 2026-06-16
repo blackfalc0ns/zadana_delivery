@@ -25,7 +25,13 @@ class MainApplication : Application() {
                 val additionalData = event.notification.additionalData
                 val notificationType = additionalData?.optString("type", "") ?: ""
                 val notificationEvent = additionalData?.optString("event", "") ?: ""
-                if (notificationType == "driver-offer" || notificationEvent.contains("dispatch.offer_new")) {
+                val notificationEventName = additionalData?.optString("eventName", "") ?: ""
+                val notificationCategory = additionalData?.optString("category", "") ?: ""
+                val notificationPopupType = additionalData?.optString("popupType", "") ?: ""
+                if (notificationType == "driver-offer" ||
+                    notificationEvent.contains("dispatch.offer_new") ||
+                    notificationEventName.contains("dispatch.offer_new") ||
+                    (notificationCategory == "dispatch" && notificationPopupType == "delivery_offer")) {
                     lastOfferPushReceivedAt = System.currentTimeMillis()
                     Log.d(LOG_TAG, "Offer push tracked at $lastOfferPushReceivedAt")
                 }

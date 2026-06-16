@@ -17,11 +17,13 @@ class ProfileScreenContent extends StatelessWidget {
     required this.state,
     required this.onActionTap,
     required this.onNotificationsChanged,
+    this.onRefresh,
   });
 
   final ProfileState state;
   final ValueChanged<ProfileActionType> onActionTap;
   final ValueChanged<bool> onNotificationsChanged;
+  final Future<void> Function()? onRefresh;
 
   @override
   Widget build(BuildContext context) {
@@ -33,48 +35,54 @@ class ProfileScreenContent extends StatelessWidget {
 
     return DecoratedBox(
       decoration: BoxDecoration(color: color.surface),
-      child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: _ProfileHeaderDelegate(
-              extent: headerHeight,
-              identity: headerIdentity,
-              onEditTap: () => onActionTap(ProfileActionType.personalInfo),
-            ),
+      child: RefreshIndicator(
+        onRefresh: onRefresh ?? () async {},
+        edgeOffset: headerHeight,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(
-              Spacing.base,
-              Spacing.sm,
-              Spacing.base,
-              Spacing.lg,
-            ),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (profile != null) ...[
-                    const SizedBox(height: 1),
-                    ProfileRejectionPolicyCard(
-                      policy: profile.rejectionPolicy,
-                    ),
-                    const SizedBox(height: Spacing.base),
-                  ],
-                  ProfileSectionsList(
-                    sections: _buildSections(locale, color),
-                    itemBuilder: (item) => ProfileActionItemBuilder(
-                      item: item,
-                      onNotificationsChanged: onNotificationsChanged,
-                      onActionTap: onActionTap,
-                    ),
-                  ),
-                ],
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _ProfileHeaderDelegate(
+                extent: headerHeight,
+                identity: headerIdentity,
+                onEditTap: () => onActionTap(ProfileActionType.personalInfo),
               ),
             ),
-          ),
-        ],
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(
+                Spacing.base,
+                Spacing.sm,
+                Spacing.base,
+                Spacing.lg,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (profile != null) ...[
+                      const SizedBox(height: 1),
+                      ProfileRejectionPolicyCard(
+                        policy: profile.rejectionPolicy,
+                      ),
+                      const SizedBox(height: Spacing.base),
+                    ],
+                    ProfileSectionsList(
+                      sections: _buildSections(locale, color),
+                      itemBuilder: (item) => ProfileActionItemBuilder(
+                        item: item,
+                        onNotificationsChanged: onNotificationsChanged,
+                        onActionTap: onActionTap,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

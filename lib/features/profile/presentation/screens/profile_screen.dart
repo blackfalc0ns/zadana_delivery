@@ -79,6 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   state: state,
                   onActionTap: _handleAction,
                   onNotificationsChanged: _cubit.updateNotifications,
+                  onRefresh: _cubit.loadProfile,
                 ),
                 if (state.isLoggingOut) ...[
                   Positioned.fill(

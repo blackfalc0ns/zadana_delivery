@@ -68,6 +68,24 @@ class DriverNotificationBootstrapService {
 
   bool get isConfigured => _driverOneSignalAppId.trim().isNotEmpty;
 
+  /// Debug helper: returns the current OneSignal external user ID.
+  Future<String?> getExternalIdForDebug() async {
+    try {
+      return await OneSignal.User.getExternalId();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Debug helper: returns the current OneSignal subscription ID.
+  Future<String?> getSubscriptionIdForDebug() async {
+    try {
+      return OneSignal.User.pushSubscription.id;
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> initialize() async {
     if (_isInitialized) return;
 
@@ -92,10 +110,12 @@ class DriverNotificationBootstrapService {
     try {
       await OneSignal.login(normalizedUserId);
       await _prepareSubscriptionAtBootstrap(context: 'authenticated_login');
-      if (OneSignal.Notifications.permission) {
+      final token = OneSignal.User.pushSubscription.token;
+      final subId = OneSignal.User.pushSubscription.id;
+      if ((token ?? '').trim().isNotEmpty || (subId ?? '').trim().isNotEmpty) {
         await _deviceService.cachePushToken(
-          OneSignal.User.pushSubscription.token,
-          subscriptionId: OneSignal.User.pushSubscription.id,
+          token,
+          subscriptionId: subId,
         );
       }
       _logCurrentSubscriptionState(
@@ -145,10 +165,12 @@ class DriverNotificationBootstrapService {
       await _prepareSubscriptionAtBootstrap(context: 'ui_ready');
     }
 
-    if (OneSignal.Notifications.permission) {
+    final token = OneSignal.User.pushSubscription.token;
+    final subId = OneSignal.User.pushSubscription.id;
+    if ((token ?? '').trim().isNotEmpty || (subId ?? '').trim().isNotEmpty) {
       await _deviceService.cachePushToken(
-        OneSignal.User.pushSubscription.token,
-        subscriptionId: OneSignal.User.pushSubscription.id,
+        token,
+        subscriptionId: subId,
       );
       _logCurrentSubscriptionState(context: 'ui_ready');
       await _logUserAndSubscriptionStatus(context: 'ui_ready');
@@ -604,6 +626,11 @@ class DriverNotificationBootstrapService {
 
     event.preventDefault();
 
+    // Determine whether to show in-app popup based on unified payload fields.
+    final shouldPopup = DriverNotificationPayloadResolver.shouldShowPopup(
+      normalizedPayload,
+    );
+
     if (_useNativeAndroidForegroundFallback) {
       debugPrint(
         '[DriverNotificationBootstrap] Native Android foreground fallback is handling the system notification display. '
@@ -620,16 +647,32 @@ class DriverNotificationBootstrapService {
         '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload, title: displayContent.title, body: displayContent.body)}',
       );
     }
-    await _overlayService.showPayloadBanner(
-      normalizedPayload,
-      title: displayContent.title,
-      body: displayContent.body,
-      source: 'onesignal_foreground',
-    );
-    debugPrint(
-      '[DriverNotificationBootstrap] Foreground push queued for in-app banner. '
-      '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload, title: displayContent.title, body: displayContent.body)}',
-    );
+
+    // Show in-app overlay banner if popup is requested or if it's the default behavior.
+    if (shouldPopup) {
+      await _overlayService.showPayloadBanner(
+        normalizedPayload,
+        title: displayContent.title,
+        body: displayContent.body,
+        source: 'onesignal_foreground',
+      );
+      debugPrint(
+        '[DriverNotificationBootstrap] Foreground push queued for in-app banner (popup requested). '
+        'popupType=${DriverNotificationPayloadResolver.resolvePopupType(normalizedPayload) ?? "-"} '
+        '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload, title: displayContent.title, body: displayContent.body)}',
+      );
+    } else {
+      await _overlayService.showPayloadBanner(
+        normalizedPayload,
+        title: displayContent.title,
+        body: displayContent.body,
+        source: 'onesignal_foreground',
+      );
+      debugPrint(
+        '[DriverNotificationBootstrap] Foreground push queued for in-app banner. '
+        '${DriverNotificationPayloadResolver.resolveDebugSummary(normalizedPayload, title: displayContent.title, body: displayContent.body)}',
+      );
+    }
 
     // Trigger home refresh when the push notification is likely a delivery offer.
     // SignalR may not deliver the ReceiveDeliveryOffer event reliably on Android,
@@ -644,8 +687,21 @@ class DriverNotificationBootstrapService {
           normalizedPayload,
         )?.toLowerCase() ??
         '';
+    final notificationEventName =
+        DriverNotificationPayloadResolver.resolveEventName(
+          normalizedPayload,
+        )?.toLowerCase() ??
+        '';
+    final notificationCategory =
+        DriverNotificationPayloadResolver.resolveCategory(
+          normalizedPayload,
+        )?.toLowerCase() ??
+        '';
     if (notificationType == 'driver-offer' ||
-        notificationEvent.contains('dispatch.offer_new')) {
+        notificationEvent.contains('dispatch.offer_new') ||
+        notificationEventName.contains('dispatch.offer_new') ||
+        (notificationCategory == 'dispatch' &&
+            DriverNotificationPayloadResolver.resolvePopupType(normalizedPayload) == 'delivery_offer')) {
       debugPrint(
         '[DriverNotificationBootstrap] Offer push detected; notifying home data source to refresh.',
       );

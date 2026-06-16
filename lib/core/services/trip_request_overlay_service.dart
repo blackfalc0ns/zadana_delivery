@@ -130,6 +130,12 @@ class TripRequestOverlayService {
         'customer_name': _str(
           offerData['customerName'] ?? offerData['customer_name'] ?? '',
         ),
+        'items_count': _toInt(
+          offerData['itemsCount'] ??
+              (offerData['orderItems'] is List
+                  ? (offerData['orderItems'] as List).length
+                  : 0),
+        ),
       };
 
       final result = await _channel.invokeMethod<bool>('showOverlay', data);
@@ -164,6 +170,10 @@ class TripRequestOverlayService {
       'paymentMethod': 'cash',
       'countdownSeconds': 30,
       'customerName': 'أحمد محمد',
+      'orderItems': [
+        {'name': 'برجر', 'quantity': 2},
+        {'name': 'بيبسي', 'quantity': 1},
+      ],
     });
   }
 

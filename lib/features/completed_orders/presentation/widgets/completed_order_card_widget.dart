@@ -185,7 +185,7 @@ class _MerchantImageBox extends StatelessWidget {
               imageUrl: resolvedUrl,
               width: 48,
               height: 48,
-              fit: BoxFit.cover,
+            
               placeholder: (_, _) => Center(
                 child: Text(
                   completedOrderMerchantEmoji(merchantName),

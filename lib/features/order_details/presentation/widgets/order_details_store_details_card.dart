@@ -88,7 +88,7 @@ class _VendorImageBox extends StatelessWidget {
         imageUrl: imageUrl,
         width: 44,
         height: 44,
-        fit: BoxFit.cover,
+      
         placeholder: (_, _) => Icon(
           Icons.storefront_rounded,
           color: AppColors.primary.withValues(alpha: 0.5),

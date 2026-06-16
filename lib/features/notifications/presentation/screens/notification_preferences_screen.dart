@@ -6,6 +6,7 @@ import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/notifications/presentation/manager/notifications_state.dart';
@@ -20,21 +21,45 @@ class NotificationPreferencesScreen extends StatefulWidget {
 }
 
 class _NotificationPreferencesScreenState
-    extends State<NotificationPreferencesScreen> {
+    extends State<NotificationPreferencesScreen> with WidgetsBindingObserver {
   late final NotificationsViewModel _viewModel;
+  late final TripRequestOverlayService _overlayService;
+  bool _hasOverlayPermission = false;
 
   bool get _isArabic => Localizations.localeOf(context).languageCode == 'ar';
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _viewModel = getIt<NotificationsViewModel>()..loadPreferences();
+    _overlayService = getIt<TripRequestOverlayService>();
+    _checkOverlayPermission();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _viewModel.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkOverlayPermission();
+    }
+  }
+
+  Future<void> _checkOverlayPermission() async {
+    final granted = await _overlayService.hasPermission();
+    if (mounted && granted != _hasOverlayPermission) {
+      setState(() => _hasOverlayPermission = granted);
+    }
+  }
+
+  Future<void> _onOverlaySwitchTapped(bool value) async {
+    await _overlayService.requestPermission();
   }
 
   // ─── Preference Getters ───────────────────────────────────────────────
@@ -229,6 +254,38 @@ class _NotificationPreferencesScreenState
                           ..._buildSoundOptions(
                             _currentSound,
                             isLoading,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // ── Overlay permission ──
+                      _buildSectionCard(
+                        children: [
+                          SwitchListTile(
+                            title: Text(
+                              _isArabic
+                                  ? 'الظهور فوق التطبيقات'
+                                  : 'Display Over Other Apps',
+                              style: getSemiBoldStyle(
+                                fontFamily: FontConstant.cairo,
+                                fontSize: FontSize.size15,
+                                color: AppColors.textPrimary,
+                              ),
+                            ),
+                            subtitle: Text(
+                              _isArabic
+                                  ? 'عرض طلبات التوصيل فوق التطبيقات الأخرى'
+                                  : 'Show delivery offers above other apps',
+                              style: getRegularStyle(
+                                fontFamily: FontConstant.cairo,
+                                fontSize: FontSize.size13,
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                            value: _hasOverlayPermission,
+                            onChanged: _onOverlaySwitchTapped,
+                            activeColor: AppColors.primary,
                           ),
                         ],
                       ),

@@ -151,6 +151,40 @@ class DriverNotificationPayloadResolver {
       customPayload?['targetUrl'],
       customPayload?['target_url'],
     ]);
+    payload['category'] = _firstNonEmptyString([
+      payload['category'],
+      nestedPayload?['category'],
+      customPayload?['category'],
+    ]);
+    payload['popupType'] = _firstNonEmptyString([
+      payload['popupType'],
+      payload['popup_type'],
+      nestedPayload?['popupType'],
+      nestedPayload?['popup_type'],
+      customPayload?['popupType'],
+      customPayload?['popup_type'],
+    ]);
+    payload['presentation'] = _firstNonEmptyString([
+      payload['presentation'],
+      nestedPayload?['presentation'],
+      customPayload?['presentation'],
+    ]);
+    payload['showPopup'] = _firstNonEmptyString([
+      payload['showPopup'],
+      payload['show_popup'],
+      nestedPayload?['showPopup'],
+      nestedPayload?['show_popup'],
+      customPayload?['showPopup'],
+      customPayload?['show_popup'],
+    ]);
+    payload['eventName'] = _firstNonEmptyString([
+      payload['eventName'],
+      payload['event_name'],
+      nestedPayload?['eventName'],
+      nestedPayload?['event_name'],
+      customPayload?['eventName'],
+      customPayload?['event_name'],
+    ]);
     payload['action'] = _firstNonEmptyString([
       payload['action'],
       nestedPayload?['action'],
@@ -239,6 +273,24 @@ class DriverNotificationPayloadResolver {
       return explicitScreen;
     }
 
+    // Resolve screen from targetUrl (backend unified payload).
+    final targetUrl = _firstNonEmptyString([normalizedPayload['targetUrl']]);
+    if (targetUrl != null) {
+      final resolvedScreen = _resolveScreenFromTargetUrl(targetUrl, normalizedPayload);
+      if (resolvedScreen != null) {
+        return resolvedScreen;
+      }
+    }
+
+    // Resolve screen from category (backend unified payload).
+    final category = _firstNonEmptyString([normalizedPayload['category']]);
+    if (category != null) {
+      final resolvedScreen = _resolveScreenFromCategory(category, normalizedPayload);
+      if (resolvedScreen != null) {
+        return resolvedScreen;
+      }
+    }
+
     if (resolveSupportCaseId(normalizedPayload) != null) {
       return 'support_case_detail';
     }
@@ -310,7 +362,11 @@ class DriverNotificationPayloadResolver {
     }
 
     final event = resolveEvent(normalizedPayload)?.toLowerCase() ?? '';
-    if (_urgentEvents.any(event.contains)) {
+    final eventName = _firstNonEmptyString([
+      normalizedPayload['eventName'],
+    ])?.toLowerCase() ?? '';
+    if (_urgentEvents.any(event.contains) ||
+        _urgentEvents.any(eventName.contains)) {
       return headsUpChannelId;
     }
 
@@ -359,6 +415,10 @@ class DriverNotificationPayloadResolver {
       'screen=${resolveScreen(normalizedPayload) ?? '-'}',
       'event=${resolveEvent(normalizedPayload) ?? '-'}',
       'type=${resolveType(normalizedPayload) ?? '-'}',
+      'category=${resolveCategory(normalizedPayload) ?? '-'}',
+      'popupType=${resolvePopupType(normalizedPayload) ?? '-'}',
+      'eventName=${resolveEventName(normalizedPayload) ?? '-'}',
+      'targetUrl=${resolveTargetUrl(normalizedPayload) ?? '-'}',
       'notificationId=${resolveNotificationId(normalizedPayload) ?? '-'}',
       'assignmentId=${resolveAssignmentId(normalizedPayload) ?? '-'}',
       'orderId=${resolveOrderId(normalizedPayload) ?? '-'}',
@@ -369,6 +429,117 @@ class DriverNotificationPayloadResolver {
       'clickAction=${normalizedPayload['click_action'] ?? '-'}',
       'channel=${explicitChannelId ?? resolveAndroidChannelId(normalizedPayload)}',
     ].join(', ');
+  }
+
+  static String? resolveCategory(Map<String, dynamic> payload) {
+    return _firstNonEmptyString([normalize(payload)['category']]);
+  }
+
+  static String? resolvePopupType(Map<String, dynamic> payload) {
+    return _firstNonEmptyString([normalize(payload)['popupType']]);
+  }
+
+  static String? resolveEventName(Map<String, dynamic> payload) {
+    final normalizedPayload = normalize(payload);
+    return _firstNonEmptyString([
+      normalizedPayload['eventName'],
+      normalizedPayload['event'],
+    ]);
+  }
+
+  static String? resolveTargetUrl(Map<String, dynamic> payload) {
+    return _firstNonEmptyString([normalize(payload)['targetUrl']]);
+  }
+
+  static bool shouldShowPopup(Map<String, dynamic> payload) {
+    final normalizedPayload = normalize(payload);
+    final presentation = _firstNonEmptyString([
+      normalizedPayload['presentation'],
+    ]);
+    if (presentation == 'popup') return true;
+
+    final showPopup = _firstNonEmptyString([normalizedPayload['showPopup']]);
+    if (showPopup == 'true' || showPopup == '1') return true;
+
+    return false;
+  }
+
+  static String? _resolveScreenFromTargetUrl(
+    String targetUrl,
+    Map<String, dynamic> payload,
+  ) {
+    final url = targetUrl.trim().toLowerCase();
+
+    if (url == '/' || url == '/home') {
+      return 'home';
+    }
+
+    // /assignments/{id} or /orders/{id}
+    final assignmentMatch = RegExp(r'^/assignments/(.+)$').firstMatch(url);
+    if (assignmentMatch != null) {
+      final id = assignmentMatch.group(1) ?? '';
+      if (id.isNotEmpty) {
+        // Inject the resolved assignment ID into the payload for downstream use.
+        payload['assignmentId'] = id;
+      }
+      return 'assignment_detail';
+    }
+    final orderMatch = RegExp(r'^/orders/(.+)$').firstMatch(url);
+    if (orderMatch != null) {
+      final id = orderMatch.group(1) ?? '';
+      if (id.isNotEmpty) {
+        payload['orderId'] = id;
+      }
+      return 'assignment_detail';
+    }
+
+    // /wallet
+    if (url == '/wallet') {
+      return 'wallet';
+    }
+
+    // /support/cases/{id}
+    final supportMatch = RegExp(r'^/support/cases/(.+)$').firstMatch(url);
+    if (supportMatch != null) {
+      final id = supportMatch.group(1) ?? '';
+      if (id.isNotEmpty) {
+        payload['supportCaseId'] = id;
+      }
+      return 'support_case_detail';
+    }
+
+    // /account-status
+    if (url == '/account-status') {
+      return 'account_status';
+    }
+
+    return null;
+  }
+
+  static String? _resolveScreenFromCategory(
+    String category,
+    Map<String, dynamic> payload,
+  ) {
+    switch (category.toLowerCase()) {
+      case 'dispatch':
+        return 'home';
+      case 'assignment':
+        if (resolveAssignmentId(payload) != null) {
+          return 'assignment_detail';
+        }
+        return 'home';
+      case 'wallet':
+        return 'wallet';
+      case 'support':
+        if (resolveSupportCaseId(payload) != null) {
+          return 'support_case_detail';
+        }
+        return 'home';
+      case 'account':
+        return 'account_status';
+      default:
+        return null;
+    }
   }
 
   static Map<String, dynamic>? _extractNestedPayload(
@@ -490,12 +661,21 @@ class DriverNotificationPayloadResolver {
   static String? _resolveFallbackTitle(Map<String, dynamic> payload) {
     final screen = resolveScreen(payload) ?? '';
     final event = resolveEvent(payload)?.toLowerCase() ?? '';
+    final eventName = _firstNonEmptyString([
+      payload['eventName'],
+    ])?.toLowerCase() ?? '';
 
     if (event.contains('dispatch.offer_new') ||
+        eventName.contains('dispatch.offer_new') ||
         event.contains('support.request_evidence') ||
         event.contains('account.suspend') ||
         event.contains('assignment.active_order_cancelled')) {
       return 'New update';
+    }
+
+    if (event.contains('dispatch.offer_expired') ||
+        eventName.contains('dispatch.offer_expired')) {
+      return 'Offer expired';
     }
 
     switch (screen) {
@@ -516,14 +696,32 @@ class DriverNotificationPayloadResolver {
 
   static String? _resolveFallbackBody(Map<String, dynamic> payload) {
     final event = resolveEvent(payload)?.toLowerCase() ?? '';
-    if (event.contains('dispatch.offer_new')) {
+    final eventName = _firstNonEmptyString([
+      payload['eventName'],
+    ])?.toLowerCase() ?? '';
+    if (event.contains('dispatch.offer_new') ||
+        eventName.contains('dispatch.offer_new')) {
       return 'A new delivery offer is waiting for you.';
+    }
+    if (event.contains('dispatch.offer_expired') ||
+        eventName.contains('dispatch.offer_expired')) {
+      return 'A delivery offer has expired.';
     }
     if (event.contains('support.request_evidence')) {
       return 'Support requested more details for your case.';
     }
-    if (event.contains('wallet.withdrawal_paid')) {
+    if (event.contains('wallet.withdrawal_paid') ||
+        event.contains('wallet.withdrawal_submitted') ||
+        eventName.contains('wallet.withdrawal_submitted')) {
       return 'Your wallet balance was updated.';
+    }
+    if (event.contains('wallet.admin_adjustment') ||
+        eventName.contains('wallet.admin_adjustment')) {
+      return 'Your wallet was adjusted by an administrator.';
+    }
+    if (event.contains('wallet.payout_completed') ||
+        eventName.contains('wallet.payout_completed')) {
+      return 'Your payout has been completed.';
     }
     if (event.contains('account.suspend')) {
       return 'Your account status needs attention.';
@@ -590,6 +788,14 @@ class DriverNotificationPayloadResolver {
     'case_type',
     'targetUrl',
     'target_url',
+    'category',
+    'popupType',
+    'popup_type',
+    'presentation',
+    'showPopup',
+    'show_popup',
+    'eventName',
+    'event_name',
     'action',
     'status',
     'changedAtUtc',
@@ -609,6 +815,7 @@ class DriverNotificationPayloadResolver {
 
   static const List<String> _urgentEvents = <String>[
     'dispatch.offer_new',
+    'dispatch.offer_expired',
     'account.suspend',
     'assignment.active_order_cancelled',
     'support.request_evidence',
