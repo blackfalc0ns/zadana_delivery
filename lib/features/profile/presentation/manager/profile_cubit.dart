@@ -116,6 +116,8 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(isLoggingOut: true, clearFailure: true));
     final result = await _logoutUseCase.call();
 
+    if (isClosed) return result is ApiSuccessResult;
+
     switch (result) {
       case ApiSuccessResult():
         emit(state.copyWith(isLoggingOut: false, clearFailure: true));

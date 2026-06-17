@@ -42,6 +42,11 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
             return
         }
 
+        // Skip native overlay when app is in foreground — the in-app UI handles it.
+        if (MainApplication.isAppInForeground) {
+            return
+        }
+
         val appContext = MainApplication.appContext
         if (appContext == null) {
             return

@@ -2583,6 +2583,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_method_deleted => 'Payout method deleted successfully.';
 
   @override
+  String get wallet_method_pending_approval =>
+      'Payout method change is pending admin approval.';
+
+  @override
   String get wallet_make_primary => 'Make primary';
 
   @override
@@ -2751,6 +2755,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profile_security_documents_saved =>
       'Security and documents saved successfully';
+
+  @override
+  String get profile_change_pending_approval =>
+      'Your changes have been submitted for review. They will be applied after admin approval.';
 
   @override
   String get order_details_title => 'Order details';

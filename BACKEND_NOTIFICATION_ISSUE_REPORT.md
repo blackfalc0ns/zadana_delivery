@@ -220,6 +220,7 @@ oneSignalSubscriptionId → subscriptionId → onesignal_id → deviceToken
   "estimatedEta": "12 دقيقة",
   "payout": 15.0,
   "totalAmount": 85.0,
+  "codAmount": 85.0,
   "paymentMethod": "cash",
   "countdownSeconds": 60,
   "itemsCount": 30

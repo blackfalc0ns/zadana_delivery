@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -32,19 +34,46 @@ class AccountPendingApprovalScreen extends StatefulWidget {
 }
 
 class _AccountPendingApprovalScreenState
-    extends State<AccountPendingApprovalScreen> {
+    extends State<AccountPendingApprovalScreen> with WidgetsBindingObserver {
   late final AuthGateCubit _cubit;
+  Timer? _recheckTimer;
+  bool _isNavigatingAway = false;
+
+  static const Duration _recheckInterval = Duration(seconds: 30);
 
   @override
   void initState() {
     super.initState();
     _cubit = getIt<AuthGateCubit>();
+    WidgetsBinding.instance.addObserver(this);
+    _startPeriodicRecheck();
   }
 
   @override
   void dispose() {
+    _recheckTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _cubit.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_isNavigatingAway) {
+      _recheckAccountStatus();
+    }
+  }
+
+  void _startPeriodicRecheck() {
+    _recheckTimer = Timer.periodic(_recheckInterval, (_) {
+      if (!_isNavigatingAway) {
+        _recheckAccountStatus();
+      }
+    });
+  }
+
+  void _recheckAccountStatus() {
+    _cubit.doIntent(const AuthGateStartedEvent());
   }
 
   @override
@@ -69,8 +98,26 @@ class _AccountPendingApprovalScreenState
               context: context,
               message: locale.profile_logout_success,
             );
+            _isNavigatingAway = true;
+            _recheckTimer?.cancel();
             context.pushNamedAndRemoveUntil(
               AppRoutes.login,
+              rootNavigator: true,
+              predicate: (route) => false,
+            );
+            return;
+          }
+
+          // Status changed — navigate to the resolved route
+          if (!state.isLoading &&
+              !state.isLoggingOut &&
+              state.targetRoute != null &&
+              state.targetRoute != AppRoutes.accountPendingApproval &&
+              !_isNavigatingAway) {
+            _isNavigatingAway = true;
+            _recheckTimer?.cancel();
+            context.pushNamedAndRemoveUntil(
+              state.targetRoute!,
               rootNavigator: true,
               predicate: (route) => false,
             );

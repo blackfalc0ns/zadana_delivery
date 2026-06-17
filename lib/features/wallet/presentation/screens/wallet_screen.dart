@@ -164,9 +164,9 @@ class _WalletScreenState extends State<WalletScreen> {
     final success = await _viewModel.createPaymentMethod(request);
     if (!mounted || !success) return;
 
-    CustomSnackbar.showSuccess(
+    CustomSnackbar.showInfo(
       context: context,
-      message: context.localization.wallet_method_saved,
+      message: context.localization.wallet_method_pending_approval,
     );
   }
 
@@ -187,9 +187,9 @@ class _WalletScreenState extends State<WalletScreen> {
     final success = await _viewModel.updatePaymentMethod(method.id, request);
     if (!mounted || !success) return;
 
-    CustomSnackbar.showSuccess(
+    CustomSnackbar.showInfo(
       context: context,
-      message: context.localization.wallet_method_updated,
+      message: context.localization.wallet_method_pending_approval,
     );
   }
 
@@ -219,14 +219,12 @@ class _WalletScreenState extends State<WalletScreen> {
                   title: Text(locale.wallet_make_primary),
                   onTap: () async {
                     final screenContext = context;
-                    final successMessage =
-                        screenContext.localization.wallet_primary_updated;
                     Navigator.of(sheetContext).pop();
                     final success = await _viewModel.makePrimary(method.id);
                     if (!screenContext.mounted || !success) return;
-                    CustomSnackbar.showSuccess(
+                    CustomSnackbar.showInfo(
                       context: screenContext,
-                      message: successMessage,
+                      message: screenContext.localization.wallet_method_pending_approval,
                     );
                   },
                 ),
@@ -235,8 +233,6 @@ class _WalletScreenState extends State<WalletScreen> {
                 title: Text(locale.delete),
                 onTap: () async {
                   final screenContext = context;
-                  final successMessage =
-                      screenContext.localization.wallet_method_deleted;
                   Navigator.of(sheetContext).pop();
                   final confirmed = await showDialog<bool>(
                     context: screenContext,
@@ -262,9 +258,9 @@ class _WalletScreenState extends State<WalletScreen> {
                     method.id,
                   );
                   if (!screenContext.mounted || !success) return;
-                  CustomSnackbar.showSuccess(
+                  CustomSnackbar.showInfo(
                     context: screenContext,
-                    message: successMessage,
+                    message: screenContext.localization.wallet_method_pending_approval,
                   );
                 },
               ),

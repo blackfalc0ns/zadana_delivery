@@ -7,6 +7,7 @@ import 'package:zadana_delivery/features/profile/presentation/models/profile_act
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_view_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_header_identity.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_action_item_builder.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_document_status_banner.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_rejection_policy_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_sections_list.dart';
@@ -17,12 +18,16 @@ class ProfileScreenContent extends StatelessWidget {
     required this.state,
     required this.onActionTap,
     required this.onNotificationsChanged,
+    required this.onOverlayChanged,
+    required this.overlayEnabled,
     this.onRefresh,
   });
 
   final ProfileState state;
   final ValueChanged<ProfileActionType> onActionTap;
   final ValueChanged<bool> onNotificationsChanged;
+  final ValueChanged<bool> onOverlayChanged;
+  final bool overlayEnabled;
   final Future<void> Function()? onRefresh;
 
   @override
@@ -64,6 +69,11 @@ class ProfileScreenContent extends StatelessWidget {
                   children: [
                     if (profile != null) ...[
                       const SizedBox(height: 1),
+                      ProfileDocumentStatusBanner(
+                        documents: profile.documents,
+                        onTap: () => onActionTap(ProfileActionType.documents),
+                      ),
+                      const SizedBox(height: Spacing.sm),
                       ProfileRejectionPolicyCard(
                         policy: profile.rejectionPolicy,
                       ),
@@ -74,6 +84,7 @@ class ProfileScreenContent extends StatelessWidget {
                       itemBuilder: (item) => ProfileActionItemBuilder(
                         item: item,
                         onNotificationsChanged: onNotificationsChanged,
+                        onOverlayChanged: onOverlayChanged,
                         onActionTap: onActionTap,
                       ),
                     ),
@@ -153,6 +164,11 @@ class ProfileScreenContent extends StatelessWidget {
             type: ProfileActionType.notifications,
           ),
           ProfileActionItemData(
+            icon: Icons.layers_outlined,
+            colorToken: ProfileColorToken.secondary,
+            type: ProfileActionType.overlayPermission,
+          ),
+          ProfileActionItemData(
             icon: Icons.lock_outline_rounded,
             colorToken: ProfileColorToken.secondary,
             type: ProfileActionType.security,
@@ -201,6 +217,9 @@ class ProfileScreenContent extends StatelessWidget {
                 isNotificationTile:
                     item.type == ProfileActionType.notifications,
                 notificationsEnabled: state.notificationsEnabled,
+                isOverlayTile:
+                    item.type == ProfileActionType.overlayPermission,
+                overlayEnabled: overlayEnabled,
               );
             }).toList(),
           ),

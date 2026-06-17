@@ -70,6 +70,20 @@ class TripRequestOverlayService {
     }
   }
 
+  /// Always opens the OS "Display over other apps" settings page,
+  /// regardless of whether permission is already granted or not.
+  Future<void> openOverlaySettings() async {
+    if (kIsWeb || !Platform.isAndroid) return;
+    try {
+      await _channel.invokeMethod<void>('openOverlaySettings');
+    } catch (error) {
+      developer.log(
+        'TripRequestOverlayService.openOverlaySettings failed: $error',
+        name: 'TripOverlay',
+      );
+    }
+  }
+
   /// Show the system overlay for an incoming delivery offer.
   ///
   /// [offerData] should contain the offer fields from SignalR/push payload.
@@ -135,6 +149,10 @@ class TripRequestOverlayService {
               (offerData['orderItems'] is List
                   ? (offerData['orderItems'] as List).length
                   : 0),
+        ),
+        'cod_amount': _toDouble(offerData['codAmount'] ?? 0),
+        'distance_text': _str(
+          offerData['distanceText'] ?? offerData['distance'] ?? '',
         ),
       };
 

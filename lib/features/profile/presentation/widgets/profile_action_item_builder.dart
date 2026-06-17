@@ -10,11 +10,13 @@ class ProfileActionItemBuilder extends StatelessWidget {
     super.key,
     required this.item,
     required this.onNotificationsChanged,
+    required this.onOverlayChanged,
     required this.onActionTap,
   });
 
   final ProfileActionViewData item;
   final ValueChanged<bool> onNotificationsChanged;
+  final ValueChanged<bool> onOverlayChanged;
   final ValueChanged<ProfileActionType> onActionTap;
 
   @override
@@ -27,6 +29,18 @@ class ProfileActionItemBuilder extends StatelessWidget {
         iconColor: item.iconColor,
         value: item.notificationsEnabled,
         onChanged: onNotificationsChanged,
+        onTap: () => onActionTap(item.type),
+      );
+    }
+
+    if (item.isOverlayTile) {
+      return ProfileNotificationTile(
+        title: item.title,
+        subtitle: item.subtitle,
+        icon: item.icon,
+        iconColor: item.iconColor,
+        value: item.overlayEnabled,
+        onChanged: onOverlayChanged,
         onTap: () => onActionTap(item.type),
       );
     }

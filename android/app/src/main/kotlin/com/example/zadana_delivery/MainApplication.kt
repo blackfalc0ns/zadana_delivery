@@ -6,6 +6,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.media.AudioAttributes
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import com.onesignal.OneSignal
@@ -39,9 +40,24 @@ class MainApplication : Application() {
             }
         }
 
+    private val lifecycleCallbacks = object : ActivityLifecycleCallbacks {
+        override fun onActivityResumed(activity: android.app.Activity) {
+            isAppInForeground = true
+        }
+        override fun onActivityPaused(activity: android.app.Activity) {
+            isAppInForeground = false
+        }
+        override fun onActivityCreated(activity: android.app.Activity, savedInstanceState: Bundle?) {}
+        override fun onActivityStarted(activity: android.app.Activity) {}
+        override fun onActivityStopped(activity: android.app.Activity) {}
+        override fun onActivitySaveInstanceState(activity: android.app.Activity, outState: Bundle) {}
+        override fun onActivityDestroyed(activity: android.app.Activity) {}
+    }
+
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+        registerActivityLifecycleCallbacks(lifecycleCallbacks)
         createNotificationChannels()
     }
 
@@ -113,6 +129,15 @@ class MainApplication : Application() {
         @Volatile
         @JvmStatic
         var lastOfferPushReceivedAt: Long = 0L
+
+        /**
+         * Whether the app currently has a resumed Activity (is in foreground).
+         * Used by [OneSignalNotificationServiceExtension] to skip showing the
+         * native overlay when the in-app UI is already handling the offer.
+         */
+        @Volatile
+        @JvmStatic
+        var isAppInForeground: Boolean = false
 
         @Volatile
         @JvmStatic

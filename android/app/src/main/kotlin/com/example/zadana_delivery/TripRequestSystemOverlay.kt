@@ -41,6 +41,8 @@ private data class OverlayData(
     val countdownSeconds: Int,
     val customerName: String,
     val itemsCount: Int,
+    val codAmount: Double,
+    val distanceText: String,
 )
 
 class TripRequestSystemOverlay(private val context: Context) {
@@ -212,6 +214,20 @@ class TripRequestSystemOverlay(private val context: Context) {
                     jsonValue(dataObject, "itemsCount"),
                     jsonValue(dataObject, "items_count"),
                 ),
+                "cod_amount" to firstDouble(
+                    jsonValue(payload, "codAmount"),
+                    jsonValue(payload, "cod_amount"),
+                    jsonValue(dataObject, "codAmount"),
+                    jsonValue(dataObject, "cod_amount"),
+                ),
+                "distance_text" to firstString(
+                    jsonString(payload, "distanceText"),
+                    jsonString(payload, "distance_text"),
+                    jsonString(payload, "distance"),
+                    jsonString(dataObject, "distanceText"),
+                    jsonString(dataObject, "distance_text"),
+                    jsonString(dataObject, "distance"),
+                ),
             )
         }
     }
@@ -261,6 +277,8 @@ class TripRequestSystemOverlay(private val context: Context) {
             countdownSeconds = (data["countdown_seconds"] as? Number)?.toInt() ?: 30,
             customerName = data["customer_name"]?.toString() ?: "",
             itemsCount = (data["items_count"] as? Number)?.toInt() ?: 0,
+            codAmount = (data["cod_amount"] as? Number)?.toDouble() ?: 0.0,
+            distanceText = data["distance_text"]?.toString() ?: "",
         )
     }
 
@@ -294,6 +312,8 @@ class TripRequestSystemOverlay(private val context: Context) {
             countdownSeconds = overlayData.countdownSeconds,
             customerName = overlayData.customerName,
             itemsCount = overlayData.itemsCount,
+            codAmount = overlayData.codAmount,
+            distanceText = overlayData.distanceText,
         )
 
         val layoutParams = WindowManager.LayoutParams(
@@ -378,6 +398,8 @@ class TripRequestSystemOverlay(private val context: Context) {
         countdownSeconds: Int,
         customerName: String,
         itemsCount: Int,
+        codAmount: Double,
+        distanceText: String,
     ): View {
         val dp = { value: Int -> (value * density).toInt() }
 
@@ -494,6 +516,87 @@ class TripRequestSystemOverlay(private val context: Context) {
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
         ).apply { bottomMargin = dp(12) })
+
+        // ── COD Amount (collection from customer) ──
+        val requiresCollection = codAmount > 0
+        if (requiresCollection) {
+            val codContainer = LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                setPadding(dp(14), dp(10), dp(14), dp(10))
+                background = GradientDrawable().apply {
+                    setColor(Color.parseColor("#FFF3E0"))
+                    cornerRadius = dp(12).toFloat()
+                    setStroke(1, Color.parseColor("#FFE0B2"))
+                }
+            }
+
+            val codLabel = TextView(context).apply {
+                text = "تحصيل من العميل"
+                setTextColor(colorTextPrimary)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            codContainer.addView(codLabel, LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            ))
+
+            val codValue = TextView(context).apply {
+                text = "${"%.1f".format(codAmount)} ر.س"
+                setTextColor(colorSecondary)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            codContainer.addView(codValue, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ))
+
+            root.addView(codContainer, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(12) })
+        } else {
+            // Show payment status (paid online)
+            val normalizedMethod = paymentMethod.trim().lowercase()
+            val isPaidOnline = normalizedMethod.isNotEmpty() &&
+                (normalizedMethod.contains("online") ||
+                 normalizedMethod.contains("card") ||
+                 normalizedMethod.contains("visa") ||
+                 normalizedMethod.contains("mada") ||
+                 normalizedMethod.contains("apple") ||
+                 normalizedMethod.contains("stc"))
+            if (isPaidOnline) {
+                val paidText = TextView(context).apply {
+                    text = "مدفوع أونلاين ✓"
+                    setTextColor(colorSuccess)
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                    typeface = Typeface.DEFAULT_BOLD
+                    setPadding(dp(14), dp(6), dp(14), dp(6))
+                }
+                root.addView(paidText, LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply { bottomMargin = dp(8) })
+            }
+        }
+
+        // ── Distance ──
+        val distanceDisplay = distanceText.ifEmpty {
+            if (distanceKm > 0) "${"%.1f".format(distanceKm)} كم" else ""
+        }
+        if (distanceDisplay.isNotEmpty()) {
+            val distanceTextView = TextView(context).apply {
+                text = "المسافة: $distanceDisplay"
+                setTextColor(colorTextSecondary)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                typeface = Typeface.DEFAULT_BOLD
+            }
+            root.addView(distanceTextView, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(8) })
+        }
 
         // ── Pickup location ──
         val pickupDisplay = if (pickupAddress.isNotEmpty()) pickupAddress else vendorName

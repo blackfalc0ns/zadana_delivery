@@ -12,6 +12,8 @@ class ProfileActionViewData {
     required this.isLoading,
     required this.isNotificationTile,
     required this.notificationsEnabled,
+    required this.isOverlayTile,
+    required this.overlayEnabled,
   });
 
   final ProfileActionType type;
@@ -23,6 +25,8 @@ class ProfileActionViewData {
   final bool isLoading;
   final bool isNotificationTile;
   final bool notificationsEnabled;
+  final bool isOverlayTile;
+  final bool overlayEnabled;
 }
 
 class ProfileSectionViewData {

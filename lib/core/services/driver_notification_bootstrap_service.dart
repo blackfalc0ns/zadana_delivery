@@ -711,8 +711,13 @@ class DriverNotificationBootstrapService {
       } catch (_) {}
       // Also trigger the system overlay for background offer alerts
       try {
-        final tripOverlay = getIt<TripRequestOverlayService>();
-        unawaited(tripOverlay.showForOffer(normalizedPayload));
+        final lifecycleState = WidgetsBinding.instance.lifecycleState;
+        final isBackground = lifecycleState != null &&
+            lifecycleState != AppLifecycleState.resumed;
+        if (isBackground) {
+          final tripOverlay = getIt<TripRequestOverlayService>();
+          unawaited(tripOverlay.showForOffer(normalizedPayload));
+        }
       } catch (_) {}
     }
   }

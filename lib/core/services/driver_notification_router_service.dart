@@ -160,10 +160,24 @@ class DriverNotificationRouterService {
           );
           return;
         case 'account_status':
-          await _navigatorService.pushNamedWhenReady(
-            AppRoutes.profile,
-            arguments: payload,
-          );
+          final event = DriverNotificationPayloadResolver.resolveEvent(payload);
+          final normalizedEvent = event?.toLowerCase().trim() ?? '';
+          if (normalizedEvent == 'account.document_rejected') {
+            await _navigatorService.pushNamedWhenReady(
+              AppRoutes.profileSecurityDocuments,
+              arguments: payload,
+            );
+          } else if (normalizedEvent == 'account.document_approved') {
+            await _navigatorService.pushNamedWhenReady(
+              AppRoutes.profile,
+              arguments: payload,
+            );
+          } else {
+            await _navigatorService.pushNamedWhenReady(
+              AppRoutes.profile,
+              arguments: payload,
+            );
+          }
           return;
         case 'notifications_center':
           await _navigatorService.pushNamedWhenReady(AppRoutes.notifications);

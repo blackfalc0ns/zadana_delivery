@@ -95,9 +95,9 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           }
 
           if (state.isSuccess) {
-            CustomSnackbar.showSuccess(
+            CustomSnackbar.showInfo(
               context: context,
-              message: context.localization.profile_personal_info_saved,
+              message: context.localization.profile_change_pending_approval,
             );
             Navigator.of(context).pop();
             return;

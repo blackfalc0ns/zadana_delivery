@@ -56,9 +56,9 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
           }
 
           if (state.isSuccess) {
-            CustomSnackbar.showSuccess(
+            CustomSnackbar.showInfo(
               context: context,
-              message: context.localization.profile_security_documents_saved,
+              message: context.localization.profile_change_pending_approval,
             );
             Navigator.of(context).pop();
             return;
@@ -100,6 +100,17 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
             );
           }
 
+          final complianceDocs = state.profile?.documents ?? const [];
+          final nationalIdDoc = complianceDocs
+              .where((d) => d.normalizedDocumentType == 'nationalid')
+              .firstOrNull;
+          final driverLicenseDoc = complianceDocs
+              .where((d) => d.normalizedDocumentType == 'driverlicense')
+              .firstOrNull;
+          final vehicleLicenseDoc = complianceDocs
+              .where((d) => d.normalizedDocumentType == 'vehiclelicense')
+              .firstOrNull;
+
           final documents = [
             ProfileDocumentItemData(
               type: ProfileDocumentType.portrait,
@@ -110,21 +121,25 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
               type: ProfileDocumentType.idFront,
               icon: Icons.badge_outlined,
               path: state.documentPaths['idFront'] ?? '',
+              complianceDocument: nationalIdDoc,
             ),
             ProfileDocumentItemData(
               type: ProfileDocumentType.idBack,
               icon: Icons.badge_outlined,
               path: state.documentPaths['idBack'] ?? '',
+              complianceDocument: nationalIdDoc,
             ),
             ProfileDocumentItemData(
               type: ProfileDocumentType.license,
               icon: Icons.assignment_ind_outlined,
               path: state.documentPaths['license'] ?? '',
+              complianceDocument: driverLicenseDoc,
             ),
             ProfileDocumentItemData(
               type: ProfileDocumentType.vehicle,
               icon: Icons.description_outlined,
               path: state.documentPaths['vehicle'] ?? '',
+              complianceDocument: vehicleLicenseDoc,
             ),
           ];
 

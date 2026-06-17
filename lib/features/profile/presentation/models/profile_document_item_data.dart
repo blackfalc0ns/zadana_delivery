@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_compliance_document_entity.dart';
 
 enum ProfileDocumentType { portrait, idFront, idBack, license, vehicle }
 
@@ -11,6 +12,17 @@ extension ProfileDocumentTypeX on ProfileDocumentType {
       ProfileDocumentType.idBack => 'idBack',
       ProfileDocumentType.license => 'license',
       ProfileDocumentType.vehicle => 'vehicle',
+    };
+  }
+
+  /// Maps this document type to the backend compliance document type.
+  String? get complianceDocumentType {
+    return switch (this) {
+      ProfileDocumentType.idFront => 'nationalid',
+      ProfileDocumentType.idBack => 'nationalid',
+      ProfileDocumentType.license => 'driverlicense',
+      ProfileDocumentType.vehicle => 'vehiclelicense',
+      ProfileDocumentType.portrait => null,
     };
   }
 
@@ -31,11 +43,13 @@ class ProfileDocumentItemData {
     required this.type,
     required this.icon,
     required this.path,
+    this.complianceDocument,
   });
 
   final ProfileDocumentType type;
   final IconData icon;
   final String path;
+  final DriverComplianceDocumentEntity? complianceDocument;
 
   bool get hasFile => path.trim().isNotEmpty;
 }

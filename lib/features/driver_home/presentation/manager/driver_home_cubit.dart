@@ -271,8 +271,29 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
         return false;
       }
 
+      // Background location ("Allow all the time") is REQUIRED to go online.
+      // The driver must grant this before connecting.
+      try {
+        await _locationPermissionService.ensureBackgroundPermission();
+      } on LocationServiceException catch (error) {
+        _emitLocationPermissionFailure(error);
+        return false;
+      } catch (_) {
+        _emitIfOpen(
+          state.copyWith(
+            failure: const Failure(
+              errorMessage:
+                  'Background location access is required to go online. Please allow location access all the time.',
+              code: 'background_location_required',
+            ),
+          ),
+        );
+        return false;
+      }
+
       // Request overlay permission so the driver receives delivery offer
       // alerts even when the app is in the background.
+      // This is OPTIONAL — does not block going online.
       await _ensureOverlayPermission();
     }
 
@@ -558,6 +579,8 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
 
   Future<void> _startOnlineRuntimeServices() async {
     try {
+      // Background permission is already ensured before going online,
+      // but re-check in case it was revoked in the meantime.
       await _locationPermissionService.ensureBackgroundPermission();
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
       await _loadCurrentLocation();
@@ -569,7 +592,7 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     }
 
     // Request overlay permission so the driver can receive delivery offer
-    // alerts even when the app is in the background.
+    // alerts even when the app is in the background (optional).
     await _ensureOverlayPermission();
   }
 

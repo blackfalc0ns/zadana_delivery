@@ -177,7 +177,7 @@ class _MerchantImageBox extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFF5F2EA),
+       
         borderRadius: BorderRadius.circular(15),
       ),
       child: hasImage

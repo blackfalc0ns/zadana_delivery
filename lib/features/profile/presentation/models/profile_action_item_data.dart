@@ -11,6 +11,7 @@ enum ProfileActionType {
   orders,
   language,
   notifications,
+  overlayPermission,
   security,
   support,
   privacy,
@@ -45,6 +46,14 @@ enum ProfileActionType {
       ProfileActionType.notifications => (
         locale.notifications,
         locale.profile_notifications_subtitle,
+      ),
+      ProfileActionType.overlayPermission => (
+        locale.localeName.startsWith('ar')
+            ? 'الظهور فوق التطبيقات'
+            : 'Display Over Other Apps',
+        locale.localeName.startsWith('ar')
+            ? 'عرض طلبات التوصيل فوق التطبيقات الأخرى'
+            : 'Show delivery offers above other apps',
       ),
       ProfileActionType.security => (
         locale.change_password,

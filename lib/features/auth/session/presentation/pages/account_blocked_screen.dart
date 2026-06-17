@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -33,21 +35,49 @@ class AccountBlockedScreen extends StatefulWidget {
   State<AccountBlockedScreen> createState() => _AccountBlockedScreenState();
 }
 
-class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
+class _AccountBlockedScreenState extends State<AccountBlockedScreen>
+    with WidgetsBindingObserver {
   late final AuthGateCubit _cubit;
   late final Future<DriverUnifiedProfileEntity?> _profileFuture;
+  Timer? _recheckTimer;
+  bool _isNavigatingAway = false;
+
+  static const Duration _recheckInterval = Duration(seconds: 30);
 
   @override
   void initState() {
     super.initState();
     _cubit = getIt<AuthGateCubit>();
     _profileFuture = _loadProfile();
+    WidgetsBinding.instance.addObserver(this);
+    _startPeriodicRecheck();
   }
 
   @override
   void dispose() {
+    _recheckTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
     _cubit.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && !_isNavigatingAway) {
+      _recheckAccountStatus();
+    }
+  }
+
+  void _startPeriodicRecheck() {
+    _recheckTimer = Timer.periodic(_recheckInterval, (_) {
+      if (!_isNavigatingAway) {
+        _recheckAccountStatus();
+      }
+    });
+  }
+
+  void _recheckAccountStatus() {
+    _cubit.doIntent(const AuthGateStartedEvent());
   }
 
   @override
@@ -72,8 +102,26 @@ class _AccountBlockedScreenState extends State<AccountBlockedScreen> {
               context: context,
               message: context.localization.profile_logout_success,
             );
+            _isNavigatingAway = true;
+            _recheckTimer?.cancel();
             context.pushNamedAndRemoveUntil(
               AppRoutes.login,
+              rootNavigator: true,
+              predicate: (route) => false,
+            );
+            return;
+          }
+
+          // Ban lifted — navigate to the resolved route
+          if (!state.isLoading &&
+              !state.isLoggingOut &&
+              state.targetRoute != null &&
+              state.targetRoute != AppRoutes.accountBlocked &&
+              !_isNavigatingAway) {
+            _isNavigatingAway = true;
+            _recheckTimer?.cancel();
+            context.pushNamedAndRemoveUntil(
+              state.targetRoute!,
               rootNavigator: true,
               predicate: (route) => false,
             );

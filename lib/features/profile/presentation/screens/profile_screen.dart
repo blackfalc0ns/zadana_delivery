@@ -6,6 +6,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
+import 'package:zadana_delivery/core/services/trip_request_overlay_service.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/app_shell/presentation/screens/app_shell_screen.dart';
@@ -22,19 +23,60 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen>
+    with WidgetsBindingObserver {
   late final ProfileCubit _cubit;
+  late final TripRequestOverlayService _overlayService;
+  late final AppLifecycleListener _lifecycleListener;
+  bool _hasOverlayPermission = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _lifecycleListener = AppLifecycleListener(onResume: _onAppResumed);
     _cubit = getIt<ProfileCubit>()..loadProfile();
+    _overlayService = getIt<TripRequestOverlayService>();
+    _checkOverlayPermission();
   }
 
   @override
   void dispose() {
+    _lifecycleListener.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     _cubit.close();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    debugPrint('[ProfileScreen] didChangeAppLifecycleState: $state');
+    if (state == AppLifecycleState.resumed) {
+      _onAppResumed();
+    }
+  }
+
+  void _onAppResumed() {
+    debugPrint('[ProfileScreen] App resumed — checking overlay permission');
+    _checkOverlayPermission();
+  }
+
+  Future<void> _checkOverlayPermission() async {
+    final granted = await _overlayService.hasPermission();
+    debugPrint('[ProfileScreen] Overlay permission check: $granted');
+    if (mounted) {
+      setState(() => _hasOverlayPermission = granted);
+    }
+  }
+
+  Future<void> _onOverlaySwitchTapped(bool value) async {
+    debugPrint('[ProfileScreen] Overlay switch tapped, value=$value current=$_hasOverlayPermission');
+    await _overlayService.openOverlaySettings();
+  }
+
+  Future<void> _openOverlayPermissionSettings() async {
+    debugPrint('[ProfileScreen] Opening overlay permission settings');
+    await _overlayService.openOverlaySettings();
   }
 
   @override
@@ -79,6 +121,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   state: state,
                   onActionTap: _handleAction,
                   onNotificationsChanged: _cubit.updateNotifications,
+                  onOverlayChanged: _onOverlaySwitchTapped,
+                  overlayEnabled: _hasOverlayPermission,
                   onRefresh: _cubit.loadProfile,
                 ),
                 if (state.isLoggingOut) ...[
@@ -120,6 +164,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return _showLanguageSheet();
       case ProfileActionType.notifications:
         return _open(AppRoutes.notifications);
+      case ProfileActionType.overlayPermission:
+        return _openOverlayPermissionSettings();
       case ProfileActionType.security:
         return _open(AppRoutes.forgetPassword);
       case ProfileActionType.support:

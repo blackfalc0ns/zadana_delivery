@@ -145,9 +145,9 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
           }
 
           if (state.isSuccess) {
-            CustomSnackbar.showSuccess(
+            CustomSnackbar.showInfo(
               context: context,
-              message: context.localization.profile_vehicle_info_saved,
+              message: context.localization.profile_change_pending_approval,
             );
             Navigator.of(context).pop();
             return;

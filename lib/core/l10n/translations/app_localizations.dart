@@ -4844,6 +4844,12 @@ abstract class AppLocalizations {
   /// **'Payout method deleted successfully.'**
   String get wallet_method_deleted;
 
+  /// No description provided for @wallet_method_pending_approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout method change is pending admin approval.'**
+  String get wallet_method_pending_approval;
+
   /// No description provided for @wallet_make_primary.
   ///
   /// In en, this message translates to:
@@ -5149,6 +5155,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Security and documents saved successfully'**
   String get profile_security_documents_saved;
+
+  /// No description provided for @profile_change_pending_approval.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes have been submitted for review. They will be applied after admin approval.'**
+  String get profile_change_pending_approval;
 
   /// No description provided for @order_details_title.
   ///

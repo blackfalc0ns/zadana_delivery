@@ -2539,6 +2539,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_method_deleted => 'تم حذف وسيلة السحب بنجاح.';
 
   @override
+  String get wallet_method_pending_approval =>
+      'تم إرسال طلب تغيير طريقة السحب للمراجعة.';
+
+  @override
   String get wallet_make_primary => 'تعيين كأساسية';
 
   @override
@@ -2705,6 +2709,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get profile_security_documents_saved =>
       'تم حفظ بيانات الأمان والمستندات بنجاح';
+
+  @override
+  String get profile_change_pending_approval =>
+      'تم إرسال التعديل للمراجعة. سيتم تطبيقه بعد موافقة الإدارة.';
 
   @override
   String get order_details_title => 'تفاصيل الطلب';
