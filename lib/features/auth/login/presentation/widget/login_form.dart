@@ -61,7 +61,7 @@ class LoginForm extends StatelessWidget {
           ),
           const SizedBox(height: Spacing.xs),
           Align(
-            alignment: AlignmentDirectional.centerEnd,
+            alignment: AlignmentDirectional.centerStart,
             child: TextButton(
               onPressed: isSubmitting ? null : onForgotPassword,
               child: Text(

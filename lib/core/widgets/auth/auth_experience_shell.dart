@@ -95,10 +95,10 @@ class AuthExperienceShell extends StatelessWidget {
                           icon: sectionIcon,
                           child: body,
                         ),
-                        if (footer != null) ...[
+                        // if (footer != null) ...[
     
-                          Center(child: footer),
-                        ],
+                        //   Center(child: footer),
+                        // ],
                       ],
                     ),
                   ),
@@ -291,7 +291,7 @@ class _FormCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Image.asset(Assets.logoDark, width: 100, height: 100),
+          Image.asset(Assets.logoDark, width: 120, height: 120),
           const SizedBox(height: 8),
           child,
         ],

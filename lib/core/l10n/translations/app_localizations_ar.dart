@@ -1439,16 +1439,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_address_label => 'العنوان';
 
   @override
-  String get driver_profile_address_hint => 'مثال: مدينة نصر، شارع عباس العقاد';
+  String get driver_profile_address_hint => 'مثال: حي النرجس، الرياض';
 
   @override
-  String get driver_profile_national_id_label => 'الرقم القومي';
+  String get driver_profile_national_id_label => 'رقم الهوية';
 
   @override
-  String get driver_profile_national_id_hint => 'أدخل الرقم القومي';
+  String get driver_profile_national_id_hint => 'أدخل رقم الهوية';
 
   @override
-  String get driver_profile_national_id_expiry_label => 'تاريخ انتهاء البطاقة';
+  String get driver_profile_national_id_expiry_label => 'تاريخ انتهاء الهوية';
 
   @override
   String get driver_profile_license_number_label => 'رقم الرخصة';
@@ -1585,7 +1585,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'كل ملف يتم رفعه هنا يجعل بيانات السائق والمركبة أوضح.';
 
   @override
-  String get driver_profile_national_id_card_title => 'البطاقة الشخصية';
+  String get driver_profile_national_id_card_title => 'بطاقة الهوية';
 
   @override
   String get driver_profile_driver_license_card_title => 'رخصة القيادة';
@@ -2160,7 +2160,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_home_connection_offline_subtitle => 'موقفه مؤقتًا';
 
   @override
-  String get driver_profile_mock_address => 'مدينة نصر، القاهرة';
+  String get driver_profile_mock_address => 'حي النرجس، الرياض';
 
   @override
   String get driver_profile_mock_national_id => '29801011234567';

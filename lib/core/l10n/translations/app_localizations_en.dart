@@ -1469,18 +1469,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver_profile_address_label => 'Address';
 
   @override
-  String get driver_profile_address_hint =>
-      'Example: Nasr City, Abbas El Akkad Street';
+  String get driver_profile_address_hint => 'Example: Al Narjis, Riyadh';
 
   @override
-  String get driver_profile_national_id_label => 'National ID';
+  String get driver_profile_national_id_label => 'ID Number';
 
   @override
-  String get driver_profile_national_id_hint => 'Enter national ID';
+  String get driver_profile_national_id_hint => 'Enter ID number';
 
   @override
-  String get driver_profile_national_id_expiry_label =>
-      'National ID expiry date';
+  String get driver_profile_national_id_expiry_label => 'ID expiry date';
 
   @override
   String get driver_profile_license_number_label => 'License number';
@@ -2200,7 +2198,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driver_home_connection_offline_subtitle => 'Temporarily paused';
 
   @override
-  String get driver_profile_mock_address => 'Nasr City, Cairo';
+  String get driver_profile_mock_address => 'Al Narjis, Riyadh';
 
   @override
   String get driver_profile_mock_national_id => '29801011234567';

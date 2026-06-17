@@ -25,8 +25,38 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
 
     private fun maybeShowNativeOfferOverlay(additionalData: JSONObject?) {
         if (additionalData == null) {
+            android.util.Log.d("TripOverlay", "Push additionalData is NULL")
             return
         }
+
+        android.util.Log.d("TripOverlay", "═══ PUSH PAYLOAD RECEIVED ═══")
+        android.util.Log.d("TripOverlay", "Full additionalData: $additionalData")
+        android.util.Log.d("TripOverlay", "Keys: ${additionalData.keys().asSequence().toList()}")
+
+        // Log each important field individually
+        val fieldsToCheck = listOf(
+            "vendorName", "vendor_name",
+            "pickupAddress", "pickup_address",
+            "deliveryAddress", "delivery_address",
+            "customerName", "customer_name",
+            "codAmount", "cod_amount",
+            "payout", "deliveryFee",
+            "totalAmount", "total_amount",
+            "itemsCount", "items_count",
+            "paymentMethod", "payment_method",
+            "estimatedDistanceKm", "distanceKm",
+            "countdownSeconds",
+            "assignmentId", "assignment_id",
+            "type", "event", "eventName", "category", "popupType",
+            "dataObject", "data", "payload"
+        )
+        for (field in fieldsToCheck) {
+            val value = additionalData.opt(field)
+            if (value != null) {
+                android.util.Log.d("TripOverlay", "  [$field] = $value")
+            }
+        }
+        android.util.Log.d("TripOverlay", "═══════════════════════════════")
 
         val eventType = additionalData.optString("event", "").trim().lowercase()
         val eventName = additionalData.optString("eventName", "").trim().lowercase()
@@ -39,6 +69,7 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
             eventName.contains("dispatch.offer_new") ||
             (category == "dispatch" && popupType == "delivery_offer")
         if (!isOfferNotification) {
+            android.util.Log.d("TripOverlay", "Not an offer notification. type=$payloadType event=$eventType eventName=$eventName category=$category popupType=$popupType")
             return
         }
 

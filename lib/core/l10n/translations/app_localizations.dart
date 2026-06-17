@@ -2837,25 +2837,25 @@ abstract class AppLocalizations {
   /// No description provided for @driver_profile_address_hint.
   ///
   /// In en, this message translates to:
-  /// **'Example: Nasr City, Abbas El Akkad Street'**
+  /// **'Example: Al Narjis, Riyadh'**
   String get driver_profile_address_hint;
 
   /// No description provided for @driver_profile_national_id_label.
   ///
   /// In en, this message translates to:
-  /// **'National ID'**
+  /// **'ID Number'**
   String get driver_profile_national_id_label;
 
   /// No description provided for @driver_profile_national_id_hint.
   ///
   /// In en, this message translates to:
-  /// **'Enter national ID'**
+  /// **'Enter ID number'**
   String get driver_profile_national_id_hint;
 
   /// No description provided for @driver_profile_national_id_expiry_label.
   ///
   /// In en, this message translates to:
-  /// **'National ID expiry date'**
+  /// **'ID expiry date'**
   String get driver_profile_national_id_expiry_label;
 
   /// No description provided for @driver_profile_license_number_label.
@@ -4127,7 +4127,7 @@ abstract class AppLocalizations {
   /// No description provided for @driver_profile_mock_address.
   ///
   /// In en, this message translates to:
-  /// **'Nasr City, Cairo'**
+  /// **'Al Narjis, Riyadh'**
   String get driver_profile_mock_address;
 
   /// No description provided for @driver_profile_mock_national_id.

@@ -263,6 +263,20 @@ class TripRequestSystemOverlay(private val context: Context) {
     }
 
     private fun parseOverlayData(data: Map<String, Any?>): OverlayData {
+        val rawCodAmount = (data["cod_amount"] as? Number)?.toDouble() ?: 0.0
+        val rawTotalAmount = (data["total_amount"] as? Number)?.toDouble() ?: 0.0
+        val rawPayout = (data["payout"] as? Number)?.toDouble() ?: 0.0
+        val paymentMethod = data["payment_method"]?.toString() ?: ""
+
+        // If codAmount is missing but payment is cash-on-delivery, use payout as codAmount
+        val normalizedPaymentMethod = paymentMethod.trim().lowercase()
+        val isCod = normalizedPaymentMethod.contains("cash") ||
+            normalizedPaymentMethod.contains("cod")
+        val codAmount = if (rawCodAmount > 0) rawCodAmount
+            else if (isCod && rawPayout > 0) rawPayout
+            else if (isCod && rawTotalAmount > 0) rawTotalAmount
+            else 0.0
+
         return OverlayData(
             assignmentId = data["assignment_id"]?.toString() ?: "",
             orderNumber = data["order_number"]?.toString() ?: "",
@@ -271,13 +285,13 @@ class TripRequestSystemOverlay(private val context: Context) {
             deliveryAddress = data["delivery_address"]?.toString() ?: "",
             distanceKm = (data["distance_km"] as? Number)?.toDouble() ?: 0.0,
             eta = data["eta"]?.toString() ?: "",
-            payout = (data["payout"] as? Number)?.toDouble() ?: 0.0,
-            totalAmount = (data["total_amount"] as? Number)?.toDouble() ?: 0.0,
-            paymentMethod = data["payment_method"]?.toString() ?: "",
+            payout = rawPayout,
+            totalAmount = rawTotalAmount,
+            paymentMethod = paymentMethod,
             countdownSeconds = (data["countdown_seconds"] as? Number)?.toInt() ?: 30,
             customerName = data["customer_name"]?.toString() ?: "",
             itemsCount = (data["items_count"] as? Number)?.toInt() ?: 0,
-            codAmount = (data["cod_amount"] as? Number)?.toDouble() ?: 0.0,
+            codAmount = codAmount,
             distanceText = data["distance_text"]?.toString() ?: "",
         )
     }
@@ -294,6 +308,22 @@ class TripRequestSystemOverlay(private val context: Context) {
 
         val overlayData = parseOverlayData(data)
         currentAssignmentId = overlayData.assignmentId
+
+        Log.d(TAG, "═══ OVERLAY DATA PARSED ═══")
+        Log.d(TAG, "  assignmentId=${overlayData.assignmentId}")
+        Log.d(TAG, "  vendorName=${overlayData.vendorName}")
+        Log.d(TAG, "  pickupAddress=${overlayData.pickupAddress}")
+        Log.d(TAG, "  deliveryAddress=${overlayData.deliveryAddress}")
+        Log.d(TAG, "  customerName=${overlayData.customerName}")
+        Log.d(TAG, "  codAmount=${overlayData.codAmount}")
+        Log.d(TAG, "  payout=${overlayData.payout}")
+        Log.d(TAG, "  totalAmount=${overlayData.totalAmount}")
+        Log.d(TAG, "  distanceKm=${overlayData.distanceKm}")
+        Log.d(TAG, "  distanceText=${overlayData.distanceText}")
+        Log.d(TAG, "  itemsCount=${overlayData.itemsCount}")
+        Log.d(TAG, "  paymentMethod=${overlayData.paymentMethod}")
+        Log.d(TAG, "  countdownSeconds=${overlayData.countdownSeconds}")
+        Log.d(TAG, "═══════════════════════════")
 
         val density = context.resources.displayMetrics.density
 
