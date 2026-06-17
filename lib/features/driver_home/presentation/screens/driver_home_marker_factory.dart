@@ -38,6 +38,30 @@ class DriverHomeMarkerFactory {
     );
   }
 
+  /// Builds a pickup marker with the vendor's logo loaded from a network URL.
+  /// Falls back to the generic store icon marker if the image fails to load.
+  static Future<BitmapDescriptor> buildPickupMarkerWithLogo({
+    required String imageUrl,
+    required String markerLabel,
+  }) {
+    return DriverHomeMarkerPainter.buildImageMarker(
+      imageUrl: imageUrl,
+      markerLabel: markerLabel,
+      accent: AppColors.secondary,
+    );
+  }
+
+  /// Builds a delivery marker with a house icon.
+  static Future<BitmapDescriptor> buildDeliveryMarker({
+    required String markerLabel,
+  }) {
+    return DriverHomeMarkerPainter.buildCompactMarker(
+      markerLabel: markerLabel,
+      accent: AppColors.primary,
+      iconData: DriverHomeMarkerPainter.homeIcon,
+    );
+  }
+
   static Future<BitmapDescriptor> buildDriverMarker() {
     return DriverHomeMarkerPainter.buildDriverMarker(accent: AppColors.primary);
   }

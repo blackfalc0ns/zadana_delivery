@@ -22,6 +22,7 @@ class DriverHomeLoadedView extends StatelessWidget {
     required this.isMyLocationEnabled,
     required this.driverMarkerIcon,
     required this.pickupMarkerIcon,
+    required this.deliveryMarkerIcon,
     required this.onMapCreated,
     required this.onToggleAvailability,
     required this.onDisabledAvailabilityTap,
@@ -43,6 +44,7 @@ class DriverHomeLoadedView extends StatelessWidget {
   final bool isMyLocationEnabled;
   final BitmapDescriptor? driverMarkerIcon;
   final BitmapDescriptor? pickupMarkerIcon;
+  final BitmapDescriptor? deliveryMarkerIcon;
   final void Function(GoogleMapController controller) onMapCreated;
   final ValueChanged<bool> onToggleAvailability;
   final VoidCallback onDisabledAvailabilityTap;
@@ -91,6 +93,7 @@ class DriverHomeLoadedView extends StatelessWidget {
               driverLocation: driverLocation,
               driverMarkerIcon: driverMarkerIcon,
               pickupMarkerIcon: pickupMarkerIcon,
+              deliveryMarkerIcon: deliveryMarkerIcon,
             ),
             circles: DriverHomeMapLayers.buildCircles(
               context: context,

@@ -538,10 +538,22 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       return;
     }
 
-    final icon = await DriverHomeMarkerFactory.buildPickupMarker(
-      marketName: normalizedName,
-      markerLabel: markerLabel,
-    );
+    // Resolve the image URL from the active assignment's vendor image.
+    final home = state.home;
+    final resolvedImageUrl = home?.currentAssignment?.vendorImageUrl.trim() ?? '';
+
+    BitmapDescriptor icon;
+    if (resolvedImageUrl.isNotEmpty) {
+      icon = await DriverHomeMarkerFactory.buildPickupMarkerWithLogo(
+        imageUrl: resolvedImageUrl,
+        markerLabel: markerLabel,
+      );
+    } else {
+      icon = await DriverHomeMarkerFactory.buildPickupMarker(
+        marketName: normalizedName,
+        markerLabel: markerLabel,
+      );
+    }
     if (isClosed) return;
 
     _emitIfOpen(
@@ -549,13 +561,29 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
     );
   }
 
-  Future<void> syncLocalizedMarkers({required String storeMarkerLabel}) async {
+  Future<void> _loadDeliveryMarker(String markerLabel) async {
+    if (state.deliveryMarkerIcon != null) return;
+
+    final icon = await DriverHomeMarkerFactory.buildDeliveryMarker(
+      markerLabel: markerLabel,
+    );
+    if (isClosed) return;
+
+    _emitIfOpen(state.copyWith(deliveryMarkerIcon: icon));
+  }
+
+  Future<void> syncLocalizedMarkers({
+    required String storeMarkerLabel,
+    required String deliveryMarkerLabel,
+  }) async {
     final activeName = canShowOffer
         ? state.home?.currentOffer?.vendorName ??
               state.home?.currentAssignment?.vendorName
         : state.home?.currentAssignment?.vendorName;
-    if ((activeName ?? '').trim().isEmpty) return;
-    await _loadPickupMarker(activeName!, storeMarkerLabel);
+    if ((activeName ?? '').trim().isNotEmpty) {
+      await _loadPickupMarker(activeName!, storeMarkerLabel);
+    }
+    await _loadDeliveryMarker(deliveryMarkerLabel);
   }
 
   Future<void> _loadCurrentLocation() async {

@@ -20,6 +20,7 @@ class DriverHomeState {
     this.driverMarkerIcon,
     this.pickupMarkerIcon,
     this.pickupMarkerLabel,
+    this.deliveryMarkerIcon,
   });
 
   final bool isLoading;
@@ -36,6 +37,7 @@ class DriverHomeState {
   final BitmapDescriptor? driverMarkerIcon;
   final BitmapDescriptor? pickupMarkerIcon;
   final String? pickupMarkerLabel;
+  final BitmapDescriptor? deliveryMarkerIcon;
 
   DriverHomeState copyWith({
     bool? isLoading,
@@ -52,6 +54,7 @@ class DriverHomeState {
     BitmapDescriptor? driverMarkerIcon,
     BitmapDescriptor? pickupMarkerIcon,
     String? pickupMarkerLabel,
+    BitmapDescriptor? deliveryMarkerIcon,
     bool clearFailure = false,
     bool clearNoticeMessage = false,
     bool clearActiveOfferActionId = false,
@@ -87,6 +90,7 @@ class DriverHomeState {
       pickupMarkerLabel: clearPickupMarkerLabel
           ? null
           : pickupMarkerLabel ?? this.pickupMarkerLabel,
+      deliveryMarkerIcon: deliveryMarkerIcon ?? this.deliveryMarkerIcon,
     );
   }
 }

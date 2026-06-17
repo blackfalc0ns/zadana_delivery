@@ -95,10 +95,10 @@ class AuthExperienceShell extends StatelessWidget {
                           icon: sectionIcon,
                           child: body,
                         ),
-                        // if (footer != null) ...[
-    
-                        //   Center(child: footer),
-                        // ],
+                        if (footer != null) ...[
+                          const SizedBox(height: Spacing.lg),
+                          Center(child: footer),
+                        ],
                       ],
                     ),
                   ),

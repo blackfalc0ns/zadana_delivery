@@ -302,6 +302,13 @@ class _MissionSummary extends StatelessWidget {
 
   final DriverHomeAssignmentEntity assignment;
 
+  String _missionSubtitle(
+    BuildContext context,
+    DriverHomeAssignmentEntity assignment,
+  ) {
+    return assignment.deliveryAddress;
+  }
+
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
@@ -317,7 +324,7 @@ class _MissionSummary extends StatelessWidget {
         children: [
           _MissionHeader(
             title: assignment.vendorName,
-            subtitle: assignment.deliveryAddress,
+            subtitle: _missionSubtitle(context, assignment),
             imageUrl: assignment.vendorImageUrl,
           ),
           const SizedBox(height: 12),

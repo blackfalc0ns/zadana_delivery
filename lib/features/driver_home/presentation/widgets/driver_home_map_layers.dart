@@ -11,6 +11,7 @@ class DriverHomeMapLayers {
     required LatLng driverLocation,
     BitmapDescriptor? driverMarkerIcon,
     BitmapDescriptor? pickupMarkerIcon,
+    BitmapDescriptor? deliveryMarkerIcon,
   }) {
     final markers = <Marker>{
       Marker(
@@ -46,9 +47,11 @@ class DriverHomeMapLayers {
           Marker(
             markerId: const MarkerId('offer_delivery'),
             position: LatLng(offer.deliveryLatitude, offer.deliveryLongitude),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueRed,
-            ),
+            icon:
+                deliveryMarkerIcon ??
+                BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueRed,
+                ),
             infoWindow: InfoWindow(title: offer.customerName),
           ),
         );
@@ -77,7 +80,9 @@ class DriverHomeMapLayers {
             assignment.deliveryLatitude,
             assignment.deliveryLongitude,
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          icon:
+              deliveryMarkerIcon ??
+              BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
           infoWindow: InfoWindow(title: assignment.orderNumber),
         ),
       );

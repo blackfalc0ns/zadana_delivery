@@ -296,6 +296,7 @@ class DriverHomeAssignmentModelDto {
       vendorName: json['vendorName']?.toString() ?? '',
       vendorImageUrl:
           json['vendorImageUrl']?.toString() ??
+          json['vendorLogoUrl']?.toString() ??
           json['vendorLogo']?.toString() ??
           json['storeImageUrl']?.toString() ??
           '',

@@ -1,4 +1,6 @@
 import 'dart:ui' as ui;
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
@@ -8,6 +10,7 @@ class DriverHomeMarkerPainter {
 
   static const IconData storeIcon = Icons.storefront_rounded;
   static const IconData customerIcon = Icons.person_pin_circle_rounded;
+  static const IconData homeIcon = Icons.home_rounded;
 
   static Future<BitmapDescriptor> buildCompactMarker({
     required String markerLabel,
@@ -33,6 +36,68 @@ class DriverHomeMarkerPainter {
     );
     final data = await image.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.bytes(data!.buffer.asUint8List());
+  }
+
+  /// Builds a marker with a circular network image (vendor logo).
+  /// Falls back to the default [storeIcon] compact marker if the image fails.
+  static Future<BitmapDescriptor> buildImageMarker({
+    required String imageUrl,
+    required String markerLabel,
+    required Color accent,
+  }) async {
+    try {
+      final client = HttpClient();
+      final request = await client.getUrl(Uri.parse(imageUrl));
+      final response = await request.close();
+      if (response.statusCode != 200) {
+        client.close();
+        return buildCompactMarker(
+          markerLabel: markerLabel,
+          accent: accent,
+          iconData: storeIcon,
+        );
+      }
+
+      final bytes = await response.fold<List<int>>(
+        <int>[],
+        (prev, chunk) => prev..addAll(chunk),
+      );
+      client.close();
+
+      final codec = await ui.instantiateImageCodec(
+        bytes is Uint8List ? bytes : Uint8List.fromList(bytes),
+        targetWidth: 64,
+        targetHeight: 64,
+      );
+      final frame = await codec.getNextFrame();
+      final vendorImage = frame.image;
+
+      const width = 108.0;
+      const height = 136.0;
+      final recorder = ui.PictureRecorder();
+      final canvas = Canvas(recorder);
+      const labelRect = Rect.fromLTWH(14, 0, width - 28, 30);
+
+      _paintLabelShell(canvas, labelRect, accent);
+      _paintLabelText(canvas, labelRect, markerLabel, accent);
+
+      const badgeCenter = Offset(width / 2, 56);
+      _paintImageBadge(canvas, badgeCenter, accent, vendorImage);
+      _paintStem(canvas, width, accent);
+
+      final image = await recorder.endRecording().toImage(
+        width.toInt(),
+        height.toInt(),
+      );
+      final data = await image.toByteData(format: ui.ImageByteFormat.png);
+      return BitmapDescriptor.bytes(data!.buffer.asUint8List());
+    } catch (_) {
+      return buildCompactMarker(
+        markerLabel: markerLabel,
+        accent: accent,
+        iconData: storeIcon,
+      );
+    }
   }
 
   static Future<BitmapDescriptor> buildDriverMarker({
@@ -184,6 +249,45 @@ class DriverHomeMarkerPainter {
         badgeCenter.dy - iconPainter.height / 2,
       ),
     );
+  }
+
+  static void _paintImageBadge(
+    Canvas canvas,
+    Offset badgeCenter,
+    Color accent,
+    ui.Image vendorImage,
+  ) {
+    // Outer glow circle
+    canvas.drawCircle(
+      badgeCenter,
+      26,
+      Paint()..color = accent.withValues(alpha: 0.14),
+    );
+    // White border
+    canvas.drawCircle(badgeCenter, 22, Paint()..color = Colors.white);
+    canvas.drawCircle(
+      badgeCenter,
+      22,
+      Paint()
+        ..color = accent.withValues(alpha: 0.28)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
+
+    // Clip to circle and draw image
+    canvas.save();
+    final clipPath = Path()
+      ..addOval(Rect.fromCircle(center: badgeCenter, radius: 19));
+    canvas.clipPath(clipPath);
+    final srcRect = Rect.fromLTWH(
+      0,
+      0,
+      vendorImage.width.toDouble(),
+      vendorImage.height.toDouble(),
+    );
+    final dstRect = Rect.fromCircle(center: badgeCenter, radius: 19);
+    canvas.drawImageRect(vendorImage, srcRect, dstRect, Paint());
+    canvas.restore();
   }
 
   static void _paintStem(Canvas canvas, double width, Color accent) {

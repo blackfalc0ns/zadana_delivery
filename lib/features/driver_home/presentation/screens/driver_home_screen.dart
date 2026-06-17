@@ -189,6 +189,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
     unawaited(
       _cubit.syncLocalizedMarkers(
         storeMarkerLabel: context.localization.order_details_store_label,
+        deliveryMarkerLabel: context.localization.driver_home_delivery_label,
       ),
     );
 
@@ -333,6 +334,7 @@ class _DriverHomeScreenState extends State<DriverHomeScreen> {
             isMyLocationEnabled: state.isMyLocationEnabled,
             driverMarkerIcon: state.driverMarkerIcon,
             pickupMarkerIcon: state.pickupMarkerIcon,
+            deliveryMarkerIcon: state.deliveryMarkerIcon,
             onMapCreated: _onMapCreated,
             onToggleAvailability: _toggleAvailability,
             onDisabledAvailabilityTap: _showAvailabilityBlockedReason,
