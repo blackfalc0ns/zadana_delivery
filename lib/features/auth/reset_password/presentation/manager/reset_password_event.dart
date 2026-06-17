@@ -9,3 +9,9 @@ class ResetPasswordSubmitEvent extends ResetPasswordEvent {
 
   final ResetPasswordRequestEntity request;
 }
+
+class ResetPasswordResendCodeEvent extends ResetPasswordEvent {
+  const ResetPasswordResendCodeEvent(this.identifier);
+
+  final String identifier;
+}

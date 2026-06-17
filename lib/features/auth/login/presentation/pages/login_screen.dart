@@ -235,6 +235,8 @@ class _LoginScreenState extends State<LoginScreen> {
         normalized.contains('email address is not verified') ||
         normalized.contains('غير مفعل') ||
         normalized.contains('غير مفع') ||
-        normalized.contains('لم يتم تفعيل');
+        normalized.contains('لم يتم تفعيل') ||
+        normalized.contains('غير موثق') ||
+        normalized.contains('رمز التحقق');
   }
 }

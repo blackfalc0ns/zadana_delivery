@@ -982,9 +982,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i371.VerifyDriverOtpUseCase>(
       () => _i371.VerifyDriverOtpUseCase(gh<_i338.DriverVerifyOtpRepository>()),
     );
-    gh.factory<_i641.ResetPasswordViewModel>(
-      () => _i641.ResetPasswordViewModel(gh<_i184.ResetPasswordUseCase>()),
-    );
     gh.factory<_i219.DriverTrackingCubit>(
       () => _i219.DriverTrackingCubit(
         gh<_i802.WatchDriverHomeUseCase>(),
@@ -1037,6 +1034,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i191.DriverVerifyOtpViewModel(
         gh<_i371.VerifyDriverOtpUseCase>(),
         gh<_i324.ResendDriverOtpUseCase>(),
+      ),
+    );
+    gh.factory<_i641.ResetPasswordViewModel>(
+      () => _i641.ResetPasswordViewModel(
+        gh<_i184.ResetPasswordUseCase>(),
+        gh<_i731.ForgotPasswordUseCase>(),
       ),
     );
     gh.factory<_i808.LoginViewModel>(
