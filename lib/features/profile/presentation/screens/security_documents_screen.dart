@@ -55,6 +55,19 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
             );
           }
 
+          if (state.lastPickedDocumentType != null) {
+            final docTitle = state.lastPickedDocumentType!.localizedTitle(
+              context.localization,
+            );
+            CustomSnackbar.showSuccess(
+              context: context,
+              message: context.localization.driver_profile_image_changed_success(
+                docTitle,
+              ),
+            );
+            _cubit.clearLastPickedDocumentType();
+          }
+
           if (state.isSuccess) {
             CustomSnackbar.showInfo(
               context: context,

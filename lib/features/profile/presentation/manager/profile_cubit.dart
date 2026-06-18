@@ -112,6 +112,11 @@ class ProfileCubit extends Cubit<ProfileState> {
     emit(state.copyWith(clearFailure: true, clearRegionCitiesFailure: true));
   }
 
+  void clearLastPickedDocumentType() {
+    if (state.lastPickedDocumentType == null) return;
+    emit(state.copyWith(clearLastPickedDocumentType: true));
+  }
+
   Future<bool> logout() async {
     emit(state.copyWith(isLoggingOut: true, clearFailure: true));
     final result = await _logoutUseCase.call();
@@ -290,6 +295,7 @@ class ProfileCubit extends Cubit<ProfileState> {
           documentPaths: Map<String, String>.from(state.documentPaths)
             ..[type.storageKey] = image.path,
           clearFailure: true,
+          lastPickedDocumentType: type,
         ),
       );
     } catch (_) {

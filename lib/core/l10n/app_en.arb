@@ -435,6 +435,14 @@
   "driver_profile_save_success": "Initial profile data was saved successfully.",
   "driver_profile_picker_restart_required": "Image picking needs a full app restart after adding the plugin.",
   "driver_profile_picker_error": "Unable to open the image picker. Please try again.",
+  "driver_profile_image_changed_success": "{documentName} has been changed successfully.",
+  "@driver_profile_image_changed_success": {
+    "placeholders": {
+      "documentName": {
+        "type": "String"
+      }
+    }
+  },
   "driver_profile_identity_section": "Identity images",
   "driver_profile_vehicle_section": "Vehicle details",
   "driver_profile_vehicle_images_section": "Vehicle images",

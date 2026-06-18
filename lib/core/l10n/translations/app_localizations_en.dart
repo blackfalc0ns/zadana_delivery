@@ -1209,6 +1209,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Unable to open the image picker. Please try again.';
 
   @override
+  String driver_profile_image_changed_success(String documentName) {
+    return '$documentName has been changed successfully.';
+  }
+
+  @override
   String get driver_profile_identity_section => 'Identity images';
 
   @override

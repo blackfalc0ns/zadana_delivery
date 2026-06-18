@@ -9,7 +9,6 @@ class PersonalInfoForm extends StatelessWidget {
     required this.profilePhotoUrl,
     required this.isBusy,
     required this.onChangePhoto,
-    required this.onDeletePhoto,
     required this.nameController,
     required this.emailController,
     required this.phoneController,
@@ -19,7 +18,6 @@ class PersonalInfoForm extends StatelessWidget {
   final String profilePhotoUrl;
   final bool isBusy;
   final VoidCallback onChangePhoto;
-  final VoidCallback onDeletePhoto;
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController phoneController;
@@ -67,15 +65,6 @@ class PersonalInfoForm extends StatelessWidget {
                               : locale.change_address,
                         ),
                       ),
-                      if (normalizedPhotoUrl.isNotEmpty)
-                        TextButton(
-                          onPressed: isBusy ? null : onDeletePhoto,
-                          child: Text(
-                            Localizations.localeOf(context).languageCode == 'ar'
-                                ? 'حذف الصورة'
-                                : 'Remove photo',
-                          ),
-                        ),
                     ],
                   ),
                 ],

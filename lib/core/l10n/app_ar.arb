@@ -419,6 +419,14 @@
   "driver_profile_save_success": "تم حفظ بيانات الملف الشخصي الأولية بنجاح.",
   "driver_profile_picker_restart_required": "اختيار الصور يحتاج إلى إعادة تشغيل كاملة للتطبيق بعد إضافة الإضافة.",
   "driver_profile_picker_error": "تعذر فتح منتقي الصور. يرجى المحاولة مرة أخرى.",
+  "driver_profile_image_changed_success": "تم تغيير {documentName} بنجاح.",
+  "@driver_profile_image_changed_success": {
+    "placeholders": {
+      "documentName": {
+        "type": "String"
+      }
+    }
+  },
   "driver_profile_identity_section": "صور الهوية",
   "driver_profile_vehicle_section": "بيانات المركبة",
   "driver_profile_vehicle_images_section": "صور المركبة",

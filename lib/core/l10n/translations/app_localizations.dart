@@ -2360,6 +2360,12 @@ abstract class AppLocalizations {
   /// **'Unable to open the image picker. Please try again.'**
   String get driver_profile_picker_error;
 
+  /// No description provided for @driver_profile_image_changed_success.
+  ///
+  /// In en, this message translates to:
+  /// **'{documentName} has been changed successfully.'**
+  String driver_profile_image_changed_success(String documentName);
+
   /// No description provided for @driver_profile_identity_section.
   ///
   /// In en, this message translates to:

@@ -1186,6 +1186,11 @@ class AppLocalizationsAr extends AppLocalizations {
       'تعذر فتح منتقي الصور. يرجى المحاولة مرة أخرى.';
 
   @override
+  String driver_profile_image_changed_success(String documentName) {
+    return 'تم تغيير $documentName بنجاح.';
+  }
+
+  @override
   String get driver_profile_identity_section => 'صور الهوية';
 
   @override

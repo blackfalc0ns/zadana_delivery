@@ -99,7 +99,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
               context: context,
               message: context.localization.profile_change_pending_approval,
             );
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(true);
             return;
           }
 
@@ -144,14 +144,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             headerColorToken: ProfileColorToken.primary,
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
-            isFormDirty: _isFormDirty,
+            isFormDirty: true,
             onSave: _save,
             children: [
               PersonalInfoForm(
                 profilePhotoUrl: state.profile?.personalPhotoUrl ?? '',
                 isBusy: state.isSaving || state.isLoading,
                 onChangePhoto: _changePhoto,
-                onDeletePhoto: _deletePhoto,
                 nameController: _nameController,
                 emailController: _emailController,
                 phoneController: _phoneController,
@@ -203,14 +202,4 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     }
   }
 
-  Future<void> _deletePhoto() async {
-    await _cubit.doIntent(const ProfileFormDeleteProfilePhotoEvent());
-    if (!mounted || _cubit.state.failure != null) return;
-    CustomSnackbar.showSuccess(
-      context: context,
-      message: Localizations.localeOf(context).languageCode == 'ar'
-          ? 'تم حذف صورة البروفايل'
-          : 'Profile photo removed',
-    );
-  }
 }

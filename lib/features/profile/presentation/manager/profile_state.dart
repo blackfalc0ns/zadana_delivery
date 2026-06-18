@@ -1,6 +1,7 @@
 import 'package:zadana_delivery/core/network/failures.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
+import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 
 class ProfileState {
   const ProfileState({
@@ -15,6 +16,7 @@ class ProfileState {
     this.documentPaths = const <String, String>{},
     this.failure,
     this.regionCitiesFailure,
+    this.lastPickedDocumentType,
   });
 
   final bool isLoading;
@@ -28,6 +30,7 @@ class ProfileState {
   final Map<String, String> documentPaths;
   final Failure? failure;
   final Failure? regionCitiesFailure;
+  final ProfileDocumentType? lastPickedDocumentType;
 
   ProfileState copyWith({
     bool? isLoading,
@@ -43,6 +46,8 @@ class ProfileState {
     Failure? regionCitiesFailure,
     bool clearFailure = false,
     bool clearRegionCitiesFailure = false,
+    ProfileDocumentType? lastPickedDocumentType,
+    bool clearLastPickedDocumentType = false,
   }) {
     return ProfileState(
       isLoading: isLoading ?? this.isLoading,
@@ -59,6 +64,9 @@ class ProfileState {
       regionCitiesFailure: clearRegionCitiesFailure
           ? null
           : regionCitiesFailure ?? this.regionCitiesFailure,
+      lastPickedDocumentType: clearLastPickedDocumentType
+          ? null
+          : lastPickedDocumentType ?? this.lastPickedDocumentType,
     );
   }
 }
