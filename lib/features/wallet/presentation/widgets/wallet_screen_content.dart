@@ -5,7 +5,6 @@ import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_state.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
-import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_ambient_background.dart';
 import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_balance_hero_card.dart';
 import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_feedback_widgets.dart';
 import 'package:zadana_delivery/features/wallet/presentation/widgets/wallet_layout_widgets.dart';

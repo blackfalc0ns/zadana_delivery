@@ -285,7 +285,7 @@ class _NotificationPreferencesScreenState
                             ),
                             value: _hasOverlayPermission,
                             onChanged: _onOverlaySwitchTapped,
-                            activeColor: AppColors.primary,
+                            activeThumbColor: AppColors.primary,
                           ),
                         ],
                       ),
@@ -324,7 +324,7 @@ class _NotificationPreferencesScreenState
       ),
       value: value,
       onChanged: onChanged,
-      activeColor: AppColors.primary,
+      activeThumbColor: AppColors.primary,
     );
   }
 
@@ -336,28 +336,32 @@ class _NotificationPreferencesScreenState
       ('silent', 'صامت', 'Silent'),
     ];
 
-    return options.map((option) {
-      final (value, arLabel, enLabel) = option;
-      return RadioListTile<String>(
-        title: Text(
-          _isArabic ? arLabel : enLabel,
-          style: getRegularStyle(
-            fontFamily: FontConstant.cairo,
-            fontSize: FontSize.size14,
-            color: AppColors.textPrimary,
-          ),
-        ),
-        value: value,
+    return [
+      RadioGroup<String>(
         groupValue: currentSound,
-        onChanged: isLoading
-            ? null
-            : (newValue) {
-                if (newValue != null) _changeSound(newValue);
-              },
-        activeColor: AppColors.primary,
-        dense: true,
-      );
-    }).toList(growable: false);
+        onChanged: (String? newValue) {
+          if (!isLoading && newValue != null) _changeSound(newValue);
+        },
+        child: Column(
+          children: options.map((option) {
+            final (value, arLabel, enLabel) = option;
+            return RadioListTile<String>(
+              title: Text(
+                _isArabic ? arLabel : enLabel,
+                style: getRegularStyle(
+                  fontFamily: FontConstant.cairo,
+                  fontSize: FontSize.size14,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              value: value,
+              activeColor: AppColors.primary,
+              dense: true,
+            );
+          }).toList(growable: false),
+        ),
+      ),
+    ];
   }
 
   Widget _buildSectionCard({required List<Widget> children}) {

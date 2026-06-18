@@ -467,31 +467,61 @@ class TripRequestSystemOverlay(private val context: Context) {
         }
         val handleParams = LinearLayout.LayoutParams(dp(40), dp(5)).apply {
             gravity = Gravity.CENTER_HORIZONTAL
-            bottomMargin = dp(12)
+            bottomMargin = dp(16)
         }
         root.addView(handleBar, handleParams)
 
-        // ── Countdown timer text (hidden, used by timer) ──
+        // ── Header row: Timer + "عرض توصيل جديد" + App logo (RTL) ──
+        val headerRow = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
+        }
+
+        // App logo (right side in RTL)
+        val logoView = android.widget.ImageView(context).apply {
+            setImageResource(R.mipmap.ic_launcher)
+            scaleType = android.widget.ImageView.ScaleType.CENTER_INSIDE
+        }
+        headerRow.addView(logoView, LinearLayout.LayoutParams(dp(44), dp(44)).apply {
+            marginEnd = dp(12)
+        })
+
+        // Title "عرض توصيل جديد"
+        val titleText = TextView(context).apply {
+            text = "عرض توصيل جديد"
+            setTextColor(colorTextPrimary)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f)
+            typeface = Typeface.DEFAULT_BOLD
+            setPadding(0, 0, dp(12), 0)
+        }
+        headerRow.addView(titleText, LinearLayout.LayoutParams(
+            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+        ))
+
+        // Countdown timer badge
         val countdownText = TextView(context).apply {
             text = "${countdownSeconds}s"
             setTextColor(colorSecondary)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
-            setPadding(dp(10), dp(5), dp(10), dp(5))
+            setPadding(dp(12), dp(6), dp(12), dp(6))
             background = GradientDrawable().apply {
                 setColor(Color.parseColor("#FFF3E0"))
-                cornerRadius = dp(10).toFloat()
+                cornerRadius = dp(16).toFloat()
                 setStroke(1, Color.parseColor("#FFE0B2"))
             }
             gravity = Gravity.CENTER
         }
-        root.addView(countdownText, LinearLayout.LayoutParams(
+        headerRow.addView(countdownText, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.WRAP_CONTENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply {
-            gravity = Gravity.CENTER_HORIZONTAL
-            bottomMargin = dp(10)
-        })
+        ))
+
+        root.addView(headerRow, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ).apply { bottomMargin = dp(16) })
 
         // Progress bar for countdown
         val progressBar = ProgressBar(
@@ -509,54 +539,57 @@ class TripRequestSystemOverlay(private val context: Context) {
             LinearLayout.LayoutParams.MATCH_PARENT, dp(3)
         ).apply { bottomMargin = dp(14) })
 
-        // ── Payout (driver earnings) — prominent section ──
-        val payoutContainer = LinearLayout(context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            setPadding(dp(14), dp(12), dp(14), dp(12))
-            background = GradientDrawable().apply {
-                setColor(Color.parseColor("#E8F5E9"))
-                cornerRadius = dp(12).toFloat()
-                setStroke(1, Color.parseColor("#C8E6C9"))
+        // ── Pickup location (text only, starts from right) ──
+        val pickupDisplay = if (pickupAddress.isNotEmpty()) {
+            if (vendorName.isNotEmpty()) "$vendorName، $pickupAddress" else pickupAddress
+        } else vendorName
+        if (pickupDisplay.isNotEmpty()) {
+            val pickupText = TextView(context).apply {
+                text = "الاستلام: $pickupDisplay"
+                setTextColor(colorTextPrimary)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                typeface = Typeface.DEFAULT_BOLD
+                maxLines = 3
+                layoutDirection = View.LAYOUT_DIRECTION_RTL
+                textDirection = View.TEXT_DIRECTION_RTL
             }
+            root.addView(pickupText, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(10) })
         }
 
-        val payoutLabel = TextView(context).apply {
-            text = "أجرة التوصيل"
-            setTextColor(colorTextPrimary)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-            typeface = Typeface.DEFAULT_BOLD
+        // ── Delivery location (text only, starts from right) ──
+        val deliveryDisplay = if (deliveryAddress.isNotEmpty()) {
+            if (customerName.isNotEmpty()) "$customerName، $deliveryAddress" else deliveryAddress
+        } else customerName
+        if (deliveryDisplay.isNotEmpty()) {
+            val deliveryText = TextView(context).apply {
+                text = "التوصيل: $deliveryDisplay"
+                setTextColor(colorTextPrimary)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
+                typeface = Typeface.DEFAULT_BOLD
+                maxLines = 3
+                layoutDirection = View.LAYOUT_DIRECTION_RTL
+                textDirection = View.TEXT_DIRECTION_RTL
+            }
+            root.addView(deliveryText, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = dp(14) })
         }
-        payoutContainer.addView(payoutLabel, LinearLayout.LayoutParams(
-            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-        ))
 
-        val payoutValue = TextView(context).apply {
-            text = "${"%.1f".format(payout)} ر.س"
-            setTextColor(colorSuccess)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
-            typeface = Typeface.DEFAULT_BOLD
-        }
-        payoutContainer.addView(payoutValue, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.WRAP_CONTENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ))
-
-        root.addView(payoutContainer, LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        ).apply { bottomMargin = dp(12) })
-
-        // ── COD Amount (collection from customer) ──
+        // ── Price: تحصيل من العميل only (above buttons) ──
         val requiresCollection = codAmount > 0
         if (requiresCollection) {
             val codContainer = LinearLayout(context).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
-                setPadding(dp(14), dp(10), dp(14), dp(10))
+                layoutDirection = View.LAYOUT_DIRECTION_RTL
+                setPadding(dp(12), dp(8), dp(12), dp(8))
                 background = GradientDrawable().apply {
-                    setColor(Color.parseColor("#FFF3E0"))
-                    cornerRadius = dp(12).toFloat()
+                    setColor(Color.parseColor("#FFF8F0"))
+                    cornerRadius = dp(10).toFloat()
                     setStroke(1, Color.parseColor("#FFE0B2"))
                 }
             }
@@ -564,7 +597,7 @@ class TripRequestSystemOverlay(private val context: Context) {
             val codLabel = TextView(context).apply {
                 text = "تحصيل من العميل"
                 setTextColor(colorTextPrimary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
                 typeface = Typeface.DEFAULT_BOLD
             }
             codContainer.addView(codLabel, LinearLayout.LayoutParams(
@@ -572,10 +605,11 @@ class TripRequestSystemOverlay(private val context: Context) {
             ))
 
             val codValue = TextView(context).apply {
-                text = "${"%.1f".format(codAmount)} ر.س"
+                text = "${"%.1f".format(codAmount)} ريال"
                 setTextColor(colorSecondary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 18f)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                 typeface = Typeface.DEFAULT_BOLD
+                setPadding(dp(14), 0, 0, 0)
             }
             codContainer.addView(codValue, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -585,126 +619,20 @@ class TripRequestSystemOverlay(private val context: Context) {
             root.addView(codContainer, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(12) })
-        } else {
-            // Show payment status (paid online)
-            val normalizedMethod = paymentMethod.trim().lowercase()
-            val isPaidOnline = normalizedMethod.isNotEmpty() &&
-                (normalizedMethod.contains("online") ||
-                 normalizedMethod.contains("card") ||
-                 normalizedMethod.contains("visa") ||
-                 normalizedMethod.contains("mada") ||
-                 normalizedMethod.contains("apple") ||
-                 normalizedMethod.contains("stc"))
-            if (isPaidOnline) {
-                val paidText = TextView(context).apply {
-                    text = "مدفوع أونلاين ✓"
-                    setTextColor(colorSuccess)
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                    typeface = Typeface.DEFAULT_BOLD
-                    setPadding(dp(14), dp(6), dp(14), dp(6))
-                }
-                root.addView(paidText, LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { bottomMargin = dp(8) })
-            }
+            ).apply {
+                topMargin = dp(4)
+                bottomMargin = dp(16)
+            })
         }
 
-        // ── Distance ──
-        val distanceDisplay = distanceText.ifEmpty {
-            if (distanceKm > 0) "${"%.1f".format(distanceKm)} كم" else ""
-        }
-        if (distanceDisplay.isNotEmpty()) {
-            val distanceTextView = TextView(context).apply {
-                text = "المسافة: $distanceDisplay"
-                setTextColor(colorTextSecondary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                typeface = Typeface.DEFAULT_BOLD
-            }
-            root.addView(distanceTextView, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(8) })
-        }
-
-        // ── Pickup location ──
-        val pickupDisplay = if (pickupAddress.isNotEmpty()) pickupAddress else vendorName
-        if (pickupDisplay.isNotEmpty()) {
-            val pickupText = TextView(context).apply {
-                text = "الاستلام: $pickupDisplay"
-                setTextColor(colorTextPrimary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-                typeface = Typeface.DEFAULT_BOLD
-                maxLines = 2
-            }
-            root.addView(pickupText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(6) })
-        }
-
-        // ── Delivery location ──
-        val deliveryDisplay = if (deliveryAddress.isNotEmpty()) deliveryAddress else customerName
-        if (deliveryDisplay.isNotEmpty()) {
-            val deliveryText = TextView(context).apply {
-                text = "التوصيل: $deliveryDisplay"
-                setTextColor(colorTextPrimary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 14f)
-                typeface = Typeface.DEFAULT_BOLD
-                maxLines = 2
-            }
-            root.addView(deliveryText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(6) })
-        }
-
-        // ── Items count ──
-        if (itemsCount > 0) {
-            val itemsText = TextView(context).apply {
-                text = "عدد الأصناف: $itemsCount"
-                setTextColor(colorTextSecondary)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
-                typeface = Typeface.DEFAULT_BOLD
-            }
-            root.addView(itemsText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { bottomMargin = dp(14) })
-        }
-
-        // ── Buttons row: Accept + Reject ──
+        // ── Buttons row: Reject (right) + Accept (left) ──
         val buttonsRow = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
+            layoutDirection = View.LAYOUT_DIRECTION_RTL
         }
 
-        // Accept button
-        val acceptBtn = TextView(context).apply {
-            text = "قبول"
-            setTextColor(Color.WHITE)
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
-            typeface = Typeface.DEFAULT_BOLD
-            gravity = Gravity.CENTER
-            setPadding(dp(20), dp(14), dp(20), dp(14))
-            background = GradientDrawable().apply {
-                setColor(colorPrimary)
-                cornerRadius = dp(14).toFloat()
-            }
-            setOnClickListener {
-                if (onAccept != null) {
-                    onAccept?.invoke(currentAssignmentId)
-                }
-                bringAppToForeground()
-                hide()
-            }
-        }
-        buttonsRow.addView(acceptBtn, LinearLayout.LayoutParams(
-            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-        ).apply { marginEnd = dp(8) })
-
-        // Reject button
+        // Reject button (on the right in RTL)
         val rejectBtn = TextView(context).apply {
             text = "رفض"
             setTextColor(colorError)
@@ -727,6 +655,30 @@ class TripRequestSystemOverlay(private val context: Context) {
             }
         }
         buttonsRow.addView(rejectBtn, LinearLayout.LayoutParams(
+            0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+        ).apply { marginEnd = dp(8) })
+
+        // Accept button (on the left in RTL)
+        val acceptBtn = TextView(context).apply {
+            text = "قبول"
+            setTextColor(Color.WHITE)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            typeface = Typeface.DEFAULT_BOLD
+            gravity = Gravity.CENTER
+            setPadding(dp(20), dp(14), dp(20), dp(14))
+            background = GradientDrawable().apply {
+                setColor(colorPrimary)
+                cornerRadius = dp(14).toFloat()
+            }
+            setOnClickListener {
+                if (onAccept != null) {
+                    onAccept?.invoke(currentAssignmentId)
+                }
+                bringAppToForeground()
+                hide()
+            }
+        }
+        buttonsRow.addView(acceptBtn, LinearLayout.LayoutParams(
             0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
         ).apply { marginStart = dp(8) })
 

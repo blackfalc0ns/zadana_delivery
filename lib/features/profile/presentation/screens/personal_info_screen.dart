@@ -144,7 +144,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             headerColorToken: ProfileColorToken.primary,
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
-            isFormDirty: true,
             onSave: _save,
             children: [
               PersonalInfoForm(

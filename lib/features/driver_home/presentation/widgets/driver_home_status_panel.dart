@@ -504,7 +504,7 @@ class _MissionHeader extends StatelessWidget {
                     width: 42,
                     height: 42,
                   
-                    errorBuilder: (_, __, ___) => Icon(
+                    errorBuilder: (_, _, _) => Icon(
                       Icons.storefront_rounded,
                       color: scheme.primary,
                       size: 22,
