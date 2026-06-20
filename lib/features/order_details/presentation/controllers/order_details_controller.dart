@@ -32,6 +32,7 @@ class OrderDetailsController extends ChangeNotifier {
   bool _hasArrivedAtCustomerOverride = false;
 
   OrderDeliveryStage _stage;
+  DateTime? _localTransitionAppliedAt;
 
   DriverOrderPreview get order => _order;
   OrderDeliveryStage get stage => _stage;
@@ -238,7 +239,15 @@ class OrderDetailsController extends ChangeNotifier {
       pickupOtpCode: details.pickupOtpCode,
       clearPickupOtpCode: details.pickupOtpCode == null,
     );
-    _stage = _resolveStageFromDetails(details);
+    final resolvedStage = _resolveStageFromDetails(details);
+    // Prevent a stale server response from reverting a local optimistic
+    // transition that was applied less than 5 seconds ago.
+    final localTransitionAt = _localTransitionAppliedAt;
+    final isRecentLocalTransition = localTransitionAt != null &&
+        DateTime.now().difference(localTransitionAt).inSeconds < 5;
+    if (!isRecentLocalTransition || resolvedStage.index >= _stage.index) {
+      _stage = resolvedStage;
+    }
     _hasArrivedAtCustomerOverride =
         _stage == OrderDeliveryStage.delivered ||
         details.driverArrivalState.trim().toLowerCase().contains(
@@ -261,6 +270,7 @@ class OrderDetailsController extends ChangeNotifier {
   }
 
   void applyLocalStageTransition(OrderDeliveryStage nextStage) {
+    _localTransitionAppliedAt = DateTime.now();
     if (_details != null) {
       switch (nextStage) {
         case OrderDeliveryStage.pending:

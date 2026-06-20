@@ -295,14 +295,22 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    // Apply local stage transition immediately so the UI updates without
+    // waiting for the server refresh which may return stale data.
+    _controller.applyLocalStageTransition(OrderDeliveryStage.arrivedAtVendor);
+
     final success = await _cubit.doIntent(
       OrderDetailsUpdateArrivalStateEvent(
         orderId,
         arrivalState: 'arrived_at_vendor',
       ),
     );
-    if (!mounted || !success) return;
-    _controller.applyLocalStageTransition(OrderDeliveryStage.arrivedAtVendor);
+    if (!mounted) return;
+    if (!success) {
+      // Revert local transition on failure
+      _controller.applyLocalStageTransition(OrderDeliveryStage.accepted);
+      return;
+    }
     _showStatusChangeToast();
   }
 
@@ -320,11 +328,17 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    final previousStage = _controller.stage;
+    _controller.applyLocalStageTransition(OrderDeliveryStage.onTheWay);
+
     final success = await _cubit.doIntent(
       OrderDetailsMarkOnTheWayEvent(orderId),
     );
-    if (!mounted || !success) return;
-    _controller.applyLocalStageTransition(OrderDeliveryStage.onTheWay);
+    if (!mounted) return;
+    if (!success) {
+      _controller.applyLocalStageTransition(previousStage);
+      return;
+    }
     _showStatusChangeToast();
   }
 
@@ -342,14 +356,20 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    _controller.markArrivedAtCustomer();
+
     final success = await _cubit.doIntent(
       OrderDetailsUpdateArrivalStateEvent(
         orderId,
         arrivalState: 'arrived_at_customer',
       ),
     );
-    if (!mounted || !success) return;
-    _controller.markArrivedAtCustomer();
+    if (!mounted) return;
+    if (!success) {
+      // Refresh to restore correct state on failure
+      await _refreshOrderDetails(silent: true);
+      return;
+    }
     _showStatusChangeToast();
   }
 

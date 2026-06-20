@@ -518,9 +518,74 @@ class DriverRealtimeService {
   }
 
   Map<String, dynamic> _normalizeMap(dynamic value) {
-    if (value is Map<String, dynamic>) return value;
-    if (value is Map) return Map<String, dynamic>.from(value);
+    if (value is Map<String, dynamic>) return _fixUtf8Map(value);
+    if (value is Map) return _fixUtf8Map(Map<String, dynamic>.from(value));
     return const <String, dynamic>{};
+  }
+
+  /// Fixes mojibake caused by SignalR Long Polling decoding UTF-8 bytes as
+  /// Latin-1. Detects garbled strings and re-encodes them correctly.
+  Map<String, dynamic> _fixUtf8Map(Map<String, dynamic> map) {
+    var needsFix = false;
+    for (final value in map.values) {
+      if (value is String && _looksLikeMojibake(value)) {
+        needsFix = true;
+        break;
+      }
+    }
+    if (!needsFix) return map;
+    return map.map((key, value) {
+      if (value is String && _looksLikeMojibake(value)) {
+        return MapEntry(key, _fixMojibake(value));
+      }
+      if (value is Map) {
+        return MapEntry(key, _fixUtf8Map(Map<String, dynamic>.from(value)));
+      }
+      if (value is List) {
+        return MapEntry(key, _fixUtf8List(value));
+      }
+      return MapEntry(key, value);
+    });
+  }
+
+  List<dynamic> _fixUtf8List(List<dynamic> list) {
+    return list.map((item) {
+      if (item is Map) {
+        return _fixUtf8Map(Map<String, dynamic>.from(item));
+      }
+      if (item is String && _looksLikeMojibake(item)) {
+        return _fixMojibake(item);
+      }
+      if (item is List) {
+        return _fixUtf8List(item);
+      }
+      return item;
+    }).toList();
+  }
+
+  /// Heuristic: strings containing sequences like "Ù" or "Ø" (common markers
+  /// of UTF-8 Arabic bytes misinterpreted as Latin-1) are likely mojibake.
+  bool _looksLikeMojibake(String text) {
+    if (text.isEmpty) return false;
+    // UTF-8 Arabic codepoints start with bytes 0xD8-0xDB when viewed as Latin-1
+    // these appear as characters Ø, Ù, Ú, Û in the string.
+    var suspiciousCount = 0;
+    for (var i = 0; i < text.length && i < 40; i++) {
+      final c = text.codeUnitAt(i);
+      if (c >= 0xC0 && c <= 0xFF) {
+        suspiciousCount++;
+      }
+    }
+    return suspiciousCount >= 3;
+  }
+
+  String _fixMojibake(String text) {
+    try {
+      final latin1Bytes = latin1.encode(text);
+      return utf8.decode(latin1Bytes);
+    } catch (_) {
+      return text;
+    }
   }
 
   Map<String, dynamic> _normalizeSupportCasePayload(dynamic payload) {
