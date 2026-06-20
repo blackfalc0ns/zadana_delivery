@@ -5587,6 +5587,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not open the maps app on this device'**
   String get order_details_maps_failure;
+
+  /// No description provided for @order_details_status_updated_success.
+  ///
+  /// In en, this message translates to:
+  /// **'Order status updated successfully'**
+  String get order_details_status_updated_success;
+
+  /// No description provided for @order_details_status_updated_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Order status updated'**
+  String get order_details_status_updated_title;
+
+  /// No description provided for @order_details_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get order_details_ok;
+
+  /// No description provided for @order_support_composer_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create support case'**
+  String get order_support_composer_title;
+
+  /// No description provided for @order_support_composer_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue and attach files before sending the case.'**
+  String get order_support_composer_subtitle;
+
+  /// No description provided for @order_support_mode_issue_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue'**
+  String get order_support_mode_issue_title;
+
+  /// No description provided for @order_support_mode_issue_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational'**
+  String get order_support_mode_issue_subtitle;
+
+  /// No description provided for @order_support_mode_dispute_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute'**
+  String get order_support_mode_dispute_title;
+
+  /// No description provided for @order_support_mode_dispute_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Objection'**
+  String get order_support_mode_dispute_subtitle;
+
+  /// No description provided for @order_support_reason_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get order_support_reason_label;
+
+  /// No description provided for @order_support_message_label_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required note'**
+  String get order_support_message_label_required;
+
+  /// No description provided for @order_support_message_label_optional.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional note'**
+  String get order_support_message_label_optional;
+
+  /// No description provided for @order_support_message_hint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write what happened'**
+  String get order_support_message_hint;
+
+  /// No description provided for @order_support_message_helper.
+  ///
+  /// In en, this message translates to:
+  /// **'This reason requires a note before submission.'**
+  String get order_support_message_helper;
+
+  /// No description provided for @order_support_submit_issue.
+  ///
+  /// In en, this message translates to:
+  /// **'Send case'**
+  String get order_support_submit_issue;
+
+  /// No description provided for @order_support_submit_dispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Send dispute'**
+  String get order_support_submit_dispute;
+
+  /// No description provided for @order_support_attach_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach files'**
+  String get order_support_attach_files;
+
+  /// No description provided for @order_support_attach_more_files.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach more files'**
+  String get order_support_attach_more_files;
+
+  /// No description provided for @order_support_error_reasons_loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load reasons right now. Please retry first.'**
+  String get order_support_error_reasons_loading;
+
+  /// No description provided for @order_support_error_no_reasons.
+  ///
+  /// In en, this message translates to:
+  /// **'No reasons are available for this type right now.'**
+  String get order_support_error_no_reasons;
+
+  /// No description provided for @order_support_error_choose_reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a reason'**
+  String get order_support_error_choose_reason;
+
+  /// No description provided for @order_support_error_message_required.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a message to clarify the reason'**
+  String get order_support_error_message_required;
+
+  /// No description provided for @order_support_error_upload_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to upload the selected images. Please try again.'**
+  String get order_support_error_upload_failed;
+
+  /// No description provided for @order_support_error_picker_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to open the image picker. Please try again.'**
+  String get order_support_error_picker_failed;
+
+  /// No description provided for @order_support_reasons_empty.
+  ///
+  /// In en, this message translates to:
+  /// **'No reasons are available right now. Please try again later.'**
+  String get order_support_reasons_empty;
+
+  /// No description provided for @order_support_stage_pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get order_support_stage_pending;
+
+  /// No description provided for @order_support_stage_accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get order_support_stage_accepted;
+
+  /// No description provided for @order_support_stage_arrived_at_vendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrived at store'**
+  String get order_support_stage_arrived_at_vendor;
+
+  /// No description provided for @order_support_stage_picked_up.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked up'**
+  String get order_support_stage_picked_up;
+
+  /// No description provided for @order_support_stage_on_the_way.
+  ///
+  /// In en, this message translates to:
+  /// **'On the way'**
+  String get order_support_stage_on_the_way;
+
+  /// No description provided for @order_support_stage_delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get order_support_stage_delivered;
 }
 
 class _AppLocalizationsDelegate

@@ -310,7 +310,8 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
         .withUrl(
           hubUrl,
           options: HttpConnectionOptions(
-            transport: HttpTransportType.WebSockets,
+            transport: HttpTransportType.LongPolling,
+            skipNegotiation: false,
             accessTokenFactory: () async =>
                 (await getIt<TokenService>().getToken())?.trim() ?? '',
             requestTimeout: 10000,
@@ -922,34 +923,16 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
 
   String _resolveHubUrl(String hubPath, {String? accessToken}) {
     final apiUri = Uri.parse(NetworkConstants.baseUrl);
-    final baseSegments = List<String>.from(apiUri.pathSegments);
-    if (baseSegments.isNotEmpty && baseSegments.last == 'api') {
-      baseSegments.removeLast();
-    }
 
-    final pathSegments = hubPath
-        .split('/')
-        .where((segment) => segment.trim().isNotEmpty)
-        .toList();
+    // Build origin without port — avoids the :0 bug when port is unset.
+    final origin = '${apiUri.scheme}://${apiUri.host}';
 
-    final needsApiPrefix =
-        pathSegments.isNotEmpty && pathSegments.first == 'api';
-    final resolvedSegments = needsApiPrefix
-        ? pathSegments
-        : <String>[...baseSegments, ...pathSegments];
+    final query = (accessToken ?? '').trim().isNotEmpty
+        ? '?access_token=${Uri.encodeComponent(accessToken!.trim())}'
+        : '';
 
-    final queryParameters = <String, String>{
-      ...apiUri.queryParameters,
-      if ((accessToken ?? '').trim().isNotEmpty)
-        'access_token': accessToken!.trim(),
-    };
-
-    return apiUri
-        .replace(
-          pathSegments: resolvedSegments,
-          queryParameters: queryParameters.isEmpty ? null : queryParameters,
-        )
-        .toString();
+    // hubPath already starts with '/' (e.g. '/hubs/notifications')
+    return '$origin$hubPath$query';
   }
 
   void _log(String message) {

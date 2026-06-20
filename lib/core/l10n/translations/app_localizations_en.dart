@@ -2999,4 +2999,106 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get order_details_maps_failure =>
       'Could not open the maps app on this device';
+
+  @override
+  String get order_details_status_updated_success =>
+      'Order status updated successfully';
+
+  @override
+  String get order_details_status_updated_title => 'Order status updated';
+
+  @override
+  String get order_details_ok => 'OK';
+
+  @override
+  String get order_support_composer_title => 'Create support case';
+
+  @override
+  String get order_support_composer_subtitle =>
+      'Describe the issue and attach files before sending the case.';
+
+  @override
+  String get order_support_mode_issue_title => 'Issue';
+
+  @override
+  String get order_support_mode_issue_subtitle => 'Operational';
+
+  @override
+  String get order_support_mode_dispute_title => 'Dispute';
+
+  @override
+  String get order_support_mode_dispute_subtitle => 'Objection';
+
+  @override
+  String get order_support_reason_label => 'Reason';
+
+  @override
+  String get order_support_message_label_required => 'Required note';
+
+  @override
+  String get order_support_message_label_optional => 'Additional note';
+
+  @override
+  String get order_support_message_hint => 'Write what happened';
+
+  @override
+  String get order_support_message_helper =>
+      'This reason requires a note before submission.';
+
+  @override
+  String get order_support_submit_issue => 'Send case';
+
+  @override
+  String get order_support_submit_dispute => 'Send dispute';
+
+  @override
+  String get order_support_attach_files => 'Attach files';
+
+  @override
+  String get order_support_attach_more_files => 'Attach more files';
+
+  @override
+  String get order_support_error_reasons_loading =>
+      'Unable to load reasons right now. Please retry first.';
+
+  @override
+  String get order_support_error_no_reasons =>
+      'No reasons are available for this type right now.';
+
+  @override
+  String get order_support_error_choose_reason => 'Choose a reason';
+
+  @override
+  String get order_support_error_message_required =>
+      'Enter a message to clarify the reason';
+
+  @override
+  String get order_support_error_upload_failed =>
+      'Unable to upload the selected images. Please try again.';
+
+  @override
+  String get order_support_error_picker_failed =>
+      'Unable to open the image picker. Please try again.';
+
+  @override
+  String get order_support_reasons_empty =>
+      'No reasons are available right now. Please try again later.';
+
+  @override
+  String get order_support_stage_pending => 'Pending';
+
+  @override
+  String get order_support_stage_accepted => 'In progress';
+
+  @override
+  String get order_support_stage_arrived_at_vendor => 'Arrived at store';
+
+  @override
+  String get order_support_stage_picked_up => 'Picked up';
+
+  @override
+  String get order_support_stage_on_the_way => 'On the way';
+
+  @override
+  String get order_support_stage_delivered => 'Delivered';
 }

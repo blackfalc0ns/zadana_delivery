@@ -2952,4 +2952,106 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get order_details_maps_failure =>
       'تعذر فتح تطبيق الخرائط على هذا الجهاز';
+
+  @override
+  String get order_details_status_updated_success =>
+      'تم تحديث حالة الطلب بنجاح';
+
+  @override
+  String get order_details_status_updated_title => 'تم تحديث حالة الطلب';
+
+  @override
+  String get order_details_ok => 'حسناً';
+
+  @override
+  String get order_support_composer_title => 'إنشاء حالة دعم';
+
+  @override
+  String get order_support_composer_subtitle =>
+      'اشرح المشكلة وأرفق الملفات قبل إرسال الحالة.';
+
+  @override
+  String get order_support_mode_issue_title => 'مشكلة';
+
+  @override
+  String get order_support_mode_issue_subtitle => 'تشغيلي';
+
+  @override
+  String get order_support_mode_dispute_title => 'نزاع';
+
+  @override
+  String get order_support_mode_dispute_subtitle => 'اعتراض';
+
+  @override
+  String get order_support_reason_label => 'السبب';
+
+  @override
+  String get order_support_message_label_required => 'الملاحظة المطلوبة';
+
+  @override
+  String get order_support_message_label_optional => 'ملاحظات إضافية';
+
+  @override
+  String get order_support_message_hint => 'اكتب ما حدث';
+
+  @override
+  String get order_support_message_helper =>
+      'هذا السبب يتطلب كتابة ملاحظة قبل الإرسال.';
+
+  @override
+  String get order_support_submit_issue => 'إرسال الحالة';
+
+  @override
+  String get order_support_submit_dispute => 'إرسال النزاع';
+
+  @override
+  String get order_support_attach_files => 'إرفاق ملفات';
+
+  @override
+  String get order_support_attach_more_files => 'إرفاق ملفات أخرى';
+
+  @override
+  String get order_support_error_reasons_loading =>
+      'تعذر تحميل الأسباب حالياً. أعد المحاولة أولاً.';
+
+  @override
+  String get order_support_error_no_reasons =>
+      'لا توجد أسباب متاحة حالياً لهذا النوع.';
+
+  @override
+  String get order_support_error_choose_reason => 'اختر السبب';
+
+  @override
+  String get order_support_error_message_required =>
+      'اكتب الرسالة لتوضيح السبب';
+
+  @override
+  String get order_support_error_upload_failed =>
+      'تعذر رفع الصور المرفقة. حاول مرة أخرى.';
+
+  @override
+  String get order_support_error_picker_failed =>
+      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+
+  @override
+  String get order_support_reasons_empty =>
+      'لا توجد أسباب متاحة حالياً. حاول مرة أخرى لاحقاً.';
+
+  @override
+  String get order_support_stage_pending => 'قيد الانتظار';
+
+  @override
+  String get order_support_stage_accepted => 'قيد التنفيذ';
+
+  @override
+  String get order_support_stage_arrived_at_vendor => 'تم الوصول للمتجر';
+
+  @override
+  String get order_support_stage_picked_up => 'تم الاستلام';
+
+  @override
+  String get order_support_stage_on_the_way => 'في الطريق';
+
+  @override
+  String get order_support_stage_delivered => 'تم التسليم';
 }
