@@ -30,11 +30,18 @@ class ProfileNotificationTile extends StatelessWidget {
       icon: icon,
       iconColor: iconColor,
       onTap: onTap,
-      trailing: Switch.adaptive(
-        value: value,
-        activeThumbColor: context.colorScheme.primary,
-        activeTrackColor: context.colorScheme.primary.withValues(alpha: 0.35),
-        onChanged: onChanged,
+      trailing: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => onChanged(!value),
+        child: IgnorePointer(
+          child: Switch.adaptive(
+            value: value,
+            activeThumbColor: context.colorScheme.primary,
+            activeTrackColor:
+                context.colorScheme.primary.withValues(alpha: 0.35),
+            onChanged: (_) {},
+          ),
+        ),
       ),
     );
   }
