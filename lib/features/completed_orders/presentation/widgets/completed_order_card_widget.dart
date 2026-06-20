@@ -186,10 +186,11 @@ class _MerchantImageBox extends StatelessWidget {
               width: 48,
               height: 48,
             
-              placeholder: (_, _) => Center(
-                child: Text(
-                  completedOrderMerchantEmoji(merchantName),
-                  style: const TextStyle(fontSize: 24),
+              placeholder: (_, _) => const Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
               ),
               errorWidget: (_, _, _) => Center(

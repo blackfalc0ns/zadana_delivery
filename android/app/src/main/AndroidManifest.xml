@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
-        android:label="زادنا - مندوب"
+        android:label="زادنا - المندوب"
         android:name=".MainApplication"
         android:icon="@mipmap/ic_launcher">
         <meta-data

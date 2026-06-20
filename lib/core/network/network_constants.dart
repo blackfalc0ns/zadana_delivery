@@ -1,5 +1,5 @@
 abstract class NetworkConstants {
-  static const String baseUrl = "https://zadana.runasp.net/api";
+  static const String baseUrl = "https://api.zadna0.com/api";
   static const String authorization = 'Authorization';
   static const String bearer = "Bearer";
   static const String notificationsHub = '/hubs/notifications';
