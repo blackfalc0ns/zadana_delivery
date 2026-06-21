@@ -55,6 +55,11 @@ class TripRequestSystemOverlay(private val context: Context) {
 
     companion object {
         private const val TAG = "TripOverlay"
+        
+        // Cache to prevent showing the same offer multiple times
+        private var lastShownAssignmentId: String? = null
+        private var lastShownTime: Long = 0
+        private const val DEDUPLICATION_WINDOW_MS = 5000L // 5 seconds
 
         fun showOfferOverlayFromPush(context: Context, payload: JSONObject?) {
             if (payload == null) {
@@ -68,6 +73,19 @@ class TripRequestSystemOverlay(private val context: Context) {
                 Log.d(TAG, "Native push overlay skipped: missing assignment id")
                 return
             }
+
+            // Prevent duplicate overlays for the same offer within 5 seconds
+            val currentTime = System.currentTimeMillis()
+            if (assignmentId == lastShownAssignmentId && 
+                (currentTime - lastShownTime) < DEDUPLICATION_WINDOW_MS) {
+                val secondsAgo = (currentTime - lastShownTime) / 1000
+                Log.d(TAG, "Native push overlay skipped: duplicate offer assignmentId=$assignmentId (shown ${secondsAgo}s ago)")
+                return
+            }
+
+            // Update cache
+            lastShownAssignmentId = assignmentId
+            lastShownTime = currentTime
 
             Handler(Looper.getMainLooper()).post {
                 val overlay = TripRequestSystemOverlay(context.applicationContext)

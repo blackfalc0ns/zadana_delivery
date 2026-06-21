@@ -9,8 +9,32 @@ import org.json.JSONObject
 
 @Keep
 class OneSignalNotificationServiceExtension : INotificationServiceExtension {
+    companion object {
+        // Cache to prevent processing the same notification multiple times
+        private var lastProcessedNotificationId: String? = null
+        private var lastProcessedTime: Long = 0
+        private const val DEDUPLICATION_WINDOW_MS = 3000L // 3 seconds
+    }
+    
     override fun onNotificationReceived(event: INotificationReceivedEvent) {
         val notification = event.notification
+        
+        // Prevent duplicate processing of the same notification
+        val notificationId = notification.notificationId
+        val currentTime = System.currentTimeMillis()
+        if (notificationId == lastProcessedNotificationId && 
+            (currentTime - lastProcessedTime) < DEDUPLICATION_WINDOW_MS) {
+            android.util.Log.d(
+                "OneSignalExtension", 
+                "Skipping duplicate notification: $notificationId (processed ${(currentTime - lastProcessedTime) / 1000}s ago)"
+            )
+            return
+        }
+        
+        // Update cache
+        lastProcessedNotificationId = notificationId
+        lastProcessedTime = currentTime
+        
         val channelId = resolveChannelId(notification)
         maybeShowNativeOfferOverlay(notification.additionalData)
         

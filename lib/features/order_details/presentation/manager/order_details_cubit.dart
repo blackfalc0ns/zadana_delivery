@@ -362,7 +362,21 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             return;
           }
           
-          // Note: Removed blocking logic to allow immediate status updates
+          // Prevent automatic transition to "arrived_at_customer" when driver is still on the way
+          final incomingArrivalState = _normalizeToken(
+            payload['driverArrivalState']?.toString() ?? '',
+          );
+          final currentStatus = _normalizeToken(
+            state.details?.assignmentStatus ?? '',
+          );
+          
+          // Block if current status is "on_the_way" and incoming wants to set "arrived_at_customer"
+          if ((currentStatus.contains('ontheway') || currentStatus.contains('on_the_way')) &&
+              (incomingArrivalState.contains('arrivedatcustomer') || 
+               incomingArrivalState.contains('arrived_at_customer'))) {
+            _log('Ignoring premature arrived_at_customer update while driver is on the way');
+            return;
+          }
           
           try {
             final entity = OrderAssignmentDetailsModelDto.fromJson(
