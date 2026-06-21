@@ -20,6 +20,7 @@ class AuthExperienceShell extends StatelessWidget {
     this.sectionIcon = Icons.lock_outline_rounded,
     this.footer,
     this.showBackButton = false,
+    this.onBackPressed,
   });
 
   final String heroBadge;
@@ -32,6 +33,7 @@ class AuthExperienceShell extends StatelessWidget {
   final Widget body;
   final Widget? footer;
   final bool showBackButton;
+  final VoidCallback? onBackPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,8 @@ class AuthExperienceShell extends StatelessWidget {
                           Align(
                             alignment: AlignmentDirectional.centerStart,
                             child: IconButton(
-                              onPressed: () => Navigator.of(context).maybePop(),
+                              onPressed: onBackPressed ??
+                                  () => Navigator.of(context).maybePop(),
                               icon: const Icon(
                                 Icons.arrow_back_ios_new_rounded,
                               ),
@@ -96,7 +99,7 @@ class AuthExperienceShell extends StatelessWidget {
                           child: body,
                         ),
                         if (footer != null) ...[
-                          const SizedBox(height: Spacing.lg),
+                          const SizedBox(height: Spacing.md),
                           Center(child: footer),
                         ],
                       ],

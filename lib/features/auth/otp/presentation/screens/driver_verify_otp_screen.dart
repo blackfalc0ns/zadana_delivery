@@ -175,6 +175,15 @@ class _DriverVerifyOtpScreenState extends State<DriverVerifyOtpScreen> {
           return Stack(
             children: [
               AuthExperienceShell(
+                showBackButton: true,
+                onBackPressed: state.isLoading
+                    ? null
+                    : () => context.pushNamedAndRemoveUntil(
+                        AppRoutes.login,
+                        rootNavigator: true,
+                        predicate: (route) => false,
+                        arguments: widget.identifier,
+                      ),
                 heroBadge: locale.auth_verify_otp_hero_badge,
                 heroTitle: locale.auth_verify_otp_hero_title,
                 heroSubtitle: locale.auth_verify_otp_hero_subtitle,
@@ -190,17 +199,6 @@ class _DriverVerifyOtpScreenState extends State<DriverVerifyOtpScreen> {
                   isResending: state.isResending,
                   onSubmit: _submit,
                   onResend: _resend,
-                ),
-                footer: TextButton(
-                  onPressed: state.isLoading
-                      ? null
-                      : () => context.pushNamedAndRemoveUntil(
-                          AppRoutes.login,
-                          rootNavigator: true,
-                          predicate: (route) => false,
-                          arguments: widget.identifier,
-                        ),
-                  child: Text(locale.auth_verify_otp_back_to_login),
                 ),
               ),
               if (state.isLoading) ...[
