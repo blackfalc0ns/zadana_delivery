@@ -53,6 +53,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   bool _isSupportComposerOpen = false;
   bool _isBlockingDialogOpen = false;
   bool _hasOpenedDeliverySuccess = false;
+  bool _isLocalActionLoading = false;
   BuildContext? _pickupOtpSheetContext;
   String? _pendingCompletionMessage;
   String? _pendingSupportNotificationMessage;
@@ -137,6 +138,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   }
 
   void _acceptOrder() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await _showDecision(
       title: locale.order_details_accept_dialog_title,
@@ -146,6 +150,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!confirmed || !mounted) return;
 
+    setState(() => _isLocalActionLoading = true);
     _controller.applyLocalStageTransition(OrderDeliveryStage.accepted);
 
     final accepted = await _cubit.doIntent(
@@ -153,13 +158,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted) return;
     if (!accepted) {
+      setState(() => _isLocalActionLoading = false);
       _controller.applyLocalStageTransition(OrderDeliveryStage.pending);
       return;
     }
     _controller.confirmLocalTransition();
+    // Note: _isLocalActionLoading will be cleared by the listener
   }
 
   Future<void> _rejectOrder() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => DriverHomeRejectOrderDialog(
@@ -169,15 +179,23 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted || confirmed != true) return;
 
+    setState(() => _isLocalActionLoading = true);
     final success = await _cubit.doIntent(
       OrderDetailsRejectOfferEvent(_controller.assignmentId),
     );
-    if (!mounted || !success) return;
+    if (!mounted) return;
+    if (!success) {
+      setState(() => _isLocalActionLoading = false);
+      return;
+    }
 
     Navigator.of(context).pop('reject');
   }
 
   void _confirmPickup() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -194,6 +212,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (orderId.isEmpty) return;
 
     final previousStage = _controller.stage;
+    setState(() => _isLocalActionLoading = true);
     _controller.applyLocalStageTransition(OrderDeliveryStage.pickedUp);
 
     final success = await _cubit.doIntent(
@@ -201,11 +220,13 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted) return;
     if (!success) {
+      setState(() => _isLocalActionLoading = false);
       _controller.applyLocalStageTransition(previousStage);
       return;
     }
     _controller.confirmLocalTransition();
     _showStatusChangeToast();
+    // Note: _isLocalActionLoading will be cleared by the listener
   }
 
   void _showItems() => OrderDetailsSheets.showOrderItemsSheet(
@@ -293,6 +314,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   });
 
   Future<void> _arrivedAtVendor() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -308,6 +332,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    setState(() => _isLocalActionLoading = true);
     final success = await _cubit.doIntent(
       OrderDetailsUpdateArrivalStateEvent(
         orderId,
@@ -315,12 +340,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
     );
     if (!mounted) return;
-    if (success) {
-      _showStatusChangeToast();
+    if (!success) {
+      setState(() => _isLocalActionLoading = false);
+      return;
     }
+    _showStatusChangeToast();
+    // Note: _isLocalActionLoading will be cleared by the listener
   }
 
   Future<void> _startDelivery() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -335,6 +366,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     if (orderId.isEmpty) return;
 
     final previousStage = _controller.stage;
+    setState(() => _isLocalActionLoading = true);
     _controller.applyLocalStageTransition(OrderDeliveryStage.onTheWay);
 
     final success = await _cubit.doIntent(
@@ -342,14 +374,20 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted) return;
     if (!success) {
+      setState(() => _isLocalActionLoading = false);
       _controller.applyLocalStageTransition(previousStage);
       return;
     }
     _controller.confirmLocalTransition();
     _showStatusChangeToast();
+    // Note: _isLocalActionLoading will be cleared by the listener
+    // after controller updates are applied
   }
 
   Future<void> _arrivedAtCustomer() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -363,6 +401,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    setState(() => _isLocalActionLoading = true);
     _controller.markArrivedAtCustomer();
 
     final success = await _cubit.doIntent(
@@ -373,14 +412,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted) return;
     if (!success) {
+      setState(() => _isLocalActionLoading = false);
       await _refreshOrderDetails(silent: true);
       return;
     }
     _controller.confirmLocalTransition();
     _showStatusChangeToast();
+    // Note: _isLocalActionLoading will be cleared by the listener
   }
 
   Future<void> _deliverOrder() async {
+    // Prevent multiple clicks
+    if (_cubit.state.isActionLoading || _isLocalActionLoading) return;
+
     final locale = context.localization;
     final confirmed = await OrderDetailsSheets.showConfirmationDialog(
       context: context,
@@ -394,10 +438,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    setState(() => _isLocalActionLoading = true);
     final success = await _cubit.doIntent(
       OrderDetailsMarkDeliveredEvent(orderId),
     );
-    if (!mounted || !success) return;
+    if (!mounted) return;
+    if (!success) {
+      setState(() => _isLocalActionLoading = false);
+      return;
+    }
     _pendingCompletionMessage = _cubit.state.notificationMessage?.trim();
     await _openDeliverySuccessScreen();
   }
@@ -639,6 +688,16 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
             }
           }
 
+          // Clear local loading state after controller updates have been applied
+          // This ensures the button reflects the new stage before loading clears
+          if (_isLocalActionLoading && !state.isActionLoading) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && _isLocalActionLoading) {
+                setState(() => _isLocalActionLoading = false);
+              }
+            });
+          }
+
           final notificationMessage = state.notificationMessage;
           if ((notificationMessage ?? '').trim().isNotEmpty) {
             if (_isSupportComposerOpen) {
@@ -711,7 +770,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
 
           return OrderDetailsScreenView(
             controller: _controller,
-            isActionLoading: state.isActionLoading &&
+            isActionLoading: (state.isActionLoading || _isLocalActionLoading) &&
                 !_isCustomerOtpSheetOpen &&
                 !_isPickupOtpSheetOpen,
             onBack: context.pop,
