@@ -55,6 +55,16 @@
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="location"
             android:stopWithTask="false" />
+        
+        <!-- Notification Action Receiver for handling accept/reject from notifications -->
+        <receiver
+            android:name=".NotificationActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.example.zadana_delivery.ACCEPT_OFFER" />
+                <action android:name="com.example.zadana_delivery.REJECT_OFFER" />
+            </intent-filter>
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

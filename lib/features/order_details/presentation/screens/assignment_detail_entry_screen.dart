@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:zadana_delivery/core/di/di.dart';
+import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/features/driver_home/presentation/widgets/driver_home_order_preview_mapper.dart';
@@ -84,7 +85,7 @@ class _AssignmentDetailEntryScreenState extends State<AssignmentDetailEntryScree
         if (!snapshot.hasData && snapshot.connectionState != ConnectionState.done) {
           return Scaffold(
             appBar: CustomAppBar.modern(
-              title: 'Assignment details',
+              title: context.localization.order_details_title,
               onBackPressed: () => Navigator.of(context).maybePop(),
             ),
             body: const Center(child: CircularProgressIndicator()),
@@ -95,7 +96,7 @@ class _AssignmentDetailEntryScreenState extends State<AssignmentDetailEntryScree
         if (details == null) {
           return Scaffold(
             appBar: CustomAppBar.modern(
-              title: 'Assignment details',
+              title: context.localization.order_details_title,
               onBackPressed: () => Navigator.of(context).maybePop(),
             ),
             body: Center(
@@ -105,7 +106,7 @@ class _AssignmentDetailEntryScreenState extends State<AssignmentDetailEntryScree
                     _loadFuture = _loadAssignment();
                   });
                 },
-                child: const Text('Retry loading assignment'),
+                child: Text(context.localization.retry),
               ),
             ),
           );

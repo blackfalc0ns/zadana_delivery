@@ -522,27 +522,39 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     Future<ApiResult<OrderDetailsActionResultEntity>> Function() action, {
     bool onSuccessRefreshAssignment = false,
     bool onSuccessRefreshHome = true,
+    bool silent = false,
   }) async {
-    emit(
-      state.copyWith(
-        isActionLoading: true,
-        clearFailure: true,
-        clearNotificationMessage: true,
-      ),
-    );
+    if (!silent) {
+      emit(
+        state.copyWith(
+          isActionLoading: true,
+          clearFailure: true,
+          clearNotificationMessage: true,
+        ),
+      );
+    } else {
+      emit(state.copyWith(clearFailure: true, clearNotificationMessage: true));
+    }
     final result = await action();
     switch (result) {
       case ApiSuccessResult():
         final localizedMessage = result.data.localizedMessage;
+        final updatedAssignment = result.data.updatedAssignment;
+        // Emit the updated assignment directly from the action response so the
+        // UI transitions immediately without waiting for the silent refresh.
         emit(
           state.copyWith(
             isActionLoading: false,
             clearFailure: true,
+            details: updatedAssignment,
             notificationMessage: localizedMessage == null
                 ? null
                 : _resolveLocalizedMessage(localizedMessage),
           ),
         );
+        if (updatedAssignment != null) {
+          _syncArrivedAtVendorPolling(updatedAssignment);
+        }
         if (onSuccessRefreshHome) {
           await _refreshDriverHomeUseCase.call();
         }

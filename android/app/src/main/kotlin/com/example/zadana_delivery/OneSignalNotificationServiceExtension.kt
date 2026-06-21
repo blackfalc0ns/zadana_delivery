@@ -2,6 +2,9 @@ package com.example.zadana_delivery
 
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import com.onesignal.notifications.IDisplayableMutableNotification
 import com.onesignal.notifications.INotificationReceivedEvent
 import com.onesignal.notifications.INotificationServiceExtension
@@ -13,7 +16,15 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         val notification = event.notification
         val channelId = resolveChannelId(notification)
         maybeShowNativeOfferOverlay(notification.additionalData)
+        
         notification.setExtender { builder: NotificationCompat.Builder ->
+            val context = MainApplication.appContext
+            
+            // Add action buttons for delivery offers
+            if (context != null && isOfferNotification(notification.additionalData)) {
+                addOfferActionButtons(builder, context, notification.additionalData)
+            }
+            
             builder
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setChannelId(channelId)
@@ -23,53 +34,85 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         }
     }
 
-    private fun maybeShowNativeOfferOverlay(additionalData: JSONObject?) {
+    private fun isOfferNotification(additionalData: JSONObject?): Boolean {
         if (additionalData == null) {
-            android.util.Log.d("TripOverlay", "Push additionalData is NULL")
-            return
+            return false
         }
-
-        android.util.Log.d("TripOverlay", "═══ PUSH PAYLOAD RECEIVED ═══")
-        android.util.Log.d("TripOverlay", "Full additionalData: $additionalData")
-        android.util.Log.d("TripOverlay", "Keys: ${additionalData.keys().asSequence().toList()}")
-
-        // Log each important field individually
-        val fieldsToCheck = listOf(
-            "vendorName", "vendor_name",
-            "pickupAddress", "pickup_address",
-            "deliveryAddress", "delivery_address",
-            "customerName", "customer_name",
-            "codAmount", "cod_amount",
-            "payout", "deliveryFee",
-            "totalAmount", "total_amount",
-            "itemsCount", "items_count",
-            "paymentMethod", "payment_method",
-            "estimatedDistanceKm", "distanceKm",
-            "countdownSeconds",
-            "assignmentId", "assignment_id",
-            "type", "event", "eventName", "category", "popupType",
-            "dataObject", "data", "payload"
-        )
-        for (field in fieldsToCheck) {
-            val value = additionalData.opt(field)
-            if (value != null) {
-                android.util.Log.d("TripOverlay", "  [$field] = $value")
-            }
-        }
-        android.util.Log.d("TripOverlay", "═══════════════════════════════")
 
         val eventType = additionalData.optString("event", "").trim().lowercase()
         val eventName = additionalData.optString("eventName", "").trim().lowercase()
         val payloadType = additionalData.optString("type", "").trim().lowercase()
         val category = additionalData.optString("category", "").trim().lowercase()
         val popupType = additionalData.optString("popupType", "").trim().lowercase()
-        val isOfferNotification =
-            payloadType == "driver-offer" ||
+        
+        return payloadType == "driver-offer" ||
             eventType.contains("dispatch.offer_new") ||
             eventName.contains("dispatch.offer_new") ||
             (category == "dispatch" && popupType == "delivery_offer")
-        if (!isOfferNotification) {
-            android.util.Log.d("TripOverlay", "Not an offer notification. type=$payloadType event=$eventType eventName=$eventName category=$category popupType=$popupType")
+    }
+
+    private fun addOfferActionButtons(
+        builder: NotificationCompat.Builder,
+        context: Context,
+        additionalData: JSONObject?
+    ) {
+        val assignmentId = additionalData?.optString("assignmentId")?.trim() ?: 
+                          additionalData?.optString("assignment_id")?.trim() ?: 
+                          additionalData?.optString("referenceId")?.trim() ?: ""
+        val orderId = additionalData?.optString("orderId")?.trim() ?: 
+                     additionalData?.optString("order_id")?.trim() ?: ""
+        val orderTitle = additionalData?.optString("titleAr")?.trim() ?:
+                        additionalData?.optString("titleEn")?.trim() ?:
+                        "الطلب"
+        
+        if (assignmentId.isEmpty()) {
+            return
+        }
+
+        // Generate a unique notification ID from the assignment ID
+        val notificationId = assignmentId.hashCode()
+
+        // Accept button
+        val acceptIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_ACCEPT
+            putExtra(NotificationActionReceiver.EXTRA_ASSIGNMENT_ID, assignmentId)
+            putExtra(NotificationActionReceiver.EXTRA_ORDER_ID, orderId)
+            putExtra(NotificationActionReceiver.EXTRA_ORDER_TITLE, orderTitle)
+            putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+        }
+        val acceptPendingIntent = PendingIntent.getBroadcast(
+            context,
+            (assignmentId + "_accept").hashCode(),
+            acceptIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Reject button
+        val rejectIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = NotificationActionReceiver.ACTION_REJECT
+            putExtra(NotificationActionReceiver.EXTRA_ASSIGNMENT_ID, assignmentId)
+            putExtra(NotificationActionReceiver.EXTRA_ORDER_ID, orderId)
+            putExtra(NotificationActionReceiver.EXTRA_ORDER_TITLE, orderTitle)
+            putExtra(NotificationActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+        }
+        val rejectPendingIntent = PendingIntent.getBroadcast(
+            context,
+            (assignmentId + "_reject").hashCode(),
+            rejectIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        builder
+            .addAction(0, "قبول", acceptPendingIntent)
+            .addAction(0, "رفض", rejectPendingIntent)
+    }
+
+    private fun maybeShowNativeOfferOverlay(additionalData: JSONObject?) {
+        if (additionalData == null) {
+            return
+        }
+
+        if (!isOfferNotification(additionalData)) {
             return
         }
 

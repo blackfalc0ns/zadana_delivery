@@ -81,6 +81,10 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
       if (!mounted) return;
 
       if (success) {
+        // Hide the loading overlay before navigating away, because
+        // pushReplacementNamed will unmount the loadingContext making it
+        // impossible to hide afterwards.
+        LoadingOverlay.hide(widget.loadingContext);
         Navigator.of(context).pop(true);
         if (widget.onVerified != null) {
           await Future<void>.delayed(const Duration(milliseconds: 180));
@@ -93,9 +97,7 @@ class _CustomerOtpSheetContentState extends State<CustomerOtpSheetContent> {
       setState(() => _isSubmitting = false);
       await _showKeyboard();
     } finally {
-      if (widget.loadingContext.mounted) {
-        LoadingOverlay.hide(widget.loadingContext);
-      }
+      LoadingOverlay.hide(widget.loadingContext);
     }
   }
 

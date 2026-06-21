@@ -15,6 +15,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
     required this.onStartDelivery,
     required this.onShowCustomerOtp,
     required this.onFinish,
+    this.isLoading = false,
   });
 
   final OrderDetailsController controller;
@@ -26,6 +27,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
   final VoidCallback onStartDelivery;
   final VoidCallback onShowCustomerOtp;
   final VoidCallback onFinish;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
                 foreground: Colors.white,
                 background: scheme.primary,
                 borderColor: scheme.primary,
+                isLoading: isLoading,
                 onTap: onAcceptOrder,
               ),
             ),
@@ -60,6 +63,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
                 foreground: scheme.error,
                 background: scheme.errorContainer.withValues(alpha: 0.25),
                 borderColor: scheme.error.withValues(alpha: 0.22),
+                isLoading: isLoading,
                 onTap: onRejectOrder,
               ),
             ),
@@ -70,6 +74,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
           return _StageActionButton(
             label: locale.order_details_arrived_at_vendor,
             color: scheme.secondary,
+            isLoading: isLoading,
             onTap: onArrivedAtVendor,
           );
         }
@@ -81,6 +86,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
           return _StageActionButton(
             label: locale.order_details_arrived_at_vendor,
             color: scheme.secondary,
+            isLoading: isLoading,
             onTap: onArrivedAtVendor,
           );
         }
@@ -92,12 +98,14 @@ class OrderDetailsBottomActions extends StatelessWidget {
         return _StageActionButton(
           label: locale.order_details_confirm_pickup,
           color: scheme.secondary,
+          isLoading: isLoading,
           onTap: onShowPickupOtp,
         );
       case OrderDeliveryStage.pickedUp:
         return _StageActionButton(
           label: locale.order_details_start_delivery,
           color: scheme.secondary,
+          isLoading: isLoading,
           onTap: onStartDelivery,
         );
       case OrderDeliveryStage.onTheWay:
@@ -105,6 +113,7 @@ class OrderDetailsBottomActions extends StatelessWidget {
           return _StageActionButton(
             label: locale.order_details_arrived_at_customer,
             color: scheme.primary,
+            isLoading: isLoading,
             onTap: onArrivedAtCustomer,
           );
         }
@@ -113,12 +122,14 @@ class OrderDetailsBottomActions extends StatelessWidget {
               ? locale.order_details_confirm_delivery_with_code
               : locale.order_details_confirm_delivery,
           color: scheme.primary,
+          isLoading: isLoading,
           onTap: onShowCustomerOtp,
         );
       case OrderDeliveryStage.delivered:
         return _StageActionButton(
           label: locale.order_details_order_delivered,
           color: scheme.primary,
+          isLoading: isLoading,
           onTap: onFinish,
         );
     }
@@ -130,11 +141,13 @@ class _StageActionButton extends StatelessWidget {
     required this.label,
     required this.color,
     required this.onTap,
+    this.isLoading = false,
   });
 
   final String label;
   final Color color;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -143,6 +156,7 @@ class _StageActionButton extends StatelessWidget {
       foreground: Colors.white,
       background: color,
       borderColor: color,
+      isLoading: isLoading,
       onTap: onTap,
     );
   }

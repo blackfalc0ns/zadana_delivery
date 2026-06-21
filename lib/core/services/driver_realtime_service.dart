@@ -341,7 +341,7 @@ class DriverRealtimeService {
       _logConnectionStatus(
         'FAILED',
         hubPath: NetworkConstants.notificationsHub,
-        details: error.toString(),
+        details: _safeErrorString(error),
         activeState: _notificationsHubConnection?.state,
       );
       _scheduleNotificationsReconnect();
@@ -382,10 +382,11 @@ class DriverRealtimeService {
       _subscribedOrderTrackingOrderId = normalizedOrderId;
       _log('Order tracking subscribe succeeded: orderId=$normalizedOrderId');
     } catch (error) {
+      final errorStr = _safeErrorString(error);
       _log(
-        'Order tracking subscribe failed: orderId=$normalizedOrderId | $error',
+        'Order tracking subscribe failed: orderId=$normalizedOrderId | $errorStr',
       );
-      if (error.toString().contains('FORBIDDEN_ORDER_TRACKING')) {
+      if (errorStr.contains('FORBIDDEN_ORDER_TRACKING')) {
         _subscribedOrderTrackingOrderId = null;
       }
     }
@@ -524,16 +525,8 @@ class DriverRealtimeService {
   }
 
   /// Fixes mojibake caused by SignalR Long Polling decoding UTF-8 bytes as
-  /// Latin-1. Detects garbled strings and re-encodes them correctly.
+  /// Latin-1 or Windows-1256. Detects garbled strings and re-encodes them.
   Map<String, dynamic> _fixUtf8Map(Map<String, dynamic> map) {
-    var needsFix = false;
-    for (final value in map.values) {
-      if (value is String && _looksLikeMojibake(value)) {
-        needsFix = true;
-        break;
-      }
-    }
-    if (!needsFix) return map;
     return map.map((key, value) {
       if (value is String && _looksLikeMojibake(value)) {
         return MapEntry(key, _fixMojibake(value));
@@ -565,28 +558,123 @@ class DriverRealtimeService {
 
   /// Heuristic: strings containing sequences like "Ù" or "Ø" (common markers
   /// of UTF-8 Arabic bytes misinterpreted as Latin-1) are likely mojibake.
+  /// Also detects Windows-1256 mojibake where UTF-8 Arabic bytes are decoded
+  /// as Windows-1256, producing unusual combinations of Arabic characters.
   bool _looksLikeMojibake(String text) {
-    if (text.isEmpty) return false;
-    // UTF-8 Arabic codepoints start with bytes 0xD8-0xDB when viewed as Latin-1
-    // these appear as characters Ø, Ù, Ú, Û in the string.
-    var suspiciousCount = 0;
-    for (var i = 0; i < text.length && i < 40; i++) {
+    if (text.isEmpty || text.length < 3) return false;
+    var latin1SuspiciousCount = 0;
+    var arabicTotal = 0;
+    // "Suspicious" = characters that almost never appear in real-world Arabic
+    // text from this app (store names, addresses): extended Arabic letters
+    // (U+0670-06FF), Arabic-Indic digits mixed with letters (U+0660-0669),
+    // and tatweel (U+0640).  Normal diacritics (U+064B-0652) are excluded
+    // because they can appear in properly vocalized text.
+    var suspiciousArabic = 0;
+    final checkLength = text.length < 60 ? text.length : 60;
+    for (var i = 0; i < checkLength; i++) {
       final c = text.codeUnitAt(i);
       if (c >= 0xC0 && c <= 0xFF) {
-        suspiciousCount++;
+        latin1SuspiciousCount++;
+      }
+      if (c >= 0x0600 && c <= 0x06FF) {
+        arabicTotal++;
+        // Extended Arabic block (U+0670-06FF) — rarely used in store
+        // names/addresses in Saudi Arabia.
+        if (c >= 0x0670) {
+          suspiciousArabic++;
+        }
+        // Arabic-Indic digits (٠١٢٣٤٥٦٧٨٩) appearing in text that
+        // is supposed to be a name/address (not a number field).
+        else if (c >= 0x0660 && c <= 0x0669) {
+          suspiciousArabic++;
+        }
+        // Tatweel
+        else if (c == 0x0640) {
+          suspiciousArabic++;
+        }
       }
     }
-    return suspiciousCount >= 3;
+    if (latin1SuspiciousCount >= 3) return true;
+    // In normal Arabic address/name text, extended Arabic and Arabic-Indic
+    // digits are extremely rare (typically 0%). In Win-1256 mojibake they
+    // make up a significant portion because UTF-8 continuation bytes
+    // (0x80-0xBF) map to extended Arabic codepoints.
+    if (arabicTotal >= 4 && suspiciousArabic >= 2 &&
+        suspiciousArabic > arabicTotal * 0.2) {
+      return true;
+    }
+    return false;
   }
 
   String _fixMojibake(String text) {
+    // Try Latin-1 → UTF-8 decode first (most common case)
     try {
       final latin1Bytes = latin1.encode(text);
-      return utf8.decode(latin1Bytes);
-    } catch (_) {
-      return text;
-    }
+      final decoded = utf8.decode(latin1Bytes);
+      if (decoded != text && !_looksLikeMojibake(decoded)) {
+        return decoded;
+      }
+    } catch (_) {}
+    // Try Windows-1256 → UTF-8 decode
+    try {
+      final win1256Bytes = _encodeWindows1256(text);
+      if (win1256Bytes != null) {
+        final decoded = utf8.decode(win1256Bytes);
+        if (decoded != text) {
+          return decoded;
+        }
+      }
+    } catch (_) {}
+    return text;
   }
+
+  /// Encodes a string as Windows-1256 bytes. Returns null if any character
+  /// cannot be mapped.
+  List<int>? _encodeWindows1256(String text) {
+    final bytes = <int>[];
+    for (var i = 0; i < text.length; i++) {
+      final c = text.codeUnitAt(i);
+      if (c < 0x80) {
+        bytes.add(c);
+      } else {
+        final byte = _win1256FromCodeUnit(c);
+        if (byte == null) return null;
+        bytes.add(byte);
+      }
+    }
+    return bytes;
+  }
+
+  /// Maps a Unicode code unit back to its Windows-1256 byte value.
+  static int? _win1256FromCodeUnit(int codeUnit) {
+    // Build reverse lookup from the Windows-1256 high-byte table
+    for (var i = 0; i < _win1256HighBytes.length; i++) {
+      if (_win1256HighBytes[i] == codeUnit) {
+        return 0x80 + i;
+      }
+    }
+    return null;
+  }
+
+  /// Windows-1256 mapping for bytes 0x80-0xFF to Unicode code points.
+  static const List<int> _win1256HighBytes = [
+    0x20AC, 0x067E, 0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021, // 80-87
+    0x02C6, 0x2030, 0x0679, 0x2039, 0x0152, 0x0686, 0x0698, 0x0688, // 88-8F
+    0x06AF, 0x2018, 0x2019, 0x201C, 0x201D, 0x2022, 0x2013, 0x2014, // 90-97
+    0x06A9, 0x2122, 0x0691, 0x203A, 0x0153, 0x200C, 0x200D, 0x06BA, // 98-9F
+    0x00A0, 0x060C, 0x00A2, 0x00A3, 0x00A4, 0x00A5, 0x00A6, 0x00A7, // A0-A7
+    0x00A8, 0x00A9, 0x06BE, 0x00AB, 0x00AC, 0x00AD, 0x00AE, 0x00AF, // A8-AF
+    0x00B0, 0x00B1, 0x00B2, 0x00B3, 0x00B4, 0x00B5, 0x00B6, 0x00B7, // B0-B7
+    0x00B8, 0x00B9, 0x061B, 0x00BB, 0x00BC, 0x00BD, 0x00BE, 0x061F, // B8-BF
+    0x06C1, 0x0621, 0x0622, 0x0623, 0x0624, 0x0625, 0x0626, 0x0627, // C0-C7
+    0x0628, 0x0629, 0x062A, 0x062B, 0x062C, 0x062D, 0x062E, 0x062F, // C8-CF
+    0x0630, 0x0631, 0x0632, 0x0633, 0x0634, 0x0635, 0x0636, 0x00D7, // D0-D7
+    0x0637, 0x0638, 0x0639, 0x063A, 0x0640, 0x0641, 0x0642, 0x0643, // D8-DF
+    0x00E0, 0x0644, 0x00E2, 0x0645, 0x0646, 0x0647, 0x0648, 0x00E7, // E0-E7
+    0x00E8, 0x00E9, 0x00EA, 0x00EB, 0x0649, 0x064A, 0x064E, 0x064F, // E8-EF
+    0x0650, 0x0651, 0x0652, 0x00F3, 0x00F4, 0x200C, 0x200D, 0x00F7, // F0-F7
+    0x00F8, 0x0652, 0x00FA, 0x00FB, 0x00FC, 0x200E, 0x200F, 0x06D2, // F8-FF
+  ];
 
   Map<String, dynamic> _normalizeSupportCasePayload(dynamic payload) {
     if (payload == null) return const <String, dynamic>{};
@@ -663,6 +751,17 @@ class DriverRealtimeService {
 
   void _log(String message) {
     debugPrint('$_logTag $message');
+  }
+
+  /// Safely converts an error to a string, guarding against third-party
+  /// [toString] implementations that may themselves throw (e.g.
+  /// [signalr_netcore] [GeneralError] with null fields).
+  String _safeErrorString(Object error) {
+    try {
+      return error.toString();
+    } catch (_) {
+      return error.runtimeType.toString();
+    }
   }
 
   void _logConnectionStatus(
@@ -848,7 +947,7 @@ class DriverRealtimeService {
       _logConnectionStatusWithState(
         'FAILED',
         hubPath: NetworkConstants.orderTrackingHub,
-        details: error.toString(),
+        details: _safeErrorString(error),
         activeState: _orderTrackingHubConnection?.state,
       );
       _scheduleOrderTrackingReconnect();
@@ -865,8 +964,9 @@ class DriverRealtimeService {
       await connection.invoke('SubscribeToOrder', args: [orderId]);
       _log('Order tracking resubscribe succeeded: orderId=$orderId');
     } catch (error) {
-      _log('Order tracking resubscribe failed: orderId=$orderId | $error');
-      if (error.toString().contains('FORBIDDEN_ORDER_TRACKING')) {
+      final errorStr = _safeErrorString(error);
+      _log('Order tracking resubscribe failed: orderId=$orderId | $errorStr');
+      if (errorStr.contains('FORBIDDEN_ORDER_TRACKING')) {
         _subscribedOrderTrackingOrderId = null;
       }
     }

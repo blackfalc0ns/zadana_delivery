@@ -11,6 +11,7 @@ class DecisionButton extends StatelessWidget {
     required this.background,
     required this.borderColor,
     required this.onTap,
+    this.isLoading = false,
   });
 
   final String label;
@@ -18,21 +19,28 @@ class DecisionButton extends StatelessWidget {
   final Color background;
   final Color borderColor;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
+    final effectiveBg = isLoading
+        ? background.withValues(alpha: 0.55)
+        : background;
+    final effectiveBorder = isLoading
+        ? borderColor.withValues(alpha: 0.35)
+        : borderColor;
     return Material(
-      color: background,
+      color: effectiveBg,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(18),
         child: Ink(
           height: 54,
           decoration: BoxDecoration(
-            color: background,
+            color: effectiveBg,
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: borderColor),
+            border: Border.all(color: effectiveBorder),
           ),
           child: Center(
             child: Text(
@@ -40,7 +48,9 @@ class DecisionButton extends StatelessWidget {
               style: getBoldStyle(
                 fontFamily: FontConstant.cairo,
                 fontSize: FontSize.size14,
-                color: foreground,
+                color: isLoading
+                    ? foreground.withValues(alpha: 0.5)
+                    : foreground,
               ),
             ),
           ),

@@ -25,6 +25,10 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        
+        // Store FlutterEngine reference for NotificationActionReceiver
+        NotificationActionReceiver.flutterEngine = flutterEngine
+        
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,
             CHANNEL_NAME,
@@ -55,6 +59,22 @@ class MainActivity : FlutterActivity() {
                         val timestamp = MainApplication.lastOfferPushReceivedAt
                         MainApplication.lastOfferPushReceivedAt = 0L
                         result.success(timestamp)
+                    }
+
+                    "consumePendingNotificationAction" -> {
+                        val pendingAction = NotificationActionReceiver.pendingAction
+                        if (pendingAction != null) {
+                            val actionMap = mapOf(
+                                "action" to pendingAction.action,
+                                "assignmentId" to pendingAction.assignmentId,
+                                "orderId" to (pendingAction.orderId ?: ""),
+                                "orderTitle" to pendingAction.orderTitle
+                            )
+                            NotificationActionReceiver.pendingAction = null
+                            result.success(actionMap)
+                        } else {
+                            result.success(null)
+                        }
                     }
 
                     else -> result.notImplemented()

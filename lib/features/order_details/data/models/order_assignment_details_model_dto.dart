@@ -1,3 +1,6 @@
+import 'package:get_it/get_it.dart';
+import 'package:zadana_delivery/core/services/language_service.dart';
+
 class OrderAssignmentDetailsModelDto {
   const OrderAssignmentDetailsModelDto({
     required this.assignmentId,
@@ -47,7 +50,7 @@ class OrderAssignmentDetailsModelDto {
       allowedActions: _asList(
         json['allowedActions'],
       ).map((item) => item.toString()).toList(growable: false),
-      vendorName: json['vendorName']?.toString() ?? '',
+      vendorName: _resolveLocalizedVendorName(json),
       vendorImageUrl: json['vendorImageUrl']?.toString() ?? '',
       pickupAddress: json['pickupAddress']?.toString() ?? '',
       pickupLatitude: _asDouble(json['pickupLatitude']),
@@ -181,4 +184,26 @@ double _asDouble(dynamic value) {
   if (value is double) return value;
   if (value is num) return value.toDouble();
   return double.tryParse(value?.toString() ?? '') ?? 0;
+}
+
+String _resolveLocalizedVendorName(Map<String, dynamic> json) {
+  final arValue = json['vendorNameAr']?.toString().trim() ?? '';
+  final enValue = json['vendorNameEn']?.toString().trim() ?? '';
+  final fallbackValue = json['vendorName']?.toString() ?? '';
+
+  if (arValue.isEmpty && enValue.isEmpty) return fallbackValue;
+
+  bool isArabic = true;
+  try {
+    final languageService = GetIt.instance.get<LanguageService>();
+    isArabic = languageService.getLanguageCode() == 'ar';
+  } catch (_) {}
+
+  final localized = isArabic ? arValue : enValue;
+  if (localized.isNotEmpty) return localized;
+
+  final otherLocalized = isArabic ? enValue : arValue;
+  if (otherLocalized.isNotEmpty) return otherLocalized;
+
+  return fallbackValue;
 }

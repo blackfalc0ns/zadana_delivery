@@ -1,3 +1,6 @@
+import 'package:get_it/get_it.dart';
+import 'package:zadana_delivery/core/services/language_service.dart';
+
 class DriverHomeModelDto {
   const DriverHomeModelDto({
     required this.homeState,
@@ -174,7 +177,13 @@ class DriverHomeOfferModelDto {
       assignmentId: json['assignmentId']?.toString() ?? '',
       orderId: json['orderId']?.toString() ?? '',
       orderNumber: json['orderNumber']?.toString() ?? '',
-      vendorName: json['vendorName']?.toString() ?? '',
+      vendorName: _resolveLocalizedName(
+            json,
+            arKey: 'vendorNameAr',
+            enKey: 'vendorNameEn',
+            fallbackKey: 'vendorName',
+          ) ??
+          '',
       pickupAddress:
           json['pickupAddress']?.toString() ??
           json['vendorAddress']?.toString() ??
@@ -293,7 +302,13 @@ class DriverHomeAssignmentModelDto {
           json['status']?.toString() ??
           json['assignmentStatus']?.toString() ??
           '',
-      vendorName: json['vendorName']?.toString() ?? '',
+      vendorName: _resolveLocalizedName(
+            json,
+            arKey: 'vendorNameAr',
+            enKey: 'vendorNameEn',
+            fallbackKey: 'vendorName',
+          ) ??
+          '',
       vendorImageUrl:
           json['vendorImageUrl']?.toString() ??
           json['vendorLogoUrl']?.toString() ??
@@ -496,4 +511,41 @@ double _asDouble(dynamic value) {
 double? _asDoubleOrNull(dynamic value) {
   if (value == null) return null;
   return _asDouble(value);
+}
+
+/// Resolves a localized name from JSON by choosing the value matching the
+/// current app language (Ar/En), falling back to the generic [fallbackKey].
+String? _resolveLocalizedName(
+  Map<String, dynamic> json, {
+  required String arKey,
+  required String enKey,
+  required String fallbackKey,
+}) {
+  final arValue = json[arKey]?.toString().trim() ?? '';
+  final enValue = json[enKey]?.toString().trim() ?? '';
+  final fallbackValue = json[fallbackKey]?.toString();
+
+  // If neither localized field is available, use the fallback directly.
+  if (arValue.isEmpty && enValue.isEmpty) return fallbackValue;
+
+  final isArabic = _currentLanguageIsArabic();
+  final localized = isArabic ? arValue : enValue;
+  if (localized.isNotEmpty) return localized;
+
+  // If preferred language is empty but the other exists, prefer the other
+  // over the raw fallback for consistency.
+  final otherLocalized = isArabic ? enValue : arValue;
+  if (otherLocalized.isNotEmpty) return otherLocalized;
+
+  return fallbackValue;
+}
+
+bool _currentLanguageIsArabic() {
+  try {
+    final languageService =
+        GetIt.instance.get<LanguageService>();
+    return languageService.getLanguageCode() == 'ar';
+  } catch (_) {
+    return true; // Default to Arabic
+  }
 }

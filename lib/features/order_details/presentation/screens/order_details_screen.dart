@@ -146,12 +146,17 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!confirmed || !mounted) return;
 
+    _controller.applyLocalStageTransition(OrderDeliveryStage.accepted);
+
     final accepted = await _cubit.doIntent(
       OrderDetailsAcceptOfferEvent(_controller.assignmentId),
     );
-    if (!mounted || !accepted) return;
-
-    _controller.updateStage(OrderDeliveryStage.accepted);
+    if (!mounted) return;
+    if (!accepted) {
+      _controller.applyLocalStageTransition(OrderDeliveryStage.pending);
+      return;
+    }
+    _controller.confirmLocalTransition();
   }
 
   Future<void> _rejectOrder() async {
@@ -188,11 +193,19 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
+    final previousStage = _controller.stage;
+    _controller.applyLocalStageTransition(OrderDeliveryStage.pickedUp);
+
     final success = await _cubit.doIntent(
       OrderDetailsMarkPickedUpEvent(orderId),
     );
-    if (!mounted || !success) return;
-    await _refreshOrderDetails(silent: true);
+    if (!mounted) return;
+    if (!success) {
+      _controller.applyLocalStageTransition(previousStage);
+      return;
+    }
+    _controller.confirmLocalTransition();
+    _showStatusChangeToast();
   }
 
   void _showItems() => OrderDetailsSheets.showOrderItemsSheet(
@@ -295,10 +308,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
-    // Apply local stage transition immediately so the UI updates without
-    // waiting for the server refresh which may return stale data.
-    _controller.applyLocalStageTransition(OrderDeliveryStage.arrivedAtVendor);
-
     final success = await _cubit.doIntent(
       OrderDetailsUpdateArrivalStateEvent(
         orderId,
@@ -306,12 +315,9 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       ),
     );
     if (!mounted) return;
-    if (!success) {
-      // Revert local transition on failure
-      _controller.applyLocalStageTransition(OrderDeliveryStage.accepted);
-      return;
+    if (success) {
+      _showStatusChangeToast();
     }
-    _showStatusChangeToast();
   }
 
   Future<void> _startDelivery() async {
@@ -339,6 +345,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       _controller.applyLocalStageTransition(previousStage);
       return;
     }
+    _controller.confirmLocalTransition();
     _showStatusChangeToast();
   }
 
@@ -366,10 +373,10 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     );
     if (!mounted) return;
     if (!success) {
-      // Refresh to restore correct state on failure
       await _refreshOrderDetails(silent: true);
       return;
     }
+    _controller.confirmLocalTransition();
     _showStatusChangeToast();
   }
 
@@ -412,11 +419,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final assignmentId = _controller.assignmentId.trim();
     if (assignmentId.isEmpty) return false;
 
+    final previousStage = _controller.stage;
+    _controller.applyLocalStageTransition(OrderDeliveryStage.pickedUp);
+
     final success = await _cubit.doIntent(
       OrderDetailsVerifyPickupOtpEvent(assignmentId, otpCode: otpCode),
     );
-    if (!mounted || !success) return false;
-
+    if (!mounted) return false;
+    if (!success) {
+      _controller.applyLocalStageTransition(previousStage);
+      return false;
+    }
+    _controller.confirmLocalTransition();
     await _refreshOrderDetails(silent: true);
     return true;
   }
@@ -596,6 +610,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         buildWhen: (previous, current) =>
             previous.isLoading != current.isLoading ||
             previous.isActionLoading != current.isActionLoading ||
+            previous.details != current.details ||
             previous.failure != current.failure,
         listenWhen: (previous, current) =>
             previous.details != current.details ||

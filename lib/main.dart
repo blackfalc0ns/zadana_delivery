@@ -12,6 +12,7 @@ import 'package:zadana_delivery/core/general_cubit/local_cubit.dart';
 import 'package:zadana_delivery/core/l10n/translations/app_localizations.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/services/app_navigator_service.dart';
+import 'package:zadana_delivery/core/services/driver_notification_action_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_bootstrap_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_overlay_service.dart';
 import 'package:zadana_delivery/core/services/driver_notification_session_service.dart';
@@ -61,6 +62,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       getIt<TripRequestGlobalAlertService>().startListening();
       unawaited(getIt<TokenService>().syncNativeTokenMirror());
       unawaited(_bootstrapNotificationServicesAfterUiReady());
+      unawaited(_initializeNotificationActionService());
     });
   }
 
@@ -148,6 +150,16 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       await getIt<DriverNotificationBootstrapService>()
           .requestNotificationPermissionAfterUiReady();
     } catch (_) {}
+  }
+
+  Future<void> _initializeNotificationActionService() async {
+    try {
+      await getIt<DriverNotificationActionService>().initialize();
+    } catch (error) {
+      debugPrint(
+        '[MyApp] Failed to initialize notification action service: $error',
+      );
+    }
   }
 
   @override

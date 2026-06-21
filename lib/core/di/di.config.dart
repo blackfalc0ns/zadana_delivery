@@ -313,6 +313,7 @@ import '../services/app_navigator_service.dart' as _i179;
 import '../services/auth_refresh_service.dart' as _i820;
 import '../services/device_id_service.dart' as _i148;
 import '../services/driver_local_notification_service.dart' as _i430;
+import '../services/driver_notification_action_service.dart' as _i606;
 import '../services/driver_notification_bootstrap_service.dart' as _i223;
 import '../services/driver_notification_dedup_service.dart' as _i889;
 import '../services/driver_notification_device_service.dart' as _i1059;
@@ -417,6 +418,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i820.AuthRefreshService(
         gh<_i361.Dio>(instanceName: 'refreshDio'),
         gh<_i227.TokenService>(),
+      ),
+    );
+    gh.lazySingleton<_i606.DriverNotificationActionService>(
+      () => _i606.DriverNotificationActionService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i585.DriverNotificationRouterService>(),
       ),
     );
     gh.lazySingleton<_i794.DriverRealtimeService>(

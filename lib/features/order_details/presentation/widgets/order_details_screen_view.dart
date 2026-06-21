@@ -137,6 +137,7 @@ class _OrderDetailsScreenViewState extends State<OrderDetailsScreenView> {
         animation: widget.controller,
         builder: (_, _) => OrderDetailsBottomActions(
           controller: widget.controller,
+          isLoading: widget.isActionLoading,
           onAcceptOrder: widget.onAcceptOrder,
           onRejectOrder: widget.onRejectOrder,
           onArrivedAtVendor: widget.onArrivedAtVendor,

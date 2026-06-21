@@ -33,6 +33,7 @@ class OrderDetailsController extends ChangeNotifier {
 
   OrderDeliveryStage _stage;
   DateTime? _localTransitionAppliedAt;
+  bool _localTransitionConfirmed = false;
 
   DriverOrderPreview get order => _order;
   OrderDeliveryStage get stage => _stage;
@@ -241,23 +242,48 @@ class OrderDetailsController extends ChangeNotifier {
     );
     final resolvedStage = _resolveStageFromDetails(details);
     // Prevent a stale server response from reverting a local optimistic
-    // transition that was applied less than 5 seconds ago.
+    // transition that was applied recently or confirmed by a successful action.
     final localTransitionAt = _localTransitionAppliedAt;
     final isRecentLocalTransition = localTransitionAt != null &&
         DateTime.now().difference(localTransitionAt).inSeconds < 5;
-    if (!isRecentLocalTransition || resolvedStage.index >= _stage.index) {
+    final shouldPreserveLocalStage =
+        (isRecentLocalTransition || _localTransitionConfirmed) &&
+        resolvedStage.index < _stage.index;
+    if (!shouldPreserveLocalStage) {
+      final previousStage = _stage;
       _stage = resolvedStage;
+      // Only clear the confirmed flag when the server moves *past* the
+      // optimistically applied stage — proving it has fully caught up.
+      // While the resolved stage equals or is below the local stage,
+      // keep the flag to guard against out-of-order stale responses.
+      if (resolvedStage.index > previousStage.index) {
+        _localTransitionConfirmed = false;
+        _localTransitionAppliedAt = null;
+      }
     }
-    _hasArrivedAtCustomerOverride =
+    // Protect _hasArrivedAtCustomerOverride if it was set by a confirmed
+    // local action — don't let stale server data clear it.
+    final serverSaysArrived =
         _stage == OrderDeliveryStage.delivered ||
         details.driverArrivalState.trim().toLowerCase().contains(
           'arrived_at_customer',
         );
+    if (!_hasArrivedAtCustomerOverride) {
+      _hasArrivedAtCustomerOverride = serverSaysArrived;
+    } else {
+      // Already marked — keep it unless stage went backward (which
+      // updateStage/applyLocalStageTransition handle separately).
+      _hasArrivedAtCustomerOverride = _stage.index >= OrderDeliveryStage.onTheWay.index;
+    }
     _loadMarkerIcons();
     notifyListeners();
   }
 
   void updateStage(OrderDeliveryStage value) {
+    // Always activate protection even if stage is already at the target,
+    // because stale SignalR updates may arrive and try to revert it.
+    _localTransitionAppliedAt = DateTime.now();
+    _localTransitionConfirmed = true;
     if (_stage == value) return;
     _stage = value;
     if (value.index < OrderDeliveryStage.onTheWay.index) {
@@ -271,6 +297,7 @@ class OrderDetailsController extends ChangeNotifier {
 
   void applyLocalStageTransition(OrderDeliveryStage nextStage) {
     _localTransitionAppliedAt = DateTime.now();
+    _localTransitionConfirmed = false;
     if (_details != null) {
       switch (nextStage) {
         case OrderDeliveryStage.pending:
@@ -330,6 +357,13 @@ class OrderDetailsController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Marks the current local stage transition as confirmed by a successful
+  /// server action. This prevents stale server responses from reverting the
+  /// stage even after the 5-second time window expires.
+  void confirmLocalTransition() {
+    _localTransitionConfirmed = true;
+  }
+
   void markArrivedAtCustomer() {
     if (_details != null) {
       _details = _details!.copyWith(
@@ -340,6 +374,9 @@ class OrderDetailsController extends ChangeNotifier {
       );
     }
     _hasArrivedAtCustomerOverride = true;
+    // Protect against stale SignalR updates reverting the arrival state.
+    _localTransitionAppliedAt = DateTime.now();
+    _localTransitionConfirmed = true;
     notifyListeners();
   }
 
