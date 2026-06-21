@@ -21,6 +21,11 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 /**
@@ -46,6 +51,7 @@ private data class OverlayData(
 )
 
 class TripRequestSystemOverlay(private val context: Context) {
+    private val scope = CoroutineScope(Dispatchers.Main + Job())
 
     companion object {
         private const val TAG = "TripOverlay"
@@ -393,10 +399,54 @@ class TripRequestSystemOverlay(private val context: Context) {
         builder.setMessage("هل أنت متأكد من قبول طلب التوصيل؟")
         builder.setPositiveButton("قبول") { dialog, _ ->
             dialog.dismiss()
-            if (onAccept != null) {
-                onAccept?.invoke(currentAssignmentId)
+            
+            // Show loading toast
+            Toast.makeText(context, "جاري قبول الطلب...", Toast.LENGTH_SHORT).show()
+            
+            // Execute accept API call
+            scope.launch {
+                val result = NotificationApiService.acceptOffer(context, currentAssignmentId)
+                
+                when (result) {
+                    is NotificationApiService.ApiResult.Success -> {
+                        Log.d(TAG, "Accept offer succeeded via overlay")
+                        Toast.makeText(context, "تم قبول الطلب بنجاح", Toast.LENGTH_SHORT).show()
+                        
+                        // Store the successful action result
+                        NotificationActionReceiver.pendingAction = NotificationActionReceiver.PendingNotificationAction(
+                            action = "accept",
+                            assignmentId = currentAssignmentId,
+                            orderId = null,
+                            orderTitle = "الطلب",
+                            wasExecuted = true,
+                            wasSuccessful = true
+                        )
+                        
+                        // Launch the app to show the order details
+                        bringAppToForeground()
+                        
+                        // Try to notify Flutter if engine is ready
+                        notifyFlutterIfReady()
+                    }
+                    is NotificationApiService.ApiResult.Error -> {
+                        Log.e(TAG, "Accept offer failed via overlay: ${result.message}")
+                        Toast.makeText(context, "فشل قبول الطلب: ${result.message}", Toast.LENGTH_LONG).show()
+                        
+                        // Store the failed action
+                        NotificationActionReceiver.pendingAction = NotificationActionReceiver.PendingNotificationAction(
+                            action = "accept",
+                            assignmentId = currentAssignmentId,
+                            orderId = null,
+                            orderTitle = "الطلب",
+                            wasExecuted = true,
+                            wasSuccessful = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
             }
-            bringAppToForeground()
+            
+            // Hide the overlay
             hide()
         }
         builder.setNegativeButton("إلغاء") { dialog, _ ->
@@ -420,11 +470,54 @@ class TripRequestSystemOverlay(private val context: Context) {
         builder.setMessage("هل أنت متأكد من رفض طلب التوصيل؟")
         builder.setPositiveButton("رفض") { dialog, _ ->
             dialog.dismiss()
-            if (onReject != null) {
-                onReject?.invoke(currentAssignmentId)
-            } else {
-                bringAppToForeground()
+            
+            // Show loading toast
+            Toast.makeText(context, "جاري رفض الطلب...", Toast.LENGTH_SHORT).show()
+            
+            // Execute reject API call
+            scope.launch {
+                val result = NotificationApiService.rejectOffer(context, currentAssignmentId)
+                
+                when (result) {
+                    is NotificationApiService.ApiResult.Success -> {
+                        Log.d(TAG, "Reject offer succeeded via overlay")
+                        Toast.makeText(context, "تم رفض الطلب", Toast.LENGTH_SHORT).show()
+                        
+                        // Store the successful action result
+                        NotificationActionReceiver.pendingAction = NotificationActionReceiver.PendingNotificationAction(
+                            action = "reject",
+                            assignmentId = currentAssignmentId,
+                            orderId = null,
+                            orderTitle = "الطلب",
+                            wasExecuted = true,
+                            wasSuccessful = true
+                        )
+                        
+                        // Optionally launch the app
+                        bringAppToForeground()
+                        
+                        // Try to notify Flutter if engine is ready
+                        notifyFlutterIfReady()
+                    }
+                    is NotificationApiService.ApiResult.Error -> {
+                        Log.e(TAG, "Reject offer failed via overlay: ${result.message}")
+                        Toast.makeText(context, "فشل رفض الطلب: ${result.message}", Toast.LENGTH_LONG).show()
+                        
+                        // Store the failed action
+                        NotificationActionReceiver.pendingAction = NotificationActionReceiver.PendingNotificationAction(
+                            action = "reject",
+                            assignmentId = currentAssignmentId,
+                            orderId = null,
+                            orderTitle = "الطلب",
+                            wasExecuted = true,
+                            wasSuccessful = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
             }
+            
+            // Hide the overlay
             hide()
         }
         builder.setNegativeButton("إلغاء") { dialog, _ ->
@@ -456,6 +549,34 @@ class TripRequestSystemOverlay(private val context: Context) {
             return
         }
         context.startActivity(launchIntent)
+    }
+
+    private fun notifyFlutterIfReady() {
+        try {
+            val action = NotificationActionReceiver.pendingAction
+            if (action != null) {
+                val engine = NotificationActionReceiver.flutterEngine ?: return
+                val channel = io.flutter.plugin.common.MethodChannel(
+                    engine.dartExecutor.binaryMessenger,
+                    "zadana_delivery/native_notifications"
+                )
+                channel.invokeMethod(
+                    "onNotificationAction",
+                    mapOf(
+                        "action" to action.action,
+                        "assignmentId" to action.assignmentId,
+                        "orderId" to action.orderId,
+                        "orderTitle" to action.orderTitle,
+                        "wasExecuted" to action.wasExecuted,
+                        "wasSuccessful" to action.wasSuccessful,
+                        "errorMessage" to action.errorMessage
+                    )
+                )
+                Log.d(TAG, "Notified Flutter of ${action.action} action from overlay (executed=${action.wasExecuted}, success=${action.wasSuccessful})")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to notify Flutter from overlay: ${e.message}")
+        }
     }
 
     fun setCallbacks(
