@@ -14,6 +14,14 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         private var lastProcessedNotificationId: String? = null
         private var lastProcessedTime: Long = 0
         private const val DEDUPLICATION_WINDOW_MS = 3000L // 3 seconds
+        
+        private val urgentEvents = setOf(
+            "dispatch.offer_new",
+            "dispatch.offer_expired",
+            "account.suspend",
+            "assignment.active_order_cancelled",
+            "support.request_evidence",
+        )
     }
     
     override fun onNotificationReceived(event: INotificationReceivedEvent) {
@@ -123,15 +131,5 @@ class OneSignalNotificationServiceExtension : INotificationServiceExtension {
         }
 
         return MainApplication.GENERAL_CHANNEL_ID
-    }
-
-    companion object {
-        private val urgentEvents = setOf(
-            "dispatch.offer_new",
-            "dispatch.offer_expired",
-            "account.suspend",
-            "assignment.active_order_cancelled",
-            "support.request_evidence",
-        )
     }
 }
