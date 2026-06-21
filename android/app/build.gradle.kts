@@ -49,6 +49,7 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
     implementation("com.onesignal:OneSignal:5.7.7")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
 
 kotlin {

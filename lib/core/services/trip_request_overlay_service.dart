@@ -25,6 +25,10 @@ class TripRequestOverlayService {
     NetworkConstants.tripOverlayChannel,
   );
 
+  // Cache to prevent showing the same offer multiple times
+  String? _lastShownAssignmentId;
+  DateTime? _lastShownTime;
+
   /// Whether the driver has the background trip overlay feature enabled.
   bool get isEnabled =>
       _prefs.getBool(AppConstants.tripOverlayEnabledKey) ?? true;
@@ -108,10 +112,25 @@ class TripRequestOverlayService {
     }
 
     try {
+      final assignmentId = _str(
+        offerData['assignmentId'] ?? offerData['assignment_id'],
+      );
+
+      // Prevent duplicate overlays for the same offer within 5 seconds
+      if (assignmentId.isNotEmpty &&
+          _lastShownAssignmentId == assignmentId &&
+          _lastShownTime != null &&
+          DateTime.now().difference(_lastShownTime!).inSeconds < 5) {
+        developer.log(
+          'TripRequestOverlayService.showForOffer skipped: duplicate offer '
+          'assignmentId=$assignmentId (shown ${DateTime.now().difference(_lastShownTime!).inSeconds}s ago)',
+          name: 'TripOverlay',
+        );
+        return false;
+      }
+
       final data = <String, dynamic>{
-        'assignment_id': _str(
-          offerData['assignmentId'] ?? offerData['assignment_id'],
-        ),
+        'assignment_id': assignmentId,
         'order_id': _str(offerData['orderId'] ?? offerData['order_id']),
         'order_number': _str(
           offerData['orderNumber'] ?? offerData['order_number'],
@@ -157,6 +176,13 @@ class TripRequestOverlayService {
       };
 
       final result = await _channel.invokeMethod<bool>('showOverlay', data);
+      
+      // Cache this offer to prevent duplicates
+      if (result == true && assignmentId.isNotEmpty) {
+        _lastShownAssignmentId = assignmentId;
+        _lastShownTime = DateTime.now();
+      }
+      
       developer.log(
         'TripRequestOverlayService.showForOffer result=$result '
         'assignmentId=${data['assignment_id']}',

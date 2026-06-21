@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +10,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
-
 import 'app_navigator_service.dart';
 import 'driver_local_notification_service.dart';
 import 'driver_notification_device_service.dart';
@@ -113,10 +111,7 @@ class DriverNotificationBootstrapService {
       final token = OneSignal.User.pushSubscription.token;
       final subId = OneSignal.User.pushSubscription.id;
       if ((token ?? '').trim().isNotEmpty || (subId ?? '').trim().isNotEmpty) {
-        await _deviceService.cachePushToken(
-          token,
-          subscriptionId: subId,
-        );
+        await _deviceService.cachePushToken(token, subscriptionId: subId);
       }
       _logCurrentSubscriptionState(
         context: 'authenticated_login',
@@ -168,10 +163,7 @@ class DriverNotificationBootstrapService {
     final token = OneSignal.User.pushSubscription.token;
     final subId = OneSignal.User.pushSubscription.id;
     if ((token ?? '').trim().isNotEmpty || (subId ?? '').trim().isNotEmpty) {
-      await _deviceService.cachePushToken(
-        token,
-        subscriptionId: subId,
-      );
+      await _deviceService.cachePushToken(token, subscriptionId: subId);
       _logCurrentSubscriptionState(context: 'ui_ready');
       await _logUserAndSubscriptionStatus(context: 'ui_ready');
     }
@@ -701,7 +693,10 @@ class DriverNotificationBootstrapService {
         notificationEvent.contains('dispatch.offer_new') ||
         notificationEventName.contains('dispatch.offer_new') ||
         (notificationCategory == 'dispatch' &&
-            DriverNotificationPayloadResolver.resolvePopupType(normalizedPayload) == 'delivery_offer')) {
+            DriverNotificationPayloadResolver.resolvePopupType(
+                  normalizedPayload,
+                ) ==
+                'delivery_offer')) {
       debugPrint(
         '[DriverNotificationBootstrap] Offer push detected; notifying home data source to refresh.',
       );
@@ -712,7 +707,8 @@ class DriverNotificationBootstrapService {
       // Also trigger the system overlay for background offer alerts
       try {
         final lifecycleState = WidgetsBinding.instance.lifecycleState;
-        final isBackground = lifecycleState != null &&
+        final isBackground =
+            lifecycleState != null &&
             lifecycleState != AppLifecycleState.resumed;
         if (isBackground) {
           final tripOverlay = getIt<TripRequestOverlayService>();

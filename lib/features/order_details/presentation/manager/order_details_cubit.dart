@@ -344,7 +344,8 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
           _log(
             'Assignment updated stream event received: '
             'assignmentId=${payload['assignmentId'] ?? 'n/a'}, '
-            'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}',
+            'assignmentStatus=${payload['assignmentStatus'] ?? 'unknown'}, '
+            'driverArrivalState=${payload['driverArrivalState'] ?? 'n/a'}',
           );
           final assignmentIdValue =
               payload['assignmentId']?.toString().trim() ?? '';
@@ -353,12 +354,16 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
             return;
           }
           // Ignore stale SignalR updates that arrive shortly after a successful local action
+          // Extended to 20 seconds to prevent premature status changes after driver actions
           final lastActionAt = _lastLocalActionAt;
           if (lastActionAt != null &&
-              DateTime.now().difference(lastActionAt).inSeconds < 8) {
-            _log('Ignoring potentially stale assignment update (recent local action)');
+              DateTime.now().difference(lastActionAt).inSeconds < 20) {
+            _log('Ignoring potentially stale assignment update (recent local action within 20s)');
             return;
           }
+          
+          // Note: Removed blocking logic to allow immediate status updates
+          
           try {
             final entity = OrderAssignmentDetailsModelDto.fromJson(
               payload,

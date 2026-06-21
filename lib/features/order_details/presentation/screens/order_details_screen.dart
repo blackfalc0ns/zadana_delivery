@@ -334,17 +334,15 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
     final orderId = _controller.order.orderId.trim();
     if (orderId.isEmpty) return;
 
-    final previousStage = _controller.stage;
-    _controller.applyLocalStageTransition(OrderDeliveryStage.onTheWay);
-
     final success = await _cubit.doIntent(
       OrderDetailsMarkOnTheWayEvent(orderId),
     );
     if (!mounted) return;
     if (!success) {
-      _controller.applyLocalStageTransition(previousStage);
       return;
     }
+    
+    _controller.applyLocalStageTransition(OrderDeliveryStage.onTheWay);
     _controller.confirmLocalTransition();
     _showStatusChangeToast();
   }

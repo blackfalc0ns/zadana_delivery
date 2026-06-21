@@ -26,7 +26,7 @@ object NotificationApiService {
                 }
 
                 val baseUrl = getBaseUrl(context)
-                val urlString = "$baseUrl/v1/driver/offers/$assignmentId/accept"
+                val urlString = "$baseUrl/drivers/offers/$assignmentId/accept"
                 Log.d(TAG, "Accept offer request: URL=$urlString")
                 
                 val url = URL(urlString)
@@ -81,7 +81,7 @@ object NotificationApiService {
                 }
 
                 val baseUrl = getBaseUrl(context)
-                val urlString = "$baseUrl/v1/driver/offers/$assignmentId/reject"
+                val urlString = "$baseUrl/drivers/offers/$assignmentId/reject"
                 Log.d(TAG, "Reject offer request: URL=$urlString")
                 
                 val url = URL(urlString)

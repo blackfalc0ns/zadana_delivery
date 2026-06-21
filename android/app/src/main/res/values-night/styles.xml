@@ -15,4 +15,22 @@
     <style name="NormalTheme" parent="@android:style/Theme.Black.NoTitleBar">
         <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+    
+    <!-- Custom Dialog Theme with App Colors for Night Mode -->
+    <style name="AppDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@color/dialog_background</item>
+        <item name="android:textColorPrimary">@color/dialog_text</item>
+        <item name="android:textColorSecondary">@color/dialog_text_secondary</item>
+        <item name="colorAccent">@color/primary_teal</item>
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+    </style>
+    
+    <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/primary_teal</item>
+    </style>
+    
+    <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+        <item name="android:textColor">@color/dialog_text_secondary</item>
+    </style>
 </resources>

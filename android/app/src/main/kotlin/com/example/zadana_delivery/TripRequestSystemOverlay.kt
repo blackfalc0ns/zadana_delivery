@@ -394,7 +394,7 @@ class TripRequestSystemOverlay(private val context: Context) {
     }
 
     private fun showAcceptConfirmationDialog() {
-        val builder = android.app.AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert)
+        val builder = android.app.AlertDialog.Builder(context, R.style.AppDialogTheme)
         builder.setTitle("تأكيد قبول الطلب")
         builder.setMessage("هل أنت متأكد من قبول طلب التوصيل؟")
         builder.setPositiveButton("قبول") { dialog, _ ->
@@ -465,7 +465,7 @@ class TripRequestSystemOverlay(private val context: Context) {
     }
 
     private fun showRejectConfirmationDialog() {
-        val builder = android.app.AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert)
+        val builder = android.app.AlertDialog.Builder(context, R.style.AppDialogTheme)
         builder.setTitle("تأكيد رفض الطلب")
         builder.setMessage("هل أنت متأكد من رفض طلب التوصيل؟")
         builder.setPositiveButton("رفض") { dialog, _ ->

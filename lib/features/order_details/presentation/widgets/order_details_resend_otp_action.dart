@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
-import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/core/widgets/loading/loading_overlay.dart';
 
 class OrderDetailsResendOtpAction extends StatefulWidget {
   const OrderDetailsResendOtpAction({
@@ -37,8 +37,16 @@ class _OrderDetailsResendOtpActionState
     if (_isSubmitting || _isCoolingDown) return;
 
     setState(() => _isSubmitting = true);
+    
+    LoadingOverlay.show(context);
     final success = await widget.onResend();
-    if (!mounted) return;
+    
+    if (!mounted) {
+      LoadingOverlay.hide();
+      return;
+    }
+    
+    LoadingOverlay.hide(context);
 
     if (success) {
       _startCooldown();
@@ -78,12 +86,7 @@ class _OrderDetailsResendOtpActionState
       alignment: AlignmentDirectional.centerStart,
       child: TextButton.icon(
         onPressed: _isSubmitting || _isCoolingDown ? null : _handleResend,
-        icon: _isSubmitting
-            ? CustomProgressIndicator.compact(
-                size: 16,
-                tintColor: scheme.primary,
-              )
-            : const Icon(Icons.refresh_rounded, size: 18),
+        icon: const Icon(Icons.refresh_rounded, size: 18),
         label: Text(text),
         style: TextButton.styleFrom(
           foregroundColor: scheme.primary,

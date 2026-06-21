@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFFFF</color>
+    
+    <!-- App primary colors -->
+    <color name="primary_orange">#FF9800</color>
+    <color name="primary_teal">#0D9488</color>
+    <color name="dialog_background">#FFFFFF</color>
+    <color name="dialog_text">#1F2937</color>
+    <color name="dialog_text_secondary">#6B7280</color>
 </resources>
