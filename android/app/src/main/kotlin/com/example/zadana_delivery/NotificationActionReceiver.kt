@@ -4,10 +4,17 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import android.widget.Toast
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class NotificationActionReceiver : BroadcastReceiver() {
+    private val scope = CoroutineScope(Dispatchers.Main + Job())
+
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action
         val assignmentId = intent.getStringExtra(EXTRA_ASSIGNMENT_ID)
@@ -30,29 +37,102 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
         when (action) {
             ACTION_ACCEPT -> {
-                handleAction(context, "accept", assignmentId, orderId, orderTitle)
+                handleAccept(context, assignmentId, orderId, orderTitle)
             }
             ACTION_REJECT -> {
-                handleAction(context, "reject", assignmentId, orderId, orderTitle)
+                handleReject(context, assignmentId, orderId, orderTitle)
             }
         }
     }
 
-    private fun handleAction(context: Context, action: String, assignmentId: String, orderId: String?, orderTitle: String) {
-        // Store the action to be consumed by Flutter
-        pendingAction = PendingNotificationAction(
-            action = action,
-            assignmentId = assignmentId,
-            orderId = orderId,
-            orderTitle = orderTitle
-        )
-        Log.d(TAG, "Stored pending $action action for assignmentId=$assignmentId")
+    private fun handleAccept(context: Context, assignmentId: String, orderId: String?, orderTitle: String) {
+        // Show loading toast
+        Toast.makeText(context, "جاري قبول $orderTitle...", Toast.LENGTH_SHORT).show()
         
-        // Launch the app - Flutter will show the dialog
-        launchApp(context)
+        scope.launch {
+            val result = NotificationApiService.acceptOffer(context, assignmentId)
+            
+            when (result) {
+                is NotificationApiService.ApiResult.Success -> {
+                    Log.d(TAG, "Accept offer succeeded via native API")
+                    Toast.makeText(context, "تم قبول الطلب بنجاح", Toast.LENGTH_SHORT).show()
+                    
+                    // Store the successful action result
+                    pendingAction = PendingNotificationAction(
+                        action = "accept",
+                        assignmentId = assignmentId,
+                        orderId = orderId,
+                        orderTitle = orderTitle,
+                        wasExecuted = true,
+                        wasSuccessful = true
+                    )
+                    
+                    // Launch the app to show the order details
+                    launchApp(context)
+                    notifyFlutterIfReady()
+                }
+                is NotificationApiService.ApiResult.Error -> {
+                    Log.e(TAG, "Accept offer failed via native API: ${result.message}")
+                    Toast.makeText(context, "فشل قبول الطلب: ${result.message}", Toast.LENGTH_LONG).show()
+                    
+                    // Store the failed action
+                    pendingAction = PendingNotificationAction(
+                        action = "accept",
+                        assignmentId = assignmentId,
+                        orderId = orderId,
+                        orderTitle = orderTitle,
+                        wasExecuted = true,
+                        wasSuccessful = false,
+                        errorMessage = result.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handleReject(context: Context, assignmentId: String, orderId: String?, orderTitle: String) {
+        // Show loading toast
+        Toast.makeText(context, "جاري رفض $orderTitle...", Toast.LENGTH_SHORT).show()
         
-        // Try to notify Flutter immediately if engine is ready
-        notifyFlutterIfReady()
+        scope.launch {
+            val result = NotificationApiService.rejectOffer(context, assignmentId)
+            
+            when (result) {
+                is NotificationApiService.ApiResult.Success -> {
+                    Log.d(TAG, "Reject offer succeeded via native API")
+                    Toast.makeText(context, "تم رفض الطلب", Toast.LENGTH_SHORT).show()
+                    
+                    // Store the successful action result
+                    pendingAction = PendingNotificationAction(
+                        action = "reject",
+                        assignmentId = assignmentId,
+                        orderId = orderId,
+                        orderTitle = orderTitle,
+                        wasExecuted = true,
+                        wasSuccessful = true
+                    )
+                    
+                    // Optionally launch the app
+                    launchApp(context)
+                    notifyFlutterIfReady()
+                }
+                is NotificationApiService.ApiResult.Error -> {
+                    Log.e(TAG, "Reject offer failed via native API: ${result.message}")
+                    Toast.makeText(context, "فشل رفض الطلب: ${result.message}", Toast.LENGTH_LONG).show()
+                    
+                    // Store the failed action
+                    pendingAction = PendingNotificationAction(
+                        action = "reject",
+                        assignmentId = assignmentId,
+                        orderId = orderId,
+                        orderTitle = orderTitle,
+                        wasExecuted = true,
+                        wasSuccessful = false,
+                        errorMessage = result.message
+                    )
+                }
+            }
+        }
     }
 
     private fun notifyFlutterIfReady() {
@@ -70,10 +150,13 @@ class NotificationActionReceiver : BroadcastReceiver() {
                         "action" to action.action,
                         "assignmentId" to action.assignmentId,
                         "orderId" to action.orderId,
-                        "orderTitle" to action.orderTitle
+                        "orderTitle" to action.orderTitle,
+                        "wasExecuted" to action.wasExecuted,
+                        "wasSuccessful" to action.wasSuccessful,
+                        "errorMessage" to action.errorMessage
                     )
                 )
-                Log.d(TAG, "Notified Flutter of ${action.action} action")
+                Log.d(TAG, "Notified Flutter of ${action.action} action (executed=${action.wasExecuted}, success=${action.wasSuccessful})")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Failed to notify Flutter immediately: ${e.message}")
@@ -92,7 +175,10 @@ class NotificationActionReceiver : BroadcastReceiver() {
         val action: String,
         val assignmentId: String,
         val orderId: String?,
-        val orderTitle: String
+        val orderTitle: String,
+        val wasExecuted: Boolean = false,
+        val wasSuccessful: Boolean = false,
+        val errorMessage: String? = null
     )
 
     companion object {

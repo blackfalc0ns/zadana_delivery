@@ -245,7 +245,7 @@ class OrderDetailsController extends ChangeNotifier {
     // transition that was applied recently or confirmed by a successful action.
     final localTransitionAt = _localTransitionAppliedAt;
     final isRecentLocalTransition = localTransitionAt != null &&
-        DateTime.now().difference(localTransitionAt).inSeconds < 5;
+        DateTime.now().difference(localTransitionAt).inSeconds < 10;
     final shouldPreserveLocalStage =
         (isRecentLocalTransition || _localTransitionConfirmed) &&
         resolvedStage.index < _stage.index;

@@ -68,7 +68,10 @@ class MainActivity : FlutterActivity() {
                                 "action" to pendingAction.action,
                                 "assignmentId" to pendingAction.assignmentId,
                                 "orderId" to (pendingAction.orderId ?: ""),
-                                "orderTitle" to pendingAction.orderTitle
+                                "orderTitle" to pendingAction.orderTitle,
+                                "wasExecuted" to pendingAction.wasExecuted,
+                                "wasSuccessful" to pendingAction.wasSuccessful,
+                                "errorMessage" to (pendingAction.errorMessage ?: "")
                             )
                             NotificationActionReceiver.pendingAction = null
                             result.success(actionMap)

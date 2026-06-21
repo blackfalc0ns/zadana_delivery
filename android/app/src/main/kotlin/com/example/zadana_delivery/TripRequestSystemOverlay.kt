@@ -387,6 +387,61 @@ class TripRequestSystemOverlay(private val context: Context) {
         }
     }
 
+    private fun showAcceptConfirmationDialog() {
+        val builder = android.app.AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert)
+        builder.setTitle("تأكيد قبول الطلب")
+        builder.setMessage("هل أنت متأكد من قبول طلب التوصيل؟")
+        builder.setPositiveButton("قبول") { dialog, _ ->
+            dialog.dismiss()
+            if (onAccept != null) {
+                onAccept?.invoke(currentAssignmentId)
+            }
+            bringAppToForeground()
+            hide()
+        }
+        builder.setNegativeButton("إلغاء") { dialog, _ ->
+            dialog.dismiss()
+        }
+        
+        val dialog = builder.create()
+        // Make dialog show on top of overlay
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            dialog.window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+        } else {
+            @Suppress("DEPRECATION")
+            dialog.window?.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
+        }
+        dialog.show()
+    }
+
+    private fun showRejectConfirmationDialog() {
+        val builder = android.app.AlertDialog.Builder(context, android.R.style.Theme_Material_Dialog_Alert)
+        builder.setTitle("تأكيد رفض الطلب")
+        builder.setMessage("هل أنت متأكد من رفض طلب التوصيل؟")
+        builder.setPositiveButton("رفض") { dialog, _ ->
+            dialog.dismiss()
+            if (onReject != null) {
+                onReject?.invoke(currentAssignmentId)
+            } else {
+                bringAppToForeground()
+            }
+            hide()
+        }
+        builder.setNegativeButton("إلغاء") { dialog, _ ->
+            dialog.dismiss()
+        }
+        
+        val dialog = builder.create()
+        // Make dialog show on top of overlay
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            dialog.window?.setType(WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
+        } else {
+            @Suppress("DEPRECATION")
+            dialog.window?.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT)
+        }
+        dialog.show()
+    }
+
     fun bringAppToForeground() {
         val launchIntent =
             context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
@@ -646,12 +701,7 @@ class TripRequestSystemOverlay(private val context: Context) {
                 cornerRadius = dp(14).toFloat()
             }
             setOnClickListener {
-                if (onReject != null) {
-                    onReject?.invoke(currentAssignmentId)
-                } else {
-                    bringAppToForeground()
-                }
-                hide()
+                showRejectConfirmationDialog()
             }
         }
         buttonsRow.addView(rejectBtn, LinearLayout.LayoutParams(
@@ -671,11 +721,7 @@ class TripRequestSystemOverlay(private val context: Context) {
                 cornerRadius = dp(14).toFloat()
             }
             setOnClickListener {
-                if (onAccept != null) {
-                    onAccept?.invoke(currentAssignmentId)
-                }
-                bringAppToForeground()
-                hide()
+                showAcceptConfirmationDialog()
             }
         }
         buttonsRow.addView(acceptBtn, LinearLayout.LayoutParams(

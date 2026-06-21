@@ -84,6 +84,7 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
   Timer? _assignmentPollingTimer;
   String? _activeAssignmentId;
   String? _activeOrderId;
+  DateTime? _lastLocalActionAt;
 
   Future<bool> doIntent(OrderDetailsEvent event) async {
     switch (event) {
@@ -351,6 +352,13 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
               assignmentIdValue != _activeAssignmentId) {
             return;
           }
+          // Ignore stale SignalR updates that arrive shortly after a successful local action
+          final lastActionAt = _lastLocalActionAt;
+          if (lastActionAt != null &&
+              DateTime.now().difference(lastActionAt).inSeconds < 8) {
+            _log('Ignoring potentially stale assignment update (recent local action)');
+            return;
+          }
           try {
             final entity = OrderAssignmentDetailsModelDto.fromJson(
               payload,
@@ -538,6 +546,8 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
     final result = await action();
     switch (result) {
       case ApiSuccessResult():
+        // Track when a local action succeeded to help filter stale SignalR updates
+        _lastLocalActionAt = DateTime.now();
         final localizedMessage = result.data.localizedMessage;
         final updatedAssignment = result.data.updatedAssignment;
         // Emit the updated assignment directly from the action response so the

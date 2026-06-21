@@ -4,11 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/di/di.dart';
-import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
-import 'package:zadana_delivery/features/driver_home/domain/usecase/accept_driver_offer_usecase.dart';
 import 'package:zadana_delivery/features/driver_home/domain/usecase/refresh_driver_home_usecase.dart';
-import 'package:zadana_delivery/features/driver_home/domain/usecase/reject_driver_offer_usecase.dart';
 
 import 'app_navigator_service.dart';
 import 'driver_notification_router_service.dart';
@@ -28,7 +25,6 @@ class DriverNotificationActionService {
   );
 
   bool _isInitialized = false;
-  bool _isProcessing = false;
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -50,27 +46,30 @@ class DriverNotificationActionService {
         final action = arguments['action']?.toString().trim() ?? '';
         final assignmentId = arguments['assignmentId']?.toString().trim() ?? '';
         final orderId = arguments['orderId']?.toString().trim() ?? '';
-        final orderTitle = arguments['orderTitle']?.toString().trim() ?? 'الطلب';
+        final wasExecuted = arguments['wasExecuted'] as bool? ?? false;
+        final wasSuccessful = arguments['wasSuccessful'] as bool? ?? false;
+        final errorMessage = arguments['errorMessage']?.toString().trim() ?? '';
 
         debugPrint(
           '[DriverNotificationAction] Received notification action: '
-          'action=$action, assignmentId=$assignmentId, orderId=$orderId, title=$orderTitle',
+          'action=$action, assignmentId=$assignmentId, executed=$wasExecuted, success=$wasSuccessful',
         );
 
         if (action.isEmpty || assignmentId.isEmpty) {
-          debugPrint(
-            '[DriverNotificationAction] Ignoring invalid action: '
-            'action=$action, assignmentId=$assignmentId',
-          );
+          debugPrint('[DriverNotificationAction] Ignoring invalid action');
           return;
         }
 
-        await _showConfirmationDialogAndProcess(
-          action,
-          assignmentId,
-          orderId,
-          orderTitle,
-        );
+        // If action was already executed in native, just refresh and navigate
+        if (wasExecuted) {
+          await _handleExecutedAction(
+            action,
+            assignmentId,
+            orderId,
+            wasSuccessful,
+            errorMessage,
+          );
+        }
         break;
     }
   }
@@ -88,7 +87,9 @@ class DriverNotificationActionService {
       final action = result['action']?.toString().trim() ?? '';
       final assignmentId = result['assignmentId']?.toString().trim() ?? '';
       final orderId = result['orderId']?.toString().trim() ?? '';
-      final orderTitle = result['orderTitle']?.toString().trim() ?? 'الطلب';
+      final wasExecuted = result['wasExecuted'] as bool? ?? false;
+      final wasSuccessful = result['wasSuccessful'] as bool? ?? false;
+      final errorMessage = result['errorMessage']?.toString().trim() ?? '';
 
       if (action.isEmpty || assignmentId.isEmpty) {
         return;
@@ -96,15 +97,19 @@ class DriverNotificationActionService {
 
       debugPrint(
         '[DriverNotificationAction] Consumed pending action: '
-        'action=$action, assignmentId=$assignmentId, orderId=$orderId, title=$orderTitle',
+        'action=$action, assignmentId=$assignmentId, executed=$wasExecuted, success=$wasSuccessful',
       );
 
-      await _showConfirmationDialogAndProcess(
-        action,
-        assignmentId,
-        orderId,
-        orderTitle,
-      );
+      // If action was already executed in native, just refresh and navigate
+      if (wasExecuted) {
+        await _handleExecutedAction(
+          action,
+          assignmentId,
+          orderId,
+          wasSuccessful,
+          errorMessage,
+        );
+      }
     } catch (error) {
       debugPrint(
         '[DriverNotificationAction] Failed to consume pending action: $error',
@@ -112,156 +117,44 @@ class DriverNotificationActionService {
     }
   }
 
-  Future<void> _showConfirmationDialogAndProcess(
+  Future<void> _handleExecutedAction(
     String action,
     String assignmentId,
     String orderId,
-    String orderTitle,
+    bool wasSuccessful,
+    String errorMessage,
   ) async {
-    await _navigatorService.waitUntilReady();
-    final context = _navigatorService.currentContext;
-    if (context == null) {
+    if (!wasSuccessful) {
       debugPrint(
-        '[DriverNotificationAction] No context available for dialog',
+        '[DriverNotificationAction] Action failed in native: $errorMessage',
       );
+      // Action failed - error was already shown as Toast in native
       return;
     }
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(action == 'accept' ? 'قبول الطلب' : 'رفض الطلب'),
-          content: Text(
-            action == 'accept'
-                ? 'هل تريد قبول $orderTitle؟'
-                : 'هل تريد رفض $orderTitle؟',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('إلغاء'),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: Text(action == 'accept' ? 'قبول' : 'رفض'),
-            ),
-          ],
-        );
-      },
+    debugPrint(
+      '[DriverNotificationAction] Action succeeded in native, refreshing home',
     );
 
-    if (confirmed == true) {
-      await _processAction(action, assignmentId, orderId);
-    }
-  }
-
-  Future<void> _processAction(
-    String action,
-    String assignmentId,
-    String orderId,
-  ) async {
-    if (_isProcessing) {
-      debugPrint(
-        '[DriverNotificationAction] Already processing an action, skipping: $action',
-      );
-      return;
-    }
-
-    _isProcessing = true;
+    // Refresh home to get updated state
     try {
+      await getIt<RefreshDriverHomeUseCase>().call();
+    } catch (error) {
+      debugPrint('[DriverNotificationAction] Failed to refresh home: $error');
+    }
+
+    // Navigate to order details if it was an accept action
+    if (action == 'accept' && assignmentId.isNotEmpty) {
       await _navigatorService.waitUntilReady();
-
-      switch (action) {
-        case 'accept':
-          await _handleAccept(assignmentId, orderId);
-          break;
-        case 'reject':
-          await _handleReject(assignmentId, orderId);
-          break;
-        default:
-          debugPrint(
-            '[DriverNotificationAction] Unknown action: $action',
-          );
-      }
-    } finally {
-      _isProcessing = false;
-    }
-  }
-
-  Future<void> _handleAccept(String assignmentId, String orderId) async {
-    debugPrint(
-      '[DriverNotificationAction] Processing accept for assignmentId=$assignmentId',
-    );
-
-    try {
-      // Execute accept offer use case
-      final acceptUseCase = getIt<AcceptDriverOfferUseCase>();
-      final result = await acceptUseCase.call(assignmentId);
-
-      switch (result) {
-        case ApiSuccessResult():
-          debugPrint(
-            '[DriverNotificationAction] Accept successful for assignmentId=$assignmentId',
-          );
-          // Refresh home to update UI
-          unawaited(getIt<RefreshDriverHomeUseCase>().call());
-          
-          // Navigate to order details if we have the assignmentId
-          if (assignmentId.isNotEmpty) {
-            unawaited(
-              _routerService.handleNotificationTap(
-                {
-                  'screen': 'assignment_detail',
-                  'assignmentId': assignmentId,
-                  'orderId': orderId,
-                },
-                source: 'notification_action_accept',
-              ),
-            );
-          }
-          break;
-        case ApiErrorResult():
-          debugPrint(
-            '[DriverNotificationAction] Accept failed for assignmentId=$assignmentId',
-          );
-          break;
-      }
-    } catch (error) {
-      debugPrint(
-        '[DriverNotificationAction] Accept error for assignmentId=$assignmentId: $error',
-      );
-    }
-  }
-
-  Future<void> _handleReject(String assignmentId, String orderId) async {
-    debugPrint(
-      '[DriverNotificationAction] Processing reject for assignmentId=$assignmentId',
-    );
-
-    try {
-      // Execute reject offer use case
-      final rejectUseCase = getIt<RejectDriverOfferUseCase>();
-      final result = await rejectUseCase.call(assignmentId);
-
-      switch (result) {
-        case ApiSuccessResult():
-          debugPrint(
-            '[DriverNotificationAction] Reject successful for assignmentId=$assignmentId',
-          );
-          // Refresh home to update UI
-          unawaited(getIt<RefreshDriverHomeUseCase>().call());
-          break;
-        case ApiErrorResult():
-          debugPrint(
-            '[DriverNotificationAction] Reject failed for assignmentId=$assignmentId',
-          );
-          break;
-      }
-    } catch (error) {
-      debugPrint(
-        '[DriverNotificationAction] Reject error for assignmentId=$assignmentId: $error',
+      unawaited(
+        _routerService.handleNotificationTap(
+          {
+            'screen': 'assignment_detail',
+            'assignmentId': assignmentId,
+            'orderId': orderId,
+          },
+          source: 'notification_action_accept_native',
+        ),
       );
     }
   }
