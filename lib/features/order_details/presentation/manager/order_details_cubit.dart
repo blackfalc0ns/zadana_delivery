@@ -585,10 +585,16 @@ class OrderDetailsCubit extends Cubit<OrderDetailsState> {
           _syncArrivedAtVendorPolling(updatedAssignment);
         }
         if (onSuccessRefreshHome) {
-          await _refreshDriverHomeUseCase.call();
+          unawaited(_refreshDriverHomeUseCase.call());
         }
-        if (onSuccessRefreshAssignment && _activeAssignmentId != null) {
-          await _loadAssignmentDetails(_activeAssignmentId!, silent: true);
+        // Only trigger a silent refresh if the action response did NOT include
+        // the updated assignment. When the response already carries the fresh
+        // assignment data we applied it above — doing another fetch risks
+        // returning stale server data that briefly reverts the UI.
+        if (onSuccessRefreshAssignment &&
+            _activeAssignmentId != null &&
+            updatedAssignment == null) {
+          unawaited(_loadAssignmentDetails(_activeAssignmentId!, silent: true));
         }
         return true;
       case ApiErrorResult():

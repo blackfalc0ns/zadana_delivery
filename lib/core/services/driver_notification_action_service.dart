@@ -143,16 +143,12 @@ class DriverNotificationActionService {
       debugPrint('[DriverNotificationAction] Failed to refresh home: $error');
     }
 
-    // Navigate to order details if it was an accept action
-    if (action == 'accept' && assignmentId.isNotEmpty) {
+    // Navigate to home after accepting an order
+    if (action == 'accept') {
       await _navigatorService.waitUntilReady();
       unawaited(
         _routerService.handleNotificationTap(
-          {
-            'screen': 'assignment_detail',
-            'assignmentId': assignmentId,
-            'orderId': orderId,
-          },
+          {'screen': 'home'},
           source: 'notification_action_accept_native',
         ),
       );
