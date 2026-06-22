@@ -35,6 +35,13 @@ int _intFromJson(dynamic value) {
   return int.tryParse(value?.toString() ?? '') ?? 0;
 }
 
+bool _boolFromJson(dynamic value) {
+  if (value is bool) return value;
+  if (value is int) return value != 0;
+  final str = value?.toString().toLowerCase() ?? '';
+  return str == 'true' || str == '1';
+}
+
 double _doubleFromJson(dynamic value) {
   if (value is double) return value;
   if (value is num) return value.toDouble();

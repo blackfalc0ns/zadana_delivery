@@ -105,7 +105,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               message: state.response!.message,
             );
             context.pushNamed(
-              AppRoutes.resetPassword,
+              AppRoutes.verifyResetOtp,
               arguments: _identifierController.text.trim(),
               rootNavigator: true,
             );

@@ -36,6 +36,7 @@ abstract class EndPoints {
   static const String driverVerifyOtp = '/drivers/auth/verify-otp';
   static const String driverResendOtp = '/drivers/auth/resend-otp';
   static const String driverForgotPassword = '/drivers/auth/forgot-password';
+  static const String driverVerifyResetOtp = '/drivers/auth/verify-reset-otp';
   static const String driverResetPassword = '/drivers/auth/reset-password';
   static const String driverRefreshToken = '/drivers/auth/refresh-token';
   static const String driverLogout = '/drivers/auth/logout';

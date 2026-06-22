@@ -4,6 +4,7 @@ abstract class AppRoutes {
   static const String driverVerifyOtp = '/driver-verify-otp';
   static const String signUp = '/sign-up';
   static const String forgetPassword = '/forget-password';
+  static const String verifyResetOtp = '/verify-reset-otp';
   static const String resetPassword = '/reset-password';
   static const String driverProfileCompletion = '/driver-profile-completion';
   static const String accountPendingApproval = '/account-pending-approval';

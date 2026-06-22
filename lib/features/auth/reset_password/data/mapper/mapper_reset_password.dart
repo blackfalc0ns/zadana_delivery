@@ -7,7 +7,7 @@ extension ResetPasswordRequestEntityMapper on ResetPasswordRequestEntity {
   ResetPasswordRequestModelDto toDto() {
     return ResetPasswordRequestModelDto(
       identifier: identifier.trim(),
-      otpCode: otpCode.trim(),
+      resetToken: resetToken.trim(),
       newPassword: newPassword,
     );
   }

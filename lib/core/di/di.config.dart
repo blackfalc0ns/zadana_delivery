@@ -97,14 +97,26 @@ import '../../features/auth/reset_password/data/data_source/reset_password_remot
     as _i454;
 import '../../features/auth/reset_password/data/data_source/reset_password_remote_data_source_impl.dart'
     as _i17;
+import '../../features/auth/reset_password/data/data_source/verify_reset_otp_remote_data_source.dart'
+    as _i7701;
+import '../../features/auth/reset_password/data/data_source/verify_reset_otp_remote_data_source_impl.dart'
+    as _i7702;
 import '../../features/auth/reset_password/data/repo/reset_password_repository_impl.dart'
     as _i51;
+import '../../features/auth/reset_password/data/repo/verify_reset_otp_repository_impl.dart'
+    as _i7703;
 import '../../features/auth/reset_password/domain/repo/reset_password_repository.dart'
     as _i985;
+import '../../features/auth/reset_password/domain/repo/verify_reset_otp_repository.dart'
+    as _i7704;
 import '../../features/auth/reset_password/domain/usecase/reset_password_usecase.dart'
     as _i184;
+import '../../features/auth/reset_password/domain/usecase/verify_reset_otp_usecase.dart'
+    as _i7705;
 import '../../features/auth/reset_password/presentation/manager/reset_password_view_model.dart'
     as _i641;
+import '../../features/auth/reset_password/presentation/manager/verify_reset_otp_view_model.dart'
+    as _i7706;
 import '../../features/auth/session/data/data_source/auth_session_remote_data_source.dart'
     as _i430;
 import '../../features/auth/session/data/data_source/auth_session_remote_data_source_impl.dart'
@@ -525,6 +537,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i454.ResetPasswordRemoteDataSource>(
       () => _i17.ResetPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
+    gh.factory<_i7701.VerifyResetOtpRemoteDataSource>(
+      () => _i7702.VerifyResetOtpRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
     gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
       () => _i223.DriverNotificationBootstrapService(
         gh<_i179.AppNavigatorService>(),
@@ -729,6 +744,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i985.ResetPasswordRepository>(
       () => _i51.ResetPasswordRepositoryImpl(
         gh<_i454.ResetPasswordRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i7704.VerifyResetOtpRepository>(
+      () => _i7703.VerifyResetOtpRepositoryImpl(
+        gh<_i7701.VerifyResetOtpRemoteDataSource>(),
       ),
     );
     gh.factory<_i137.LoginRepository>(
@@ -961,6 +981,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
     );
+    gh.factory<_i7705.VerifyResetOtpUseCase>(
+      () => _i7705.VerifyResetOtpUseCase(gh<_i7704.VerifyResetOtpRepository>()),
+    );
     gh.factory<_i663.GetCompletedOrderDetailsUseCase>(
       () => _i663.GetCompletedOrderDetailsUseCase(
         gh<_i929.CompletedOrdersRepository>(),
@@ -1046,7 +1069,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i641.ResetPasswordViewModel>(
       () => _i641.ResetPasswordViewModel(
         gh<_i184.ResetPasswordUseCase>(),
-        gh<_i731.ForgotPasswordUseCase>(),
+      ),
+    );
+    gh.factory<_i7706.VerifyResetOtpViewModel>(
+      () => _i7706.VerifyResetOtpViewModel(
+        gh<_i7705.VerifyResetOtpUseCase>(),
+        gh<_i324.ResendDriverOtpUseCase>(),
       ),
     );
     gh.factory<_i808.LoginViewModel>(

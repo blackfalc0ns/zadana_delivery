@@ -17,6 +17,12 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
   final GetCompletedOrdersUseCase _getCompletedOrdersUseCase;
   final GetCompletedOrderDetailsUseCase _getCompletedOrderDetailsUseCase;
 
+  static const int _perPage = 20;
+
+  /// Cache per status tab to avoid re-fetching when switching.
+  final Map<CompletedOrderStatus, _TabCache> _cache = {};
+
+
   void loadInitial() {
     doIntent(const CompletedOrdersLoadEvent());
   }
@@ -27,6 +33,10 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
 
   Future<void> refreshOrders() {
     return doIntent(const CompletedOrdersLoadEvent(refresh: true));
+  }
+
+  Future<void> loadMore() {
+    return doIntent(const CompletedOrdersLoadMoreEvent());
   }
 
   void clearError() {
@@ -72,6 +82,9 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
       case CompletedOrdersLoadEvent():
         await _loadOrders(refresh: event.refresh);
         return null;
+      case CompletedOrdersLoadMoreEvent():
+        await _loadMoreOrders();
+        return null;
       case CompletedOrdersSelectStatusEvent():
         await _selectStatus(event.status);
         return null;
@@ -84,13 +97,43 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
   }
 
   Future<void> _selectStatus(CompletedOrderStatus status) async {
+    if (status == state.selectedStatus) return;
+
+    // Save current tab data to cache before switching.
+    _saveCurrentToCache();
+
     emit(state.copyWith(selectedStatus: status, clearFailure: true));
+
+    // Restore from cache if available.
+    final cached = _cache[status];
+    if (cached != null) {
+      emit(
+        state.copyWith(
+          isLoading: false,
+          isFilterLoading: false,
+          isRefreshing: false,
+          hasLoadedOnce: true,
+          orders: cached.orders,
+          totalCount: cached.totalCount,
+          currentPage: cached.currentPage,
+          hasMore: cached.hasMore,
+          clearFailure: true,
+        ),
+      );
+      return;
+    }
+
     await _loadOrders();
   }
 
   Future<void> _loadOrders({bool refresh = false}) async {
     final isInitialLoad = !refresh && !state.hasLoadedOnce;
     final isFilterLoad = !refresh && state.hasLoadedOnce;
+
+    // If refreshing, invalidate cache for current status.
+    if (refresh) {
+      _cache.remove(state.selectedStatus);
+    }
 
     emit(
       state.copyWith(
@@ -103,11 +146,14 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
 
     final result = await _getCompletedOrdersUseCase.call(
       status: state.selectedStatus,
+      page: 1,
+      perPage: _perPage,
     );
 
     switch (result) {
       case ApiSuccessResult():
-        final orders = result.data
+        final page = result.data;
+        final orders = page.orders
           ..sort(
             (first, second) => second.completedAt.compareTo(first.completedAt),
           );
@@ -118,16 +164,59 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
             isRefreshing: false,
             hasLoadedOnce: true,
             orders: orders,
-            totalCount: orders.length,
+            totalCount: page.totalCount,
+            currentPage: page.page,
+            hasMore: page.hasMore,
             clearFailure: true,
           ),
         );
+        _saveCurrentToCache();
       case ApiErrorResult():
         emit(
           state.copyWith(
             isLoading: false,
             isFilterLoading: false,
             isRefreshing: false,
+            failure: result.failure,
+          ),
+        );
+    }
+  }
+
+  Future<void> _loadMoreOrders() async {
+    if (state.isLoadingMore || !state.hasMore) return;
+
+    emit(state.copyWith(isLoadingMore: true, clearFailure: true));
+
+    final nextPage = state.currentPage + 1;
+    final result = await _getCompletedOrdersUseCase.call(
+      status: state.selectedStatus,
+      page: nextPage,
+      perPage: _perPage,
+    );
+
+    switch (result) {
+      case ApiSuccessResult():
+        final page = result.data;
+        final allOrders = [...state.orders, ...page.orders]
+          ..sort(
+            (first, second) => second.completedAt.compareTo(first.completedAt),
+          );
+        emit(
+          state.copyWith(
+            isLoadingMore: false,
+            orders: allOrders,
+            totalCount: page.totalCount,
+            currentPage: page.page,
+            hasMore: page.hasMore,
+            clearFailure: true,
+          ),
+        );
+        _saveCurrentToCache();
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isLoadingMore: false,
             failure: result.failure,
           ),
         );
@@ -151,7 +240,6 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
           state.copyWith(
             isDetailsLoading: false,
             clearActiveDetailsOrderId: true,
-            lastDetailsOrderId: orderId,
             clearFailure: true,
           ),
         );
@@ -161,7 +249,6 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
           state.copyWith(
             isDetailsLoading: false,
             clearActiveDetailsOrderId: true,
-            lastDetailsOrderId: orderId,
             failure: result.failure,
           ),
         );
@@ -174,10 +261,34 @@ class CompletedOrdersViewModel extends Cubit<CompletedOrdersState> {
     emit(state.copyWith(clearFailure: true));
   }
 
-  CompletedOrder? _orderById(String orderId) {
-    for (final order in state.orders) {
-      if (order.id == orderId) return order;
-    }
-    return null;
+  void _saveCurrentToCache() {
+    _cache[state.selectedStatus] = _TabCache(
+      orders: state.orders,
+      totalCount: state.totalCount,
+      currentPage: state.currentPage,
+      hasMore: state.hasMore,
+    );
   }
+
+  CompletedOrder? _orderById(String orderId) {
+    try {
+      return state.orders.firstWhere((order) => order.id == orderId);
+    } catch (_) {
+      return null;
+    }
+  }
+}
+
+class _TabCache {
+  const _TabCache({
+    required this.orders,
+    required this.totalCount,
+    required this.currentPage,
+    required this.hasMore,
+  });
+
+  final List<CompletedOrder> orders;
+  final int totalCount;
+  final int currentPage;
+  final bool hasMore;
 }

@@ -104,7 +104,10 @@ class TokenInterceptor extends QueuedInterceptor {
         requestOptions.extra[retryAttemptedKey] != true &&
         !path.contains(EndPoints.driverLogin) &&
         !path.contains(EndPoints.driverRegister) &&
+        !path.contains(EndPoints.driverVerifyOtp) &&
+        !path.contains(EndPoints.driverResendOtp) &&
         !path.contains(EndPoints.driverForgotPassword) &&
+        !path.contains(EndPoints.driverVerifyResetOtp) &&
         !path.contains(EndPoints.driverResetPassword) &&
         !path.contains(EndPoints.driverRefreshToken) &&
         !path.contains(EndPoints.driverLogout);

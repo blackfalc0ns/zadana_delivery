@@ -34,6 +34,9 @@ abstract class ApiServices {
   @POST(EndPoints.driverForgotPassword)
   Future<dynamic> forgotDriverPassword(@Body() Map<String, dynamic> request);
 
+  @POST(EndPoints.driverVerifyResetOtp)
+  Future<dynamic> verifyDriverResetOtp(@Body() Map<String, dynamic> request);
+
   @POST(EndPoints.driverResetPassword)
   Future<dynamic> resetDriverPassword(@Body() Map<String, dynamic> request);
 
@@ -59,7 +62,11 @@ abstract class ApiServices {
   Future<dynamic> getDriverHome();
 
   @GET(EndPoints.driverCompletedOrders)
-  Future<dynamic> getDriverCompletedOrders({@Query('status') String? status});
+  Future<dynamic> getDriverCompletedOrders({
+    @Query('status') String? status,
+    @Query('page') int page = 1,
+    @Query('perPage') int perPage = 20,
+  });
 
   @GET('${EndPoints.driverCompletedOrders}/{orderId}')
   Future<dynamic> getDriverCompletedOrderDetails(

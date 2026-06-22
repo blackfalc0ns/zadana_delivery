@@ -4,6 +4,8 @@ import 'package:zadana_delivery/features/completed_orders/domain/entities/comple
 abstract class CompletedOrdersRemoteDataSource {
   Future<CompletedOrdersResponseModelDto> getCompletedOrders({
     CompletedOrderStatus? status,
+    int page = 1,
+    int perPage = 20,
   });
 
   Future<CompletedOrderDetailsModelDto> getCompletedOrderDetails(

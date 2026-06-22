@@ -4,6 +4,7 @@ import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
@@ -25,17 +26,30 @@ class CompletedOrdersScreen extends StatefulWidget {
 
 class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
   late final CompletedOrdersViewModel _viewModel;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _viewModel = getIt<CompletedOrdersViewModel>()..loadInitial();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _viewModel.close();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    // Trigger load more when 200px from the bottom
+    if (currentScroll >= maxScroll - 200) {
+      _viewModel.loadMore();
+    }
   }
 
   Future<void> _openOrderDetails(CompletedOrder order) async {
@@ -157,9 +171,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                         ),
                       ),
                       Expanded(
-                        child: state.isLoading
-                            ? const Center(child: CustomProgressIndicator())
-                            : state.isFilterLoading
+                        child: state.isLoading || state.isFilterLoading
                             ? const Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 16),
                                 child: CompletedOrdersLoadingSkeleton(),
@@ -209,6 +221,7 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                                         : RefreshIndicator(
                                             onRefresh: _viewModel.refreshOrders,
                                             child: ListView.separated(
+                                              controller: _scrollController,
                                               padding:
                                                   const EdgeInsets.fromLTRB(
                                                     16,
@@ -221,10 +234,14 @@ class _CompletedOrdersScreenState extends State<CompletedOrdersScreen> {
                                                     parent:
                                                         BouncingScrollPhysics(),
                                                   ),
-                                              itemCount: orders.length,
-                                              separatorBuilder: (_, _) =>
+                                              itemCount: orders.length +
+                                                  (state.isLoadingMore ? 3 : 0),
+                                              separatorBuilder: (_, __) =>
                                                   const SizedBox(height: 12),
                                               itemBuilder: (context, index) {
+                                                if (index >= orders.length) {
+                                                  return _PaginationSkeletonCard();
+                                                }
                                                 final order = orders[index];
                                                 return CompletedOrderCard(
                                                   order: order,
@@ -303,6 +320,112 @@ class _SummaryCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PaginationSkeletonCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final mutedColor = scheme.outlineVariant.withValues(alpha: 0.18);
+    final borderColor = scheme.outlineVariant.withValues(alpha: 0.35);
+
+    return SkeletonStateWidget(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: scheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(width: .5, color: borderColor),
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: mutedColor,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: mutedColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        width: 90,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: mutedColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 74,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: mutedColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Container(height: 1, color: mutedColor),
+            const SizedBox(height: 10),
+            Row(
+              children: List.generate(
+                3,
+                (index) => Expanded(
+                  child: Padding(
+                    padding:
+                        EdgeInsetsDirectional.only(end: index == 2 ? 0 : 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 56,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: mutedColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          width: index == 1 ? 78 : double.infinity,
+                          height: 13,
+                          decoration: BoxDecoration(
+                            color: mutedColor,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

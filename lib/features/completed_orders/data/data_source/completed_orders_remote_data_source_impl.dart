@@ -16,10 +16,14 @@ class CompletedOrdersRemoteDataSourceImpl
   @override
   Future<CompletedOrdersResponseModelDto> getCompletedOrders({
     CompletedOrderStatus? status,
+    int page = 1,
+    int perPage = 20,
   }) async {
     try {
       final response = await _apiServices.getDriverCompletedOrders(
         status: _statusToApiValue(status),
+        page: page,
+        perPage: perPage,
       );
       return CompletedOrdersResponseModelDto.fromJson(_normalizeMap(response));
     } on DioException catch (exception) {

@@ -10,6 +10,10 @@ class CompletedOrdersLoadEvent extends CompletedOrdersEvent {
   final bool refresh;
 }
 
+class CompletedOrdersLoadMoreEvent extends CompletedOrdersEvent {
+  const CompletedOrdersLoadMoreEvent();
+}
+
 class CompletedOrdersSelectStatusEvent extends CompletedOrdersEvent {
   const CompletedOrdersSelectStatusEvent(this.status);
 

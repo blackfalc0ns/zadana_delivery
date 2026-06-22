@@ -5,6 +5,9 @@ class CompletedOrdersResponseModelDto {
   const CompletedOrdersResponseModelDto({
     this.items = const <CompletedOrderListItemModelDto>[],
     this.totalCount = 0,
+    this.page = 1,
+    this.perPage = 20,
+    this.hasMore = false,
   });
 
   factory CompletedOrdersResponseModelDto.fromJson(Map<String, dynamic> json) =>
@@ -14,6 +17,12 @@ class CompletedOrdersResponseModelDto {
   final List<CompletedOrderListItemModelDto> items;
   @JsonKey(fromJson: _intFromJson)
   final int totalCount;
+  @JsonKey(fromJson: _intFromJson)
+  final int page;
+  @JsonKey(fromJson: _intFromJson)
+  final int perPage;
+  @JsonKey(fromJson: _boolFromJson)
+  final bool hasMore;
 
   Map<String, dynamic> toJson() =>
       _$CompletedOrdersResponseModelDtoToJson(this);

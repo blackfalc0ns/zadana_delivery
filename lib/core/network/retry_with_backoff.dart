@@ -92,6 +92,12 @@ class RetryWithBackoffInterceptor extends Interceptor {
         err.type == DioExceptionType.connectionError) {
       return true;
     }
+
+    // Retry on unknown errors (connection reset, socket errors, etc.)
+    // Only when there's no response (meaning the server was never reached)
+    if (err.type == DioExceptionType.unknown && err.response == null) {
+      return true;
+    }
     
     return false;
   }

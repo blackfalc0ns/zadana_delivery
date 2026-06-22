@@ -167,6 +167,28 @@ class _ApiServices implements ApiServices {
   }
 
   @override
+  Future<dynamic> verifyDriverResetOtp(Map<String, dynamic> request) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    _data.addAll(request);
+    final _options = _setStreamType<dynamic>(
+      Options(method: 'POST', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/drivers/auth/verify-reset-otp',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    final _result = await _dio.fetch(_options);
+    final _value = _result.data;
+    return _value;
+  }
+
+  @override
   Future<dynamic> resetDriverPassword(Map<String, dynamic> request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -339,9 +361,17 @@ class _ApiServices implements ApiServices {
   }
 
   @override
-  Future<dynamic> getDriverCompletedOrders({String? status}) async {
+  Future<dynamic> getDriverCompletedOrders({
+    String? status,
+    int page = 1,
+    int perPage = 20,
+  }) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'status': status};
+    final queryParameters = <String, dynamic>{
+      r'status': status,
+      r'page': page,
+      r'perPage': perPage,
+    };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;

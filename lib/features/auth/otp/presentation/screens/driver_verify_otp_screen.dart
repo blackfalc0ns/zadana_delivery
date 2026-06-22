@@ -128,9 +128,7 @@ class _DriverVerifyOtpScreenState extends State<DriverVerifyOtpScreen> {
           }
 
           final resendException = state.resendFailure?.asException;
-          if (!state.isResending &&
-              resendException != null &&
-              resendException.errorType.showSnackBar) {
+          if (!state.isResending && resendException != null) {
             CustomSnackbar.showError(
               context: context,
               message: ErrorMessagePresenter.snackBarMessage(

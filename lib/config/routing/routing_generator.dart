@@ -9,6 +9,7 @@ import 'package:zadana_delivery/features/auth/register/presentation/models/regis
 import 'package:zadana_delivery/features/auth/register/presentation/pages/driver_profile_completion_screen.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/pages/sign_up_screen.dart';
 import 'package:zadana_delivery/features/auth/reset_password/presentation/pages/reset_password_screen.dart';
+import 'package:zadana_delivery/features/auth/reset_password/presentation/pages/verify_reset_otp_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_blocked_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/account_pending_approval_screen.dart';
 import 'package:zadana_delivery/features/auth/session/presentation/pages/auth_gate_screen.dart';
@@ -62,11 +63,20 @@ class RouteGenerator {
         return _pageRoute(settings, const SignUpScreen());
       case AppRoutes.forgetPassword:
         return _pageRoute(settings, const ForgotPasswordScreen());
-      case AppRoutes.resetPassword:
+      case AppRoutes.verifyResetOtp:
         final identifier = settings.arguments as String? ?? '';
         return _pageRoute(
           settings,
-          ResetPasswordScreen(identifier: identifier),
+          VerifyResetOtpScreen(identifier: identifier),
+        );
+      case AppRoutes.resetPassword:
+        final args = settings.arguments as ResetPasswordArgs;
+        return _pageRoute(
+          settings,
+          ResetPasswordScreen(
+            identifier: args.identifier,
+            resetToken: args.resetToken,
+          ),
         );
       case AppRoutes.driverProfileCompletion:
         final draft = settings.arguments as RegisterAccountDraft?;

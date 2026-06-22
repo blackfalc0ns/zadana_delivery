@@ -55,7 +55,12 @@ class ProfileCubit extends Cubit<ProfileState> {
     final notificationsEnabled = await getIt<DriverNotificationDeviceService>()
         .isPushEnabled();
 
+    if (isClosed) return;
+
     final result = await _getProfileUseCase.call();
+
+    if (isClosed) return;
+
     switch (result) {
       case ApiSuccessResult():
         emit(
