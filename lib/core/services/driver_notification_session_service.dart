@@ -43,6 +43,10 @@ class DriverNotificationSessionService {
     await _bootstrapService.restoreAuthenticatedPushIfPossible();
     await _deviceService.registerCurrentDeviceIfAuthenticated();
     await _driverRealtimeService.ensureConnected();
+    // Sync per-category notification sound preferences locally.
+    try {
+      await _deviceService.getDevicePreferences();
+    } catch (_) {}
   }
 
   Future<void> handleSuccessfulAuthentication(String userId) async {

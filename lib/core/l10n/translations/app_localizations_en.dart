@@ -3101,4 +3101,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get order_support_stage_delivered => 'Delivered';
+
+  @override
+  String get profile_section_under_review_title => 'Under Review';
+
+  @override
+  String get profile_section_under_review_subtitle =>
+      'Your changes have been submitted and are pending admin approval. The displayed data is the currently approved version.';
+
+  @override
+  String get profile_section_rejected_title => 'Rejected';
+
+  @override
+  String get profile_section_rejected_default_subtitle =>
+      'Your last update request was rejected. You can re-submit.';
 }

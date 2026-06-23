@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
+import 'notification_sound_preferences_service.dart';
 
 @pragma('vm:entry-point')
 void driverLocalNotificationBackgroundTap(NotificationResponse response) {
@@ -20,13 +21,17 @@ void driverLocalNotificationBackgroundTap(NotificationResponse response) {
 
 @lazySingleton
 class DriverLocalNotificationService {
-  DriverLocalNotificationService(this._routerService);
+  DriverLocalNotificationService(
+    this._routerService,
+    this._soundPreferencesService,
+  );
 
   static const String _notificationImageAssetPath =
       'assets/images/notification_logo.png';
   static const String _androidNotificationIcon = 'ic_notification_small';
 
   final DriverNotificationRouterService _routerService;
+  final NotificationSoundPreferencesService _soundPreferencesService;
   final FlutterLocalNotificationsPlugin _plugin =
       FlutterLocalNotificationsPlugin();
 
@@ -82,6 +87,19 @@ class DriverLocalNotificationService {
       normalizedPayload,
     );
 
+    // Resolve per-category sound
+    final category = DriverNotificationPayloadResolver.resolveCategory(
+      normalizedPayload,
+    );
+    final dataSound = DriverNotificationPayloadResolver.resolveNotificationSound(
+      normalizedPayload,
+    );
+    final resolvedSoundKey = _soundPreferencesService.resolveSound(
+      category: category,
+      dataSound: dataSound,
+    );
+    final isSilent = resolvedSoundKey == NotificationSoundValues.off;
+
     await _plugin.show(
       notificationId.hashCode,
       title,
@@ -102,6 +120,10 @@ class DriverLocalNotificationService {
           visibility: NotificationVisibility.public,
           category: AndroidNotificationCategory.message,
           ticker: 'zadana_driver_notification',
+          playSound: !isSilent,
+          sound: isSilent
+              ? null
+              : RawResourceAndroidNotificationSound(resolvedSoundKey),
         ),
         iOS: DarwinNotificationDetails(
           attachments: await _resolveIosAttachments(),
@@ -109,7 +131,8 @@ class DriverLocalNotificationService {
           presentBadge: true,
           presentBanner: true,
           presentList: true,
-          presentSound: true,
+          presentSound: !isSilent,
+          sound: isSilent ? null : '$resolvedSoundKey.wav',
         ),
       ),
       payload: jsonEncode(normalizedPayload),

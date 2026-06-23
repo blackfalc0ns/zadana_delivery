@@ -153,11 +153,11 @@ class _ProfileScreenState extends State<ProfileScreen>
               : AppRoutes.accountPendingApproval,
         );
       case ProfileActionType.personalInfo:
-        return _open(AppRoutes.profileEdit);
+        return _openWithProfile(AppRoutes.profilePersonalInfo);
       case ProfileActionType.vehicleInfo:
-        return _open(AppRoutes.profileVehicleInfo);
+        return _openWithProfile(AppRoutes.profileVehicleInfo);
       case ProfileActionType.documents:
-        return _open(AppRoutes.profileSecurityDocuments);
+        return _openWithProfile(AppRoutes.profileSecurityDocuments);
       case ProfileActionType.orders:
         return _openOrdersTab();
       case ProfileActionType.language:
@@ -322,6 +322,15 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Future<void> _open(String route) async {
     await context.pushNamed(route, rootNavigator: true);
+    if (mounted) _cubit.loadProfile();
+  }
+
+  Future<void> _openWithProfile(String route) async {
+    await context.pushNamed(
+      route,
+      rootNavigator: true,
+      arguments: _cubit.state.profile,
+    );
     if (mounted) _cubit.loadProfile();
   }
 

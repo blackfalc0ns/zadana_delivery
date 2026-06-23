@@ -72,6 +72,10 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     await doIntent(const NotificationsLoadEvent(refresh: true));
   }
 
+  Future<void> loadMore() async {
+    await doIntent(const NotificationsLoadMoreEvent());
+  }
+
   Future<bool> markAsRead(String id) {
     return doIntent(NotificationsMarkReadEvent(id));
   }
@@ -93,6 +97,8 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
     switch (event) {
       case NotificationsLoadEvent():
         return _loadNotifications(refresh: event.refresh);
+      case NotificationsLoadMoreEvent():
+        return _loadMoreNotifications();
       case NotificationsClearErrorEvent():
         _clearError();
         return true;
@@ -141,6 +147,48 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
           state.copyWith(
             isLoading: false,
             isRefreshing: false,
+            failure: result.failure,
+          ),
+        );
+        return false;
+    }
+  }
+
+  Future<bool> _loadMoreNotifications() async {
+    final currentNotifications = state.notifications;
+    if (currentNotifications == null) return false;
+    if (state.isLoadingMore || !currentNotifications.hasMore) return false;
+
+    emit(state.copyWith(isLoadingMore: true, clearFailure: true));
+
+    final nextPage = currentNotifications.page + 1;
+    final result = await _getDriverNotificationsUseCase.call(
+      page: nextPage,
+      perPage: currentNotifications.perPage,
+    );
+
+    switch (result) {
+      case ApiSuccessResult(data: final page):
+        final allItems = [...currentNotifications.items, ...page.items];
+        emit(
+          state.copyWith(
+            isLoadingMore: false,
+            notifications: currentNotifications.copyWith(
+              items: allItems,
+              page: page.page,
+              hasMore: page.hasMore,
+              total: page.total,
+              unreadCount: page.unreadCount,
+            ),
+            unreadCount: page.unreadCount,
+            clearFailure: true,
+          ),
+        );
+        return true;
+      case ApiErrorResult():
+        emit(
+          state.copyWith(
+            isLoadingMore: false,
             failure: result.failure,
           ),
         );

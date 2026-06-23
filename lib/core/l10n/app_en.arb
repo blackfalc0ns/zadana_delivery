@@ -1087,5 +1087,10 @@
   "order_support_stage_arrived_at_vendor": "Arrived at store",
   "order_support_stage_picked_up": "Picked up",
   "order_support_stage_on_the_way": "On the way",
-  "order_support_stage_delivered": "Delivered"
+  "order_support_stage_delivered": "Delivered",
+
+  "profile_section_under_review_title": "Under Review",
+  "profile_section_under_review_subtitle": "Your changes have been submitted and are pending admin approval. The displayed data is the currently approved version.",
+  "profile_section_rejected_title": "Rejected",
+  "profile_section_rejected_default_subtitle": "Your last update request was rejected. You can re-submit."
 }

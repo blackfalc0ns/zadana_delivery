@@ -5773,6 +5773,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delivered'**
   String get order_support_stage_delivered;
+
+  /// No description provided for @profile_section_under_review_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Under Review'**
+  String get profile_section_under_review_title;
+
+  /// No description provided for @profile_section_under_review_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes have been submitted and are pending admin approval. The displayed data is the currently approved version.'**
+  String get profile_section_under_review_subtitle;
+
+  /// No description provided for @profile_section_rejected_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get profile_section_rejected_title;
+
+  /// No description provided for @profile_section_rejected_default_subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your last update request was rejected. You can re-submit.'**
+  String get profile_section_rejected_default_subtitle;
 }
 
 class _AppLocalizationsDelegate

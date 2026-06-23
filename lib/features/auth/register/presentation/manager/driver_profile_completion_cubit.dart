@@ -144,6 +144,9 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     required String imagesRequiredMessage,
     required String profileSuccessMessage,
   }) async {
+    // Prevent double submit
+    if (state.isLoading) return null;
+
     final validationMessage = _validateCurrentStep(
       isFormValid: isFormValid,
       vehicleRequiredMessage: vehicleRequiredMessage,

@@ -36,4 +36,7 @@ abstract class AppConstants {
   static const String helpContentKey = "help_screen_content";
   static const String privacyPolicyContentKey = "privacy_policy";
   static const String securityRolesContentKey = "security_roles_config";
+
+  // 🔹 Per-Category Notification Sounds
+  static const String notificationSoundsMap = 'notificationSoundsMap';
 }

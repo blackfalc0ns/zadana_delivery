@@ -3,6 +3,7 @@ import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/validators.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
+import 'package:zadana_delivery/features/auth/register/domain/entities/driver_region_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_region_city_selector.dart';
 import 'package:zadana_delivery/features/auth/register/presentation/widget/driver_profile/driver_vehicle_type_selector.dart';
@@ -22,13 +23,17 @@ class VehicleInfoFields extends StatelessWidget {
     required this.vehicleLicenseExpiryController,
     required this.regionCities,
     required this.isRegionCitiesLoading,
+    required this.isCitiesLoading,
+    required this.regions,
     required this.selectedCityId,
     required this.selectedRegionCode,
     required this.selectedCityName,
     required this.selectedRegionName,
     required this.regionCitiesFailure,
+    required this.citiesFailure,
     required this.onRetryRegionCities,
-    required this.onRegionCityChanged,
+    required this.onRegionSelected,
+    required this.onCitySelected,
     required this.onPickDate,
   });
 
@@ -42,13 +47,17 @@ class VehicleInfoFields extends StatelessWidget {
   final TextEditingController vehicleLicenseExpiryController;
   final List<DriverRegionCityEntity> regionCities;
   final bool isRegionCitiesLoading;
+  final bool isCitiesLoading;
+  final List<DriverRegionEntity> regions;
   final String selectedCityId;
   final String selectedRegionCode;
   final String selectedCityName;
   final String selectedRegionName;
   final Failure? regionCitiesFailure;
+  final Failure? citiesFailure;
   final VoidCallback onRetryRegionCities;
-  final ValueChanged<DriverRegionCityEntity> onRegionCityChanged;
+  final void Function(String regionCode, String regionName) onRegionSelected;
+  final ValueChanged<DriverRegionCityEntity> onCitySelected;
   final ValueChanged<TextEditingController> onPickDate;
 
   @override
@@ -71,13 +80,17 @@ class VehicleInfoFields extends StatelessWidget {
               DriverRegionCitySelector(
                 regionCities: regionCities,
                 isLoading: isRegionCitiesLoading,
+                isCitiesLoading: isCitiesLoading,
+                regions: regions,
                 selectedCityId: selectedCityId,
                 selectedRegionCode: selectedRegionCode,
                 selectedCityName: selectedCityName,
                 selectedRegionName: selectedRegionName,
                 failure: regionCitiesFailure,
+                citiesFailure: citiesFailure,
                 onRetry: onRetryRegionCities,
-                onChanged: onRegionCityChanged,
+                onRegionSelected: onRegionSelected,
+                onCitySelected: onCitySelected,
               ),
             ],
           ),

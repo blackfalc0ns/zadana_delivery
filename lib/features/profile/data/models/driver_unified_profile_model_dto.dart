@@ -35,6 +35,7 @@ class DriverUnifiedProfileModelDto {
     required this.missingRequirements,
     required this.canSubmitForReview,
     required this.rejectionPolicy,
+    required this.sections,
   });
 
   factory DriverUnifiedProfileModelDto.fromJson(Map<String, dynamic> json) {
@@ -84,6 +85,7 @@ class DriverUnifiedProfileModelDto {
       rejectionPolicy: DriverRejectionPolicyModelDto.fromJson(
         _readMap(json['rejectionPolicy']),
       ),
+      sections: _readSections(json['sections']),
     );
   }
 
@@ -119,6 +121,7 @@ class DriverUnifiedProfileModelDto {
   final List<String> missingRequirements;
   final bool canSubmitForReview;
   final DriverRejectionPolicyModelDto rejectionPolicy;
+  final List<Map<String, dynamic>> sections;
 
   static int _readInt(dynamic value) {
     if (value is int) return value;
@@ -155,5 +158,13 @@ class DriverUnifiedProfileModelDto {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);
     return const <String, dynamic>{};
+  }
+
+  static List<Map<String, dynamic>> _readSections(dynamic value) {
+    if (value is! List) return const <Map<String, dynamic>>[];
+    return value
+        .whereType<Map>()
+        .map((item) => Map<String, dynamic>.from(item))
+        .toList(growable: false);
   }
 }

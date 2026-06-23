@@ -6,17 +6,23 @@ import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/helpers/document_expiry_date_helper.dart';
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/manager/register_zones_cubit.dart';
+import 'package:zadana_delivery/features/auth/register/presentation/manager/register_zones_state.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
 import 'package:zadana_delivery/features/profile/presentation/models/profile_action_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_scaffold.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_loading_skeleton.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_section_status_banner.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/vehicle_info_fields.dart';
 
 class VehicleInfoScreen extends StatefulWidget {
-  const VehicleInfoScreen({super.key});
+  const VehicleInfoScreen({super.key, this.initialProfile});
+
+  final DriverUnifiedProfileEntity? initialProfile;
 
   @override
   State<VehicleInfoScreen> createState() => _VehicleInfoScreenState();
@@ -24,6 +30,7 @@ class VehicleInfoScreen extends StatefulWidget {
 
 class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   late final ProfileCubit _cubit;
+  late final RegisterRegionsCubit _regionsCubit;
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nationalIdController;
   late final TextEditingController _licenseController;
@@ -53,8 +60,8 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = getIt<ProfileCubit>()
-      ..doIntent(const ProfileFormLoadEvent(includeRegionCities: true));
+    _cubit = getIt<ProfileCubit>();
+    _regionsCubit = getIt<RegisterRegionsCubit>()..loadRegions();
     _nationalIdController = TextEditingController();
     _licenseController = TextEditingController();
     _nationalIdExpiryController = TextEditingController();
@@ -67,6 +74,40 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     _driverLicenseExpiryController.addListener(_onFieldChanged);
     _vehicleLicenseNumberController.addListener(_onFieldChanged);
     _vehicleLicenseExpiryController.addListener(_onFieldChanged);
+
+    if (widget.initialProfile != null) {
+      _cubit.seedProfile(widget.initialProfile!);
+      _seedVehicleControllers(widget.initialProfile!);
+    } else {
+      _cubit.doIntent(const ProfileFormLoadEvent(includeRegionCities: false));
+    }
+  }
+
+  void _seedVehicleControllers(DriverUnifiedProfileEntity profile) {
+    _didSeedControllers = true;
+    _vehicleType = DriverVehicleType.normalize(profile.vehicleType);
+    _nationalIdController.text = profile.nationalId;
+    _licenseController.text = profile.licenseNumber;
+    _nationalIdExpiryController.text =
+        DocumentExpiryDateHelper.toFormValue(profile.nationalIdExpiryDate);
+    _driverLicenseExpiryController.text =
+        DocumentExpiryDateHelper.toFormValue(profile.driverLicenseExpiryDate);
+    _vehicleLicenseNumberController.text = profile.vehicleLicenseNumber;
+    _vehicleLicenseExpiryController.text =
+        DocumentExpiryDateHelper.toFormValue(profile.vehicleLicenseExpiryDate);
+    _selectedCityId = profile.city;
+    _selectedRegionCode = profile.region;
+    _selectedCityName = profile.displayCityName;
+    _selectedRegionName = profile.displayRegionName;
+    _originalVehicleType = _vehicleType;
+    _originalNationalId = _nationalIdController.text;
+    _originalLicense = _licenseController.text;
+    _originalNationalIdExpiry = _nationalIdExpiryController.text;
+    _originalDriverLicenseExpiry = _driverLicenseExpiryController.text;
+    _originalVehicleLicenseNumber = _vehicleLicenseNumberController.text;
+    _originalVehicleLicenseExpiry = _vehicleLicenseExpiryController.text;
+    _originalCityId = _selectedCityId;
+    _originalRegionCode = _selectedRegionCode;
   }
 
   void _onFieldChanged() {
@@ -98,15 +139,21 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     _vehicleLicenseNumberController.dispose();
     _vehicleLicenseExpiryController.dispose();
     _cubit.close();
+    _regionsCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final locale = context.localization;
-    return BlocProvider.value(
-      value: _cubit,
-      child: BlocConsumer<ProfileCubit, ProfileState>(
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _cubit),
+        BlocProvider.value(value: _regionsCubit),
+      ],
+      child: BlocBuilder<RegisterRegionsCubit, RegisterRegionsState>(
+        builder: (context, regionsState) {
+          return BlocConsumer<ProfileCubit, ProfileState>(
         listener: (context, state) {
           final profile = state.profile;
           if (!_didSeedControllers && profile != null) {
@@ -202,6 +249,12 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             isSaving: state.isSaving || state.isLoading,
             isFormDirty: _isFormDirty,
             onSave: _save,
+            banner: state.profile?.vehicleSection != null &&
+                    !state.profile!.vehicleSection.isValid
+                ? ProfileSectionStatusBanner(
+                    section: state.profile!.vehicleSection,
+                  )
+                : null,
             children: [
               VehicleInfoFields(
                 groupValue: _vehicleType,
@@ -212,16 +265,32 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                 driverLicenseExpiryController: _driverLicenseExpiryController,
                 vehicleLicenseNumberController: _vehicleLicenseNumberController,
                 vehicleLicenseExpiryController: _vehicleLicenseExpiryController,
-                regionCities: state.regionCities,
-                isRegionCitiesLoading: state.isRegionCitiesLoading,
+                regionCities: _regionsCubit.state.regionCities,
+                isRegionCitiesLoading: _regionsCubit.state.isLoading,
+                isCitiesLoading: _regionsCubit.state.isCitiesLoading,
+                regions: _regionsCubit.state.regions,
                 selectedCityId: _selectedCityId,
                 selectedRegionCode: _selectedRegionCode,
                 selectedCityName: _selectedCityName,
                 selectedRegionName: _selectedRegionName,
-                regionCitiesFailure: state.regionCitiesFailure,
-                onRetryRegionCities: () =>
-                    _cubit.doIntent(const ProfileFormRetryRegionCitiesEvent()),
-                onRegionCityChanged: (regionCity) {
+                regionCitiesFailure: _regionsCubit.state.failure,
+                citiesFailure: _regionsCubit.state.citiesFailure,
+                onRetryRegionCities: _regionsCubit.loadRegions,
+                onRegionSelected: (code, name) {
+                  setState(() {
+                    _selectedRegionCode = code;
+                    _selectedRegionName = name;
+                    _selectedCityId = '';
+                    _selectedCityName = '';
+                  });
+                  _regionsCubit.loadCitiesForRegion(
+                    regionCode: code,
+                    regionName: name,
+                  );
+                  _cubit.clearError();
+                  _checkDirty();
+                },
+                onCitySelected: (regionCity) {
                   setState(() {
                     _selectedCityId = regionCity.id;
                     _selectedRegionCode = regionCity.regionCode;
@@ -235,6 +304,8 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
               ),
             ],
           );
+        },
+      );
         },
       ),
     );

@@ -6,6 +6,7 @@ import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart'
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/core/widgets/image_source_picker_sheet.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
@@ -14,9 +15,12 @@ import 'package:zadana_delivery/features/profile/presentation/models/profile_act
 import 'package:zadana_delivery/features/profile/presentation/widgets/personal_info_form.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_scaffold.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_loading_skeleton.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_section_status_banner.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
-  const PersonalInfoScreen({super.key});
+  const PersonalInfoScreen({super.key, this.initialProfile});
+
+  final DriverUnifiedProfileEntity? initialProfile;
 
   @override
   State<PersonalInfoScreen> createState() => _PersonalInfoScreenState();
@@ -41,7 +45,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = getIt<ProfileCubit>()..doIntent(const ProfileFormLoadEvent());
+    _cubit = getIt<ProfileCubit>();
     _nameController = TextEditingController();
     _emailController = TextEditingController();
     _phoneController = TextEditingController();
@@ -50,6 +54,25 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     _emailController.addListener(_onFieldChanged);
     _phoneController.addListener(_onFieldChanged);
     _addressController.addListener(_onFieldChanged);
+
+    if (widget.initialProfile != null) {
+      _cubit.seedProfile(widget.initialProfile!);
+      _seedControllers(widget.initialProfile!);
+    } else {
+      _cubit.doIntent(const ProfileFormLoadEvent());
+    }
+  }
+
+  void _seedControllers(DriverUnifiedProfileEntity profile) {
+    _didSeedControllers = true;
+    _originalName = profile.fullName;
+    _originalEmail = profile.email;
+    _originalPhone = profile.phone;
+    _originalAddress = profile.address;
+    _nameController.text = profile.fullName;
+    _emailController.text = profile.email;
+    _phoneController.text = profile.phone;
+    _addressController.text = profile.address;
   }
 
   void _onFieldChanged() {
@@ -145,6 +168,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
             formKey: _formKey,
             isSaving: state.isSaving || state.isLoading,
             onSave: _save,
+            banner: state.profile?.personalSection != null &&
+                    !state.profile!.personalSection.isValid
+                ? ProfileSectionStatusBanner(
+                    section: state.profile!.personalSection,
+                  )
+                : null,
             children: [
               PersonalInfoForm(
                 profilePhotoUrl: state.profile?.personalPhotoUrl ?? '',

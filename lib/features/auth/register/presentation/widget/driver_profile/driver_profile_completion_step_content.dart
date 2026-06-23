@@ -125,15 +125,42 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                   DriverRegionCitySelector(
                     regionCities: regionCitiesState.regionCities,
                     isLoading: regionCitiesState.isLoading,
+                    isCitiesLoading: regionCitiesState.isCitiesLoading,
+                    regions: regionCitiesState.regions,
                     selectedCityId: state.draft.cityId,
                     selectedRegionCode: state.draft.regionCode,
                     selectedCityName: state.draft.cityName,
                     selectedRegionName: state.draft.regionName,
                     failure: regionCitiesState.failure,
+                    citiesFailure: regionCitiesState.citiesFailure,
                     onRetry: context
                         .read<RegisterRegionsCubit>()
-                        .loadRegionCities,
-                    onChanged: isSubmitting ? (_) {} : onRegionCityChanged,
+                        .loadRegions,
+                    onRegionSelected: (code, name) {
+                      if (!isSubmitting) {
+                        onRegionCityChanged(
+                          DriverRegionCityEntity(
+                            id: '',
+                            regionCode: code,
+                            regionName: name,
+                            cityName: '',
+                            centerLat: 0,
+                            centerLng: 0,
+                            radiusKm: 0,
+                            isActive: true,
+                          ),
+                        );
+                        context
+                            .read<RegisterRegionsCubit>()
+                            .loadCitiesForRegion(
+                              regionCode: code,
+                              regionName: name,
+                            );
+                      }
+                    },
+                    onCitySelected: isSubmitting
+                        ? (_) {}
+                        : onRegionCityChanged,
                   ),
                   const SizedBox(height: 14),
                   _buildField(

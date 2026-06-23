@@ -13,6 +13,7 @@ import 'package:zadana_delivery/features/auth/register/domain/usecase/get_driver
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_documents_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/get_driver_unified_profile_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_documents_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_personal_usecase.dart'
@@ -81,6 +82,22 @@ class ProfileCubit extends Cubit<ProfileState> {
       case ApiErrorResult():
         emit(state.copyWith(isLoading: false, failure: result.failure));
     }
+  }
+
+  /// Seeds the cubit with an existing profile to avoid re-fetching.
+  void seedProfile(DriverUnifiedProfileEntity profile) {
+    emit(state.copyWith(
+      profile: profile,
+      isLoading: false,
+      documentPaths: {
+        'portrait': profile.personalPhotoUrl,
+        'idFront': profile.nationalIdFrontImageUrl,
+        'idBack': profile.nationalIdBackImageUrl,
+        'license': profile.licenseImageUrl,
+        'vehicle': profile.vehicleImageUrl,
+      },
+      clearFailure: true,
+    ));
   }
 
   void updateNotifications(bool value) {

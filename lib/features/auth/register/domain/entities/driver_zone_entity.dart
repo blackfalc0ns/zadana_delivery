@@ -18,4 +18,26 @@ class DriverRegionCityEntity {
   final double centerLng;
   final double radiusKm;
   final bool isActive;
+
+  DriverRegionCityEntity copyWith({
+    String? id,
+    String? regionCode,
+    String? regionName,
+    String? cityName,
+    double? centerLat,
+    double? centerLng,
+    double? radiusKm,
+    bool? isActive,
+  }) {
+    return DriverRegionCityEntity(
+      id: id ?? this.id,
+      regionCode: regionCode ?? this.regionCode,
+      regionName: regionName ?? this.regionName,
+      cityName: cityName ?? this.cityName,
+      centerLat: centerLat ?? this.centerLat,
+      centerLng: centerLng ?? this.centerLng,
+      radiusKm: radiusKm ?? this.radiusKm,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }

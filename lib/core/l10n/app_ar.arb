@@ -1070,5 +1070,10 @@
   "order_support_stage_arrived_at_vendor": "تم الوصول للمتجر",
   "order_support_stage_picked_up": "تم الاستلام",
   "order_support_stage_on_the_way": "في الطريق",
-  "order_support_stage_delivered": "تم التسليم"
+  "order_support_stage_delivered": "تم التسليم",
+
+  "profile_section_under_review_title": "تحت المراجعة",
+  "profile_section_under_review_subtitle": "تم إرسال التعديلات وبانتظار موافقة الإدارة. البيانات المعروضة هي البيانات المعتمدة الحالية.",
+  "profile_section_rejected_title": "تم الرفض",
+  "profile_section_rejected_default_subtitle": "تم رفض آخر طلب تعديل. يمكنك إعادة التعديل."
 }

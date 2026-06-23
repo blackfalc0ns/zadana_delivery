@@ -21,6 +21,7 @@ class ProfileFormScaffold extends StatelessWidget {
     required this.children,
     this.actionText,
     this.isFormDirty = true,
+    this.banner,
   });
 
   final String title;
@@ -34,6 +35,7 @@ class ProfileFormScaffold extends StatelessWidget {
   final List<Widget> children;
   final String? actionText;
   final bool isFormDirty;
+  final Widget? banner;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,10 @@ class ProfileFormScaffold extends StatelessWidget {
                     icon: headerIcon,
                     colorToken: headerColorToken,
                   ),
+                  if (banner != null) ...[
+                    const SizedBox(height: Spacing.sm),
+                    banner!,
+                  ],
                   const SizedBox(height: Spacing.base),
                   ...children,
                   const SizedBox(height: Spacing.lg),

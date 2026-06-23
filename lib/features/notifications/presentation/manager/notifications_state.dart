@@ -5,6 +5,7 @@ class NotificationsState {
   const NotificationsState({
     this.isLoading = false,
     this.isRefreshing = false,
+    this.isLoadingMore = false,
     this.isMarkingAllRead = false,
     this.isDeletingAll = false,
     this.isNotificationActionLoading = false,
@@ -19,6 +20,7 @@ class NotificationsState {
 
   final bool isLoading;
   final bool isRefreshing;
+  final bool isLoadingMore;
   final bool isMarkingAllRead;
   final bool isDeletingAll;
   final bool isNotificationActionLoading;
@@ -33,6 +35,7 @@ class NotificationsState {
   NotificationsState copyWith({
     bool? isLoading,
     bool? isRefreshing,
+    bool? isLoadingMore,
     bool? isMarkingAllRead,
     bool? isDeletingAll,
     bool? isNotificationActionLoading,
@@ -49,6 +52,7 @@ class NotificationsState {
     return NotificationsState(
       isLoading: isLoading ?? this.isLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
+      isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       isMarkingAllRead: isMarkingAllRead ?? this.isMarkingAllRead,
       isDeletingAll: isDeletingAll ?? this.isDeletingAll,
       isNotificationActionLoading:

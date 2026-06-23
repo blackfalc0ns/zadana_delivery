@@ -8,6 +8,10 @@ class NotificationsLoadEvent extends NotificationsEvent {
   final bool refresh;
 }
 
+class NotificationsLoadMoreEvent extends NotificationsEvent {
+  const NotificationsLoadMoreEvent();
+}
+
 class NotificationsClearErrorEvent extends NotificationsEvent {
   const NotificationsClearErrorEvent();
 }

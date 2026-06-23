@@ -89,6 +89,10 @@ import '../../features/auth/register/domain/repo/register_repository.dart'
     as _i251;
 import '../../features/auth/register/domain/usecase/get_driver_zones_usecase.dart'
     as _i985;
+import '../../features/auth/register/domain/usecase/get_region_cities_usecase.dart'
+    as _i628;
+import '../../features/auth/register/domain/usecase/get_regions_usecase.dart'
+    as _i708;
 import '../../features/auth/register/domain/usecase/register_usecase.dart'
     as _i635;
 import '../../features/auth/register/presentation/manager/register_zones_cubit.dart'
@@ -98,25 +102,25 @@ import '../../features/auth/reset_password/data/data_source/reset_password_remot
 import '../../features/auth/reset_password/data/data_source/reset_password_remote_data_source_impl.dart'
     as _i17;
 import '../../features/auth/reset_password/data/data_source/verify_reset_otp_remote_data_source.dart'
-    as _i7701;
+    as _i863;
 import '../../features/auth/reset_password/data/data_source/verify_reset_otp_remote_data_source_impl.dart'
-    as _i7702;
+    as _i119;
 import '../../features/auth/reset_password/data/repo/reset_password_repository_impl.dart'
     as _i51;
 import '../../features/auth/reset_password/data/repo/verify_reset_otp_repository_impl.dart'
-    as _i7703;
+    as _i228;
 import '../../features/auth/reset_password/domain/repo/reset_password_repository.dart'
     as _i985;
 import '../../features/auth/reset_password/domain/repo/verify_reset_otp_repository.dart'
-    as _i7704;
+    as _i665;
 import '../../features/auth/reset_password/domain/usecase/reset_password_usecase.dart'
     as _i184;
 import '../../features/auth/reset_password/domain/usecase/verify_reset_otp_usecase.dart'
-    as _i7705;
+    as _i288;
 import '../../features/auth/reset_password/presentation/manager/reset_password_view_model.dart'
     as _i641;
 import '../../features/auth/reset_password/presentation/manager/verify_reset_otp_view_model.dart'
-    as _i7706;
+    as _i691;
 import '../../features/auth/session/data/data_source/auth_session_remote_data_source.dart'
     as _i430;
 import '../../features/auth/session/data/data_source/auth_session_remote_data_source_impl.dart'
@@ -338,6 +342,7 @@ import '../services/driver_runtime_services_controller.dart' as _i88;
 import '../services/file_upload_service.dart' as _i102;
 import '../services/language_interceptor.dart' as _i32;
 import '../services/language_service.dart' as _i819;
+import '../services/notification_sound_preferences_service.dart' as _i134;
 import '../services/registration_upload_token_service.dart' as _i487;
 import '../services/session_expiry_handler.dart' as _i1017;
 import '../services/token_interceptor.dart' as _i1056;
@@ -426,6 +431,11 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i148.DeviceIdService>(
       () => _i148.DeviceIdService(gh<_i460.SharedPreferences>()),
     );
+    gh.lazySingleton<_i134.NotificationSoundPreferencesService>(
+      () => _i134.NotificationSoundPreferencesService(
+        gh<_i460.SharedPreferences>(),
+      ),
+    );
     gh.factory<_i820.AuthRefreshService>(
       () => _i820.AuthRefreshService(
         gh<_i361.Dio>(instanceName: 'refreshDio'),
@@ -459,11 +469,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i649.DriverTrackingRepository>(),
       ),
     );
-    gh.lazySingleton<_i430.DriverLocalNotificationService>(
-      () => _i430.DriverLocalNotificationService(
-        gh<_i585.DriverNotificationRouterService>(),
-      ),
-    );
     gh.factory<_i1056.TokenInterceptor>(
       () => _i1056.TokenInterceptor(
         gh<_i227.TokenService>(),
@@ -486,12 +491,10 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i32.LanguageInterceptor>(),
       ),
     );
-    gh.lazySingleton<_i1059.DriverNotificationDeviceService>(
-      () => _i1059.DriverNotificationDeviceService(
-        gh<_i361.Dio>(),
-        gh<_i460.SharedPreferences>(),
-        gh<_i227.TokenService>(),
-        gh<_i819.LanguageService>(),
+    gh.lazySingleton<_i430.DriverLocalNotificationService>(
+      () => _i430.DriverLocalNotificationService(
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i134.NotificationSoundPreferencesService>(),
       ),
     );
     gh.lazySingleton<_i1017.SessionExpiryHandler>(
@@ -499,6 +502,15 @@ extension GetItInjectableX on _i174.GetIt {
         tokenService: gh<_i227.TokenService>(),
         navigatorService: gh<_i179.AppNavigatorService>(),
         realtimeService: gh<_i794.DriverRealtimeService>(),
+      ),
+    );
+    gh.lazySingleton<_i1059.DriverNotificationDeviceService>(
+      () => _i1059.DriverNotificationDeviceService(
+        gh<_i361.Dio>(),
+        gh<_i460.SharedPreferences>(),
+        gh<_i227.TokenService>(),
+        gh<_i819.LanguageService>(),
+        gh<_i134.NotificationSoundPreferencesService>(),
       ),
     );
     gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
@@ -536,9 +548,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i454.ResetPasswordRemoteDataSource>(
       () => _i17.ResetPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
-    );
-    gh.factory<_i7701.VerifyResetOtpRemoteDataSource>(
-      () => _i7702.VerifyResetOtpRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
     gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
       () => _i223.DriverNotificationBootstrapService(
@@ -583,6 +592,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i430.AuthSessionRemoteDataSource>(
       () => _i502.AuthSessionRemoteDataSourceImpl(gh<_i804.ApiServices>()),
+    );
+    gh.factory<_i863.VerifyResetOtpRemoteDataSource>(
+      () => _i119.VerifyResetOtpRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
     gh.factory<_i548.DriverVerifyOtpRemoteDataSource>(
       () => _i798.DriverVerifyOtpRemoteDataSourceImpl(gh<_i804.ApiServices>()),
@@ -688,6 +700,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i755.DriverSupportRepository>(),
       ),
     );
+    gh.factory<_i665.VerifyResetOtpRepository>(
+      () => _i228.VerifyResetOtpRepositoryImpl(
+        gh<_i863.VerifyResetOtpRemoteDataSource>(),
+      ),
+    );
     gh.lazySingleton<_i102.FileUploadService>(
       () => externalModules.provideFileUploadService(
         gh<_i804.ApiServices>(),
@@ -744,11 +761,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i985.ResetPasswordRepository>(
       () => _i51.ResetPasswordRepositoryImpl(
         gh<_i454.ResetPasswordRemoteDataSource>(),
-      ),
-    );
-    gh.factory<_i7704.VerifyResetOtpRepository>(
-      () => _i7703.VerifyResetOtpRepositoryImpl(
-        gh<_i7701.VerifyResetOtpRemoteDataSource>(),
       ),
     );
     gh.factory<_i137.LoginRepository>(
@@ -831,10 +843,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverIdentityService>(),
       ),
     );
-    gh.factory<_i599.DriverRegionsRepository>(
-      () => _i772.DriverRegionsRepositoryImpl(
-        gh<_i897.DriverRegionsRemoteDataSource>(),
-      ),
+    gh.factory<_i288.VerifyResetOtpUseCase>(
+      () => _i288.VerifyResetOtpUseCase(gh<_i665.VerifyResetOtpRepository>()),
     );
     gh.factory<_i929.CompletedOrdersRepository>(
       () => _i563.CompletedOrdersRepositoryImpl(
@@ -975,14 +985,14 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i992.OrderDetailsCubit(gh<_i696.GetOrderAssignmentDetailsUseCase>()),
     );
-    gh.factory<_i985.GetDriverRegionsUseCase>(
-      () => _i985.GetDriverRegionsUseCase(gh<_i599.DriverRegionsRepository>()),
+    gh.factory<_i599.DriverRegionsRepository>(
+      () => _i772.DriverRegionsRepositoryImpl(
+        gh<_i897.DriverRegionsRemoteDataSource>(),
+        gh<_i819.LanguageService>(),
+      ),
     );
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
-    );
-    gh.factory<_i7705.VerifyResetOtpUseCase>(
-      () => _i7705.VerifyResetOtpUseCase(gh<_i7704.VerifyResetOtpRepository>()),
     );
     gh.factory<_i663.GetCompletedOrderDetailsUseCase>(
       () => _i663.GetCompletedOrderDetailsUseCase(
@@ -1012,6 +1022,9 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i371.VerifyDriverOtpUseCase>(
       () => _i371.VerifyDriverOtpUseCase(gh<_i338.DriverVerifyOtpRepository>()),
     );
+    gh.factory<_i641.ResetPasswordViewModel>(
+      () => _i641.ResetPasswordViewModel(gh<_i184.ResetPasswordUseCase>()),
+    );
     gh.factory<_i219.DriverTrackingCubit>(
       () => _i219.DriverTrackingCubit(
         gh<_i802.WatchDriverHomeUseCase>(),
@@ -1026,6 +1039,12 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i855.CompletedOrdersViewModel(
         gh<_i763.GetCompletedOrdersUseCase>(),
         gh<_i663.GetCompletedOrderDetailsUseCase>(),
+      ),
+    );
+    gh.factory<_i691.VerifyResetOtpViewModel>(
+      () => _i691.VerifyResetOtpViewModel(
+        gh<_i288.VerifyResetOtpUseCase>(),
+        gh<_i324.ResendDriverOtpUseCase>(),
       ),
     );
     gh.factory<_i339.GetDriverUnifiedProfileUseCase>(
@@ -1057,28 +1076,30 @@ extension GetItInjectableX on _i174.GetIt {
       () =>
           _i458.UpdateDriverVehicleUseCase(gh<_i540.DriverProfileRepository>()),
     );
-    gh.factory<_i340.RegisterRegionsCubit>(
-      () => _i340.RegisterRegionsCubit(gh<_i985.GetDriverRegionsUseCase>()),
-    );
     gh.factory<_i191.DriverVerifyOtpViewModel>(
       () => _i191.DriverVerifyOtpViewModel(
         gh<_i371.VerifyDriverOtpUseCase>(),
         gh<_i324.ResendDriverOtpUseCase>(),
       ),
     );
-    gh.factory<_i641.ResetPasswordViewModel>(
-      () => _i641.ResetPasswordViewModel(
-        gh<_i184.ResetPasswordUseCase>(),
-      ),
-    );
-    gh.factory<_i7706.VerifyResetOtpViewModel>(
-      () => _i7706.VerifyResetOtpViewModel(
-        gh<_i7705.VerifyResetOtpUseCase>(),
-        gh<_i324.ResendDriverOtpUseCase>(),
-      ),
-    );
     gh.factory<_i808.LoginViewModel>(
       () => _i808.LoginViewModel(gh<_i817.LoginUseCase>()),
+    );
+    gh.factory<_i985.GetDriverRegionsUseCase>(
+      () => _i985.GetDriverRegionsUseCase(gh<_i599.DriverRegionsRepository>()),
+    );
+    gh.factory<_i628.GetRegionCitiesUseCase>(
+      () => _i628.GetRegionCitiesUseCase(gh<_i599.DriverRegionsRepository>()),
+    );
+    gh.factory<_i708.GetRegionsUseCase>(
+      () => _i708.GetRegionsUseCase(gh<_i599.DriverRegionsRepository>()),
+    );
+    gh.factory<_i340.RegisterRegionsCubit>(
+      () => _i340.RegisterRegionsCubit(
+        gh<_i985.GetDriverRegionsUseCase>(),
+        gh<_i708.GetRegionsUseCase>(),
+        gh<_i628.GetRegionCitiesUseCase>(),
+      ),
     );
     gh.factory<_i735.ProfileCubit>(
       () => _i735.ProfileCubit(

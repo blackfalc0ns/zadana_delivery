@@ -203,6 +203,14 @@ class DriverNotificationPayloadResolver {
       customPayload?['changedAtUtc'],
       customPayload?['changed_at_utc'],
     ]);
+    payload['notificationSound'] = _firstNonEmptyString([
+      payload['notificationSound'],
+      payload['notification_sound'],
+      nestedPayload?['notificationSound'],
+      nestedPayload?['notification_sound'],
+      customPayload?['notificationSound'],
+      customPayload?['notification_sound'],
+    ]);
 
     return payload;
   }
@@ -433,6 +441,15 @@ class DriverNotificationPayloadResolver {
 
   static String? resolveCategory(Map<String, dynamic> payload) {
     return _firstNonEmptyString([normalize(payload)['category']]);
+  }
+
+  /// Resolves the `notificationSound` hint sent by the server in the push data.
+  static String? resolveNotificationSound(Map<String, dynamic> payload) {
+    final normalizedPayload = normalize(payload);
+    return _firstNonEmptyString([
+      normalizedPayload['notificationSound'],
+      normalizedPayload['notification_sound'],
+    ]);
   }
 
   static String? resolvePopupType(Map<String, dynamic> payload) {
@@ -810,6 +827,8 @@ class DriverNotificationPayloadResolver {
     'accountStatus',
     'android_channel_id',
     'existing_android_channel_id',
+    'notificationSound',
+    'notification_sound',
     'i',
   ];
 

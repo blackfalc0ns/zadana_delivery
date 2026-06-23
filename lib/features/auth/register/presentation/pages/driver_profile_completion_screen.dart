@@ -56,7 +56,7 @@ class _DriverProfileCompletionScreenState
       updateDocumentsUseCase: getIt<UpdateDriverDocumentsUseCase>(),
       imagePicker: getIt(),
     )..initialize(registrationDraft: widget.registrationDraft);
-    _regionsCubit = getIt<RegisterRegionsCubit>()..loadRegionCities();
+    _regionsCubit = getIt<RegisterRegionsCubit>()..loadRegions();
 
     for (final controller in [
       _addressController,

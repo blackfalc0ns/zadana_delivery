@@ -167,11 +167,19 @@ class DriverNotificationRouterService {
               AppRoutes.profileSecurityDocuments,
               arguments: payload,
             );
-          } else if (normalizedEvent == 'account.document_approved') {
-            await _navigatorService.pushNamedWhenReady(
-              AppRoutes.profile,
-              arguments: payload,
-            );
+          } else if (normalizedEvent == 'account.profile_section_rejected') {
+            final section = payload['section']?.toString().toLowerCase() ?? '';
+            if (section == 'vehicle') {
+              await _navigatorService.pushNamedWhenReady(
+                AppRoutes.profile,
+                arguments: payload,
+              );
+            } else {
+              await _navigatorService.pushNamedWhenReady(
+                AppRoutes.profile,
+                arguments: payload,
+              );
+            }
           } else {
             await _navigatorService.pushNamedWhenReady(
               AppRoutes.profile,

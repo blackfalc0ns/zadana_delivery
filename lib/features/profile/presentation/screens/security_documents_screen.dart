@@ -6,6 +6,7 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_form_event.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_state.dart';
@@ -13,10 +14,13 @@ import 'package:zadana_delivery/features/profile/presentation/models/profile_act
 import 'package:zadana_delivery/features/profile/presentation/models/profile_document_item_data.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_form_scaffold.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_loading_skeleton.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_section_status_banner.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/security_documents_fields.dart';
 
 class SecurityDocumentsScreen extends StatefulWidget {
-  const SecurityDocumentsScreen({super.key});
+  const SecurityDocumentsScreen({super.key, this.initialProfile});
+
+  final DriverUnifiedProfileEntity? initialProfile;
 
   @override
   State<SecurityDocumentsScreen> createState() =>
@@ -32,7 +36,12 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
   @override
   void initState() {
     super.initState();
-    _cubit = getIt<ProfileCubit>()..doIntent(const ProfileFormLoadEvent());
+    _cubit = getIt<ProfileCubit>();
+    if (widget.initialProfile != null) {
+      _cubit.seedProfile(widget.initialProfile!);
+    } else {
+      _cubit.doIntent(const ProfileFormLoadEvent());
+    }
   }
 
   @override
@@ -171,6 +180,12 @@ class _SecurityDocumentsScreenState extends State<SecurityDocumentsScreen> {
             isSaving: state.isSaving || state.isLoading,
             isFormDirty: isFormDirty,
             onSave: _save,
+            banner: state.profile?.documentsSection != null &&
+                    !state.profile!.documentsSection.isValid
+                ? ProfileSectionStatusBanner(
+                    section: state.profile!.documentsSection,
+                  )
+                : null,
             children: [
               SecurityDocumentsFields(
                 documents: documents,

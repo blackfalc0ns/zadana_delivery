@@ -3054,4 +3054,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_support_stage_delivered => 'تم التسليم';
+
+  @override
+  String get profile_section_under_review_title => 'تحت المراجعة';
+
+  @override
+  String get profile_section_under_review_subtitle =>
+      'تم إرسال التعديلات وبانتظار موافقة الإدارة. البيانات المعروضة هي البيانات المعتمدة الحالية.';
+
+  @override
+  String get profile_section_rejected_title => 'تم الرفض';
+
+  @override
+  String get profile_section_rejected_default_subtitle =>
+      'تم رفض آخر طلب تعديل. يمكنك إعادة التعديل.';
 }

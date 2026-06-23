@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zadana_delivery/config/routing/app_routes.dart';
+import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_presentation.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/empty_state_widget.dart';
+import 'package:zadana_delivery/core/errors/error_widgets/skeleton_state_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
@@ -25,17 +27,29 @@ class NotificationsScreen extends StatefulWidget {
 
 class _NotificationsScreenState extends State<NotificationsScreen> {
   late final NotificationsViewModel _viewModel;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _viewModel = getIt<NotificationsViewModel>()..loadInitial();
+    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _viewModel.close();
     super.dispose();
+  }
+
+  void _onScroll() {
+    if (!_scrollController.hasClients) return;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.position.pixels;
+    if (currentScroll >= maxScroll - 200) {
+      _viewModel.loadMore();
+    }
   }
 
   @override
@@ -79,14 +93,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: Center(
                     child: IconButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed(
-                          AppRoutes.notificationPreferences,
-                        );
+                        Navigator.of(
+                          context,
+                        ).pushNamed(AppRoutes.notificationPreferences);
                       },
-                      icon: const Icon(
-                        Icons.settings_outlined,
-                        size: 22,
-                      ),
+                      icon: const Icon(Icons.settings_outlined, size: 22),
                       tooltip: 'Settings',
                     ),
                   ),
@@ -138,6 +149,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                             : const Icon(
                                 Icons.delete_outline_rounded,
                                 size: 22,
+                                color: AppColors.error,
                               ),
                         tooltip: 'Delete all',
                       ),
@@ -162,6 +174,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         : RefreshIndicator(
                             onRefresh: _viewModel.refreshNotifications,
                             child: ListView(
+                              controller: _scrollController,
                               physics: const AlwaysScrollableScrollPhysics(
                                 parent: BouncingScrollPhysics(),
                               ),
@@ -202,12 +215,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                               AlignmentDirectional.centerStart,
                                           padding:
                                               const EdgeInsetsDirectional.only(
-                                            start: 24,
-                                          ),
+                                                start: 24,
+                                              ),
                                           decoration: BoxDecoration(
                                             color: Colors.red.shade50,
-                                            borderRadius:
-                                                BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                           ),
                                           child: Icon(
                                             Icons.delete_outline_rounded,
@@ -219,12 +233,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                               AlignmentDirectional.centerEnd,
                                           padding:
                                               const EdgeInsetsDirectional.only(
-                                            end: 24,
-                                          ),
+                                                end: 24,
+                                              ),
                                           decoration: BoxDecoration(
                                             color: Colors.red.shade50,
-                                            borderRadius:
-                                                BorderRadius.circular(22),
+                                            borderRadius: BorderRadius.circular(
+                                              22,
+                                            ),
                                           ),
                                           child: Icon(
                                             Icons.delete_outline_rounded,
@@ -232,8 +247,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                           ),
                                         ),
                                         onDismissed: (_) {
-                                          _viewModel
-                                              .deleteNotification(item.id);
+                                          _viewModel.deleteNotification(
+                                            item.id,
+                                          );
                                         },
                                         child: NotificationCard(
                                           item: item,
@@ -250,6 +266,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                                       ),
                                     ),
                                   ),
+                                if (state.isLoadingMore)
+                                  ..._buildNotificationSkeletons(),
                               ],
                             ),
                           ),
@@ -259,6 +277,99 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  List<Widget> _buildNotificationSkeletons() {
+    return List.generate(
+      3,
+      (index) => const Padding(
+        padding: EdgeInsets.only(bottom: Spacing.sm),
+        child: _NotificationSkeletonCard(),
+      ),
+    );
+  }
+}
+
+class _NotificationSkeletonCard extends StatelessWidget {
+  const _NotificationSkeletonCard();
+
+  @override
+  Widget build(BuildContext context) {
+    final mutedColor = Theme.of(
+      context,
+    ).colorScheme.outlineVariant.withValues(alpha: 0.18);
+
+    return SkeletonStateWidget(
+      child: Container(
+        padding: const EdgeInsets.all(Spacing.base),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: const Color(0xFFE5EDF2)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: mutedColor,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                const SizedBox(width: Spacing.md),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: 16,
+                        decoration: BoxDecoration(
+                          color: mutedColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        width: double.infinity,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: mutedColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        width: 180,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: mutedColor,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: Spacing.sm),
+            Container(
+              width: 120,
+              height: 28,
+              decoration: BoxDecoration(
+                color: mutedColor,
+                borderRadius: BorderRadius.circular(999),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/services/language_service.dart';
+import 'package:zadana_delivery/core/services/notification_sound_preferences_service.dart';
 import 'package:zadana_delivery/core/services/token_service.dart';
 import 'package:zadana_delivery/core/utils/constants.dart';
 
@@ -18,12 +19,14 @@ class DriverNotificationDeviceService {
     this._sharedPreferences,
     this._tokenService,
     this._languageService,
+    this._soundPreferencesService,
   );
 
   final Dio _dio;
   final SharedPreferences _sharedPreferences;
   final TokenService _tokenService;
   final LanguageService _languageService;
+  final NotificationSoundPreferencesService _soundPreferencesService;
 
   final Uuid _uuid = const Uuid();
 
@@ -226,10 +229,19 @@ class DriverNotificationDeviceService {
         data: body,
       );
       _lastRegistrationSignature = null;
+      Map<String, dynamic> result = body;
       if (response.data is Map) {
-        return Map<String, dynamic>.from(response.data as Map);
+        result = Map<String, dynamic>.from(response.data as Map);
       }
-      return body;
+      // Sync per-category notification sounds locally.
+      final notificationSounds = result['notificationSounds'] ??
+          preferences['notificationSounds'];
+      if (notificationSounds is Map) {
+        await _soundPreferencesService.syncFromServerResponse(
+          Map<String, dynamic>.from(notificationSounds),
+        );
+      }
+      return result;
     } on DioException catch (error) {
       debugPrint(
         '[DriverNotificationDevice] updateDevicePreferences failed: '
@@ -259,7 +271,15 @@ class DriverNotificationDeviceService {
         queryParameters: queryParams,
       );
       if (response.data is Map) {
-        return Map<String, dynamic>.from(response.data as Map);
+        final result = Map<String, dynamic>.from(response.data as Map);
+        // Sync per-category notification sounds locally.
+        final notificationSounds = result['notificationSounds'];
+        if (notificationSounds is Map) {
+          await _soundPreferencesService.syncFromServerResponse(
+            Map<String, dynamic>.from(notificationSounds),
+          );
+        }
+        return result;
       }
       return null;
     } on DioException catch (error) {

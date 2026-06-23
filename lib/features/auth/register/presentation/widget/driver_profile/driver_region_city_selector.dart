@@ -5,7 +5,7 @@ import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/inline_api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/network/failures.dart';
-import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/features/auth/register/domain/entities/driver_region_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 
 class DriverRegionCitySelector extends StatelessWidget {
@@ -13,32 +13,39 @@ class DriverRegionCitySelector extends StatelessWidget {
     super.key,
     required this.regionCities,
     required this.isLoading,
+    required this.isCitiesLoading,
     required this.selectedCityId,
     required this.selectedRegionCode,
     required this.selectedCityName,
     required this.selectedRegionName,
-    required this.onChanged,
+    required this.regions,
+    required this.onRegionSelected,
+    required this.onCitySelected,
     required this.onRetry,
     this.failure,
+    this.citiesFailure,
   });
 
   final List<DriverRegionCityEntity> regionCities;
   final bool isLoading;
+  final bool isCitiesLoading;
   final String selectedCityId;
   final String selectedRegionCode;
   final String selectedCityName;
   final String selectedRegionName;
+  final List<DriverRegionEntity> regions;
   final Failure? failure;
-  final ValueChanged<DriverRegionCityEntity> onChanged;
+  final Failure? citiesFailure;
+  final void Function(String regionCode, String regionName) onRegionSelected;
+  final ValueChanged<DriverRegionCityEntity> onCitySelected;
   final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colorScheme;
     final locale = context.localization;
-    final selectedRegionCity = _findSelectedRegionCity();
-    final selectedRegion = selectedRegionCity?.regionName ?? selectedRegionName;
-    final selectedCity = selectedRegionCity?.cityName ?? selectedCityName;
+    final selectedRegion = selectedRegionName;
+    final selectedCity = selectedCityName;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,23 +69,24 @@ class DriverRegionCitySelector extends StatelessWidget {
                   value: selectedRegion,
                   placeholder: locale.driver_profile_zone_region_placeholder,
                   icon: Icons.map_outlined,
-                  onTap: () => _showRegionPicker(context, selectedRegion),
+                  onTap: () => _showRegionPicker(context),
                 ),
               ),
               const SizedBox(width: Spacing.sm),
               Expanded(
-                child: _SelectorTile(
-                  title: locale.driver_profile_zone_city_label,
-                  value: selectedCity,
-                  placeholder: locale.driver_profile_zone_city_placeholder,
-                  icon: Icons.location_city_outlined,
-                  onTap: _resolveCitiesForRegion(selectedRegion).isEmpty
-                      ? null
-                      : () => _showCityPicker(
-                          context,
-                          selectedRegion: selectedRegion,
-                        ),
-                ),
+                child: isCitiesLoading
+                    ? const _LoadingTile(icon: Icons.location_city_outlined)
+                    : _SelectorTile(
+                        title: locale.driver_profile_zone_city_label,
+                        value: selectedCity,
+                        placeholder:
+                            locale.driver_profile_zone_city_placeholder,
+                        icon: Icons.location_city_outlined,
+                        onTap: regionCities.isEmpty ||
+                                selectedRegionCode.isEmpty
+                            ? null
+                            : () => _showCityPicker(context),
+                      ),
               ),
             ],
           ),
@@ -86,105 +94,42 @@ class DriverRegionCitySelector extends StatelessWidget {
           const SizedBox(height: Spacing.sm),
           InlineApiErrorWidget(failure: failure!, onRetry: onRetry),
         ],
+        if (citiesFailure != null) ...[
+          const SizedBox(height: Spacing.sm),
+          InlineApiErrorWidget(failure: citiesFailure!, onRetry: onRetry),
+        ],
       ],
     );
   }
 
-  DriverRegionCityEntity? _findSelectedRegionCity() {
-    for (final regionCity in regionCities) {
-      if (regionCity.id == selectedCityId) {
-        return regionCity;
-      }
-    }
-    return null;
-  }
-
-  List<_RegionGroup> _buildGroups() {
-    final grouped = <String, List<DriverRegionCityEntity>>{};
-
-    for (final regionCity in regionCities) {
-      grouped
-          .putIfAbsent(regionCity.regionName, () => <DriverRegionCityEntity>[])
-          .add(regionCity);
-    }
-
-    final groups =
-        grouped.entries
-            .map(
-              (entry) => _RegionGroup(
-                code: entry.value.first.regionCode,
-                name: entry.key,
-                cities: List<DriverRegionCityEntity>.from(entry.value)
-                  ..sort(
-                    (first, second) =>
-                        first.cityName.compareTo(second.cityName),
-                  ),
-              ),
-            )
-            .toList(growable: false)
-          ..sort((first, second) => first.name.compareTo(second.name));
-
-    return groups;
-  }
-
-  List<DriverRegionCityEntity> _resolveCitiesForRegion(String region) {
-    for (final group in _buildGroups()) {
-      if (group.name == region) {
-        return group.cities;
-      }
-    }
-    return const <DriverRegionCityEntity>[];
-  }
-
-  Future<void> _showRegionPicker(
-    BuildContext context,
-    String currentRegion,
-  ) async {
+  Future<void> _showRegionPicker(BuildContext context) async {
     final locale = context.localization;
-    final groups = _buildGroups();
 
-    final selectedRegion = await showModalBottomSheet<_RegionGroup>(
+    final selected = await showModalBottomSheet<DriverRegionEntity>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _SelectionSheet<_RegionGroup>(
+      builder: (context) => _SelectionSheet<DriverRegionEntity>(
         title: locale.driver_profile_zone_region_sheet_title,
         subtitle: locale.driver_profile_zone_region_sheet_subtitle,
-        items: groups,
+        items: regions,
         selectedValue: selectedRegionCode,
-        itemTitle: (group) => group.name,
-        itemSubtitle: (group) => locale.driver_profile_zone_cities_count(
-          group.cities.length.toString(),
-        ),
+        itemTitle: (region) => region.name,
+        itemSubtitle: (_) => '',
         itemIcon: Icons.map_outlined,
-        onSelected: (group) => group,
-        selectedMatcher: (group, selected) => group.code == selected,
+        onSelected: (region) => region,
+        selectedMatcher: (region, selected) => region.code == selected,
       ),
     );
 
-    if (selectedRegion == null) return;
+    if (selected == null) return;
 
-    onChanged(
-      DriverRegionCityEntity(
-        id: '',
-        regionCode: selectedRegion.code,
-        regionName: selectedRegion.name,
-        cityName: '',
-        centerLat: 0,
-        centerLng: 0,
-        radiusKm: 0,
-        isActive: true,
-      ),
-    );
+    onRegionSelected(selected.code, selected.name);
   }
 
-  Future<void> _showCityPicker(
-    BuildContext context, {
-    required String selectedRegion,
-  }) async {
+  Future<void> _showCityPicker(BuildContext context) async {
     final locale = context.localization;
-    final cities = _resolveCitiesForRegion(selectedRegion);
-    if (cities.isEmpty) return;
+    if (regionCities.isEmpty) return;
 
     final selectedCity = await showModalBottomSheet<DriverRegionCityEntity>(
       context: context,
@@ -193,10 +138,10 @@ class DriverRegionCitySelector extends StatelessWidget {
       builder: (context) => _SelectionSheet<DriverRegionCityEntity>(
         title: locale.driver_profile_zone_city_sheet_title,
         subtitle: locale.driver_profile_zone_city_sheet_subtitle,
-        items: cities,
+        items: regionCities,
         selectedValue: selectedCityId,
         itemTitle: (city) => city.cityName,
-        itemSubtitle: (_) => selectedRegion,
+        itemSubtitle: (_) => selectedRegionName,
         itemIcon: Icons.location_city_outlined,
         onSelected: (city) => city,
         selectedMatcher: (city, selected) => city.id == selected,
@@ -204,7 +149,7 @@ class DriverRegionCitySelector extends StatelessWidget {
     );
 
     if (selectedCity != null) {
-      onChanged(selectedCity);
+      onCitySelected(selectedCity);
     }
   }
 }
@@ -253,25 +198,14 @@ class _LoadingTile extends StatelessWidget {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: Row(
-              children: [
-                CustomProgressIndicator.compact(
-                  size: 16,
-                  tintColor: color.primary,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    context.localization.driver_profile_zone_loading,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: getRegularStyle(
-                      fontFamily: FontConstant.cairo,
-                      color: color.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
+            child: Text(
+              context.localization.driver_profile_zone_loading,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: getRegularStyle(
+                fontFamily: FontConstant.cairo,
+                color: color.onSurfaceVariant,
+              ),
             ),
           ),
         ],
@@ -542,16 +476,4 @@ class _SelectionSheet<T> extends StatelessWidget {
       ),
     );
   }
-}
-
-class _RegionGroup {
-  const _RegionGroup({
-    required this.code,
-    required this.name,
-    required this.cities,
-  });
-
-  final String code;
-  final String name;
-  final List<DriverRegionCityEntity> cities;
 }

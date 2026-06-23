@@ -7,6 +7,7 @@ import 'package:zadana_delivery/features/profile/data/models/update_driver_docum
 import 'package:zadana_delivery/features/profile/data/models/update_driver_personal_request_model_dto.dart';
 import 'package:zadana_delivery/features/profile/data/models/update_driver_vehicle_request_model_dto.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_compliance_document_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_profile_section_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_rejection_policy_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_documents_request_entity.dart';
@@ -55,7 +56,47 @@ extension DriverUnifiedProfileDtoMapper on DriverUnifiedProfileModelDto {
           .toList(),
       canSubmitForReview: canSubmitForReview,
       rejectionPolicy: rejectionPolicy.toEntity(),
+      sections: sections
+          .map(_parseSectionFromJson)
+          .toList(growable: false),
     );
+  }
+
+  static DriverProfileSectionEntity _parseSectionFromJson(
+    Map<String, dynamic> json,
+  ) {
+    return DriverProfileSectionEntity(
+      section: _parseSectionKey(json['section'] as String?),
+      status: _parseSectionStatus(json['status'] as String?),
+      rejectionReason: (json['rejectionReason'] as String?)?.trim().isEmpty == true
+          ? null
+          : (json['rejectionReason'] as String?)?.trim(),
+      reviewedAtUtc: json['reviewedAtUtc'] != null
+          ? DateTime.tryParse(json['reviewedAtUtc'] as String)
+          : null,
+    );
+  }
+
+  static DriverProfileSectionKey _parseSectionKey(String? raw) {
+    switch ((raw ?? '').toLowerCase()) {
+      case 'vehicle':
+        return DriverProfileSectionKey.vehicle;
+      case 'documents':
+        return DriverProfileSectionKey.documents;
+      default:
+        return DriverProfileSectionKey.personal;
+    }
+  }
+
+  static DriverProfileSectionStatus _parseSectionStatus(String? raw) {
+    switch ((raw ?? '').toLowerCase()) {
+      case 'review':
+        return DriverProfileSectionStatus.review;
+      case 'rejected':
+        return DriverProfileSectionStatus.rejected;
+      default:
+        return DriverProfileSectionStatus.valid;
+    }
   }
 }
 

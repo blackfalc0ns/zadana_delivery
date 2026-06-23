@@ -28,6 +28,7 @@ import 'package:zadana_delivery/features/profile/presentation/screens/edit_profi
 import 'package:zadana_delivery/features/profile/presentation/screens/personal_info_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/security_documents_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/vehicle_info_screen.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/privacy_screen.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/security_screen.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/support_help_screen.dart';
@@ -158,11 +159,35 @@ class RouteGenerator {
       case AppRoutes.profileEdit:
         return _pageRoute(settings, const EditProfileScreen());
       case AppRoutes.profilePersonalInfo:
-        return _pageRoute(settings, const PersonalInfoScreen());
+        final profile = settings.arguments;
+        return _pageRoute(
+          settings,
+          PersonalInfoScreen(
+            initialProfile: profile is DriverUnifiedProfileEntity
+                ? profile
+                : null,
+          ),
+        );
       case AppRoutes.profileVehicleInfo:
-        return _pageRoute(settings, const VehicleInfoScreen());
+        final profile = settings.arguments;
+        return _pageRoute(
+          settings,
+          VehicleInfoScreen(
+            initialProfile: profile is DriverUnifiedProfileEntity
+                ? profile
+                : null,
+          ),
+        );
       case AppRoutes.profileSecurityDocuments:
-        return _pageRoute(settings, const SecurityDocumentsScreen());
+        final profile = settings.arguments;
+        return _pageRoute(
+          settings,
+          SecurityDocumentsScreen(
+            initialProfile: profile is DriverUnifiedProfileEntity
+                ? profile
+                : null,
+          ),
+        );
       case AppRoutes.orderDetails:
         final args = settings.arguments;
         if (args is Map<String, dynamic>) {

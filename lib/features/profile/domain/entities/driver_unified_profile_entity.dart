@@ -1,5 +1,6 @@
 import 'package:zadana_delivery/core/utils/driver_vehicle_type.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_compliance_document_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_profile_section_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_rejection_policy_entity.dart';
 
 class DriverUnifiedProfileEntity {
@@ -36,6 +37,7 @@ class DriverUnifiedProfileEntity {
     required this.missingRequirements,
     required this.canSubmitForReview,
     required this.rejectionPolicy,
+    this.sections = const <DriverProfileSectionEntity>[],
   });
 
   final String fullName;
@@ -70,6 +72,7 @@ class DriverUnifiedProfileEntity {
   final List<String> missingRequirements;
   final bool canSubmitForReview;
   final DriverRejectionPolicyEntity rejectionPolicy;
+  final List<DriverProfileSectionEntity> sections;
 
   String get normalizedVehicleType => DriverVehicleType.normalize(vehicleType);
   String get normalizedVerificationStatus =>
@@ -106,4 +109,32 @@ class DriverUnifiedProfileEntity {
     }
     return null;
   }
+
+  DriverProfileSectionEntity? sectionByKey(DriverProfileSectionKey key) {
+    for (final section in sections) {
+      if (section.section == key) return section;
+    }
+    return null;
+  }
+
+  DriverProfileSectionEntity get personalSection =>
+      sectionByKey(DriverProfileSectionKey.personal) ??
+      const DriverProfileSectionEntity(
+        section: DriverProfileSectionKey.personal,
+        status: DriverProfileSectionStatus.valid,
+      );
+
+  DriverProfileSectionEntity get vehicleSection =>
+      sectionByKey(DriverProfileSectionKey.vehicle) ??
+      const DriverProfileSectionEntity(
+        section: DriverProfileSectionKey.vehicle,
+        status: DriverProfileSectionStatus.valid,
+      );
+
+  DriverProfileSectionEntity get documentsSection =>
+      sectionByKey(DriverProfileSectionKey.documents) ??
+      const DriverProfileSectionEntity(
+        section: DriverProfileSectionKey.documents,
+        status: DriverProfileSectionStatus.valid,
+      );
 }
