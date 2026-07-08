@@ -439,7 +439,16 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
   }
 
   Future<bool> _updatePreferences(Map<String, dynamic> body) async {
-    emit(state.copyWith(isPreferencesLoading: true, clearFailure: true));
+    final previousPreferences = state.preferences;
+    final optimisticPreferences = _mergePreferences(previousPreferences, body);
+
+    emit(
+      state.copyWith(
+        isPreferencesLoading: true,
+        preferences: optimisticPreferences,
+        clearFailure: true,
+      ),
+    );
 
     final result = await _updateNotificationPreferencesUseCase.call(body);
     switch (result) {
@@ -447,7 +456,7 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
         emit(
           state.copyWith(
             isPreferencesLoading: false,
-            preferences: prefs,
+            preferences: _mergePreferences(optimisticPreferences, prefs),
             clearFailure: true,
           ),
         );
@@ -456,11 +465,34 @@ class NotificationsViewModel extends Cubit<NotificationsState> {
         emit(
           state.copyWith(
             isPreferencesLoading: false,
+            preferences: previousPreferences,
             failure: result.failure,
           ),
         );
         return false;
     }
+  }
+
+  Map<String, dynamic> _mergePreferences(
+    Map<String, dynamic>? current,
+    Map<String, dynamic> updates,
+  ) {
+    final merged = <String, dynamic>{...?current};
+
+    for (final entry in updates.entries) {
+      if (entry.key == 'notificationSounds' && entry.value is Map) {
+        merged['notificationSounds'] = <String, dynamic>{
+          ...?((merged['notificationSounds'] is Map)
+              ? Map<String, dynamic>.from(merged['notificationSounds'] as Map)
+              : null),
+          ...Map<String, dynamic>.from(entry.value as Map),
+        };
+      } else {
+        merged[entry.key] = entry.value;
+      }
+    }
+
+    return merged;
   }
 
   @override
