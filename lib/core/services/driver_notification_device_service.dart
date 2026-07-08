@@ -135,8 +135,7 @@ class DriverNotificationDeviceService {
     final signature = body.values.map((value) => '$value').join('|');
     if (!force && _lastRegistrationSignature == signature) {
       debugPrint(
-        '[DriverNotificationDevice] Registration skipped because payload is unchanged '
-        'for deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
+        '[DriverNotificationDevice] Registration skipped because payload is unchanged.',
       );
       return;
     }
@@ -145,8 +144,7 @@ class DriverNotificationDeviceService {
     if (inFlightRegistration != null &&
         _inFlightRegistrationSignature == signature) {
       debugPrint(
-        '[DriverNotificationDevice] Registration joined existing in-flight request '
-        'for deviceId=$deviceId subscriptionId=${_pushSubscriptionId.isEmpty ? "-" : _pushSubscriptionId}.',
+        '[DriverNotificationDevice] Registration joined existing in-flight request.',
       );
       await inFlightRegistration;
       return;
@@ -340,18 +338,11 @@ class DriverNotificationDeviceService {
     required String signature,
   }) async {
     debugPrint(
-      '╔══════════════════════════════════════════════════════════════╗\n'
-      '║  [PUSH REGISTER] Sending device registration to backend     ║\n'
-      '║  endpoint: ${EndPoints.driverNotificationDevices}/register\n'
-      '║  deviceId: $deviceId\n'
-      '║  platform: ${body['platform']}\n'
-      '║  oneSignalSubscriptionId: ${body['oneSignalSubscriptionId'] ?? "MISSING!"}\n'
-      '║  deviceToken: ${(_pushToken.length > 20) ? "${_pushToken.substring(0, 20)}..." : _pushToken}\n'
-      '║  locale: $locale\n'
-      '║  appVersion: $appVersion\n'
-      '║  dispatchPushEnabled: ${body['dispatchPushEnabled']}\n'
-      '║  assignmentPushEnabled: ${body['assignmentPushEnabled']}\n'
-      '╚══════════════════════════════════════════════════════════════╝',
+      '[PUSH REGISTER] Sending device registration to backend '
+      'endpoint=${EndPoints.driverNotificationDevices}/register '
+      'platform=${body['platform']} locale=$locale appVersion=$appVersion '
+      'dispatchPushEnabled=${body['dispatchPushEnabled']} '
+      'assignmentPushEnabled=${body['assignmentPushEnabled']}',
     );
 
     final succeeded =
@@ -364,15 +355,9 @@ class DriverNotificationDeviceService {
 
     if (succeeded) {
       _lastRegistrationSignature = signature;
-      debugPrint(
-        '[PUSH REGISTER] ✅ Device registration SUCCEEDED for '
-        'deviceId=$deviceId oneSignalSubscriptionId=${body['oneSignalSubscriptionId'] ?? "-"}.',
-      );
+      debugPrint('[PUSH REGISTER] Device registration SUCCEEDED.');
     } else {
-      debugPrint(
-        '[PUSH REGISTER] ❌ Device registration FAILED for '
-        'deviceId=$deviceId oneSignalSubscriptionId=${body['oneSignalSubscriptionId'] ?? "-"}.',
-      );
+      debugPrint('[PUSH REGISTER] Device registration FAILED.');
     }
   }
 

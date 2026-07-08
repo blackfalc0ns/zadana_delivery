@@ -161,6 +161,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'The gateway timed out. Please try again later.';
 
   @override
+  String get reviewsFor => 'Reviews for';
+
+  @override
   String get error_bad_request_desc =>
       'The request contains invalid data. Please check your input.';
 
@@ -233,6 +236,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error_uri_too_long_desc => 'The request URI is too long.';
+
+  @override
+  String get lead_send_error =>
+      'An error occurred while sending the contact request';
+
+  @override
+  String get lead_info_collected => 'Lead information collected successfully';
+
+  @override
+  String get lead_offline_mode => 'Contact information has been saved locally';
 
   @override
   String get error_unsupported_media_type => 'Unsupported media type';

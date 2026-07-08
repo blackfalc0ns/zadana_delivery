@@ -5,7 +5,6 @@ import 'package:zadana_delivery/core/di/di.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/api_error_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
-import 'package:zadana_delivery/core/widgets/image_source_picker_sheet.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/manager/profile_cubit.dart';
@@ -207,18 +206,19 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   }
 
   Future<void> _changePhoto() async {
-    final source = await ImageSourcePickerSheet.show(context);
-    if (!mounted || source == null) return;
     try {
       final picker = getIt<ImagePicker>();
-      final image = await picker.pickImage(source: source, imageQuality: 86);
+      final image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 86,
+      );
       if (!mounted || image == null) return;
       await _cubit.doIntent(ProfileFormUpdateProfilePhotoEvent(image.path));
       if (!mounted) return;
       CustomSnackbar.showSuccess(
         context: context,
         message: Localizations.localeOf(context).languageCode == 'ar'
-            ? 'تم تحديث صورة البروفايل'
+            ? '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0635\u0648\u0631\u0629 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a'
             : 'Profile photo updated',
       );
     } catch (_) {
@@ -229,5 +229,4 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       );
     }
   }
-
 }

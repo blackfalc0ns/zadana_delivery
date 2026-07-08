@@ -17,7 +17,7 @@ import 'network_constants.dart';
 abstract class ExternalModules {
   @lazySingleton
   Dio provideDio(
-    PrettyDioLogger prettyDioLogger,
+  //  PrettyDioLogger prettyDioLogger,
     TokenInterceptor tokenInterceptor,
     LanguageInterceptor languageInterceptor,
   ) {
@@ -35,7 +35,7 @@ abstract class ExternalModules {
     dio.interceptors.add(languageInterceptor);
     dio.interceptors.add(tokenInterceptor);
     dio.interceptors.add(RetryWithBackoffInterceptor());
-    dio.interceptors.add(prettyDioLogger);
+  //  dio.interceptors.add(prettyDioLogger);
 
     return dio;
   }

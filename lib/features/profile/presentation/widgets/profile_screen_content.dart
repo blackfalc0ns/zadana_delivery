@@ -80,7 +80,11 @@ class ProfileScreenContent extends StatelessWidget {
                       const SizedBox(height: Spacing.base),
                     ],
                     ProfileSectionsList(
-                      sections: _buildSections(locale, color),
+                      sections: _buildSections(
+                        locale,
+                        color,
+                        Theme.of(context).platform,
+                      ),
                       itemBuilder: (item) => ProfileActionItemBuilder(
                         item: item,
                         onNotificationsChanged: onNotificationsChanged,
@@ -125,7 +129,9 @@ class ProfileScreenContent extends StatelessWidget {
   List<ProfileSectionViewData> _buildSections(
     AppLocalizations locale,
     ColorScheme colorScheme,
+    TargetPlatform platform,
   ) {
+    final showOverlayPermission = platform == TargetPlatform.android;
     final sections = [
       const ProfileSectionData(
         items: [
@@ -151,24 +157,25 @@ class ProfileScreenContent extends StatelessWidget {
           ),
         ],
       ),
-      const ProfileSectionData(
+      ProfileSectionData(
         items: [
-          ProfileActionItemData(
+          const ProfileActionItemData(
             icon: Icons.language_rounded,
             colorToken: ProfileColorToken.tertiary,
             type: ProfileActionType.language,
           ),
-          ProfileActionItemData(
+          const ProfileActionItemData(
             icon: Icons.notifications_none_rounded,
             colorToken: ProfileColorToken.primary,
             type: ProfileActionType.notifications,
           ),
-          ProfileActionItemData(
-            icon: Icons.layers_outlined,
-            colorToken: ProfileColorToken.secondary,
-            type: ProfileActionType.overlayPermission,
-          ),
-          ProfileActionItemData(
+          if (showOverlayPermission)
+            const ProfileActionItemData(
+              icon: Icons.layers_outlined,
+              colorToken: ProfileColorToken.secondary,
+              type: ProfileActionType.overlayPermission,
+            ),
+          const ProfileActionItemData(
             icon: Icons.lock_outline_rounded,
             colorToken: ProfileColorToken.secondary,
             type: ProfileActionType.security,

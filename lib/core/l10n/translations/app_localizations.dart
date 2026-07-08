@@ -368,6 +368,12 @@ abstract class AppLocalizations {
   /// **'The gateway timed out. Please try again later.'**
   String get error_gateway_timeout_desc;
 
+  /// No description provided for @reviewsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews for'**
+  String get reviewsFor;
+
   /// No description provided for @error_bad_request_desc.
   ///
   /// In en, this message translates to:
@@ -493,6 +499,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The request URI is too long.'**
   String get error_uri_too_long_desc;
+
+  /// No description provided for @lead_send_error.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while sending the contact request'**
+  String get lead_send_error;
+
+  /// No description provided for @lead_info_collected.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead information collected successfully'**
+  String get lead_info_collected;
+
+  /// No description provided for @lead_offline_mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact information has been saved locally'**
+  String get lead_offline_mode;
 
   /// No description provided for @error_unsupported_media_type.
   ///

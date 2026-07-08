@@ -51,12 +51,7 @@ class DriverNotificationSessionService {
 
   Future<void> handleSuccessfulAuthentication(String userId) async {
     await _tokenService.saveCurrentUserId(userId);
-    debugPrint(
-      '╔══════════════════════════════════════════════════════════════╗\n'
-      '║  [PUSH DEBUG] handleSuccessfulAuthentication                ║\n'
-      '║  userId (external_user_id for OneSignal): $userId\n'
-      '╚══════════════════════════════════════════════════════════════╝',
-    );
+    debugPrint('[PUSH DEBUG] handleSuccessfulAuthentication started.');
     try {
       await _runtimeServicesController.initializeDriverRuntimeServices();
     } catch (_) {
@@ -66,40 +61,17 @@ class DriverNotificationSessionService {
     }
     try {
       await _bootstrapService.prepareAuthenticatedPush(userId);
-    } catch (e) {
-      debugPrint('[PUSH DEBUG] prepareAuthenticatedPush FAILED: $e');
+    } catch (_) {
+      debugPrint('[PUSH DEBUG] prepareAuthenticatedPush FAILED.');
     }
     try {
       await _deviceService.registerCurrentDeviceIfAuthenticated(force: true);
-    } catch (e) {
-      debugPrint('[PUSH DEBUG] registerCurrentDevice FAILED: $e');
+    } catch (_) {
+      debugPrint('[PUSH DEBUG] registerCurrentDevice FAILED.');
     }
     try {
       await _driverRealtimeService.ensureConnected();
     } catch (_) {}
-
-    // Log final push state for backend verification
-    try {
-      final oneSignalExternalId =
-          await _bootstrapService.getExternalIdForDebug();
-      final oneSignalSubscriptionId =
-          await _bootstrapService.getSubscriptionIdForDebug();
-      final pushToken = _deviceService.pushToken;
-      final deviceId = await _deviceService.getDeviceId();
-      debugPrint(
-        '╔══════════════════════════════════════════════════════════════╗\n'
-        '║  [PUSH DEBUG] Final state after authentication              ║\n'
-        '║  userId sent to OneSignal.login(): $userId\n'
-        '║  OneSignal externalId: $oneSignalExternalId\n'
-        '║  OneSignal subscriptionId: $oneSignalSubscriptionId\n'
-        '║  FCM pushToken: ${pushToken.isEmpty ? "MISSING!" : "${pushToken.substring(0, 20)}..."}\n'
-        '║  deviceId: $deviceId\n'
-        '║  NOTE: Backend must send to external_user_id = $userId\n'
-        '╚══════════════════════════════════════════════════════════════╝',
-      );
-    } catch (e) {
-      debugPrint('[PUSH DEBUG] Failed to log final state: $e');
-    }
   }
 
   Future<void> handleAccessTokenRefreshed() async {

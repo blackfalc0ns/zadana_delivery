@@ -1061,7 +1061,14 @@ class DriverHomeRemoteDataSourceImpl implements DriverHomeRemoteDataSource {
   }
 
   void _log(String message) {
-    debugPrint('$_logTag $message');
+    debugPrint('$_logTag ${_redactSensitiveQueryValues(message)}');
+  }
+
+  String _redactSensitiveQueryValues(String message) {
+    return message.replaceAllMapped(
+      RegExp(r'([?&]access_token=)[^&\s]+', caseSensitive: false),
+      (match) => '${match.group(1)}<redacted>',
+    );
   }
 
   void _logConnectionStatus(String status, {String? hubPath, String? details}) {

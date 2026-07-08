@@ -750,7 +750,14 @@ class DriverRealtimeService {
   }
 
   void _log(String message) {
-    debugPrint('$_logTag $message');
+    debugPrint('$_logTag ${_redactSensitiveQueryValues(message)}');
+  }
+
+  String _redactSensitiveQueryValues(String message) {
+    return message.replaceAllMapped(
+      RegExp(r'([?&]access_token=)[^&\s]+', caseSensitive: false),
+      (match) => '${match.group(1)}<redacted>',
+    );
   }
 
   /// Safely converts an error to a string, guarding against third-party

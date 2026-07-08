@@ -58,7 +58,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (_turnstileSiteKey.isNotEmpty && (_turnstileToken ?? '').isEmpty) {
       CustomSnackbar.showError(
         context: context,
-        message: 'يرجى إكمال التحقق أولاً',
+        message: 'فضلاً أكمل التحقق أولاً',
       );
       return;
     }

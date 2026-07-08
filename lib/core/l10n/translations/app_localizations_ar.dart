@@ -52,7 +52,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get password_must_be_at_least_6_characters =>
-      'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل';
+      'لازم تكون كلمة المرور 6 أحرف على الأقل';
 
   @override
   String get passwords_do_not_match => 'كلمتا المرور غير متطابقتين';
@@ -65,13 +65,13 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get password_and_confirm_password_must_be_same =>
-      'يجب أن تكون كلمة المرور وتأكيد كلمة المرور متطابقتين!';
+      'لازم تكون كلمة المرور وتأكيدها متطابقين!';
 
   @override
-  String get phone_number_is_required => 'رقم الهاتف مطلوب!';
+  String get phone_number_is_required => 'رقم الجوال مطلوب!';
 
   @override
-  String get phone_number_is_not_valid => 'رقم الهاتف هذا غير صالح';
+  String get phone_number_is_not_valid => 'رقم الجوال هذا غير صالح';
 
   @override
   String get this_field_is_required => 'هذا الحقل مطلوب';
@@ -87,83 +87,83 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get location_service_disabled_message =>
-      'يرجى تفعيل خدمات الموقع والمحاولة مرة أخرى.';
+      'فضلاً فعّل خدمات الموقع وحاول مرة ثانية.';
 
   @override
   String get location_permission_denied => 'تم رفض إذن الموقع';
 
   @override
   String get location_permission_denied_message =>
-      'يرجى السماح بالوصول إلى الموقع للمتابعة.';
+      'فضلاً اسمح بالوصول للموقع عشان تكمل.';
 
   @override
   String get location_permission_denied_forever => 'تم رفض إذن الموقع نهائيًا';
 
   @override
   String get location_permission_denied_forever_message =>
-      'تم رفض إذن الموقع نهائيًا. يرجى تفعيله من إعدادات الجهاز.';
+      'تم رفض إذن الموقع نهائيًا. فضلاً فعّله من إعدادات الجهاز.';
 
   @override
-  String get error_no_internet_connection => 'لا يوجد اتصال بالإنترنت';
+  String get error_no_internet_connection => 'ما فيه اتصال بالإنترنت';
 
   @override
   String get error_no_internet_connection_desc =>
-      'يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى';
+      'فضلاً تأكد من اتصالك بالإنترنت وحاول مرة ثانية';
 
   @override
   String get error_connection_timeout_desc =>
-      'استغرق الاتصال وقتاً طويلاً. يرجى المحاولة مرة أخرى';
+      'الاتصال أخذ وقت أطول من المعتاد. حاول مرة ثانية';
 
   @override
   String get error_receive_timeout_desc =>
-      'استغرق الخادم وقتاً طويلاً للرد. يرجى المحاولة مرة أخرى';
+      'الخادم أخذ وقت طويل للرد. حاول مرة ثانية';
 
   @override
   String get error_send_timeout_desc =>
-      'فشل في إرسال البيانات إلى الخادم. يرجى المحاولة مرة أخرى';
+      'ما قدرنا نرسل البيانات للخادم. حاول مرة ثانية';
 
   @override
   String get error_server_error => 'خطأ في الخادم';
 
   @override
-  String get error_server_error_desc =>
-      'حدث خطأ في الخادم. يرجى المحاولة لاحقاً';
+  String get error_server_error_desc => 'صار خطأ في الخادم. حاول لاحقًا';
 
   @override
   String get error_internal_server_error => 'خطأ داخلي في الخادم';
 
   @override
   String get error_internal_server_error_desc =>
-      'واجه الخادم خطأ داخلي. يرجى المحاولة لاحقاً';
+      'واجه الخادم خطأ داخلي. حاول لاحقًا';
 
   @override
   String get error_bad_gateway => 'بوابة سيئة';
 
   @override
-  String get error_bad_gateway_desc =>
-      'تلقى الخادم استجابة غير صالحة. يرجى المحاولة لاحقاً';
+  String get error_bad_gateway_desc => 'الخادم استلم رد غير صالح. حاول لاحقًا';
 
   @override
   String get error_service_unavailable => 'الخدمة غير متاحة';
 
   @override
   String get error_service_unavailable_desc =>
-      'الخدمة غير متاحة مؤقتاً. يرجى المحاولة لاحقاً';
+      'الخدمة غير متاحة مؤقتًا. حاول لاحقًا';
 
   @override
   String get error_gateway_timeout => 'انتهت مهلة البوابة';
 
   @override
-  String get error_gateway_timeout_desc =>
-      'انتهت مهلة البوابة. يرجى المحاولة لاحقاً';
+  String get error_gateway_timeout_desc => 'انتهت مهلة البوابة. حاول لاحقًا';
+
+  @override
+  String get reviewsFor => 'مراجعات ل';
 
   @override
   String get error_bad_request_desc =>
-      'يحتوي الطلب على بيانات غير صالحة. يرجى التحقق من المدخلات';
+      'الطلب فيه بيانات غير صحيحة. فضلاً تأكد من المدخلات';
 
   @override
   String get error_unauthorized_desc =>
-      'أنت غير مصرح للوصول إلى هذا المورد. يرجى تسجيل الدخول مرة أخرى';
+      'ما عندك صلاحية للوصول لهذا المورد. سجّل دخولك مرة ثانية';
 
   @override
   String get error_forbidden_desc => 'ليس لديك إذن للوصول إلى هذا المورد';
@@ -188,8 +188,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_request_timeout => 'انتهت مهلة الطلب';
 
   @override
-  String get error_request_timeout_desc =>
-      'انتهت مهلة الطلب. يرجى المحاولة مرة أخرى';
+  String get error_request_timeout_desc => 'انتهت مهلة الطلب. حاول مرة ثانية';
 
   @override
   String get error_conflict_desc => 'يوجد تعارض مع الحالة الحالية للمورد';
@@ -225,6 +224,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_uri_too_long_desc => 'رابط الطلب طويل جداً';
 
   @override
+  String get lead_send_error => 'حدث خطأ أثناء إرسال طلب التواصل';
+
+  @override
+  String get lead_info_collected => 'تم جمع معلومات العميل المحتمل بنجاح';
+
+  @override
+  String get lead_offline_mode => 'تم حفظ معلومات التواصل محلياً';
+
+  @override
   String get error_unsupported_media_type => 'نوع الوسائط غير مدعوم';
 
   @override
@@ -244,14 +252,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'لا يمكن تلبية التوقع المحدد في حقل رأس الطلب';
 
   @override
-  String get error_too_many_requests => 'طلبات كثيرة جداً';
+  String get error_too_many_requests => 'طلبات كثيرة جدًا';
 
   @override
   String get error_too_many_requests_desc =>
-      'لقد أرسلت طلبات كثيرة جداً. يرجى المحاولة لاحقاً';
+      'أرسلت طلبات كثيرة جدًا. حاول لاحقًا';
 
   @override
-  String get error_unknown_desc => 'حدث خطأ غير معروف. يرجى المحاولة مرة أخرى';
+  String get error_unknown_desc => 'صار خطأ غير معروف. حاول مرة ثانية';
 
   @override
   String get error_cancelled => 'تم إلغاء الطلب';
@@ -263,7 +271,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_other => 'حدث خطأ';
 
   @override
-  String get error_other_desc => 'حدث خطأ. يرجى المحاولة مرة أخرى';
+  String get error_other_desc => 'صار خطأ. حاول مرة ثانية';
 
   @override
   String get retry => 'إعادة المحاولة';
@@ -281,10 +289,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_title => 'ابدأ الآن';
 
   @override
-  String get auth_subtitle_login => 'مرحبًا بعودتك! سجّل الدخول إلى حسابك';
+  String get auth_subtitle_login => 'يا هلا برجعتك! سجّل دخولك لحسابك';
 
   @override
-  String get auth_subtitle_signup => 'أنشئ حسابًا لاستكشاف تطبيقنا';
+  String get auth_subtitle_signup => 'أنشئ حساب عشان تستكشف تطبيقنا';
 
   @override
   String get toggle_login => 'تسجيل الدخول';
@@ -299,7 +307,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get label_email => 'البريد الإلكتروني';
 
   @override
-  String get label_phone => 'الهاتف';
+  String get label_phone => 'الجوال';
 
   @override
   String get label_password => 'كلمة المرور';
@@ -314,7 +322,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hint_email_or_phone => 'example@email.com';
 
   @override
-  String get label_email_or_phone => 'البريد الالكتروني';
+  String get label_email_or_phone => 'البريد الإلكتروني أو رقم الجوال';
 
   @override
   String get hint_phone => '(+966) 726-0592';
@@ -336,7 +344,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get forget_password_description =>
-      'أدخل رقم هاتفك أو بريدك الإلكتروني لاستلام رمز التحقق';
+      'أدخل رقم جوالك أو بريدك الإلكتروني لاستلام رمز التحقق';
 
   @override
   String get btn_send_verification_code => 'إرسال رمز التحقق';
@@ -369,22 +377,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get msg_password_reset_success => 'تم تغيير كلمة المرور بنجاح';
 
   @override
-  String get verification_code_required => 'يرجى إدخال رمز التحقق';
+  String get verification_code_required => 'فضلاً أدخل رمز التحقق';
 
   @override
   String get verification_code_invalid => 'رمز التحقق غير صالح';
 
   @override
-  String get otp_description => 'أدخل رمز التحقق المرسل إليك';
+  String get otp_description => 'أدخل رمز التحقق اللي وصل لك';
 
   @override
-  String get otp_code_sent_to => 'تم إرسال الرمز إلى';
+  String get otp_code_sent_to => 'أرسلنا الرمز إلى';
 
   @override
   String get otp_verify_button => 'تحقق';
 
   @override
-  String get otp_complete_code_required => 'يرجى إدخال رمز التحقق كاملًا';
+  String get otp_complete_code_required => 'فضلاً أدخل رمز التحقق كامل';
 
   @override
   String get otp_success_message => 'تم تأكيد الحساب بنجاح';
@@ -393,7 +401,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get otp_screen_title => 'رمز التحقق';
 
   @override
-  String get otp_screen_subtitle => 'أدخل رمز التحقق المرسل إليك لتأكيد حسابك';
+  String get otp_screen_subtitle =>
+      'أدخل رمز التحقق اللي وصل لك عشان تأكد حسابك';
 
   @override
   String get social_divider => 'أو المتابعة باستخدام';
@@ -405,10 +414,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get btn_login_apple => 'آبل';
 
   @override
-  String get footer_have_account => 'لديك حساب بالفعل؟ ';
+  String get footer_have_account => 'عندك حساب؟ ';
 
   @override
-  String get footer_no_account => 'ليس لديك حساب؟ ';
+  String get footer_no_account => 'ما عندك حساب؟ ';
 
   @override
   String get footer_action_login => 'تسجيل الدخول';
@@ -432,7 +441,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get banner_title => 'خضروات عضوية طازجة\nحتى 40% خصم';
 
   @override
-  String get banner_subtitle => 'تسوّق طازجًا، وعِش بصحة كل يوم';
+  String get banner_subtitle => 'تسوّق الطازج وخلك صحي كل يوم';
 
   @override
   String get banner_action => 'تسوّق الآن';
@@ -498,7 +507,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get name => 'الاسم';
 
   @override
-  String get phone => 'الهاتف';
+  String get phone => 'الجوال';
 
   @override
   String get date_of_birth => 'تاريخ الميلاد';
@@ -534,18 +543,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notifications_unread_badge => 'غير مقروء';
 
   @override
-  String get notifications_all_caught_up => 'لا توجد إشعارات غير مقروءة';
+  String get notifications_all_caught_up => 'ما فيه إشعارات غير مقروءة';
 
   @override
-  String get notifications_empty_title => 'لا توجد إشعارات بعد';
+  String get notifications_empty_title => 'ما فيه إشعارات حتى الآن';
 
   @override
   String get notifications_empty_description =>
-      'ستظهر هنا التنبيهات والعروض الجديدة فور وصولها إليك.';
+      'بتظهر هنا التنبيهات والعروض الجديدة أول ما توصلك.';
 
   @override
   String notifications_unread_summary(int count) {
-    return 'لديك $count إشعارات غير مقروءة';
+    return 'عندك $count إشعارات غير مقروءة';
   }
 
   @override
@@ -610,7 +619,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get register_success =>
-      'تم إنشاء الحساب بنجاح، يرجى تأكيد بريدك الإلكتروني';
+      'تم إنشاء الحساب بنجاح، فضلاً أكد بريدك الإلكتروني';
 
   @override
   String get legal => 'قانوني';
@@ -628,7 +637,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get logout => 'تسجيل الخروج';
 
   @override
-  String get logout_confirm => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+  String get logout_confirm => 'متأكد تبي تسجّل خروج؟';
 
   @override
   String get cart_title => 'سلتي';
@@ -646,7 +655,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get vendor_change_warning =>
-      'تغيير المتجر سيؤثر على جميع المنتجات في سلتك. هل تريد المتابعة؟';
+      'تغيير المتجر بيأثر على كل المنتجات في سلتك. تبي تكمل؟';
 
   @override
   String get cancel => 'إلغاء';
@@ -688,7 +697,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get delete_item => 'حذف العنصر';
 
   @override
-  String get delete_item_confirm => 'هل تريد إزالة هذا العنصر من سلتك؟';
+  String get delete_item_confirm => 'تبي تحذف هذا العنصر من سلتك؟';
 
   @override
   String get available_vendors => 'المتاجر المتاحة';
@@ -718,19 +727,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_request_cancelled => 'تم إلغاء الطلب';
 
   @override
-  String get error_no_internet => 'لا يوجد اتصال بالإنترنت';
+  String get error_no_internet => 'ما فيه اتصال بالإنترنت';
 
   @override
-  String get error_unknown => 'حدث خطأ غير متوقع';
+  String get error_unknown => 'صار خطأ غير متوقع';
 
   @override
-  String get error_no_response => 'لم يتم استلام أي رد من الخادم';
+  String get error_no_response => 'ما استلمنا أي رد من الخادم';
 
   @override
   String get error_bad_request => 'طلب غير صالح';
 
   @override
-  String get error_unauthorized => 'غير مصرح، يرجى تسجيل الدخول مرة أخرى';
+  String get error_unauthorized => 'غير مصرح، سجّل دخولك مرة ثانية';
 
   @override
   String get error_forbidden => 'ليس لديك صلاحية';
@@ -745,7 +754,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get error_validation => 'بيانات الإدخال غير صالحة';
 
   @override
-  String get error_server => 'خطأ في الخادم، يرجى المحاولة لاحقًا';
+  String get error_server => 'خطأ في الخادم، حاول لاحقًا';
 
   @override
   String get locationServicesDisabled => 'خدمات الموقع معطلة';
@@ -767,7 +776,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get product_description_text =>
-      'هذا منتج عالي الجودة بميزات ممتازة ومناسب لجميع الاستخدامات.';
+      'هذا منتج عالي الجودة وبمميزات ممتازة ويناسب كل الاستخدامات.';
 
   @override
   String get quantity_label => 'الكمية:';
@@ -814,7 +823,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get not_available => 'غير متوفر';
 
   @override
-  String get redirecting_to_checkout => 'جارٍ تحويلك إلى الدفع...';
+  String get redirecting_to_checkout => 'جاري تحويلك للدفع...';
 
   @override
   String get cart => 'سلة التسوق';
@@ -838,8 +847,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get clear_cart => 'تفريغ السلة';
 
   @override
-  String get clear_cart_confirmation =>
-      'هل أنت متأكد أنك تريد إزالة جميع العناصر من السلة؟';
+  String get clear_cart_confirmation => 'متأكد تبي تحذف كل العناصر من السلة؟';
 
   @override
   String get start_shopping => 'ابدأ التسوق';
@@ -857,7 +865,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get compare => 'قارن';
 
   @override
-  String get select_vendor_to_show_price => 'اختر متجرًا لعرض السعر';
+  String get select_vendor_to_show_price => 'اختر متجر عشان نعرض السعر';
 
   @override
   String get comparison_results => 'نتائج المقارنة';
@@ -878,7 +886,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get currently_selected => 'المحدد حاليًا';
 
   @override
-  String get select_one_more_vendor => 'اختر متجرًا إضافيًا واحدًا على الأقل';
+  String get select_one_more_vendor => 'اختر متجر إضافي واحد على الأقل';
 
   @override
   String get compare_prices => 'قارن الأسعار';
@@ -890,7 +898,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get select_vendors_to_compare => 'اختر المتاجر للمقارنة';
 
   @override
-  String get select_2_to_3_vendors => 'اختر من متجرين إلى ثلاثة متاجر للمقارنة';
+  String get select_2_to_3_vendors =>
+      'اختر من متجرين إلى ثلاثة عشان تقارن الأسعار';
 
   @override
   String get category_vegetables => 'الخضروات';
@@ -926,7 +935,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sort_newest => 'الأحدث';
 
   @override
-  String get sort_newest_desc => 'المنتجات المضافة حديثًا';
+  String get sort_newest_desc => 'المنتجات المضافة مؤخرًا';
 
   @override
   String get sort_price_low => 'السعر من الأقل إلى الأعلى';
@@ -950,7 +959,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sort_highest_rated => 'الأعلى تقييمًا';
 
   @override
-  String get sort_highest_rated_desc => 'بناءً على تقييمات العملاء';
+  String get sort_highest_rated_desc => 'حسب تقييمات العملاء';
 
   @override
   String get sort_alphabetical => 'أبجديًا';
@@ -1013,24 +1022,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get favorites => 'المفضلة';
 
   @override
-  String get favorites_empty => 'لا توجد منتجات مفضلة';
+  String get favorites_empty => 'ما فيه منتجات مفضلة';
 
   @override
   String get favorites_empty_message =>
-      'ابدأ بإضافة منتجاتك المفضلة للوصول إليها بسهولة';
+      'ابدأ بإضافة منتجاتك المفضلة عشان توصل لها بسهولة';
 
   @override
   String get clear_favorites => 'مسح كل المفضلة';
 
   @override
   String get clear_favorites_confirmation =>
-      'هل أنت متأكد أنك تريد إزالة جميع المنتجات من المفضلة؟';
+      'متأكد تبي تحذف كل المنتجات من المفضلة؟';
 
   @override
   String get invoice_details => 'تفاصيل الفاتورة';
 
   @override
-  String get processing => 'جارٍ المعالجة...';
+  String get processing => 'جاري المعالجة...';
 
   @override
   String get order_success => 'تم تقديم الطلب بنجاح! ';
@@ -1043,7 +1052,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get payment_success_message =>
-      'شكرًا لك! تم استلام طلبك وسيتم توصيله قريبًا';
+      'يعطيك العافية! استلمنا طلبك وبيوصلك قريبًا';
 
   @override
   String get estimated_delivery => 'وقت التوصيل المتوقع';
@@ -1055,13 +1064,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get track_order => 'تتبع الطلب 📍';
 
   @override
-  String get back_to_home => 'العودة إلى الرئيسية';
+  String get back_to_home => 'الرجوع للرئيسية';
 
   @override
   String get my_orders_title => 'طلباتي';
 
   @override
-  String get my_orders_subtitle => 'تتبّع طلباتك الحالية والسابقة بسهولة';
+  String get my_orders_subtitle => 'تابع طلباتك الحالية والسابقة بكل سهولة';
 
   @override
   String get active_orders_tab => 'النشطة';
@@ -1070,10 +1079,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get completed_orders_tab => 'المكتملة';
 
   @override
-  String get no_active_orders => 'لا توجد طلبات نشطة';
+  String get no_active_orders => 'ما فيه طلبات نشطة';
 
   @override
-  String get no_previous_orders => 'لا توجد طلبات سابقة';
+  String get no_previous_orders => 'ما فيه طلبات سابقة';
 
   @override
   String get my_orders_order_date => 'تاريخ الطلب';
@@ -1124,7 +1133,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cash_on_delivery => 'الدفع عند الاستلام';
 
   @override
-  String get cash_on_delivery_subtitle => 'ادفع نقدًا عند وصول الطلب';
+  String get cash_on_delivery_subtitle => 'ادفع كاش عند وصول الطلب';
 
   @override
   String get bank_transfer => 'تحويل بنكي';
@@ -1133,25 +1142,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bank_transfer_subtitle => 'تحويل مباشر من البنك';
 
   @override
-  String get auth_driver_account_caption => 'حساب السائق';
+  String get auth_driver_account_caption => 'حساب المندوب';
 
   @override
   String get auth_login_description =>
-      'سجّل الدخول لإدارة رحلاتك وعمليات التسليم الخاصة بك.';
+      'سجّل دخولك لإدارة رحلاتك وطلبات التوصيل.';
 
   @override
   String get auth_login_error =>
-      'تعذر تسجيل الدخول. تحقق من بياناتك وحاول مرة أخرى.';
+      'تعذر تسجيل الدخول. تأكد من بياناتك وحاول مرة ثانية.';
 
   @override
   String get auth_forgot_password_pending =>
-      'سيتم ربط نسيت كلمة المرور في الخطوة التالية.';
+      'بنربط استعادة كلمة المرور في الخطوة الجاية.';
 
   @override
   String get auth_signup_caption => 'إنشاء حساب سائق';
 
   @override
-  String get auth_signup_description => 'أدخل بياناتك الأساسية للبدء.';
+  String get auth_signup_description => 'أدخل بياناتك الأساسية عشان تبدأ.';
 
   @override
   String get auth_continue => 'متابعة';
@@ -1160,15 +1169,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_caption => 'إكمال الملف الشخصي';
 
   @override
-  String get driver_profile_title => 'بيانات السائق والمركبة';
+  String get driver_profile_title => 'بيانات المندوب والمركبة';
 
   @override
   String get driver_profile_subtitle =>
-      'أضف صور المستندات وبيانات المركبة لتفعيل حسابك.';
+      'أضف صور المستندات وبيانات المركبة عشان يتفعل حسابك.';
 
   @override
   String get driver_profile_description =>
-      'ارفع الصور المطلوبة واملأ المعلومات الأساسية.';
+      'ارفع الصور المطلوبة وعبّئ المعلومات الأساسية.';
 
   @override
   String get driver_profile_save => 'حفظ ومتابعة';
@@ -1179,11 +1188,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_picker_restart_required =>
-      'اختيار الصور يحتاج إلى إعادة تشغيل كاملة للتطبيق بعد إضافة الإضافة.';
+      'اختيار الصور يحتاج إعادة تشغيل كاملة للتطبيق بعد إضافة الإضافة.';
 
   @override
   String get driver_profile_picker_error =>
-      'تعذر فتح منتقي الصور. يرجى المحاولة مرة أخرى.';
+      'تعذر فتح منتقي الصور. حاول مرة ثانية.';
 
   @override
   String driver_profile_image_changed_success(String documentName) {
@@ -1224,7 +1233,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_portrait_title => 'الصورة الشخصية للسائق';
 
   @override
-  String get driver_profile_portrait_subtitle => 'صورة شخصية واضحة للسائق.';
+  String get driver_profile_portrait_subtitle => 'صورة شخصية واضحة للمندوب.';
 
   @override
   String get driver_profile_id_front_title => 'الوجه الأمامي للهوية';
@@ -1282,19 +1291,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_gate_ready_description =>
-      'جارٍ تجهيز جلسة السائق وتوجيهك إلى الخطوة التالية المناسبة.';
+      'جاري تجهيز جلسة المندوب وتوجيهك للخطوة المناسبة.';
 
   @override
   String get auth_login_hero_badge => 'جاهز للتوصيل';
 
   @override
-  String get auth_login_hero_title => 'تسجيل دخول السائق';
+  String get auth_login_hero_title => 'تسجيل دخول المندوب';
 
   @override
-  String get auth_login_hero_subtitle => 'الوصول للطلبات وإدارة نشاطك بسهولة.';
+  String get auth_login_hero_subtitle => 'توصل للطلبات وتدير نشاطك بسهولة.';
 
   @override
-  String get auth_login_section_badge => 'حساب السائق';
+  String get auth_login_section_badge => 'حساب المندوب';
 
   @override
   String get auth_verify_otp_hero_badge => 'التحقق';
@@ -1304,7 +1313,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_verify_otp_hero_subtitle =>
-      'لن يكتمل تفعيل الحساب قبل تأكيد الكود المرسل إلى بريدك الإلكتروني.';
+      'ما يكتمل تفعيل الحساب إلا بعد تأكيد الكود المرسل لبريدك الإلكتروني.';
 
   @override
   String get auth_verify_otp_section_badge => 'OTP';
@@ -1314,7 +1323,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_verify_otp_section_description =>
-      'راجع بريدك الإلكتروني وأدخل الكود المكوّن من 4 أرقام للمتابعة.';
+      'راجع بريدك الإلكتروني وأدخل الكود المكوّن من 4 أرقام عشان تكمل.';
 
   @override
   String get auth_verify_otp_identifier_label => 'البريد الإلكتروني';
@@ -1329,24 +1338,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_verify_otp_resend_action => 'إعادة إرسال';
 
   @override
-  String get auth_verify_otp_resending => 'جارٍ الإرسال...';
+  String get auth_verify_otp_resending => 'جاري الإرسال...';
 
   @override
   String get auth_verify_otp_back_to_login => 'العودة لتسجيل الدخول';
 
   @override
   String get auth_verify_otp_missing_tokens =>
-      'لم يتم استلام بيانات تسجيل الدخول بعد التحقق.';
+      'ما استلمنا بيانات تسجيل الدخول بعد التحقق.';
 
   @override
-  String get auth_signup_hero_badge => 'انضم إلى فريق السائقين';
+  String get auth_signup_hero_badge => 'انضم لفريق المندوبين';
 
   @override
-  String get auth_signup_hero_title => 'إنشاء حساب سائق';
+  String get auth_signup_hero_title => 'إنشاء حساب مندوب';
 
   @override
   String get auth_signup_hero_subtitle =>
-      'ابدأ ببياناتك الأساسية للانضمام سريعًا.';
+      'ابدأ ببياناتك الأساسية عشان تنضم بسرعة.';
 
   @override
   String get auth_signup_section_badge => 'رحلة جديدة';
@@ -1355,8 +1364,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_forgot_hero_badge => 'استعادة سريعة';
 
   @override
-  String get auth_forgot_hero_subtitle =>
-      'استعد الوصول إلى حسابك بخطوات بسيطة.';
+  String get auth_forgot_hero_subtitle => 'استرجع الوصول لحسابك بخطوات بسيطة.';
 
   @override
   String get auth_forgot_section_badge => 'استعادة الوصول';
@@ -1399,7 +1407,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_step_identity_subtitle =>
-      'أدخل بيانات الهوية الرسمية للسائق.';
+      'أدخل بيانات الهوية الرسمية للمندوب.';
 
   @override
   String get driver_profile_step_vehicle_subtitle =>
@@ -1415,7 +1423,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_page_subtitle =>
-      'أكمل ملف السائق خطوة بخطوة ضمن تدفق واضح وموجّه.';
+      'كمّل ملف المندوب خطوة بخطوة وبشكل واضح.';
 
   @override
   String get driver_profile_step_back => 'رجوع';
@@ -1428,17 +1436,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_images_required_error =>
-      'يرجى رفع جميع الصور المطلوبة قبل المتابعة.';
+      'فضلاً ارفع كل الصور المطلوبة قبل المتابعة.';
 
   @override
-  String get driver_profile_submit_success => 'تم إرسال معلومات السائق بنجاح.';
+  String get driver_profile_submit_success => 'تم إرسال معلومات المندوب بنجاح.';
 
   @override
   String get driver_profile_identity_card_title => 'البيانات الشخصية والرسمية';
 
   @override
   String get driver_profile_identity_card_subtitle =>
-      'املأ هذه البيانات بعناية لأنها الأساس لبقية الملف الشخصي.';
+      'عبّئ هذه البيانات بعناية لأنها أساس باقي الملف الشخصي.';
 
   @override
   String get driver_profile_address_label => 'العنوان';
@@ -1516,31 +1524,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_zone_hint =>
-      'حدد المنطقة ثم المدينة التي تريد بدء استقبال الطلبات منها.';
+      'حدد المنطقة ثم المدينة اللي تبي تبدأ تستقبل منها الطلبات.';
 
   @override
-  String get driver_profile_zone_loading => 'جارٍ تحميل المناطق والمدن';
+  String get driver_profile_zone_loading => 'جاري تحميل المناطق والمدن';
 
   @override
   String get driver_profile_zone_sheet_title => 'اختر نطاق عملك';
 
   @override
   String get driver_profile_zone_sheet_subtitle =>
-      'ابدأ باختيار المنطقة ثم اختر المدينة التي سيتم ربطها بحساب السائق.';
+      'ابدأ باختيار المنطقة ثم المدينة اللي بنربطها بحساب المندوب.';
 
   @override
   String get driver_profile_zone_region_sheet_title => 'اختر المنطقة';
 
   @override
   String get driver_profile_zone_region_sheet_subtitle =>
-      'اختيار المنطقة هيحدد المدن المتاحة لك.';
+      'اختيار المنطقة يحدد المدن المتاحة لك.';
 
   @override
   String get driver_profile_zone_city_sheet_title => 'اختر المدينة';
 
   @override
   String get driver_profile_zone_city_sheet_subtitle =>
-      'اختر المدينة التي تريد بدء استقبال الطلبات منها.';
+      'اختر المدينة اللي تبي تبدأ تستقبل منها الطلبات.';
 
   @override
   String get driver_profile_zone_sheet_region_label => '1. المنطقة';
@@ -1549,7 +1557,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_zone_sheet_city_label => '2. المدينة';
 
   @override
-  String get driver_profile_zone_empty => 'لا توجد مناطق أو مدن متاحة حاليًا.';
+  String get driver_profile_zone_empty => 'ما فيه مناطق أو مدن متاحة حاليًا.';
 
   @override
   String driver_profile_zone_cities_count(String count) {
@@ -1571,23 +1579,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String driver_profile_vehicle_selected_message(String vehicleType) {
-    return 'تم اختيار $vehicleType. تأكد أن الصورة المرفوعة مطابقة لنوع المركبة.';
+    return 'تم اختيار $vehicleType. تأكد إن الصورة المرفوعة مطابقة لنوع المركبة.';
   }
 
   @override
   String get driver_profile_vehicle_selected_bike_message =>
-      'تم اختيار الدراجة. هذا الإعداد يركز على المرونة وسرعة الحركة في الزحام.';
+      'تم اختيار الدراجة. هذا الخيار مناسب للمرونة وسرعة الحركة في الزحمة.';
 
   @override
   String get driver_profile_vehicle_selected_car_message =>
-      'تم اختيار السيارة. هذا الإعداد مناسب للطلبات الأكبر والأكثر تنوعًا.';
+      'تم اختيار السيارة. هذا الخيار مناسب للطلبات الأكبر والأكثر تنوعًا.';
 
   @override
   String get driver_profile_uploads_card_title => 'الصور والمرفقات';
 
   @override
   String get driver_profile_uploads_card_subtitle =>
-      'كل ملف يتم رفعه هنا يجعل بيانات السائق والمركبة أوضح.';
+      'كل ملف ترفعه هنا يوضح بيانات المندوب والمركبة أكثر.';
 
   @override
   String get driver_profile_national_id_card_title => 'بطاقة الهوية';
@@ -1610,7 +1618,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_review_card_subtitle =>
-      'راجع كل ما أدخلته قبل الإرسال النهائي.';
+      'راجع كل اللي أدخلته قبل الإرسال النهائي.';
 
   @override
   String get driver_profile_uploaded_images_label => 'الصور المرفوعة';
@@ -1635,7 +1643,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_vehicle_type_car_subtitle =>
-      'مثالية للطلبات الأكبر والمتعددة';
+      'مناسبة للطلبات الأكبر والمتعددة';
 
   @override
   String get driver_vehicle_type_bike_subtitle =>
@@ -1672,15 +1680,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_pending_description =>
-      'تم استلام بياناتك بنجاح. سيقوم فريقنا بمراجعة الحساب وتفعيله قبل بدء استلام الطلبات.';
+      'استلمنا بياناتك بنجاح. فريقنا بيراجع الحساب ويفعّله قبل ما تبدأ تستلم الطلبات.';
 
   @override
   String get auth_pending_notification_hint =>
-      'سيصلك إشعار جديد فور الموافقة على الحساب، ويمكنك متابعة كل التنبيهات من زر الإشعارات بالأعلى.';
+      'بيوصلك إشعار جديد أول ما تتم الموافقة على الحساب، وتقدر تتابع كل التنبيهات من زر الإشعارات بالأعلى.';
 
   @override
   String get auth_pending_eta_hint =>
-      'عادةً تتم مراجعة الحساب خلال وقت قصير بعد التأكد من اكتمال البيانات.';
+      'عادةً مراجعة الحساب تاخذ وقت قصير بعد التأكد من اكتمال البيانات.';
 
   @override
   String get auth_pending_update_required => 'مطلوب تعديل';
@@ -1708,21 +1716,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_pending_notifications_review_message =>
-      'سيصلك إشعار أول ما تتم المراجعة.';
+      'بيوصلك إشعار أول ما تتم المراجعة.';
 
   @override
   String get auth_pending_support_title => 'الدعم';
 
   @override
   String get auth_pending_support_message =>
-      'لو محتاج تستفسر عن حالة الحساب أو تبعت شكوى، تقدر تكلم الدعم مباشرة من هنا.';
+      'إذا تحتاج تستفسر عن حالة الحساب أو ترسل شكوى، تقدر تكلم الدعم مباشرة من هنا.';
 
   @override
   String get driver_account_support_title => 'دعم حساب المندوب';
 
   @override
   String get driver_account_support_subtitle =>
-      'أرسل طلب دعم مباشر بخصوص المراجعة أو الإيقاف أو الحظر أو أي مشكلة تمنع استخدام الحساب.';
+      'أرسل طلب دعم مباشر بخصوص المراجعة أو الإيقاف أو الحظر أو أي مشكلة تمنعك من استخدام الحساب.';
 
   @override
   String get driver_account_support_identifier_label => 'البريد أو رقم الجوال';
@@ -1755,15 +1763,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_account_support_empty_reasons =>
-      'لا توجد أسباب متاحة حاليًا. اسحب للتحديث ثم حاول مرة أخرى.';
+      'ما فيه أسباب متاحة حاليًا. اسحب للتحديث ثم حاول مرة ثانية.';
 
   @override
   String get driver_account_support_pick_files_error =>
-      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+      'تعذر فتح منتقي الصور. حاول مرة ثانية.';
 
   @override
   String get driver_account_support_upload_files_error =>
-      'تعذر رفع الملفات المرفقة. حاول مرة أخرى.';
+      'تعذر رفع الملفات المرفقة. حاول مرة ثانية.';
 
   @override
   String get driver_support_case_entry_title => 'تفاصيل الشكوى';
@@ -1775,11 +1783,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_support_cases_title => 'الشكاوى والنزاعات';
 
   @override
-  String get driver_support_cases_empty_title => 'لا توجد طلبات دعم حتى الآن';
+  String get driver_support_cases_empty_title => 'ما فيه طلبات دعم حتى الآن';
 
   @override
   String get driver_support_cases_empty_subtitle =>
-      'أي شكوى أو نزاع أو طلب دعم حساب ترسله سيظهر هنا مباشرة.';
+      'أي شكوى أو نزاع أو طلب دعم حساب ترسله بيظهر هنا مباشرة.';
 
   @override
   String get driver_support_case_order_number => 'رقم الطلب';
@@ -1860,14 +1868,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_support_pick_files_error =>
-      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+      'تعذر فتح منتقي الصور. حاول مرة ثانية.';
 
   @override
   String get driver_support_attachment_file_name => 'مرفق.jpg';
 
   @override
   String get driver_support_upload_files_error =>
-      'تعذر رفع الملفات المرفقة. حاول مرة أخرى.';
+      'تعذر رفع الملفات المرفقة. حاول مرة ثانية.';
 
   @override
   String get driver_support_open_attachment_error => 'تعذر فتح الملف المرفق.';
@@ -1940,14 +1948,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_account_status_subtitle =>
-      'تابع مراجعة كل مستند، والمتطلبات الناقصة، وما الذي يجب تحديثه حتى يكتمل حسابك.';
+      'تابع مراجعة كل مستند والمتطلبات الناقصة واللي تحتاج تحدثه عشان يكتمل حسابك.';
 
   @override
   String get profile_rejection_policy_title => 'سياسة رفض العروض';
 
   @override
   String get profile_rejection_policy_tracking_subtitle =>
-      'حدود الرفض اليومية والأسبوعية كما يعرضها النظام';
+      'حدود الرفض اليومية والأسبوعية حسب النظام';
 
   @override
   String get profile_rejection_policy_frozen_badge =>
@@ -1961,7 +1969,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_rejection_policy_summary_active =>
-      'تابع حدود الرفض اليومية والأسبوعية بشكل مباشر';
+      'تابع حدود الرفض اليومية والأسبوعية مباشرة';
 
   @override
   String get profile_rejection_policy_summary_frozen =>
@@ -2081,23 +2089,23 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_blocked_description =>
-      'تم إيقاف الوصول إلى حسابك في الوقت الحالي. إذا كنت تعتقد أن هذا الإجراء بالخطأ، تواصل مع فريق الدعم لمراجعة الحالة.';
+      'تم إيقاف الوصول لحسابك حاليًا. إذا تشوف إن الإجراء بالخطأ، تواصل مع الدعم لمراجعة الحالة.';
 
   @override
   String get auth_blocked_access_hint =>
-      'لن تتمكن من استلام الطلبات أو استخدام مزايا التطبيق إلى حين رفع الحظر أو مراجعة الحساب من الإدارة.';
+      'ما تقدر تستلم طلبات أو تستخدم مزايا التطبيق لين ينرفع الحظر أو تتم مراجعة الحساب من الإدارة.';
 
   @override
   String get auth_blocked_support_hint =>
-      'يمكنك الرجوع إلى الدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.';
+      'تقدر ترجع للدعم والمساعدة لإرسال استفسار أو متابعة سبب الحظر وخطوات استعادة الحساب.';
 
   @override
   String get auth_blocked_rejection_policy_hint =>
-      'يُرفع هذا الحظر اليومي تلقائيًا غدًا حسب يوم الخادم، ما لم يقم المشرف بإزالته قبل ذلك.';
+      'ينرفع هذا الحظر اليومي تلقائيًا بكرة حسب يوم الخادم، إلا إذا المشرف أزاله قبلها.';
 
   @override
   String get auth_blocked_rejection_policy_reset_note =>
-      'يتم رفع تجميد الرفض اليومي تلقائيًا مع بداية يوم الخادم التالي، ويمكن للمشرف أيضًا إزالة التقييد قبل ذلك.';
+      'ينرفع تجميد الرفض اليومي تلقائيًا مع بداية يوم الخادم التالي، ويقدر المشرف يشيل التقييد قبلها.';
 
   @override
   String get auth_contact_support => 'التواصل مع الدعم';
@@ -2107,7 +2115,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get auth_session_parse_error =>
-      'تعذر قراءة بيانات الجلسة من استجابة تسجيل الدخول.';
+      'تعذر قراءة بيانات الجلسة من رد تسجيل الدخول.';
 
   @override
   String get driver_home_accept => 'قبول';
@@ -2132,7 +2140,7 @@ class AppLocalizationsAr extends AppLocalizations {
     Object orderTitle,
     Object vendorName,
   ) {
-    return 'هل تريد قبول $orderTitle من $vendorName والانتقال إلى تفاصيل الطلب؟';
+    return 'تبي تقبل $orderTitle من $vendorName وتنتقل لتفاصيل الطلب؟';
   }
 
   @override
@@ -2146,7 +2154,7 @@ class AppLocalizationsAr extends AppLocalizations {
     Object orderTitle,
     Object vendorName,
   ) {
-    return 'هل تريد رفض $orderTitle من $vendorName وانتظار العرض التالي؟';
+    return 'تبي ترفض $orderTitle من $vendorName وتنتظر العرض التالي؟';
   }
 
   @override
@@ -2162,7 +2170,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_home_connection_online_subtitle => 'جاهز للطلبات';
 
   @override
-  String get driver_home_connection_offline_subtitle => 'موقفه مؤقتًا';
+  String get driver_home_connection_offline_subtitle => 'متوقف مؤقتًا';
 
   @override
   String get driver_profile_mock_address => 'حي النرجس، الرياض';
@@ -2187,7 +2195,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get completed_orders_subtitle =>
-      'راجع الطلبات التي تم تسليمها أو إلغاؤها أو التي فشل تسليمها ضمن سجل منظم.';
+      'راجع الطلبات اللي تم تسليمها أو إلغاؤها أو فشل تسليمها ضمن سجل منظم.';
 
   @override
   String get completed_orders_history_badge => 'أرشيف السجل';
@@ -2245,18 +2253,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get completed_orders_order_number_prefix => 'طلب';
 
   @override
-  String get completed_orders_empty_title => 'لا توجد طلبات مكتملة بعد';
+  String get completed_orders_empty_title => 'ما فيه طلبات مكتملة حتى الآن';
 
   @override
   String get completed_orders_empty_subtitle =>
-      'ستظهر رحلات السائق المنتهية هنا بعد تسليم الطلب أو إلغائه أو اعتباره فاشلًا.';
+      'بتظهر رحلات المندوب المنتهية هنا بعد تسليم الطلب أو إلغائه أو اعتباره فاشلًا.';
 
   @override
-  String get completed_orders_no_results_title => 'لا توجد طلبات مطابقة';
+  String get completed_orders_no_results_title => 'ما فيه طلبات مطابقة';
 
   @override
   String get completed_orders_no_results_subtitle =>
-      'جرّب كلمة بحث أخرى أو امسح عامل التصفية النشط.';
+      'جرّب كلمة بحث ثانية أو امسح الفلتر النشط.';
 
   @override
   String get order_delivery_failed => 'فشل التسليم';
@@ -2272,11 +2280,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_subtitle =>
-      'تابع رصيدك الحالي، وجاهزية السحب، والحوافز، وكل حركة في لوحة تحكم متميزة.';
+      'تابع رصيدك الحالي، وجاهزية السحب، والحوافز، وكل حركة من لوحة تحكم مرتبة.';
 
   @override
   String get wallet_subtitle_secure =>
-      'راجع رصيدك الحالي، وآخر الحركات، وجاهزية السحب من خلال مركز محفظة آمن.';
+      'راجع رصيدك الحالي، وآخر الحركات، وجاهزية السحب من مركز محفظة آمن.';
 
   @override
   String get wallet_subtitle_ready => 'صافي الرصيد المتاح جاهز للسحب الآن.';
@@ -2290,7 +2298,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_subtitle_no_withdrawable =>
-      'لا يوجد صافي رصيد متاح للسحب حاليًا.';
+      'ما فيه صافي رصيد متاح للسحب حاليًا.';
 
   @override
   String get wallet_preview_state => 'حالة المعاينة';
@@ -2356,24 +2364,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_bonus_progress => 'مكتمل';
 
   @override
-  String get wallet_bonus_unlock_before => 'افتحه قبل';
+  String get wallet_bonus_unlock_before => 'فعّله قبل';
 
   @override
   String get wallet_empty_title => 'محفظتك جاهزة لأول عملية سحب';
 
   @override
   String get wallet_empty_subtitle =>
-      'أكمل بعض رحلات التوصيل وستظهر أرباحك وسجلك وخيارات السحب هنا.';
+      'كمّل كم رحلة توصيل وبتظهر أرباحك وسجلك وخيارات السحب هنا.';
 
   @override
-  String get wallet_error_title => 'تعذر تحميل المحفظة الآن';
+  String get wallet_error_title => 'تعذر تحميل المحفظة الحين';
 
   @override
   String get wallet_error_subtitle =>
-      'لم نتمكن من جلب أحدث حالة للمحفظة. حاول مرة أخرى بعد قليل.';
+      'ما قدرنا نجيب أحدث حالة للمحفظة. حاول مرة ثانية بعد شوي.';
 
   @override
-  String get wallet_retry => 'حاول مرة أخرى';
+  String get wallet_retry => 'حاول مرة ثانية';
 
   @override
   String get wallet_status_completed => 'مكتمل';
@@ -2460,18 +2468,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_view_all => 'عرض الكل';
 
   @override
-  String get wallet_transactions_empty_title => 'لا توجد معاملات للمحفظة بعد';
+  String get wallet_transactions_empty_title =>
+      'ما فيه معاملات للمحفظة حتى الآن';
 
   @override
   String get wallet_transactions_empty_subtitle =>
-      'ستظهر هنا أرباح التوصيل وحركات المحفظة بعد بدء النشاط.';
+      'بتظهر هنا أرباح التوصيل وحركات المحفظة بعد بدء النشاط.';
 
   @override
-  String get wallet_withdrawals_empty_title => 'لا توجد طلبات سحب بعد';
+  String get wallet_withdrawals_empty_title => 'ما فيه طلبات سحب حتى الآن';
 
   @override
   String get wallet_withdrawals_empty_subtitle =>
-      'سيظهر سجل طلبات السحب هنا بعد أول طلب سحب.';
+      'بيظهر سجل طلبات السحب هنا بعد أول طلب سحب.';
 
   @override
   String get wallet_load_more => 'تحميل المزيد';
@@ -2480,7 +2489,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_add_method => 'إضافة وسيلة';
 
   @override
-  String get wallet_methods_empty_title => 'لا توجد وسائل سحب مضافة';
+  String get wallet_methods_empty_title => 'ما فيه وسائل سحب مضافة';
 
   @override
   String get wallet_methods_empty_subtitle =>
@@ -2491,15 +2500,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_withdraw_info_hint =>
-      'تتم معالجة طلبات السحب بشكل آمن باستخدام وسيلة السحب التي تختارها.';
+      'تتم معالجة طلبات السحب بأمان باستخدام وسيلة السحب اللي تختارها.';
 
   @override
   String get wallet_withdraw_amount_subtitle =>
-      'أدخل المبلغ الذي تريد تحويله من رصيد محفظتك.';
+      'أدخل المبلغ اللي تبي تحوله من رصيد محفظتك.';
 
   @override
   String get wallet_withdraw_method_subtitle =>
-      'اختر استخدام وسيلة السحب الأساسية أو حدد وسيلة محفوظة أخرى.';
+      'اختر استخدام وسيلة السحب الأساسية أو حدد وسيلة محفوظة ثانية.';
 
   @override
   String get wallet_amount_label => 'المبلغ';
@@ -2517,7 +2526,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_use_primary_method => 'استخدم وسيلة السحب الأساسية';
 
   @override
-  String get wallet_no_primary_method => 'لا توجد وسيلة أساسية متاحة';
+  String get wallet_no_primary_method => 'ما فيه وسيلة أساسية متاحة';
 
   @override
   String get wallet_withdraw_blocked_no_primary =>
@@ -2525,7 +2534,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_withdraw_blocked_cod =>
-      'يجب تسوية النقد المحصل COD قبل طلب السحب.';
+      'لازم تسوي النقد المحصل COD قبل طلب السحب.';
 
   @override
   String get wallet_withdraw_blocked_no_balance =>
@@ -2558,7 +2567,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_delete_method_message =>
-      'سيتم حذف وسيلة السحب إذا لم تكن مرتبطة بسجل طلبات سحب.';
+      'بتنحذف وسيلة السحب إذا ما كانت مرتبطة بسجل طلبات سحب.';
 
   @override
   String get wallet_edit_method_title => 'تعديل وسيلة السحب';
@@ -2577,11 +2586,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_identifier_reentry_hint =>
-      'أعد إدخال المعرّف كاملًا للحفاظ على أمان وسيلة السحب.';
+      'أعد إدخال المعرّف كامل عشان نحافظ على أمان وسيلة السحب.';
 
   @override
   String get wallet_identifier_secure_hint =>
-      'يتم إرسال المعرّف الكامل بشكل آمن ولا يظهر مرة أخرى داخل واجهة المحفظة.';
+      'ينرسل المعرّف الكامل بشكل آمن وما يظهر مرة ثانية داخل واجهة المحفظة.';
 
   @override
   String get wallet_save_action => 'حفظ';
@@ -2608,7 +2617,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_bonus_peak_hours => 'تعزيز ساعات الذروة';
 
   @override
-  String get wallet_alert_verification_title => 'تحقق من حساب السحب الخاص بك';
+  String get wallet_alert_verification_title => 'تحقق من حساب السحب';
 
   @override
   String get wallet_alert_verification_subtitle =>
@@ -2619,21 +2628,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wallet_alert_payout_subtitle =>
-      'تم إدراج آخر طلب سحب لديك في قائمة المعالجة، ويُفترض أن يصل خلال المدة المتوقعة للتسوية.';
+      'آخر طلب سحب لك دخل قائمة المعالجة، والمفترض يوصل خلال مدة التسوية المتوقعة.';
 
   @override
   String get wallet_cod_block_title => 'مستحق COD يمنع السحب';
 
   @override
   String get wallet_cod_block_subtitle =>
-      'يجب أن تنهي الإدارة مطابقة توريد COD قبل أن تتمكن من السحب من المحفظة.';
+      'لازم تنهي الإدارة مطابقة توريد COD قبل ما تقدر تسحب من المحفظة.';
 
   @override
   String get wallet_alert_incentive_title => 'تم فتح حافز جديد';
 
   @override
   String get wallet_alert_incentive_subtitle =>
-      'أنت قريب من الحصول على مكافأة إضافية للسائق خلال ساعات التوصيل المزدحمة.';
+      'أنت قريب من مكافأة إضافية للمندوب خلال ساعات التوصيل المزدحمة.';
 
   @override
   String get wallet_alert_action_verify => 'تحقق';
@@ -2717,7 +2726,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_change_pending_approval =>
-      'تم إرسال التعديل للمراجعة. سيتم تطبيقه بعد موافقة الإدارة.';
+      'تم إرسال التعديل للمراجعة. بيتم تطبيقه بعد موافقة الإدارة.';
 
   @override
   String get order_details_title => 'تفاصيل الطلب';
@@ -2802,14 +2811,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_pickup_code_subtitle =>
-      'اعرض هذا الكود للمتجر حتى يتم تسليم الطلب لك';
+      'اعرض هذا الكود للمتجر عشان يسلّمونك الطلب';
 
   @override
   String get order_details_pickup_code_copied => 'تم نسخ كود الاستلام';
 
   @override
   String get order_details_waiting_for_merchant_confirmation =>
-      'في انتظار تأكيد التاجر...';
+      'بانتظار تأكيد التاجر...';
 
   @override
   String get order_details_confirm_pickup => 'تأكيد الاستلام من المتجر';
@@ -2868,14 +2877,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_package_note_fallback =>
-      'راجع عدد القطع وتأكد إن التغليف مقفول قبل التحرك.';
+      'راجع عدد القطع وتأكد إن التغليف مقفل قبل تتحرك.';
 
   @override
   String get order_details_accept_dialog_title => 'تأكيد قبول الطلب';
 
   @override
   String order_details_accept_dialog_message(Object orderTitle) {
-    return 'هل تريد قبول $orderTitle والبدء في تنفيذ الطلب الآن؟';
+    return 'تبي تقبل $orderTitle وتبدأ تنفيذ الطلب الحين؟';
   }
 
   @override
@@ -2886,7 +2895,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String order_details_pickup_dialog_message(Object vendorName) {
-    return 'هل تؤكد استلام الطلب من $vendorName وأن كل الأصناف جاهزة معك؟';
+    return 'تأكد استلام الطلب من $vendorName وأن كل الأصناف جاهزة معك؟';
   }
 
   @override
@@ -2898,7 +2907,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String order_details_arrived_vendor_dialog_message(String vendorName) {
-    return 'هل تؤكد أنك وصلت إلى $vendorName؟';
+    return 'تأكد إنك وصلت إلى $vendorName؟';
   }
 
   @override
@@ -2909,7 +2918,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_start_delivery_dialog_message =>
-      'هل تريد بدء التوجه إلى العميل الآن؟';
+      'تبي تبدأ التوجه للعميل الحين؟';
 
   @override
   String get order_details_start_delivery_dialog_confirm => 'بدء التوصيل';
@@ -2920,7 +2929,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_arrived_customer_dialog_message =>
-      'هل تؤكد أنك وصلت إلى موقع العميل؟';
+      'تأكد إنك وصلت لموقع العميل؟';
 
   @override
   String get order_details_arrived_customer_dialog_confirm => 'تأكيد الوصول';
@@ -2930,7 +2939,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_details_delivered_dialog_message =>
-      'هل تؤكد أن الطلب تم تسليمه بنجاح؟';
+      'تأكد إن الطلب تم تسليمه بنجاح؟';
 
   @override
   String get order_details_delivered_dialog_confirm => 'تأكيد التسليم';
@@ -2940,7 +2949,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_delivery_success_subtitle =>
-      'أحسنت، تم إغلاق الرحلة بنجاح ويمكنك الآن الرجوع لمتابعة الطلبات الجديدة.';
+      'يعطيك العافية، تم إغلاق الرحلة بنجاح وتقدر الحين ترجع تتابع الطلبات الجديدة.';
 
   @override
   String get order_delivery_success_button => 'العودة للرئيسية';
@@ -2996,7 +3005,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_support_message_helper =>
-      'هذا السبب يتطلب كتابة ملاحظة قبل الإرسال.';
+      'هذا السبب يحتاج تكتب ملاحظة قبل الإرسال.';
 
   @override
   String get order_support_submit_issue => 'إرسال الحالة';
@@ -3012,11 +3021,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_support_error_reasons_loading =>
-      'تعذر تحميل الأسباب حالياً. أعد المحاولة أولاً.';
+      'تعذر تحميل الأسباب حاليًا. حاول مرة ثانية أولاً.';
 
   @override
   String get order_support_error_no_reasons =>
-      'لا توجد أسباب متاحة حالياً لهذا النوع.';
+      'ما فيه أسباب متاحة حاليًا لهذا النوع.';
 
   @override
   String get order_support_error_choose_reason => 'اختر السبب';
@@ -3027,15 +3036,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get order_support_error_upload_failed =>
-      'تعذر رفع الصور المرفقة. حاول مرة أخرى.';
+      'تعذر رفع الصور المرفقة. حاول مرة ثانية.';
 
   @override
   String get order_support_error_picker_failed =>
-      'تعذر فتح منتقي الصور. حاول مرة أخرى.';
+      'تعذر فتح منتقي الصور. حاول مرة ثانية.';
 
   @override
   String get order_support_reasons_empty =>
-      'لا توجد أسباب متاحة حالياً. حاول مرة أخرى لاحقاً.';
+      'ما فيه أسباب متاحة حاليًا. حاول مرة ثانية لاحقًا.';
 
   @override
   String get order_support_stage_pending => 'قيد الانتظار';
@@ -3060,12 +3069,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile_section_under_review_subtitle =>
-      'تم إرسال التعديلات وبانتظار موافقة الإدارة. البيانات المعروضة هي البيانات المعتمدة الحالية.';
+      'تم إرسال التعديلات وبانتظار موافقة الإدارة. البيانات المعروضة هي البيانات المعتمدة حاليًا.';
 
   @override
   String get profile_section_rejected_title => 'تم الرفض';
 
   @override
   String get profile_section_rejected_default_subtitle =>
-      'تم رفض آخر طلب تعديل. يمكنك إعادة التعديل.';
+      'تم رفض آخر طلب تعديل. تقدر تعيد التعديل.';
 }
