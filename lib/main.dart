@@ -27,11 +27,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
   runApp(
-    DevicePreview(
-      // ignore: avoid_redundant_argument_values
-      enabled: !kReleaseMode,
-      builder: (context) => const MyApp(),
-    ),
+    // DevicePreview(
+    //    ignore: avoid_redundant_argument_values
+    //   enabled: !kReleaseMode,
+    //   builder: (context) => const MyApp(),
+    // ),
+    const MyApp(),
   );
 }
 
