@@ -45,8 +45,7 @@ class _NotificationPreferencesScreenState
 
   // ─── Preference Getters ───────────────────────────────────────────────
 
-  bool _getBool(String key) =>
-      _viewModel.state.preferences?[key] == true;
+  bool _getBool(String key) => _viewModel.state.preferences?[key] == true;
 
   String get _currentSound =>
       _viewModel.state.preferences?['notificationSound']?.toString() ??
@@ -101,18 +100,14 @@ class _NotificationPreferencesScreenState
     if (soundKey == 'off') return;
     try {
       await _audioPlayer.stop();
-      await _audioPlayer.play(
-        AssetSource('sounds/$soundKey.wav'),
-      );
+      await _audioPlayer.play(AssetSource('sounds/$soundKey.wav'));
     } catch (e) {
       debugPrint('[NotificationPreferences] Audio preview failed: $e');
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            _isArabic
-                ? 'تعذّر تشغيل النغمة'
-                : 'Could not play sound',
+            _isArabic ? 'تعذّر تشغيل النغمة' : 'Could not play sound',
           ),
           duration: const Duration(seconds: 2),
         ),
@@ -144,8 +139,7 @@ class _NotificationPreferencesScreenState
           return Scaffold(
             backgroundColor: context.colorScheme.surface,
             appBar: CustomAppBar.modern(
-              title:
-                  _isArabic ? 'إعدادات الإشعارات' : 'Notification Settings',
+              title: _isArabic ? 'إعدادات الإشعارات' : 'Notification Settings',
               onBackPressed: context.pop,
             ),
             body: isLoading && state.preferences == null
@@ -153,189 +147,226 @@ class _NotificationPreferencesScreenState
                 : Stack(
                     children: [
                       ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      // ── Master toggle ──
-                      _buildSectionCard(
+                        padding: const EdgeInsets.all(16),
                         children: [
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'تفعيل الإشعارات'
-                                : 'Push Notifications',
-                            subtitle: _isArabic
-                                ? 'تشغيل أو إيقاف كل الإشعارات'
-                                : 'Enable or disable all notifications',
-                            value: _getBool('notificationsEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : _toggleAllNotifications,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // ── Per-category toggles ──
-                      _buildSectionCard(
-                        children: [
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'إشعارات العروض والديسباتش'
-                                : 'Dispatch Notifications',
-                            subtitle: _isArabic
-                                ? 'عروض التوصيل والديسباتش'
-                                : 'Delivery offers and dispatch',
-                            value: _getBool('dispatchPushEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : (v) => _togglePreference(
-                                      'dispatchPushEnabled',
-                                      v,
-                                    ),
-                          ),
-                          const Divider(height: 1),
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'إشعارات الطلبات المسندة'
-                                : 'Assignment Notifications',
-                            subtitle: _isArabic
-                                ? 'تحديثات الطلبات المسندة إليك'
-                                : 'Updates on orders assigned to you',
-                            value: _getBool('assignmentPushEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : (v) => _togglePreference(
-                                      'assignmentPushEnabled',
-                                      v,
-                                    ),
-                          ),
-                          const Divider(height: 1),
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'إشعارات الدعم والنزاعات'
-                                : 'Support Notifications',
-                            subtitle: _isArabic
-                                ? 'الدعم والنزاعات والاسترجاع'
-                                : 'Support, disputes and refunds',
-                            value: _getBool('supportPushEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : (v) => _togglePreference(
-                                      'supportPushEnabled',
-                                      v,
-                                    ),
-                          ),
-                          const Divider(height: 1),
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'إشعارات المحفظة'
-                                : 'Wallet Notifications',
-                            subtitle: _isArabic
-                                ? 'المحفظة والسحب'
-                                : 'Wallet and withdrawals',
-                            value: _getBool('walletPushEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : (v) => _togglePreference(
-                                      'walletPushEnabled',
-                                      v,
-                                    ),
-                          ),
-                          const Divider(height: 1),
-                          _buildSwitch(
-                            title: _isArabic
-                                ? 'إشعارات الحساب'
-                                : 'Account Notifications',
-                            subtitle: _isArabic
-                                ? 'المراجعات والحظر وفك الحظر'
-                                : 'Reviews, bans and unbans',
-                            value: _getBool('accountPushEnabled'),
-                            onChanged: isLoading
-                                ? null
-                                : (v) => _togglePreference(
-                                      'accountPushEnabled',
-                                      v,
-                                    ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-
-                      // ── Per-category sound selection ──
-                      _buildSectionCard(
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16, 12, 16, 4),
-                            child: Text(
-                              _isArabic
-                                  ? 'أصوات الإشعارات'
-                                  : 'Notification Sounds',
-                              style: getSemiBoldStyle(
-                                fontFamily: FontConstant.cairo,
-                                fontSize: FontSize.size15,
-                                color: AppColors.textPrimary,
+                          // ── Master toggle ──
+                          _buildSectionCard(
+                            children: [
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'تفعيل الإشعارات'
+                                    : 'Push Notifications',
+                                subtitle: _isArabic
+                                    ? 'تشغيل أو إيقاف كل الإشعارات'
+                                    : 'Enable or disable all notifications',
+                                value: _getBool('notificationsEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : _toggleAllNotifications,
                               ),
-                            ),
+                            ],
                           ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                            child: Text(
-                              _isArabic
-                                  ? 'اختر نغمة مختلفة لكل فئة'
-                                  : 'Choose a different tone for each category',
-                              style: getRegularStyle(
-                                fontFamily: FontConstant.cairo,
-                                fontSize: FontSize.size13,
-                                color: AppColors.textSecondary,
+                          const SizedBox(height: 16),
+
+                          // ── Per-category toggles ──
+                          _buildSectionCard(
+                            children: [
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'إشعارات العروض والديسباتش'
+                                    : 'Dispatch Notifications',
+                                subtitle: _isArabic
+                                    ? 'عروض التوصيل والديسباتش'
+                                    : 'Delivery offers and dispatch',
+                                value: _getBool('dispatchPushEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) => _togglePreference(
+                                        'dispatchPushEnabled',
+                                        v,
+                                      ),
                               ),
-                            ),
+                              const Divider(height: 1),
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'إشعارات الطلبات المسندة'
+                                    : 'Assignment Notifications',
+                                subtitle: _isArabic
+                                    ? 'تحديثات الطلبات المسندة إليك'
+                                    : 'Updates on orders assigned to you',
+                                value: _getBool('assignmentPushEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) => _togglePreference(
+                                        'assignmentPushEnabled',
+                                        v,
+                                      ),
+                              ),
+                              const Divider(height: 1),
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'إشعارات الدعم والنزاعات'
+                                    : 'Support Notifications',
+                                subtitle: _isArabic
+                                    ? 'الدعم والنزاعات والاسترجاع'
+                                    : 'Support, disputes and refunds',
+                                value: _getBool('supportPushEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) => _togglePreference(
+                                        'supportPushEnabled',
+                                        v,
+                                      ),
+                              ),
+                              const Divider(height: 1),
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'إشعارات المحفظة'
+                                    : 'Wallet Notifications',
+                                subtitle: _isArabic
+                                    ? 'المحفظة والسحب'
+                                    : 'Wallet and withdrawals',
+                                value: _getBool('walletPushEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) => _togglePreference(
+                                        'walletPushEnabled',
+                                        v,
+                                      ),
+                              ),
+                              const Divider(height: 1),
+                              _buildSwitch(
+                                title: _isArabic
+                                    ? 'إشعارات الحساب'
+                                    : 'Account Notifications',
+                                subtitle: _isArabic
+                                    ? 'المراجعات والحظر وفك الحظر'
+                                    : 'Reviews, bans and unbans',
+                                value: _getBool('accountPushEnabled'),
+                                onChanged: isLoading
+                                    ? null
+                                    : (v) => _togglePreference(
+                                        'accountPushEnabled',
+                                        v,
+                                      ),
+                              ),
+                            ],
                           ),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'النغمة الافتراضية' : 'Default Sound',
-                            currentValue: _currentSound,
-                            isLoading: isLoading,
-                            onChanged: _changeSound,
-                          ),
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'عروض التوصيل' : 'Dispatch',
-                            currentValue: _getCategorySound('dispatch'),
-                            isLoading: isLoading,
-                            onChanged: (v) => _changeCategorySound('dispatch', v),
-                          ),
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'الطلبات المسندة' : 'Assignment',
-                            currentValue: _getCategorySound('assignment'),
-                            isLoading: isLoading,
-                            onChanged: (v) => _changeCategorySound('assignment', v),
-                          ),
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'الدعم الفني' : 'Support',
-                            currentValue: _getCategorySound('support'),
-                            isLoading: isLoading,
-                            onChanged: (v) => _changeCategorySound('support', v),
-                          ),
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'المحفظة' : 'Wallet',
-                            currentValue: _getCategorySound('wallet'),
-                            isLoading: isLoading,
-                            onChanged: (v) => _changeCategorySound('wallet', v),
-                          ),
-                          const Divider(height: 1, indent: 16, endIndent: 16),
-                          _buildSoundDropdown(
-                            label: _isArabic ? 'الحساب' : 'Account',
-                            currentValue: _getCategorySound('account'),
-                            isLoading: isLoading,
-                            onChanged: (v) => _changeCategorySound('account', v),
+                          const SizedBox(height: 16),
+
+                          // ── Per-category sound selection ──
+                          _buildSectionCard(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  12,
+                                  16,
+                                  4,
+                                ),
+                                child: Text(
+                                  _isArabic
+                                      ? 'أصوات الإشعارات'
+                                      : 'Notification Sounds',
+                                  style: getSemiBoldStyle(
+                                    fontFamily: FontConstant.cairo,
+                                    fontSize: FontSize.size15,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                  16,
+                                  0,
+                                  16,
+                                  8,
+                                ),
+                                child: Text(
+                                  _isArabic
+                                      ? 'اختر نغمة مختلفة لكل فئة'
+                                      : 'Choose a different tone for each category',
+                                  style: getRegularStyle(
+                                    fontFamily: FontConstant.cairo,
+                                    fontSize: FontSize.size13,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic
+                                    ? 'النغمة الافتراضية'
+                                    : 'Default Sound',
+                                currentValue: _currentSound,
+                                isLoading: isLoading,
+                                onChanged: _changeSound,
+                              ),
+                              const Divider(
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic ? 'عروض التوصيل' : 'Dispatch',
+                                currentValue: _getCategorySound('dispatch'),
+                                isLoading: isLoading,
+                                onChanged: (v) =>
+                                    _changeCategorySound('dispatch', v),
+                              ),
+                              const Divider(
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic
+                                    ? 'الطلبات المسندة'
+                                    : 'Assignment',
+                                currentValue: _getCategorySound('assignment'),
+                                isLoading: isLoading,
+                                onChanged: (v) =>
+                                    _changeCategorySound('assignment', v),
+                              ),
+                              const Divider(
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic ? 'الدعم الفني' : 'Support',
+                                currentValue: _getCategorySound('support'),
+                                isLoading: isLoading,
+                                onChanged: (v) =>
+                                    _changeCategorySound('support', v),
+                              ),
+                              const Divider(
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic ? 'المحفظة' : 'Wallet',
+                                currentValue: _getCategorySound('wallet'),
+                                isLoading: isLoading,
+                                onChanged: (v) =>
+                                    _changeCategorySound('wallet', v),
+                              ),
+                              const Divider(
+                                height: 1,
+                                indent: 16,
+                                endIndent: 16,
+                              ),
+                              _buildSoundDropdown(
+                                label: _isArabic ? 'الحساب' : 'Account',
+                                currentValue: _getCategorySound('account'),
+                                isLoading: isLoading,
+                                onChanged: (v) =>
+                                    _changeCategorySound('account', v),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
                       if (isLoading)
                         Positioned.fill(
                           child: ColoredBox(
@@ -438,13 +469,15 @@ class _NotificationPreferencesScreenState
                 : (value) {
                     if (value != null) onChanged(value);
                   },
-            items: soundOptions.map((option) {
-              final (value, arLabel, enLabel) = option;
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(_isArabic ? arLabel : enLabel),
-              );
-            }).toList(growable: false),
+            items: soundOptions
+                .map((option) {
+                  final (value, arLabel, enLabel) = option;
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(_isArabic ? arLabel : enLabel),
+                  );
+                })
+                .toList(growable: false),
           ),
         ],
       ),
