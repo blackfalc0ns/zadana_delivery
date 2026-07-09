@@ -337,10 +337,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hint_email => 'example@gmail.com ';
 
   @override
-  String get hint_email_or_phone => 'example@email.com or 5xxxxxxxx';
+  String get hint_email_or_phone => 'example@email.com';
 
   @override
-  String get label_email_or_phone => 'Email or phone number';
+  String get label_email_or_phone => 'Email';
 
   @override
   String get hint_phone => '(+966) 726-0592';

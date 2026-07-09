@@ -112,7 +112,7 @@
   "hint_full_name": "محمد أحمد",
   "hint_email": "example@gmail.com",
   "hint_email_or_phone": "example@email.com",
-  "label_email_or_phone": "البريد الإلكتروني أو رقم الجوال",
+  "label_email_or_phone": "البريد الإلكتروني",
   "hint_phone": "(+966) 726-0592",
   "hint_password": "P@ssw0rd123",
   "btn_login": "تسجيل الدخول",

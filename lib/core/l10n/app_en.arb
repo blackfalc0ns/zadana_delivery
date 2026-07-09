@@ -107,8 +107,8 @@
 
 "hint_full_name"       : "John Doe",
 "hint_email"           : "example@gmail.com ",
-"hint_email_or_phone": "example@email.com or 5xxxxxxxx",
-"label_email_or_phone": "Email or phone number",
+"hint_email_or_phone": "example@email.com",
+"label_email_or_phone": "Email",
 "hint_phone"           : "(+966) 726-0592",
 "hint_password"        : "P@ssw0rd123",
 

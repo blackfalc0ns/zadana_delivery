@@ -689,13 +689,13 @@ abstract class AppLocalizations {
   /// No description provided for @hint_email_or_phone.
   ///
   /// In en, this message translates to:
-  /// **'example@email.com or 5xxxxxxxx'**
+  /// **'example@email.com'**
   String get hint_email_or_phone;
 
   /// No description provided for @label_email_or_phone.
   ///
   /// In en, this message translates to:
-  /// **'Email or phone number'**
+  /// **'Email'**
   String get label_email_or_phone;
 
   /// No description provided for @hint_phone.
