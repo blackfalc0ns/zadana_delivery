@@ -46,6 +46,12 @@ class DriverRegionCitySelector extends StatelessWidget {
     final locale = context.localization;
     final selectedRegion = selectedRegionName;
     final selectedCity = selectedCityName;
+    final showEmptyCitiesMessage =
+        !isLoading &&
+        !isCitiesLoading &&
+        citiesFailure == null &&
+        selectedRegionCode.trim().isNotEmpty &&
+        regionCities.isEmpty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,8 +88,8 @@ class DriverRegionCitySelector extends StatelessWidget {
                         placeholder:
                             locale.driver_profile_zone_city_placeholder,
                         icon: Icons.location_city_outlined,
-                        onTap: regionCities.isEmpty ||
-                                selectedRegionCode.isEmpty
+                        onTap:
+                            regionCities.isEmpty || selectedRegionCode.isEmpty
                             ? null
                             : () => _showCityPicker(context),
                       ),
@@ -97,6 +103,10 @@ class DriverRegionCitySelector extends StatelessWidget {
         if (citiesFailure != null) ...[
           const SizedBox(height: Spacing.sm),
           InlineApiErrorWidget(failure: citiesFailure!, onRetry: onRetry),
+        ],
+        if (showEmptyCitiesMessage) ...[
+          const SizedBox(height: Spacing.sm),
+          _EmptyCitiesMessage(regionName: selectedRegionName),
         ],
       ],
     );
@@ -151,6 +161,49 @@ class DriverRegionCitySelector extends StatelessWidget {
     if (selectedCity != null) {
       onCitySelected(selectedCity);
     }
+  }
+}
+
+class _EmptyCitiesMessage extends StatelessWidget {
+  const _EmptyCitiesMessage({required this.regionName});
+
+  final String regionName;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme;
+    final locale = context.localization;
+    final normalizedRegionName = regionName.trim();
+    final message = normalizedRegionName.isEmpty
+        ? locale.driver_profile_zone_no_cities
+        : locale.driver_profile_zone_no_cities_for_region(normalizedRegionName);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.error.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.error.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.info_outline_rounded, color: color.error, size: 22),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: getRegularStyle(
+                fontFamily: FontConstant.cairo,
+                color: color.onSurface,
+                fontSize: FontSize.size13,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

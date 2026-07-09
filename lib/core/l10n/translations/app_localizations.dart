@@ -3062,6 +3062,18 @@ abstract class AppLocalizations {
   /// **'No available regions or cities right now.'**
   String get driver_profile_zone_empty;
 
+  /// No description provided for @driver_profile_zone_no_cities.
+  ///
+  /// In en, this message translates to:
+  /// **'No working cities are available in this region right now. Choose another region.'**
+  String get driver_profile_zone_no_cities;
+
+  /// No description provided for @driver_profile_zone_no_cities_for_region.
+  ///
+  /// In en, this message translates to:
+  /// **'No working cities are available in {regionName} right now. Choose another region.'**
+  String driver_profile_zone_no_cities_for_region(Object regionName);
+
   /// No description provided for @driver_profile_zone_cities_count.
   ///
   /// In en, this message translates to:

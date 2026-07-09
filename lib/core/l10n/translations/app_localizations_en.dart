@@ -1597,6 +1597,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'No available regions or cities right now.';
 
   @override
+  String get driver_profile_zone_no_cities =>
+      'No working cities are available in this region right now. Choose another region.';
+
+  @override
+  String driver_profile_zone_no_cities_for_region(Object regionName) {
+    return 'No working cities are available in $regionName right now. Choose another region.';
+  }
+
+  @override
   String driver_profile_zone_cities_count(String count) {
     return '$count cities';
   }

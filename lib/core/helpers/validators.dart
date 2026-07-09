@@ -4,8 +4,6 @@ import '../helpers/regex.dart';
 import '../l10n/translations/app_localizations.dart';
 
 abstract class Validations {
-  static final RegExp _saudiPhoneRegExp = RegExp(r'^(?:\+966|966|0)?5\d{8}$');
-
   static String? validateName(BuildContext context, String? name) {
     final normalizedName = name?.trim() ?? '';
     if (normalizedName.isEmpty) {
@@ -206,10 +204,6 @@ abstract class Validations {
 
     if (normalizedPhoneNumber.isEmpty) {
       return localized.phone_number_is_required;
-    }
-
-    if (!_saudiPhoneRegExp.hasMatch(normalizedPhoneNumber)) {
-      return localized.phone_number_is_not_valid;
     }
 
     return null;

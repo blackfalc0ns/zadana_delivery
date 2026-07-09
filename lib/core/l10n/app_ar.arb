@@ -538,6 +538,13 @@
   "driver_profile_zone_sheet_region_label": "1. المنطقة",
   "driver_profile_zone_sheet_city_label": "2. المدينة",
   "driver_profile_zone_empty": "ما فيه مناطق أو مدن متاحة حاليًا.",
+  "driver_profile_zone_no_cities": "لا توجد مدن متاحة للعمل في هذه المنطقة حاليًا. اختر منطقة أخرى.",
+  "driver_profile_zone_no_cities_for_region": "لا توجد مدن متاحة للعمل في {regionName} حاليًا. اختر منطقة أخرى.",
+  "@driver_profile_zone_no_cities_for_region": {
+    "placeholders": {
+      "regionName": {}
+    }
+  },
   "driver_profile_zone_cities_count": "{count} مدن",
   "@driver_profile_zone_cities_count": {
     "placeholders": {

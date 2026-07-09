@@ -1,6 +1,8 @@
 abstract class AppRegExp {
   static bool isNameValid(String name) {
-    return RegExp(r"^[A-Za-z]{2,}$").hasMatch(name);
+    return RegExp(
+      r"^[A-Za-z\u0600-\u06FF]{2,}(?:\s+[A-Za-z\u0600-\u06FF]{2,})*$",
+    ).hasMatch(name);
   }
 
   static bool isEmailValid(String email) {

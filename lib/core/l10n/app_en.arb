@@ -563,6 +563,13 @@
   "driver_profile_zone_sheet_region_label": "1. Region",
   "driver_profile_zone_sheet_city_label": "2. City",
   "driver_profile_zone_empty": "No available regions or cities right now.",
+  "driver_profile_zone_no_cities": "No working cities are available in this region right now. Choose another region.",
+  "driver_profile_zone_no_cities_for_region": "No working cities are available in {regionName} right now. Choose another region.",
+  "@driver_profile_zone_no_cities_for_region": {
+    "placeholders": {
+      "regionName": {}
+    }
+  },
   "driver_profile_zone_cities_count": "{count} cities",
   "@driver_profile_zone_cities_count": {
     "placeholders": {

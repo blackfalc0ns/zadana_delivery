@@ -1560,6 +1560,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get driver_profile_zone_empty => 'ما فيه مناطق أو مدن متاحة حاليًا.';
 
   @override
+  String get driver_profile_zone_no_cities =>
+      'لا توجد مدن متاحة للعمل في هذه المنطقة حاليًا. اختر منطقة أخرى.';
+
+  @override
+  String driver_profile_zone_no_cities_for_region(Object regionName) {
+    return 'لا توجد مدن متاحة للعمل في $regionName حاليًا. اختر منطقة أخرى.';
+  }
+
+  @override
   String driver_profile_zone_cities_count(String count) {
     return '$count مدن';
   }

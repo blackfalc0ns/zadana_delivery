@@ -110,7 +110,7 @@ abstract class EndPoints {
   static const String driverProfileDocuments = '/drivers/me/profile/documents';
   static const String driverZones = '/geography/regions';
   static const String driverZoneCities =
-      '/geography/regions/{regionCode}/cities';
+      '/geography/driver/regions/{regionCode}/cities';
 
   static const String register = "/customers/auth/register";
   static const String login = '/customers/auth/login';
