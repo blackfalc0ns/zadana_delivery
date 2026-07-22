@@ -2608,7 +2608,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_save_action => 'حفظ';
 
   @override
-  String get wallet_status_processing => 'قيد المعالجة';
+  String get wallet_status_processing => 'جاري التحويل';
 
   @override
   String get wallet_status_paid => 'تم الدفع';

@@ -93,11 +93,15 @@ extension DriverWalletTransactionsPageMapper
 extension DriverWalletWithdrawalRequestMapper
     on DriverWalletWithdrawalRequestModelDto {
   DriverWalletWithdrawalRequestEntity toEntity() {
+    // A transfer reference is a final payment confirmation.  Never retain or
+    // expose one from a pending/processing payload, even if a stale backend
+    // response happens to include it.
+    final isPaid = status.trim().toLowerCase() == 'paid';
     return DriverWalletWithdrawalRequestEntity(
       id: id,
       amount: amount,
       status: status,
-      transferReference: transferReference,
+      transferReference: isPaid ? transferReference : null,
       failureReason: failureReason,
       createdAt: DateTime.tryParse(createdAtUtc)?.toLocal() ?? DateTime(0),
       processedAt: processedAtUtc == null

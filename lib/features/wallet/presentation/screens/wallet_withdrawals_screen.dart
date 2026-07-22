@@ -311,7 +311,8 @@ class _WithdrawalRequestCard extends StatelessWidget {
                 label: DateFormat('d MMM, h:mm a').format(item.createdAt),
                 color: colors.primary,
               ),
-              if ((item.transferReference ?? '').trim().isNotEmpty)
+              if (item.status.trim().toLowerCase() == 'paid' &&
+                  (item.transferReference ?? '').trim().isNotEmpty)
                 _WithdrawalPill(
                   label:
                       '${locale.wallet_transfer_reference}: ${item.transferReference!}',
@@ -375,8 +376,9 @@ class _WithdrawalRequestCard extends StatelessWidget {
                     ],
                   ),
                 );
-                if (confirmed == true)
+                if (confirmed == true) {
                   await viewModel.cancelWithdrawal(item.id);
+                }
               },
             ),
           ],

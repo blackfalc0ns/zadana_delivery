@@ -908,7 +908,7 @@
   "wallet_identifier_reentry_hint": "أعد إدخال المعرّف كامل عشان نحافظ على أمان وسيلة السحب.",
   "wallet_identifier_secure_hint": "ينرسل المعرّف الكامل بشكل آمن وما يظهر مرة ثانية داخل واجهة المحفظة.",
   "wallet_save_action": "حفظ",
-  "wallet_status_processing": "قيد المعالجة",
+  "wallet_status_processing": "جاري التحويل",
   "wallet_status_paid": "تم الدفع",
   "wallet_status_cancelled": "تم الإلغاء",
   "wallet_transfer_reference": "مرجع التحويل",
