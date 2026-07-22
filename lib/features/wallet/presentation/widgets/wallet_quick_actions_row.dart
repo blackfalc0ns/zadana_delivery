@@ -15,10 +15,7 @@ class WalletQuickAction {
 }
 
 class WalletQuickActionsRow extends StatelessWidget {
-  const WalletQuickActionsRow({
-    super.key,
-    required this.actions,
-  });
+  const WalletQuickActionsRow({super.key, required this.actions});
 
   final List<WalletQuickAction> actions;
 

@@ -308,7 +308,10 @@ class _WalletFormCard extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 14),
-          child,
+          // SwitchListTile paints its ink on the closest Material.  Keeping a
+          // local transparent Material prevents the card decoration from
+          // hiding the splash/background.
+          Material(color: Colors.transparent, child: child),
         ],
       ),
     );

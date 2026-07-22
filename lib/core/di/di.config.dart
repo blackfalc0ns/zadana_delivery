@@ -301,6 +301,8 @@ import '../../features/wallet/data/data_source/wallet_remote_data_source_impl.da
     as _i617;
 import '../../features/wallet/data/repo/wallet_repository_impl.dart' as _i520;
 import '../../features/wallet/domain/repo/wallet_repository.dart' as _i456;
+import '../../features/wallet/domain/usecase/cancel_driver_wallet_withdrawal_usecase.dart'
+    as _i344;
 import '../../features/wallet/domain/usecase/create_driver_wallet_payment_method_usecase.dart'
     as _i813;
 import '../../features/wallet/domain/usecase/create_driver_wallet_withdrawal_usecase.dart'
@@ -622,6 +624,11 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i456.WalletRepository>(),
       ),
     );
+    gh.factory<_i344.CancelDriverWalletWithdrawalUseCase>(
+      () => _i344.CancelDriverWalletWithdrawalUseCase(
+        gh<_i456.WalletRepository>(),
+      ),
+    );
     gh.factory<_i650.DeleteDriverWalletPaymentMethodUseCase>(
       () => _i650.DeleteDriverWalletPaymentMethodUseCase(
         gh<_i456.WalletRepository>(),
@@ -813,20 +820,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i341.NotificationsRepository>(),
       ),
     );
-    gh.factory<_i583.WalletViewModel>(
-      () => _i583.WalletViewModel(
-        gh<_i644.GetDriverWalletSummaryUseCase>(),
-        gh<_i649.GetDriverWalletTransactionsUseCase>(),
-        gh<_i494.GetDriverWalletPaymentMethodsUseCase>(),
-        gh<_i813.CreateDriverWalletPaymentMethodUseCase>(),
-        gh<_i935.UpdateDriverWalletPaymentMethodUseCase>(),
-        gh<_i650.DeleteDriverWalletPaymentMethodUseCase>(),
-        gh<_i562.MakeDriverWalletPaymentMethodPrimaryUseCase>(),
-        gh<_i968.CreateDriverWalletWithdrawalUseCase>(),
-        gh<_i1024.GetDriverWalletWithdrawalsUseCase>(),
-        gh<_i794.DriverRealtimeService>(),
-      ),
-    );
     gh.factory<_i251.RegisterRepository>(
       () => _i794.RegisterRepositoryImpl(
         gh<_i207.RegisterRemoteDataSource>(),
@@ -905,6 +898,22 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i548.DriverVerifyOtpRemoteDataSource>(),
         gh<_i227.TokenService>(),
         gh<_i550.DriverIdentityService>(),
+      ),
+    );
+    gh.factory<_i583.WalletViewModel>(
+      () => _i583.WalletViewModel(
+        gh<_i644.GetDriverWalletSummaryUseCase>(),
+        gh<_i649.GetDriverWalletTransactionsUseCase>(),
+        gh<_i494.GetDriverWalletPaymentMethodsUseCase>(),
+        gh<_i813.CreateDriverWalletPaymentMethodUseCase>(),
+        gh<_i935.UpdateDriverWalletPaymentMethodUseCase>(),
+        gh<_i650.DeleteDriverWalletPaymentMethodUseCase>(),
+        gh<_i562.MakeDriverWalletPaymentMethodPrimaryUseCase>(),
+        gh<_i968.CreateDriverWalletWithdrawalUseCase>(),
+        gh<_i1024.GetDriverWalletWithdrawalsUseCase>(),
+        gh<_i344.CancelDriverWalletWithdrawalUseCase>(),
+        gh<_i456.WalletRepository>(),
+        gh<_i794.DriverRealtimeService>(),
       ),
     );
     gh.factory<_i725.AcceptDriverOfferUseCase>(

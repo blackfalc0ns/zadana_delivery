@@ -1,9 +1,11 @@
 class DriverWalletCreateWithdrawalRequestEntity {
   const DriverWalletCreateWithdrawalRequestEntity({
     required this.amount,
-    this.paymentMethodId,
+    required this.paymentMethodId,
+    required this.idempotencyKey,
   });
 
-  final String? paymentMethodId;
+  final String paymentMethodId;
   final double amount;
+  final String idempotencyKey;
 }

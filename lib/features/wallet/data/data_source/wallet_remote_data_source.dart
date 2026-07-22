@@ -35,4 +35,9 @@ abstract class WalletRemoteDataSource {
     int page = 1,
     int pageSize = 20,
   });
+
+  Future<void> cancelWithdrawal(String withdrawalId);
+
+  Future<Map<String, dynamic>> getPayoutPreference();
+  Future<Map<String, dynamic>> updatePayoutPreference(String payoutDay);
 }

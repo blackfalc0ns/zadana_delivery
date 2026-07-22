@@ -2386,6 +2386,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Withdrawal request created successfully.';
 
   @override
+  String get wallet_payout_day_saved => 'Payout day saved successfully.';
+
+  @override
   String get wallet_earnings_summary => 'Earnings summary';
 
   @override

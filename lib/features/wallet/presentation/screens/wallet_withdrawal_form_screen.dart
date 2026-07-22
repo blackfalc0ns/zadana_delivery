@@ -10,6 +10,7 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_me
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
 import 'package:zadana_delivery/features/wallet/presentation/wallet_ui_labels.dart';
+import 'package:uuid/uuid.dart';
 
 class WalletWithdrawalFormScreen extends StatefulWidget {
   const WalletWithdrawalFormScreen({
@@ -34,8 +35,9 @@ class _WalletWithdrawalFormScreenState
   final _amountController = TextEditingController();
   String? _selectedMethodId;
 
-  List<DriverPayoutMethodEntity> get _methods =>
-      widget.viewModel.paymentMethods;
+  List<DriverPayoutMethodEntity> get _methods => widget.viewModel.paymentMethods
+      .where((method) => method.isVerified && method.type == 'BankAccount')
+      .toList(growable: false);
 
   @override
   void initState() {
@@ -214,13 +216,11 @@ class _WalletWithdrawalFormScreenState
                                         }
                                         Navigator.of(context).pop(
                                           DriverWalletCreateWithdrawalRequestEntity(
-                                            paymentMethodId:
-                                                selectedMethod.isPrimary
-                                                ? null
-                                                : selectedMethod.id,
+                                            paymentMethodId: selectedMethod.id,
                                             amount: double.parse(
                                               _amountController.text.trim(),
                                             ),
+                                            idempotencyKey: const Uuid().v4(),
                                           ),
                                         );
                                       },

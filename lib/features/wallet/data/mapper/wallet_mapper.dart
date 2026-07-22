@@ -73,6 +73,7 @@ extension DriverWalletSummaryMapper on DriverWalletSummaryModelDto {
           .map((item) => item.toEntity())
           .toList(growable: false),
       withdrawalSummary: withdrawalSummary.toEntity(),
+      payoutDay: payoutDay,
     );
   }
 }
@@ -136,9 +137,9 @@ extension DriverWalletCreateWithdrawalRequestMapper
     on DriverWalletCreateWithdrawalRequestEntity {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
-      if (paymentMethodId != null && paymentMethodId!.trim().isNotEmpty)
-        'paymentMethodId': paymentMethodId!.trim(),
+      'paymentMethodId': paymentMethodId.trim(),
       'amount': amount,
+      'idempotencyKey': idempotencyKey,
     };
   }
 }

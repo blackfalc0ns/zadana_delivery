@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui' show PlatformDispatcher;
 
 class DriverNotificationDisplayContent {
   const DriverNotificationDisplayContent({required this.title, this.body});
@@ -245,13 +246,20 @@ class DriverNotificationPayloadResolver {
     String? body,
   }) {
     final normalizedPayload = normalize(payload);
+    final isArabic =
+        PlatformDispatcher.instance.locale.languageCode.toLowerCase() == 'ar';
+    final localizedTitle = isArabic
+        ? [normalizedPayload['titleAr'], normalizedPayload['titleEn']]
+        : [normalizedPayload['titleEn'], normalizedPayload['titleAr']];
+    final localizedBody = isArabic
+        ? [normalizedPayload['bodyAr'], normalizedPayload['bodyEn']]
+        : [normalizedPayload['bodyEn'], normalizedPayload['bodyAr']];
     final resolvedTitle = _firstNonEmptyString([
       title,
       normalizedPayload['title'],
       normalizedPayload['heading'],
       _resolveLocalizedMapValue(normalizedPayload['headings']),
-      normalizedPayload['titleAr'],
-      normalizedPayload['titleEn'],
+      ...localizedTitle,
       _resolveFallbackTitle(normalizedPayload),
     ]);
     final resolvedBody = _firstNonEmptyString([
@@ -260,8 +268,7 @@ class DriverNotificationPayloadResolver {
       normalizedPayload['message'],
       normalizedPayload['content'],
       _resolveLocalizedMapValue(normalizedPayload['contents']),
-      normalizedPayload['bodyAr'],
-      normalizedPayload['bodyEn'],
+      ...localizedBody,
       _resolveFallbackBody(normalizedPayload),
     ]);
 
@@ -284,7 +291,10 @@ class DriverNotificationPayloadResolver {
     // Resolve screen from targetUrl (backend unified payload).
     final targetUrl = _firstNonEmptyString([normalizedPayload['targetUrl']]);
     if (targetUrl != null) {
-      final resolvedScreen = _resolveScreenFromTargetUrl(targetUrl, normalizedPayload);
+      final resolvedScreen = _resolveScreenFromTargetUrl(
+        targetUrl,
+        normalizedPayload,
+      );
       if (resolvedScreen != null) {
         return resolvedScreen;
       }
@@ -293,7 +303,10 @@ class DriverNotificationPayloadResolver {
     // Resolve screen from category (backend unified payload).
     final category = _firstNonEmptyString([normalizedPayload['category']]);
     if (category != null) {
-      final resolvedScreen = _resolveScreenFromCategory(category, normalizedPayload);
+      final resolvedScreen = _resolveScreenFromCategory(
+        category,
+        normalizedPayload,
+      );
       if (resolvedScreen != null) {
         return resolvedScreen;
       }
@@ -370,9 +383,9 @@ class DriverNotificationPayloadResolver {
     }
 
     final event = resolveEvent(normalizedPayload)?.toLowerCase() ?? '';
-    final eventName = _firstNonEmptyString([
-      normalizedPayload['eventName'],
-    ])?.toLowerCase() ?? '';
+    final eventName =
+        _firstNonEmptyString([normalizedPayload['eventName']])?.toLowerCase() ??
+        '';
     if (_urgentEvents.any(event.contains) ||
         _urgentEvents.any(eventName.contains)) {
       return headsUpChannelId;
@@ -512,6 +525,15 @@ class DriverNotificationPayloadResolver {
 
     // /wallet
     if (url == '/wallet') {
+      return 'wallet';
+    }
+    // A withdrawal detail currently opens the wallet tab; retain the ID for
+    // the wallet UI to refresh/select the relevant request.
+    final withdrawalMatch = RegExp(
+      r'^/wallet/withdrawals/([^/]+)$',
+    ).firstMatch(url);
+    if (withdrawalMatch != null) {
+      payload['withdrawalId'] = withdrawalMatch.group(1) ?? '';
       return 'wallet';
     }
 
@@ -678,9 +700,8 @@ class DriverNotificationPayloadResolver {
   static String? _resolveFallbackTitle(Map<String, dynamic> payload) {
     final screen = resolveScreen(payload) ?? '';
     final event = resolveEvent(payload)?.toLowerCase() ?? '';
-    final eventName = _firstNonEmptyString([
-      payload['eventName'],
-    ])?.toLowerCase() ?? '';
+    final eventName =
+        _firstNonEmptyString([payload['eventName']])?.toLowerCase() ?? '';
 
     if (event.contains('dispatch.offer_new') ||
         eventName.contains('dispatch.offer_new') ||
@@ -713,9 +734,8 @@ class DriverNotificationPayloadResolver {
 
   static String? _resolveFallbackBody(Map<String, dynamic> payload) {
     final event = resolveEvent(payload)?.toLowerCase() ?? '';
-    final eventName = _firstNonEmptyString([
-      payload['eventName'],
-    ])?.toLowerCase() ?? '';
+    final eventName =
+        _firstNonEmptyString([payload['eventName']])?.toLowerCase() ?? '';
     if (event.contains('dispatch.offer_new') ||
         eventName.contains('dispatch.offer_new')) {
       return 'A new delivery offer is waiting for you.';
@@ -727,9 +747,8 @@ class DriverNotificationPayloadResolver {
     if (event.contains('support.request_evidence')) {
       return 'Support requested more details for your case.';
     }
-    if (event.contains('wallet.withdrawal_paid') ||
-        event.contains('wallet.withdrawal_submitted') ||
-        eventName.contains('wallet.withdrawal_submitted')) {
+    if (event.contains('wallet.withdrawal_') ||
+        eventName.contains('wallet.withdrawal_')) {
       return 'Your wallet balance was updated.';
     }
     if (event.contains('wallet.admin_adjustment') ||

@@ -4,6 +4,7 @@ import 'package:zadana_delivery/features/wallet/data/data_source/wallet_remote_d
 import 'package:zadana_delivery/features/wallet/data/mapper/wallet_mapper.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_upsert_request_entity.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_preference_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_summary_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transactions_page_entity.dart';
@@ -115,4 +116,22 @@ class WalletRepositoryImpl implements WalletRepository {
       return response.toEntity();
     });
   }
+
+  @override
+  Future<ApiResult<void>> cancelWithdrawal(String withdrawalId) {
+    return safeApiCall(() => _remoteDataSource.cancelWithdrawal(withdrawalId));
+  }
+
+  @override
+  Future<ApiResult<DriverPayoutPreferenceEntity>> getPayoutPreference() => safeApiCall(() async {
+    final json = await _remoteDataSource.getPayoutPreference(); return _payoutPreference(json);
+  });
+  @override
+  Future<ApiResult<DriverPayoutPreferenceEntity>> updatePayoutPreference(String payoutDay) => safeApiCall(() async {
+    final json = await _remoteDataSource.updatePayoutPreference(payoutDay); return _payoutPreference(json);
+  });
+  DriverPayoutPreferenceEntity _payoutPreference(Map<String, dynamic> json) => DriverPayoutPreferenceEntity(
+    payoutDay: json['payoutDay']?.toString() ?? '',
+    availablePayoutDays: (json['availablePayoutDays'] as List? ?? const []).map((e) => e.toString()).toList(growable: false),
+  );
 }

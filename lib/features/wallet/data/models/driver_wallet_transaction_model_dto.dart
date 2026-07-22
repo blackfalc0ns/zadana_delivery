@@ -20,7 +20,9 @@ class DriverWalletTransactionModelDto {
       referenceType: json['referenceType']?.toString() ?? '',
       referenceId: json['referenceId']?.toString(),
       createdAtUtc:
-          json['createdAtUtc']?.toString() ?? json['createdAt']?.toString() ?? '',
+          json['createdAtUtc']?.toString() ??
+          json['createdAt']?.toString() ??
+          '',
     );
   }
 

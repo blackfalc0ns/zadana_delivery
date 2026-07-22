@@ -145,6 +145,29 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
     }
   }
 
+  @override
+  Future<void> cancelWithdrawal(String withdrawalId) async {
+    try {
+      await _apiServices.cancelDriverWalletWithdrawal(withdrawalId);
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getPayoutPreference() async {
+    try {
+      return _normalizeMap(await _apiServices.getDriverWalletPayoutPreference());
+    } on DioException catch (exception) { throw ApiExceptionMapper.fromDioException(exception); }
+  }
+
+  @override
+  Future<Map<String, dynamic>> updatePayoutPreference(String payoutDay) async {
+    try {
+      return _normalizeMap(await _apiServices.updateDriverWalletPayoutPreference({'payoutDay': payoutDay}));
+    } on DioException catch (exception) { throw ApiExceptionMapper.fromDioException(exception); }
+  }
+
   Map<String, dynamic> _normalizeMap(dynamic value) {
     if (value is Map<String, dynamic>) return value;
     if (value is Map) return Map<String, dynamic>.from(value);

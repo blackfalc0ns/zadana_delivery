@@ -50,7 +50,9 @@ abstract class ApiServices {
   Future<dynamic> getDriverProfile();
 
   @PUT(EndPoints.driverProfilePhoto)
-  Future<dynamic> updateDriverProfilePhoto(@Body() Map<String, dynamic> request);
+  Future<dynamic> updateDriverProfilePhoto(
+    @Body() Map<String, dynamic> request,
+  );
 
   @DELETE(EndPoints.driverProfilePhoto)
   Future<dynamic> deleteDriverProfilePhoto();
@@ -132,11 +134,27 @@ abstract class ApiServices {
     @Body() Map<String, dynamic> request,
   );
 
+  @GET(EndPoints.driverWalletWithdrawalSettings)
+  Future<dynamic> getDriverWalletWithdrawalSettings();
+
+  @GET(EndPoints.driverWalletPayoutPreference)
+  Future<dynamic> getDriverWalletPayoutPreference();
+
+  @PUT(EndPoints.driverWalletPayoutPreference)
+  Future<dynamic> updateDriverWalletPayoutPreference(
+    @Body() Map<String, dynamic> request,
+  );
+
   @GET(EndPoints.driverWalletWithdrawals)
   Future<dynamic> getDriverWalletWithdrawals({
     @Query('page') int page = 1,
     @Query('pageSize') int pageSize = 20,
   });
+
+  @POST(EndPoints.driverWalletWithdrawalCancel)
+  Future<dynamic> cancelDriverWalletWithdrawal(
+    @Path('withdrawalId') String withdrawalId,
+  );
 
   @GET(EndPoints.driverSupportCases)
   Future<dynamic> getDriverSupportCases({

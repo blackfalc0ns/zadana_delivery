@@ -2340,6 +2340,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_withdraw_success => 'تم إنشاء طلب السحب بنجاح.';
 
   @override
+  String get wallet_payout_day_saved => 'تم حفظ يوم التحويل بنجاح.';
+
+  @override
   String get wallet_earnings_summary => 'ملخص الأرباح';
 
   @override

@@ -89,7 +89,8 @@ class _WalletScreenState extends State<WalletScreen> {
                       onOpenCreatePaymentMethod: _openCreatePaymentMethodPage,
                       onOpenWithdrawal: _openWithdrawalPage,
                       onShowPaymentMethodActions: _showPaymentMethodActionsById,
-                      formatCurrency: (value) => _formatCurrency(context, value),
+                      formatCurrency: (value) =>
+                          _formatCurrency(context, value),
                       formatSignedCurrency: (value, isIncoming) =>
                           _formatSignedCurrency(context, value, isIncoming),
                     ),
@@ -224,7 +225,9 @@ class _WalletScreenState extends State<WalletScreen> {
                     if (!screenContext.mounted || !success) return;
                     CustomSnackbar.showInfo(
                       context: screenContext,
-                      message: screenContext.localization.wallet_method_pending_approval,
+                      message: screenContext
+                          .localization
+                          .wallet_method_pending_approval,
                     );
                   },
                 ),
@@ -260,7 +263,9 @@ class _WalletScreenState extends State<WalletScreen> {
                   if (!screenContext.mounted || !success) return;
                   CustomSnackbar.showInfo(
                     context: screenContext,
-                    message: screenContext.localization.wallet_method_pending_approval,
+                    message: screenContext
+                        .localization
+                        .wallet_method_pending_approval,
                   );
                 },
               ),

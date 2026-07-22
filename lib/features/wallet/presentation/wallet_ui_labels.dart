@@ -39,6 +39,8 @@ extension WalletUiLabels on AppLocalizations {
       case 'cancelled':
         return wallet_status_cancelled;
       case 'failed':
+      case 'returned':
+        return wallet_transaction_refund;
       default:
         return wallet_status_failed;
     }

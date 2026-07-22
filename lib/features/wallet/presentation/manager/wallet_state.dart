@@ -74,7 +74,8 @@ class WalletState {
           isSubmittingWithdrawal ?? this.isSubmittingWithdrawal,
       isSubmittingPaymentMethod:
           isSubmittingPaymentMethod ?? this.isSubmittingPaymentMethod,
-      isTransactionsLoading: isTransactionsLoading ?? this.isTransactionsLoading,
+      isTransactionsLoading:
+          isTransactionsLoading ?? this.isTransactionsLoading,
       isLoadingMoreTransactions:
           isLoadingMoreTransactions ?? this.isLoadingMoreTransactions,
       isWithdrawalsLoading: isWithdrawalsLoading ?? this.isWithdrawalsLoading,
@@ -90,7 +91,8 @@ class WalletState {
           transactionsTotalCount ?? this.transactionsTotalCount,
       withdrawals: withdrawals ?? this.withdrawals,
       withdrawalsPage: withdrawalsPage ?? this.withdrawalsPage,
-      withdrawalsTotalCount: withdrawalsTotalCount ?? this.withdrawalsTotalCount,
+      withdrawalsTotalCount:
+          withdrawalsTotalCount ?? this.withdrawalsTotalCount,
       paymentMethods: paymentMethods ?? this.paymentMethods,
       failure: clearFailure ? null : failure ?? this.failure,
     );

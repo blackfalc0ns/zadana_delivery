@@ -15,6 +15,7 @@ class DriverWalletSummaryModelDto {
     required this.recentTransactions,
     required this.paymentMethods,
     required this.withdrawalSummary,
+    required this.payoutDay,
   });
 
   factory DriverWalletSummaryModelDto.fromJson(Map<String, dynamic> json) {
@@ -47,6 +48,7 @@ class DriverWalletSummaryModelDto {
               payload['withdrawalStats'],
         ),
       ),
+      payoutDay: payload['payoutDay']?.toString() ?? '',
     );
   }
 
@@ -61,6 +63,7 @@ class DriverWalletSummaryModelDto {
   final List<DriverWalletTransactionModelDto> recentTransactions;
   final List<DriverPayoutMethodModelDto> paymentMethods;
   final DriverWalletWithdrawalSummaryModelDto withdrawalSummary;
+  final String payoutDay;
 
   static List<T> _toList<T>(
     dynamic value,

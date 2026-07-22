@@ -850,6 +850,7 @@
   "wallet_cod_owed_balance": "COD due",
   "wallet_withdraw_cta": "Withdraw now",
   "wallet_withdraw_success": "Withdrawal request created successfully.",
+  "wallet_payout_day_saved": "Payout day saved successfully.",
   "wallet_earnings_summary": "Earnings summary",
   "wallet_metric_today": "Today",
   "wallet_metric_week": "This week",

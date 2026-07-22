@@ -48,20 +48,15 @@ class WalletScreenContent extends StatelessWidget {
     final withdrawalBlockMessage = _withdrawalBlockMessage(context);
 
     return Scaffold(
-    
       body: SafeArea(
         top: false,
         child: Column(
           children: [
             Expanded(
               child: state.isRefreshing && summary == null
-                  ? const Center(
-                      child: CustomProgressIndicator(),
-                    )
+                  ? const Center(child: CustomProgressIndicator())
                   : summary == null && state.isLoading
-                  ? const Center(
-                      child: CustomProgressIndicator(),
-                    )
+                  ? const Center(child: CustomProgressIndicator())
                   : RefreshIndicator(
                       onRefresh: onRefresh,
                       child: ListView(
@@ -76,8 +71,7 @@ class WalletScreenContent extends StatelessWidget {
                             balanceValue: formatCurrency(
                               summary?.currentBalance ?? 0,
                             ),
-                            availableLabel:
-                                locale.wallet_available_to_withdraw,
+                            availableLabel: locale.wallet_available_to_withdraw,
                             availableValue: formatCurrency(
                               viewModel.withdrawableAmount,
                             ),
@@ -136,24 +130,22 @@ class WalletScreenContent extends StatelessWidget {
                                     if ((summary?.codOwedBalance ?? 0) > 0)
                                       InlineWalletAlert(
                                         icon: Icons.payments_outlined,
-                                        title:
-                                            locale.wallet_cod_block_title,
-                                        subtitle: locale
-                                            .wallet_cod_block_subtitle,
+                                        title: locale.wallet_cod_block_title,
+                                        subtitle:
+                                            locale.wallet_cod_block_subtitle,
                                       ),
                                     if ((summary?.pendingBalance ?? 0) > 0)
                                       Padding(
                                         padding: EdgeInsets.only(
-                                          top: (summary?.codOwedBalance ??
-                                                      0) >
-                                                  0
+                                          top:
+                                              (summary?.codOwedBalance ?? 0) > 0
                                               ? 10
                                               : 0,
                                         ),
                                         child: InlineWalletAlert(
                                           icon: Icons.lock_clock_rounded,
-                                          title: locale
-                                              .wallet_alert_payout_title,
+                                          title:
+                                              locale.wallet_alert_payout_title,
                                           subtitle: locale
                                               .wallet_alert_payout_subtitle,
                                         ),
@@ -166,8 +158,7 @@ class WalletScreenContent extends StatelessWidget {
                                       (item) => !item.isVerified,
                                     ))
                                       InlineWalletAlert(
-                                        icon:
-                                            Icons.verified_user_outlined,
+                                        icon: Icons.verified_user_outlined,
                                         title: locale
                                             .wallet_alert_verification_title,
                                         subtitle: locale
@@ -178,6 +169,54 @@ class WalletScreenContent extends StatelessWidget {
                               ),
                             ),
                           ],
+                          const SizedBox(height: 16),
+                          WalletSurface(
+                            child: WalletSectionShell(
+                              title: 'يوم التحويل',
+                              subtitle:
+                                  'يتم التحويل في اليوم الذي تحدده من الإعدادات المتاحة.',
+                              child: InkWell(
+                                onTap: () => _selectPayoutDay(context),
+                                borderRadius: BorderRadius.circular(16),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: 44,
+                                      height: 44,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.info.withValues(
+                                          alpha: 0.12,
+                                        ),
+                                        borderRadius: BorderRadius.circular(14),
+                                      ),
+                                      child: const Icon(
+                                        Icons.calendar_month_rounded,
+                                        color: AppColors.info,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        _payoutDayLabel(
+                                          viewModel
+                                                  .payoutPreference
+                                                  ?.payoutDay ??
+                                              summary?.payoutDay,
+                                        ),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .titleMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w800,
+                                            ),
+                                      ),
+                                    ),
+                                    const Icon(Icons.chevron_right_rounded),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                           const SizedBox(height: 16),
                           WalletSurface(
                             child: WalletSectionShell(
@@ -234,10 +273,11 @@ class WalletScreenContent extends StatelessWidget {
                                     tint: AppColors.warning,
                                   ),
                                   WalletSummaryMetricCard(
-                                    label: locale
-                                        .wallet_pending_requests_amount,
+                                    label:
+                                        locale.wallet_pending_requests_amount,
                                     value: formatCurrency(
-                                      summary?.withdrawalSummary
+                                      summary
+                                              ?.withdrawalSummary
                                               .pendingAmount ??
                                           0,
                                     ),
@@ -263,19 +303,17 @@ class WalletScreenContent extends StatelessWidget {
                                 onPressed: onOpenTransactions,
                                 child: Text(locale.wallet_view_all),
                               ),
-                              child: viewModel
-                                      .recentTransactionsPreview
-                                      .isNotEmpty
+                              child:
+                                  viewModel.recentTransactionsPreview.isNotEmpty
                                   ? Column(
                                       children: viewModel
                                           .recentTransactionsPreview
                                           .map(
                                             (item) => Padding(
                                               key: ValueKey<String>(item.id),
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom: 10,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 10,
+                                              ),
                                               child: WalletTransactionTile(
                                                 item: item,
                                                 amountText:
@@ -301,14 +339,10 @@ class WalletScreenContent extends StatelessWidget {
                           WalletSurface(
                             child: WalletSectionShell(
                               title: locale.wallet_payment_methods,
-                              subtitle:
-                                  _paymentMethodsStatusLabel(context),
+                              subtitle: _paymentMethodsStatusLabel(context),
                               trailing: TextButton.icon(
                                 onPressed: onOpenCreatePaymentMethod,
-                                icon: const Icon(
-                                  Icons.add_rounded,
-                                  size: 16,
-                                ),
+                                icon: const Icon(Icons.add_rounded, size: 16),
                                 label: Text(locale.wallet_add_method),
                               ),
                               child: paymentMethods.isNotEmpty
@@ -317,12 +351,12 @@ class WalletScreenContent extends StatelessWidget {
                                           .map(
                                             (item) => Padding(
                                               key: ValueKey<String>(item.id),
-                                              padding:
-                                                  const EdgeInsets.only(
-                                                    bottom: 10,
-                                                  ),
+                                              padding: const EdgeInsets.only(
+                                                bottom: 10,
+                                              ),
                                               child: GestureDetector(
-                                                onTap: state.activePaymentMethodId ==
+                                                onTap:
+                                                    state.activePaymentMethodId ==
                                                         item.id
                                                     ? null
                                                     : () =>
@@ -332,8 +366,9 @@ class WalletScreenContent extends StatelessWidget {
                                                 child: WalletPaymentMethodTile(
                                                   item: item,
                                                   isLoading:
-                                                      state.activePaymentMethodId ==
-                                                          item.id,
+                                                      state
+                                                          .activePaymentMethodId ==
+                                                      item.id,
                                                 ),
                                               ),
                                             ),
@@ -341,12 +376,11 @@ class WalletScreenContent extends StatelessWidget {
                                           .toList(),
                                     )
                                   : EmptyWalletSection(
-                                      icon: Icons
-                                          .account_balance_wallet_outlined,
-                                      title:
-                                          locale.wallet_methods_empty_title,
-                                      subtitle: locale
-                                          .wallet_methods_empty_subtitle,
+                                      icon:
+                                          Icons.account_balance_wallet_outlined,
+                                      title: locale.wallet_methods_empty_title,
+                                      subtitle:
+                                          locale.wallet_methods_empty_subtitle,
                                     ),
                             ),
                           ),
@@ -410,6 +444,65 @@ class WalletScreenContent extends StatelessWidget {
         return locale.wallet_primary_method;
       case WalletPaymentMethodsState.completed:
         return locale.wallet_status_completed;
+    }
+  }
+
+  String _payoutDayLabel(String? day) {
+    const days = <String, String>{
+      'Sunday': 'الأحد',
+      'Monday': 'الاثنين',
+      'Tuesday': 'الثلاثاء',
+      'Wednesday': 'الأربعاء',
+      'Thursday': 'الخميس',
+      'Friday': 'الجمعة',
+      'Saturday': 'السبت',
+    };
+    return days[day?.trim()] ?? 'لم يتم تحديد يوم التحويل';
+  }
+
+  Future<void> _selectPayoutDay(BuildContext context) async {
+    await viewModel.loadPayoutPreference();
+    if (!context.mounted) return;
+    final preference = viewModel.payoutPreference;
+    final days = preference?.availablePayoutDays ?? const <String>[];
+    if (days.isEmpty) return;
+    final selected = await showModalBottomSheet<String>(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: ListView(
+          shrinkWrap: true,
+          children: days
+              .map(
+                (day) => RadioListTile<String>(
+                  value: day,
+                  groupValue: preference?.payoutDay,
+                  title: Text(_payoutDayLabel(day)),
+                  onChanged: (value) => Navigator.pop(sheetContext, value),
+                ),
+              )
+              .toList(growable: false),
+        ),
+      ),
+    );
+    if (selected == null) return;
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(child: CustomProgressIndicator()),
+      ),
+    );
+    final saved = await viewModel.updatePayoutPreference(selected);
+    if (!context.mounted) return;
+    rootNavigator.pop();
+    if (saved) {
+      CustomSnackbar.showSuccess(
+        context: context,
+        message: context.localization.wallet_payout_day_saved,
+      );
     }
   }
 }

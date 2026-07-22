@@ -154,9 +154,15 @@ class DriverNotificationRouterService {
           );
           return;
         case 'wallet':
+          final withdrawalId =
+              DriverNotificationPayloadResolver.resolveWithdrawalId(payload);
           await _navigatorService.resetToNamedWhenReady(
             AppRoutes.mainShell,
-            arguments: {'initialIndex': 2},
+            arguments: <String, dynamic>{
+              'initialIndex': 2,
+              if ((withdrawalId ?? '').trim().isNotEmpty)
+                'withdrawalId': withdrawalId,
+            },
           );
           return;
         case 'account_status':

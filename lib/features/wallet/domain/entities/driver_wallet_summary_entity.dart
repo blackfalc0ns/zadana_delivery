@@ -15,6 +15,7 @@ class DriverWalletSummaryEntity {
     required this.recentTransactions,
     required this.paymentMethods,
     required this.withdrawalSummary,
+    required this.payoutDay,
   });
 
   final double currentBalance;
@@ -28,6 +29,7 @@ class DriverWalletSummaryEntity {
   final List<DriverWalletTransactionEntity> recentTransactions;
   final List<DriverPayoutMethodEntity> paymentMethods;
   final DriverWalletWithdrawalSummaryEntity withdrawalSummary;
+  final String payoutDay;
 
   bool get isEmpty =>
       currentBalance == 0 &&

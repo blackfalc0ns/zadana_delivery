@@ -77,7 +77,10 @@ class WalletWithdrawalsScreen extends StatelessWidget {
                             (item) => Padding(
                               key: ValueKey<String>(item.id),
                               padding: const EdgeInsets.only(bottom: 12),
-                              child: _WithdrawalRequestCard(item: item),
+                              child: _WithdrawalRequestCard(
+                                item: item,
+                                viewModel: viewModel,
+                              ),
                             ),
                           ),
                           if (state.isLoadingMoreWithdrawals)
@@ -224,9 +227,10 @@ class _OverviewMetric extends StatelessWidget {
 }
 
 class _WithdrawalRequestCard extends StatelessWidget {
-  const _WithdrawalRequestCard({required this.item});
+  const _WithdrawalRequestCard({required this.item, required this.viewModel});
 
   final DriverWalletWithdrawalRequestEntity item;
+  final WalletViewModel viewModel;
 
   @override
   Widget build(BuildContext context) {
@@ -347,6 +351,33 @@ class _WithdrawalRequestCard extends StatelessWidget {
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.error),
               ),
+            ),
+          ],
+          if (item.status.trim().toLowerCase() == 'pending') ...[
+            const SizedBox(height: 12),
+            AppButton.outlined(
+              text: context.localization.cancel,
+              onPressed: () async {
+                final confirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: Text(context.localization.cancel),
+                    content: const Text('هل تريد إلغاء طلب السحب؟'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext, false),
+                        child: Text(context.localization.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () => Navigator.pop(dialogContext, true),
+                        child: const Text('تأكيد'),
+                      ),
+                    ],
+                  ),
+                );
+                if (confirmed == true)
+                  await viewModel.cancelWithdrawal(item.id);
+              },
             ),
           ],
         ],

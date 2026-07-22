@@ -6,6 +6,7 @@ import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/services/driver_realtime_service.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_upsert_request_entity.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_preference_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_summary_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transaction_entity.dart';
@@ -14,6 +15,7 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_wi
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawals_page_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/create_driver_wallet_payment_method_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/create_driver_wallet_withdrawal_usecase.dart';
+import 'package:zadana_delivery/features/wallet/domain/usecase/cancel_driver_wallet_withdrawal_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/delete_driver_wallet_payment_method_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet_payment_methods_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet_summary_usecase.dart';
@@ -21,10 +23,16 @@ import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet
 import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet_withdrawals_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/make_driver_wallet_payment_method_primary_usecase.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/update_driver_wallet_payment_method_usecase.dart';
+import 'package:zadana_delivery/features/wallet/domain/repo/wallet_repository.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_event.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_state.dart';
 
-enum WalletWithdrawalBlockReason { none, noPrimaryMethod, codBlocked, noBalance }
+enum WalletWithdrawalBlockReason {
+  none,
+  noPrimaryMethod,
+  codBlocked,
+  noBalance,
+}
 
 enum WalletHeroState { ready, addPrimaryMethod, codBlocked, noWithdrawable }
 
@@ -49,6 +57,8 @@ class WalletViewModel extends Cubit<WalletState> {
     this._makeDriverWalletPaymentMethodPrimaryUseCase,
     this._createDriverWalletWithdrawalUseCase,
     this._getDriverWalletWithdrawalsUseCase,
+    this._cancelDriverWalletWithdrawalUseCase,
+    this._walletRepository,
     DriverRealtimeService driverRealtimeService,
   ) : super(const WalletState()) {
     _walletUpdatedSubscription = driverRealtimeService.driverWalletUpdated
@@ -60,7 +70,14 @@ class WalletViewModel extends Cubit<WalletState> {
           final screen =
               payload['screen']?.toString().trim().toLowerCase() ?? '';
           final event = payload['event']?.toString().trim().toLowerCase() ?? '';
-          if (screen == 'wallet' || event.startsWith('wallet.')) {
+          final eventName =
+              payload['eventName']?.toString().trim().toLowerCase() ?? '';
+          final popupType =
+              payload['popupType']?.toString().trim().toLowerCase() ?? '';
+          if (screen == 'wallet' ||
+              event.startsWith('wallet.') ||
+              eventName.startsWith('wallet.') ||
+              popupType == 'driver_wallet_updated') {
             unawaited(_refreshWalletCollections(forceRefresh: true));
           }
         });
@@ -81,6 +98,11 @@ class WalletViewModel extends Cubit<WalletState> {
   final CreateDriverWalletWithdrawalUseCase
   _createDriverWalletWithdrawalUseCase;
   final GetDriverWalletWithdrawalsUseCase _getDriverWalletWithdrawalsUseCase;
+  final CancelDriverWalletWithdrawalUseCase
+  _cancelDriverWalletWithdrawalUseCase;
+  final WalletRepository _walletRepository;
+  DriverPayoutPreferenceEntity? _payoutPreference;
+  DriverPayoutPreferenceEntity? get payoutPreference => _payoutPreference;
   late final StreamSubscription<Map<String, dynamic>>
   _walletUpdatedSubscription;
   late final StreamSubscription<Map<String, dynamic>>
@@ -95,7 +117,7 @@ class WalletViewModel extends Cubit<WalletState> {
 
   DriverPayoutMethodEntity? get primaryPaymentMethod {
     for (final method in paymentMethods) {
-      if (method.isPrimary) return method;
+      if (method.isPrimary && method.isVerified) return method;
     }
     return null;
   }
@@ -189,6 +211,25 @@ class WalletViewModel extends Cubit<WalletState> {
 
   void loadInitial() {
     doIntent(const WalletLoadEvent());
+    unawaited(loadPayoutPreference());
+  }
+
+  Future<void> loadPayoutPreference() async {
+    final result = await _walletRepository.getPayoutPreference();
+    if (result case ApiSuccessResult(data: final preference)) {
+      _payoutPreference = preference;
+      emit(state.copyWith());
+    }
+  }
+
+  Future<bool> updatePayoutPreference(String payoutDay) async {
+    final result = await _walletRepository.updatePayoutPreference(payoutDay);
+    if (result case ApiSuccessResult(data: final preference)) {
+      _payoutPreference = preference;
+      emit(state.copyWith());
+      return true;
+    }
+    return false;
   }
 
   Future<void> refreshWallet() async {
@@ -346,10 +387,26 @@ class WalletViewModel extends Cubit<WalletState> {
     return doIntent(WalletCreateWithdrawalEvent(request)) as Future<bool>;
   }
 
+  Future<bool> cancelWithdrawal(String withdrawalId) async {
+    final result = await _cancelDriverWalletWithdrawalUseCase.call(
+      withdrawalId,
+    );
+    switch (result) {
+      case ApiSuccessResult():
+        await _refreshWalletCollections(forceRefresh: true);
+        return true;
+      case ApiErrorResult():
+        emit(state.copyWith(failure: result.failure));
+        return false;
+    }
+  }
+
   Future<bool> _createWithdrawal(
     DriverWalletCreateWithdrawalRequestEntity request,
   ) async {
     emit(state.copyWith(isSubmittingWithdrawal: true, clearFailure: true));
+    // The key is created once per user action and is retained by the request
+    // object, so callers can retry the exact same request safely.
     final result = await _createDriverWalletWithdrawalUseCase.call(request);
     switch (result) {
       case ApiSuccessResult():

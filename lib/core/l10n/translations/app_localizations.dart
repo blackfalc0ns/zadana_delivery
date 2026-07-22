@@ -4466,6 +4466,12 @@ abstract class AppLocalizations {
   /// **'Withdrawal request created successfully.'**
   String get wallet_withdraw_success;
 
+  /// No description provided for @wallet_payout_day_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout day saved successfully.'**
+  String get wallet_payout_day_saved;
+
   /// No description provided for @wallet_earnings_summary.
   ///
   /// In en, this message translates to:

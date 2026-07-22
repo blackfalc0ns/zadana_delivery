@@ -46,13 +46,6 @@ class DriverRegionCitySelector extends StatelessWidget {
     final locale = context.localization;
     final selectedRegion = selectedRegionName;
     final selectedCity = selectedCityName;
-    final showEmptyCitiesMessage =
-        !isLoading &&
-        !isCitiesLoading &&
-        citiesFailure == null &&
-        selectedRegionCode.trim().isNotEmpty &&
-        regionCities.isEmpty;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -88,8 +81,7 @@ class DriverRegionCitySelector extends StatelessWidget {
                         placeholder:
                             locale.driver_profile_zone_city_placeholder,
                         icon: Icons.location_city_outlined,
-                        onTap:
-                            regionCities.isEmpty || selectedRegionCode.isEmpty
+                        onTap: selectedRegionCode.isEmpty
                             ? null
                             : () => _showCityPicker(context),
                       ),
@@ -103,10 +95,6 @@ class DriverRegionCitySelector extends StatelessWidget {
         if (citiesFailure != null) ...[
           const SizedBox(height: Spacing.sm),
           InlineApiErrorWidget(failure: citiesFailure!, onRetry: onRetry),
-        ],
-        if (showEmptyCitiesMessage) ...[
-          const SizedBox(height: Spacing.sm),
-          _EmptyCitiesMessage(regionName: selectedRegionName),
         ],
       ],
     );
@@ -124,6 +112,7 @@ class DriverRegionCitySelector extends StatelessWidget {
         subtitle: locale.driver_profile_zone_region_sheet_subtitle,
         items: regions,
         selectedValue: selectedRegionCode,
+        emptyMessage: locale.driver_profile_zone_empty,
         itemTitle: (region) => region.name,
         itemSubtitle: (_) => '',
         itemIcon: Icons.map_outlined,
@@ -139,8 +128,7 @@ class DriverRegionCitySelector extends StatelessWidget {
 
   Future<void> _showCityPicker(BuildContext context) async {
     final locale = context.localization;
-    if (regionCities.isEmpty) return;
-
+    final normalizedRegionName = selectedRegionName.trim();
     final selectedCity = await showModalBottomSheet<DriverRegionCityEntity>(
       context: context,
       isScrollControlled: true,
@@ -150,6 +138,11 @@ class DriverRegionCitySelector extends StatelessWidget {
         subtitle: locale.driver_profile_zone_city_sheet_subtitle,
         items: regionCities,
         selectedValue: selectedCityId,
+        emptyMessage: normalizedRegionName.isEmpty
+            ? locale.driver_profile_zone_no_cities
+            : locale.driver_profile_zone_no_cities_for_region(
+                normalizedRegionName,
+              ),
         itemTitle: (city) => city.cityName,
         itemSubtitle: (_) => selectedRegionName,
         itemIcon: Icons.location_city_outlined,
@@ -161,49 +154,6 @@ class DriverRegionCitySelector extends StatelessWidget {
     if (selectedCity != null) {
       onCitySelected(selectedCity);
     }
-  }
-}
-
-class _EmptyCitiesMessage extends StatelessWidget {
-  const _EmptyCitiesMessage({required this.regionName});
-
-  final String regionName;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = context.colorScheme;
-    final locale = context.localization;
-    final normalizedRegionName = regionName.trim();
-    final message = normalizedRegionName.isEmpty
-        ? locale.driver_profile_zone_no_cities
-        : locale.driver_profile_zone_no_cities_for_region(normalizedRegionName);
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.error.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.error.withValues(alpha: 0.18)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(Icons.info_outline_rounded, color: color.error, size: 22),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              message,
-              style: getRegularStyle(
-                fontFamily: FontConstant.cairo,
-                color: color.onSurface,
-                fontSize: FontSize.size13,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 
@@ -376,6 +326,7 @@ class _SelectionSheet<T> extends StatelessWidget {
     required this.subtitle,
     required this.items,
     required this.selectedValue,
+    required this.emptyMessage,
     required this.itemTitle,
     required this.itemSubtitle,
     required this.itemIcon,
@@ -387,6 +338,7 @@ class _SelectionSheet<T> extends StatelessWidget {
   final String subtitle;
   final List<T> items;
   final String selectedValue;
+  final String emptyMessage;
   final String Function(T item) itemTitle;
   final String Function(T item) itemSubtitle;
   final IconData itemIcon;
@@ -442,87 +394,107 @@ class _SelectionSheet<T> extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: ListView.separated(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                itemCount: items.length,
-                separatorBuilder: (_, _) => const SizedBox(height: 10),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  final isSelected =
-                      selectedMatcher?.call(item, selectedValue) ??
-                      itemTitle(item) == selectedValue;
-
-                  return InkWell(
-                    onTap: () => Navigator.of(context).pop(onSelected(item)),
-                    borderRadius: BorderRadius.circular(22),
-                    child: Ink(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? color.primary.withValues(alpha: 0.10)
-                            : color.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(22),
-                        border: Border.all(
-                          color: isSelected
-                              ? color.primary
-                              : color.outlineVariant.withValues(alpha: 0.55),
+              child: items.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Text(
+                          emptyMessage,
+                          textAlign: TextAlign.center,
+                          style: getRegularStyle(
+                            fontFamily: FontConstant.cairo,
+                            color: color.onSurfaceVariant,
+                          ),
                         ),
                       ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 48,
-                            height: 48,
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      itemCount: items.length,
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        final item = items[index];
+                        final isSelected =
+                            selectedMatcher?.call(item, selectedValue) ??
+                            itemTitle(item) == selectedValue;
+
+                        return InkWell(
+                          onTap: () =>
+                              Navigator.of(context).pop(onSelected(item)),
+                          borderRadius: BorderRadius.circular(22),
+                          child: Ink(
+                            padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? color.primary
-                                  : color.primary.withValues(alpha: 0.10),
-                              borderRadius: BorderRadius.circular(16),
+                                  ? color.primary.withValues(alpha: 0.10)
+                                  : color.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(
+                                color: isSelected
+                                    ? color.primary
+                                    : color.outlineVariant.withValues(
+                                        alpha: 0.55,
+                                      ),
+                              ),
                             ),
-                            child: Icon(
-                              itemIcon,
-                              color: isSelected
-                                  ? color.onPrimary
-                                  : color.primary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            child: Row(
                               children: [
-                                Text(
-                                  itemTitle(item),
-                                  style: getBoldStyle(
-                                    fontFamily: FontConstant.cairo,
-                                    fontSize: FontSize.size15,
-                                    color: color.onSurface,
+                                Container(
+                                  width: 48,
+                                  height: 48,
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? color.primary
+                                        : color.primary.withValues(alpha: 0.10),
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Icon(
+                                    itemIcon,
+                                    color: isSelected
+                                        ? color.onPrimary
+                                        : color.primary,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  itemSubtitle(item),
-                                  style: getRegularStyle(
-                                    fontFamily: FontConstant.cairo,
-                                    color: color.onSurfaceVariant,
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        itemTitle(item),
+                                        style: getBoldStyle(
+                                          fontFamily: FontConstant.cairo,
+                                          fontSize: FontSize.size15,
+                                          color: color.onSurface,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        itemSubtitle(item),
+                                        style: getRegularStyle(
+                                          fontFamily: FontConstant.cairo,
+                                          color: color.onSurfaceVariant,
+                                        ),
+                                      ),
+                                    ],
                                   ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  isSelected
+                                      ? Icons.check_circle_rounded
+                                      : Icons.circle_outlined,
+                                  color: isSelected
+                                      ? color.primary
+                                      : color.outline,
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            isSelected
-                                ? Icons.check_circle_rounded
-                                : Icons.circle_outlined,
-                            color: isSelected ? color.primary : color.outline,
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         ),

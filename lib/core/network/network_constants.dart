@@ -84,6 +84,12 @@ abstract class EndPoints {
   static const String driverWalletPaymentMethodPrimary =
       '/drivers/wallet/payment-methods/{id}/make-primary';
   static const String driverWalletWithdrawals = '/drivers/wallet/withdrawals';
+  static const String driverWalletWithdrawalSettings =
+      '/drivers/wallet/withdrawal-settings';
+  static const String driverWalletPayoutPreference =
+      '/drivers/wallet/payout-preference';
+  static const String driverWalletWithdrawalCancel =
+      '/drivers/wallet/withdrawals/{withdrawalId}/cancel';
   static const String driverSupportCases = '/drivers/support/cases';
   static const String driverSupportCaseDetails =
       '/drivers/support/cases/{caseId}';

@@ -824,6 +824,7 @@
   "wallet_cod_owed_balance": "مستحق COD",
   "wallet_withdraw_cta": "اسحب الآن",
   "wallet_withdraw_success": "تم إنشاء طلب السحب بنجاح.",
+  "wallet_payout_day_saved": "تم حفظ يوم التحويل بنجاح.",
   "wallet_earnings_summary": "ملخص الأرباح",
   "wallet_metric_today": "اليوم",
   "wallet_metric_week": "هذا الأسبوع",
