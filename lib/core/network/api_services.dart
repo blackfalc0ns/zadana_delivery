@@ -190,6 +190,9 @@ abstract class ApiServices {
   @GET(EndPoints.driverUnifiedProfile)
   Future<dynamic> getDriverUnifiedProfile();
 
+  @POST(EndPoints.driverCloseAccount)
+  Future<dynamic> closeDriverAccount(@Body() Map<String, dynamic> request);
+
   @GET(EndPoints.driverZones)
   Future<dynamic> getDriverZones();
 

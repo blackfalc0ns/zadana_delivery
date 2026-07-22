@@ -122,6 +122,16 @@ class DriverProfileRepositoryImpl implements DriverProfileRepository {
     });
   }
 
+  @override
+  Future<ApiResult<void>> closeAccount({
+    required String password,
+    String? reason,
+  }) {
+    return safeApiCall(
+      () => _remoteDataSource.closeAccount(password: password, reason: reason),
+    );
+  }
+
   Future<String> _resolveUrl(
     String value, {
     required DriverUploadDirectory directory,

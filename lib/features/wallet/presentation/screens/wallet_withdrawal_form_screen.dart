@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
@@ -10,7 +11,6 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_me
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
 import 'package:zadana_delivery/features/wallet/presentation/wallet_ui_labels.dart';
-import 'package:uuid/uuid.dart';
 
 class WalletWithdrawalFormScreen extends StatefulWidget {
   const WalletWithdrawalFormScreen({
@@ -128,15 +128,21 @@ class _WalletWithdrawalFormScreenState
                                       children: [
                                         _AmountPresetChip(
                                           label: '25%',
-                                          onTap: () => _applyPreset(0.25),
+                                          onTap: isBusy
+                                              ? null
+                                              : () => _applyPreset(0.25),
                                         ),
                                         _AmountPresetChip(
                                           label: '50%',
-                                          onTap: () => _applyPreset(0.5),
+                                          onTap: isBusy
+                                              ? null
+                                              : () => _applyPreset(0.5),
                                         ),
                                         _AmountPresetChip(
                                           label: '100%',
-                                          onTap: () => _applyPreset(1),
+                                          onTap: isBusy
+                                              ? null
+                                              : () => _applyPreset(1),
                                         ),
                                       ],
                                     ),
@@ -209,21 +215,7 @@ class _WalletWithdrawalFormScreenState
                                 text: locale.wallet_withdraw_cta,
                                 onPressed: isBusy || selectedMethod == null
                                     ? null
-                                    : () {
-                                        if (!_formKey.currentState!
-                                            .validate()) {
-                                          return;
-                                        }
-                                        Navigator.of(context).pop(
-                                          DriverWalletCreateWithdrawalRequestEntity(
-                                            paymentMethodId: selectedMethod.id,
-                                            amount: double.parse(
-                                              _amountController.text.trim(),
-                                            ),
-                                            idempotencyKey: const Uuid().v4(),
-                                          ),
-                                        );
-                                      },
+                                    : () => _submitWithdrawal(selectedMethod),
                               ),
                             ),
                           ],
@@ -259,6 +251,21 @@ class _WalletWithdrawalFormScreenState
     final decimalDigits = amount.truncateToDouble() == amount ? 0 : 2;
     final text = amount.toStringAsFixed(decimalDigits);
     setState(() => _amountController.text = text);
+  }
+
+  Future<void> _submitWithdrawal(DriverPayoutMethodEntity method) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final success = await widget.viewModel.createWithdrawal(
+      DriverWalletCreateWithdrawalRequestEntity(
+        paymentMethodId: method.id,
+        amount: double.parse(_amountController.text.trim()),
+        idempotencyKey: const Uuid().v4(),
+      ),
+    );
+    if (!mounted || !success) return;
+
+    Navigator.of(context).pop(true);
   }
 }
 
@@ -369,7 +376,7 @@ class _AmountPresetChip extends StatelessWidget {
   const _AmountPresetChip({required this.label, required this.onTap});
 
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

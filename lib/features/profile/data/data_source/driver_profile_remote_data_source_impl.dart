@@ -61,6 +61,19 @@ class DriverProfileRemoteDataSourceImpl
   }
 
   @override
+  Future<void> closeAccount({required String password, String? reason}) async {
+    try {
+      await _apiServices.closeDriverAccount(<String, dynamic>{
+        'confirmation': 'DELETE',
+        'password': password,
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+      });
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  @override
   Future<DriverUnifiedProfileModelDto> updatePersonal(
     UpdateDriverPersonalRequestModelDto request,
   ) async {

@@ -25,4 +25,9 @@ abstract class DriverProfileRepository {
   );
 
   Future<ApiResult<DriverUnifiedProfileEntity>> deleteProfilePhoto();
+
+  Future<ApiResult<void>> closeAccount({
+    required String password,
+    String? reason,
+  });
 }

@@ -4718,6 +4718,24 @@ abstract class AppLocalizations {
   /// **'Withdrawal requests'**
   String get wallet_withdrawal_requests;
 
+  /// No description provided for @wallet_cancel_withdrawal_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel withdrawal request'**
+  String get wallet_cancel_withdrawal_title;
+
+  /// No description provided for @wallet_cancel_withdrawal_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to cancel this withdrawal request?'**
+  String get wallet_cancel_withdrawal_message;
+
+  /// No description provided for @wallet_withdrawal_cancelled_by_driver.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request cancelled by driver.'**
+  String get wallet_withdrawal_cancelled_by_driver;
+
   /// No description provided for @wallet_pending_requests.
   ///
   /// In en, this message translates to:

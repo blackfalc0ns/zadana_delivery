@@ -10,10 +10,11 @@ import 'package:zadana_delivery/core/services/driver_notification_device_service
 import 'package:zadana_delivery/features/auth/logout/domain/usecase/logout_usecase.dart';
 import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zone_entity.dart';
 import 'package:zadana_delivery/features/auth/register/domain/usecase/get_driver_zones_usecase.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_documents_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_personal_request_entity.dart';
 import 'package:zadana_delivery/features/profile/domain/entities/update_driver_vehicle_request_entity.dart';
-import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
+import 'package:zadana_delivery/features/profile/domain/usecase/close_driver_account_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/get_driver_unified_profile_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_documents_usecase.dart';
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_personal_usecase.dart'
@@ -22,6 +23,8 @@ import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_pe
         UpdateDriverProfilePhotoUseCase,
         UpdateDriverPersonalUseCase;
 import 'package:zadana_delivery/features/profile/domain/usecase/update_driver_vehicle_usecase.dart';
+import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet_summary_usecase.dart';
+import 'package:zadana_delivery/features/wallet/domain/usecase/get_driver_wallet_withdrawals_usecase.dart';
 
 import '../models/profile_document_item_data.dart';
 import 'profile_form_event.dart';
@@ -32,6 +35,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit(
     this._getProfileUseCase,
     this._logoutUseCase,
+    this._closeDriverAccountUseCase,
+    this._getWalletSummaryUseCase,
+    this._getWalletWithdrawalsUseCase,
     this._updatePersonalUseCase,
     this._updateVehicleUseCase,
     this._updateDocumentsUseCase,
@@ -43,6 +49,9 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   final GetDriverUnifiedProfileUseCase _getProfileUseCase;
   final LogoutUseCase _logoutUseCase;
+  final CloseDriverAccountUseCase _closeDriverAccountUseCase;
+  final GetDriverWalletSummaryUseCase _getWalletSummaryUseCase;
+  final GetDriverWalletWithdrawalsUseCase _getWalletWithdrawalsUseCase;
   final UpdateDriverPersonalUseCase _updatePersonalUseCase;
   final UpdateDriverVehicleUseCase _updateVehicleUseCase;
   final UpdateDriverDocumentsUseCase _updateDocumentsUseCase;
@@ -86,18 +95,20 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   /// Seeds the cubit with an existing profile to avoid re-fetching.
   void seedProfile(DriverUnifiedProfileEntity profile) {
-    emit(state.copyWith(
-      profile: profile,
-      isLoading: false,
-      documentPaths: {
-        'portrait': profile.personalPhotoUrl,
-        'idFront': profile.nationalIdFrontImageUrl,
-        'idBack': profile.nationalIdBackImageUrl,
-        'license': profile.licenseImageUrl,
-        'vehicle': profile.vehicleImageUrl,
-      },
-      clearFailure: true,
-    ));
+    emit(
+      state.copyWith(
+        profile: profile,
+        isLoading: false,
+        documentPaths: {
+          'portrait': profile.personalPhotoUrl,
+          'idFront': profile.nationalIdFrontImageUrl,
+          'idBack': profile.nationalIdBackImageUrl,
+          'license': profile.licenseImageUrl,
+          'vehicle': profile.vehicleImageUrl,
+        },
+        clearFailure: true,
+      ),
+    );
   }
 
   void updateNotifications(bool value) {
@@ -153,6 +164,54 @@ class ProfileCubit extends Cubit<ProfileState> {
         emit(state.copyWith(isLoggingOut: false, failure: result.failure));
         return false;
     }
+  }
+
+  Future<AccountCloseEligibility> checkAccountCloseEligibility() async {
+    final walletResult = await _getWalletSummaryUseCase.call();
+    final withdrawalsResult = await _getWalletWithdrawalsUseCase.call(
+      pageSize: 100,
+    );
+    if (walletResult is ApiErrorResult || withdrawalsResult is ApiErrorResult) {
+      return AccountCloseEligibility.unknown;
+    }
+
+    final wallet = (walletResult as ApiSuccessResult).data;
+    final withdrawals = (withdrawalsResult as ApiSuccessResult).data;
+    if (wallet.codOwedBalance > 0) {
+      return AccountCloseEligibility.codOutstanding;
+    }
+    final hasActiveWithdrawal = withdrawals.items.any((item) {
+      final status = item.status.trim().toLowerCase();
+      return status == 'pending' || status == 'processing';
+    });
+    return hasActiveWithdrawal
+        ? AccountCloseEligibility.activeWithdrawal
+        : AccountCloseEligibility.allowed;
+  }
+
+  Future<AccountCloseResult> closeAccount({required String password}) async {
+    emit(state.copyWith(isClosingAccount: true, clearFailure: true));
+    final result = await _closeDriverAccountUseCase.call(password: password);
+    if (isClosed) return AccountCloseResult.failed;
+
+    if (result case ApiErrorResult()) {
+      emit(state.copyWith(isClosingAccount: false));
+      return switch (result.failure.normalizedCode) {
+        'account_close_active_withdrawal' =>
+          AccountCloseResult.activeWithdrawal,
+        'account_close_cod_outstanding' => AccountCloseResult.codOutstanding,
+        'account_close_invalid_password' => AccountCloseResult.invalidPassword,
+        _ => AccountCloseResult.failed,
+      };
+    }
+
+    // Account closure revokes server access; logout is used solely to clear
+    // all local credentials, notifications, and cached driver data.
+    await _logoutUseCase.call();
+    if (!isClosed) {
+      emit(state.copyWith(isClosingAccount: false, clearFailure: true));
+    }
+    return AccountCloseResult.success;
   }
 
   Future<void> _loadForm({required bool includeRegionCities}) async {
@@ -429,4 +488,19 @@ class ProfileCubit extends Cubit<ProfileState> {
         );
     }
   }
+}
+
+enum AccountCloseEligibility {
+  allowed,
+  activeWithdrawal,
+  codOutstanding,
+  unknown,
+}
+
+enum AccountCloseResult {
+  success,
+  activeWithdrawal,
+  codOutstanding,
+  invalidPassword,
+  failed,
 }

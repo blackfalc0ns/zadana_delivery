@@ -21,4 +21,6 @@ abstract class DriverProfileRemoteDataSource {
   Future<void> updateProfilePhoto(String profilePhotoUrl);
 
   Future<void> deleteProfilePhoto();
+
+  Future<void> closeAccount({required String password, String? reason});
 }

@@ -10,6 +10,7 @@ class ProfileState {
     this.isRegionCitiesLoading = false,
     this.isSuccess = false,
     this.isLoggingOut = false,
+    this.isClosingAccount = false,
     this.notificationsEnabled = true,
     this.profile,
     this.regionCities = const <DriverRegionCityEntity>[],
@@ -24,6 +25,7 @@ class ProfileState {
   final bool isRegionCitiesLoading;
   final bool isSuccess;
   final bool isLoggingOut;
+  final bool isClosingAccount;
   final bool notificationsEnabled;
   final DriverUnifiedProfileEntity? profile;
   final List<DriverRegionCityEntity> regionCities;
@@ -38,6 +40,7 @@ class ProfileState {
     bool? isRegionCitiesLoading,
     bool? isSuccess,
     bool? isLoggingOut,
+    bool? isClosingAccount,
     bool? notificationsEnabled,
     DriverUnifiedProfileEntity? profile,
     List<DriverRegionCityEntity>? regionCities,
@@ -56,6 +59,7 @@ class ProfileState {
           isRegionCitiesLoading ?? this.isRegionCitiesLoading,
       isSuccess: isSuccess ?? this.isSuccess,
       isLoggingOut: isLoggingOut ?? this.isLoggingOut,
+      isClosingAccount: isClosingAccount ?? this.isClosingAccount,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       profile: profile ?? this.profile,
       regionCities: regionCities ?? this.regionCities,

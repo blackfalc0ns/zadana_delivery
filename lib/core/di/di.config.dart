@@ -285,6 +285,8 @@ import '../../features/profile/data/repo/driver_profile_repository_impl.dart'
     as _i852;
 import '../../features/profile/domain/repo/driver_profile_repository.dart'
     as _i540;
+import '../../features/profile/domain/usecase/close_driver_account_usecase.dart'
+    as _i495;
 import '../../features/profile/domain/usecase/get_driver_unified_profile_usecase.dart'
     as _i339;
 import '../../features/profile/domain/usecase/update_driver_documents_usecase.dart'
@@ -1056,6 +1058,10 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i324.ResendDriverOtpUseCase>(),
       ),
     );
+    gh.factory<_i495.CloseDriverAccountUseCase>(
+      () =>
+          _i495.CloseDriverAccountUseCase(gh<_i540.DriverProfileRepository>()),
+    );
     gh.factory<_i339.GetDriverUnifiedProfileUseCase>(
       () => _i339.GetDriverUnifiedProfileUseCase(
         gh<_i540.DriverProfileRepository>(),
@@ -1114,6 +1120,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i735.ProfileCubit(
         gh<_i339.GetDriverUnifiedProfileUseCase>(),
         gh<_i78.LogoutUseCase>(),
+        gh<_i495.CloseDriverAccountUseCase>(),
+        gh<_i644.GetDriverWalletSummaryUseCase>(),
+        gh<_i1024.GetDriverWalletWithdrawalsUseCase>(),
         gh<_i1047.UpdateDriverPersonalUseCase>(),
         gh<_i458.UpdateDriverVehicleUseCase>(),
         gh<_i373.UpdateDriverDocumentsUseCase>(),

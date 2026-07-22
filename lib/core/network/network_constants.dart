@@ -111,6 +111,7 @@ abstract class EndPoints {
   static const String driverAccountSupportAppeals =
       '/drivers/account-support/appeals';
   static const String driverUnifiedProfile = '/drivers/me/profile';
+  static const String driverCloseAccount = '/drivers/me/close-account';
   static const String driverProfilePersonal = '/drivers/me/profile/personal';
   static const String driverProfileVehicle = '/drivers/me/profile/vehicle';
   static const String driverProfileDocuments = '/drivers/me/profile/documents';

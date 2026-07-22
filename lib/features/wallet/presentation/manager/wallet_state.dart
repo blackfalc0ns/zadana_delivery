@@ -9,6 +9,7 @@ class WalletState {
     this.isLoading = false,
     this.isRefreshing = false,
     this.isSubmittingWithdrawal = false,
+    this.cancellingWithdrawalId,
     this.isSubmittingPaymentMethod = false,
     this.isTransactionsLoading = false,
     this.isLoadingMoreTransactions = false,
@@ -29,6 +30,7 @@ class WalletState {
   final bool isLoading;
   final bool isRefreshing;
   final bool isSubmittingWithdrawal;
+  final String? cancellingWithdrawalId;
   final bool isSubmittingPaymentMethod;
   final bool isTransactionsLoading;
   final bool isLoadingMoreTransactions;
@@ -49,6 +51,7 @@ class WalletState {
     bool? isLoading,
     bool? isRefreshing,
     bool? isSubmittingWithdrawal,
+    String? cancellingWithdrawalId,
     bool? isSubmittingPaymentMethod,
     bool? isTransactionsLoading,
     bool? isLoadingMoreTransactions,
@@ -66,12 +69,16 @@ class WalletState {
     Failure? failure,
     bool clearFailure = false,
     bool clearActivePaymentMethodId = false,
+    bool clearCancellingWithdrawalId = false,
   }) {
     return WalletState(
       isLoading: isLoading ?? this.isLoading,
       isRefreshing: isRefreshing ?? this.isRefreshing,
       isSubmittingWithdrawal:
           isSubmittingWithdrawal ?? this.isSubmittingWithdrawal,
+      cancellingWithdrawalId: clearCancellingWithdrawalId
+          ? null
+          : cancellingWithdrawalId ?? this.cancellingWithdrawalId,
       isSubmittingPaymentMethod:
           isSubmittingPaymentMethod ?? this.isSubmittingPaymentMethod,
       isTransactionsLoading:

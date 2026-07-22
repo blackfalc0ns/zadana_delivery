@@ -15,6 +15,7 @@ enum ProfileActionType {
   security,
   support,
   privacy,
+  deleteAccount,
   logout;
 
   (String, String) localizedCopy(AppLocalizations locale) {
@@ -70,6 +71,12 @@ enum ProfileActionType {
       ProfileActionType.privacy => (
         locale.privacy_policy,
         locale.profile_privacy_subtitle,
+      ),
+      ProfileActionType.deleteAccount => (
+        locale.localeName.startsWith('ar') ? 'حذف الحساب' : 'Delete account',
+        locale.localeName.startsWith('ar')
+            ? 'إغلاق الحساب نهائيًا وتسجيل الخروج'
+            : 'Permanently close your account and sign out',
       ),
       ProfileActionType.logout => (
         locale.logout,

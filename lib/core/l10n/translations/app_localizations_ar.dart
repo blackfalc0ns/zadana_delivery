@@ -2468,6 +2468,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_withdrawal_requests => 'طلبات السحب';
 
   @override
+  String get wallet_cancel_withdrawal_title => 'إلغاء طلب السحب';
+
+  @override
+  String get wallet_cancel_withdrawal_message => 'هل تريد إلغاء طلب السحب؟';
+
+  @override
+  String get wallet_withdrawal_cancelled_by_driver =>
+      'تم إلغاء طلب السحب بواسطة المندوب.';
+
+  @override
   String get wallet_pending_requests => 'الطلبات المعلقة';
 
   @override

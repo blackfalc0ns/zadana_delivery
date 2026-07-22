@@ -80,6 +80,8 @@ class WalletWithdrawalsScreen extends StatelessWidget {
                               child: _WithdrawalRequestCard(
                                 item: item,
                                 viewModel: viewModel,
+                                isCancelling:
+                                    state.cancellingWithdrawalId == item.id,
                               ),
                             ),
                           ),
@@ -227,10 +229,15 @@ class _OverviewMetric extends StatelessWidget {
 }
 
 class _WithdrawalRequestCard extends StatelessWidget {
-  const _WithdrawalRequestCard({required this.item, required this.viewModel});
+  const _WithdrawalRequestCard({
+    required this.item,
+    required this.viewModel,
+    required this.isCancelling,
+  });
 
   final DriverWalletWithdrawalRequestEntity item;
   final WalletViewModel viewModel;
+  final bool isCancelling;
 
   @override
   Widget build(BuildContext context) {
@@ -308,7 +315,7 @@ class _WithdrawalRequestCard extends StatelessWidget {
                 color: statusColor,
               ),
               _WithdrawalPill(
-                label: DateFormat('d MMM, h:mm a').format(item.createdAt),
+                label: _formatDate(context, item.createdAt),
                 color: colors.primary,
               ),
               if (item.status.trim().toLowerCase() == 'paid' &&
@@ -320,23 +327,6 @@ class _WithdrawalRequestCard extends StatelessWidget {
                 ),
             ],
           ),
-          if (item.processedAt != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-              decoration: BoxDecoration(
-                color: colors.surfaceContainerHighest.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: Text(
-                DateFormat('d MMM, h:mm a').format(item.processedAt!),
-                style: Theme.of(
-                  context,
-                ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
-              ),
-            ),
-          ],
           if ((item.failureReason ?? '').trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
@@ -347,7 +337,7 @@ class _WithdrawalRequestCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
-                item.failureReason!,
+                _localizedFailureReason(context, item.failureReason!),
                 style: Theme.of(
                   context,
                 ).textTheme.bodySmall?.copyWith(color: colors.error),
@@ -358,12 +348,17 @@ class _WithdrawalRequestCard extends StatelessWidget {
             const SizedBox(height: 12),
             AppButton.outlined(
               text: context.localization.cancel,
+              isLoading: isCancelling,
               onPressed: () async {
                 final confirmed = await showDialog<bool>(
                   context: context,
                   builder: (dialogContext) => AlertDialog(
-                    title: Text(context.localization.cancel),
-                    content: const Text('هل تريد إلغاء طلب السحب؟'),
+                    title: Text(
+                      context.localization.wallet_cancel_withdrawal_title,
+                    ),
+                    content: Text(
+                      context.localization.wallet_cancel_withdrawal_message,
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogContext, false),
@@ -371,7 +366,7 @@ class _WithdrawalRequestCard extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () => Navigator.pop(dialogContext, true),
-                        child: const Text('تأكيد'),
+                        child: Text(context.localization.confirm),
                       ),
                     ],
                   ),
@@ -400,6 +395,24 @@ class _WithdrawalRequestCard extends StatelessWidget {
       default:
         return colors.primary;
     }
+  }
+
+  String _formatDate(BuildContext context, DateTime date) {
+    final localeName = Localizations.localeOf(context).toLanguageTag();
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return DateFormat(
+      isArabic ? 'd MMMM yyyy، h:mm a' : 'd MMM yyyy, h:mm a',
+      localeName,
+    ).format(date);
+  }
+
+  String _localizedFailureReason(BuildContext context, String reason) {
+    final normalized = reason.trim().toLowerCase();
+    if (normalized.contains('cancelled by driver') ||
+        normalized.contains('canceled by driver')) {
+      return context.localization.wallet_withdrawal_cancelled_by_driver;
+    }
+    return reason;
   }
 }
 

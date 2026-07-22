@@ -92,6 +92,14 @@ class ProfileScreenContent extends StatelessWidget {
                         onActionTap: onActionTap,
                       ),
                     ),
+                    const SizedBox(height: Spacing.xl),
+                    _DeleteAccountCallout(
+                      actionLabel: locale.localeName.startsWith('ar')
+                          ? 'حذف الحساب'
+                          : 'Delete account',
+                      onTap: () => onActionTap(ProfileActionType.deleteAccount),
+                    ),
+                    const SizedBox(height: Spacing.lg),
                   ],
                 ),
               ),
@@ -224,8 +232,7 @@ class ProfileScreenContent extends StatelessWidget {
                 isNotificationTile:
                     item.type == ProfileActionType.notifications,
                 notificationsEnabled: state.notificationsEnabled,
-                isOverlayTile:
-                    item.type == ProfileActionType.overlayPermission,
+                isOverlayTile: item.type == ProfileActionType.overlayPermission,
                 overlayEnabled: overlayEnabled,
               );
             }).toList(),
@@ -238,6 +245,29 @@ class ProfileScreenContent extends StatelessWidget {
     final trimmed = value.trim();
     if (trimmed.isEmpty) return fallback;
     return trimmed;
+  }
+}
+
+class _DeleteAccountCallout extends StatelessWidget {
+  const _DeleteAccountCallout({required this.actionLabel, required this.onTap});
+
+  final String actionLabel;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = context.colorScheme;
+    return OutlinedButton.icon(
+      onPressed: onTap,
+      icon: const Icon(Icons.delete_outline_rounded),
+      label: Text(actionLabel),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: color.error,
+        side: BorderSide(color: color.error.withValues(alpha: 0.65)),
+        minimumSize: const Size.fromHeight(48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+    );
   }
 }
 

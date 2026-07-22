@@ -23,7 +23,10 @@ class LogoutRepositoryImpl implements LogoutRepository {
 
   @override
   Future<ApiResult<void>> logout() {
-    return safeApiCall(() async {
+    // Local credentials must be cleared even when the server is unavailable.
+    // This is also required after a successful account closure, which revokes
+    // the server session before the app can issue its usual logout request.
+    return safeLocalCall(() async {
       final refreshToken = await _tokenService.getRefreshToken();
 
       if (refreshToken != null && refreshToken.trim().isNotEmpty) {

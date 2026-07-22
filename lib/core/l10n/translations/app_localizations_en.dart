@@ -2514,6 +2514,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_withdrawal_requests => 'Withdrawal requests';
 
   @override
+  String get wallet_cancel_withdrawal_title => 'Cancel withdrawal request';
+
+  @override
+  String get wallet_cancel_withdrawal_message =>
+      'Do you want to cancel this withdrawal request?';
+
+  @override
+  String get wallet_withdrawal_cancelled_by_driver =>
+      'Withdrawal request cancelled by driver.';
+
+  @override
   String get wallet_pending_requests => 'Pending requests';
 
   @override

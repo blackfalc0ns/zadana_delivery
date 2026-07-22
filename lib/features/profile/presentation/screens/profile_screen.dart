@@ -70,7 +70,9 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _onOverlaySwitchTapped(bool value) async {
-    debugPrint('[ProfileScreen] Overlay switch tapped, value=$value current=$_hasOverlayPermission');
+    debugPrint(
+      '[ProfileScreen] Overlay switch tapped, value=$value current=$_hasOverlayPermission',
+    );
     await _overlayService.openOverlaySettings();
   }
 
@@ -125,7 +127,7 @@ class _ProfileScreenState extends State<ProfileScreen>
                   overlayEnabled: _hasOverlayPermission,
                   onRefresh: _cubit.loadProfile,
                 ),
-                if (state.isLoggingOut) ...[
+                if (state.isLoggingOut || state.isClosingAccount) ...[
                   Positioned.fill(
                     child: AbsorbPointer(
                       child: ColoredBox(
@@ -172,8 +174,229 @@ class _ProfileScreenState extends State<ProfileScreen>
         return _open(AppRoutes.driverSupportCases);
       case ProfileActionType.privacy:
         return _open(AppRoutes.privacy);
+      case ProfileActionType.deleteAccount:
+        return _requestAccountClosure();
       case ProfileActionType.logout:
         return _logout();
+    }
+  }
+
+  Future<void> _requestAccountClosure() async {
+    final eligibility = await _cubit.checkAccountCloseEligibility();
+    if (!mounted) return;
+
+    switch (eligibility) {
+      case AccountCloseEligibility.activeWithdrawal:
+        await _showAccountCloseBlockedDialog(
+          title: _isArabic
+              ? 'لا يمكن حذف الحساب الآن'
+              : 'Unable to delete account',
+          message: _isArabic
+              ? 'يوجد طلب سحب قيد الانتظار أو المعالجة. راجع طلبات السحب أولًا.'
+              : 'A withdrawal is pending or processing. Review your withdrawals first.',
+          openWallet: true,
+        );
+        return;
+      case AccountCloseEligibility.codOutstanding:
+        await _showAccountCloseBlockedDialog(
+          title: _isArabic ? 'تسوية COD مطلوبة' : 'COD settlement required',
+          message: _isArabic
+              ? 'لا يمكن حذف الحساب قبل تسوية مستحقات COD مع الإدارة.'
+              : 'Settle your outstanding COD balance with support before deleting your account.',
+        );
+        return;
+      case AccountCloseEligibility.unknown:
+        CustomSnackbar.showError(
+          context: context,
+          message: _isArabic
+              ? 'تعذر التحقق من حالة المحفظة. حاول مرة أخرى.'
+              : 'Unable to verify your wallet status. Please try again.',
+        );
+        return;
+      case AccountCloseEligibility.allowed:
+        break;
+    }
+
+    final password = await _showAccountCloseConfirmationDialog();
+    if (password == null || !mounted) return;
+
+    final result = await _cubit.closeAccount(password: password);
+    if (!mounted) return;
+    switch (result) {
+      case AccountCloseResult.success:
+        await _showAccountClosedDialog();
+        if (!mounted) return;
+        context.pushNamedAndRemoveUntil(
+          AppRoutes.login,
+          rootNavigator: true,
+          predicate: (route) => false,
+        );
+      case AccountCloseResult.activeWithdrawal:
+        await _showAccountCloseBlockedDialog(
+          title: _isArabic
+              ? 'لا يمكن حذف الحساب الآن'
+              : 'Unable to delete account',
+          message: _isArabic
+              ? 'يوجد طلب سحب قيد الانتظار أو المعالجة. راجع طلبات السحب أولًا.'
+              : 'A withdrawal is pending or processing. Review your withdrawals first.',
+          openWallet: true,
+        );
+      case AccountCloseResult.codOutstanding:
+        await _showAccountCloseBlockedDialog(
+          title: _isArabic ? 'تسوية COD مطلوبة' : 'COD settlement required',
+          message: _isArabic
+              ? 'لا يمكن حذف الحساب قبل تسوية مستحقات COD مع الإدارة.'
+              : 'Settle your outstanding COD balance with support before deleting your account.',
+        );
+      case AccountCloseResult.invalidPassword:
+        CustomSnackbar.showError(
+          context: context,
+          message: _isArabic ? 'كلمة المرور غير صحيحة.' : 'Incorrect password.',
+        );
+      case AccountCloseResult.failed:
+        CustomSnackbar.showError(
+          context: context,
+          message: _isArabic
+              ? 'تعذر حذف الحساب. حاول مرة أخرى.'
+              : 'Unable to delete the account. Please try again.',
+        );
+    }
+  }
+
+  bool get _isArabic => context.localization.localeName.startsWith('ar');
+
+  Future<String?> _showAccountCloseConfirmationDialog() async {
+    final confirmationController = TextEditingController();
+    final passwordController = TextEditingController();
+    final colorScheme = context.colorScheme;
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) {
+          final canDelete =
+              confirmationController.text.trim() == 'DELETE' &&
+              passwordController.text.isNotEmpty;
+          return AlertDialog(
+            icon: Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+            title: Text(
+              _isArabic ? 'حذف الحساب نهائيًا؟' : 'Delete account permanently?',
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    _isArabic
+                        ? 'سيتم إغلاق حسابك وتسجيل خروجك من التطبيق. إذا أردت الرجوع مرة أخرى، تواصل مع الدعم.'
+                        : 'Your account will be closed and you will be signed out. Contact support if you need to return later.',
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: confirmationController,
+                    textCapitalization: TextCapitalization.characters,
+                    onChanged: (_) => setDialogState(() {}),
+                    decoration: InputDecoration(
+                      labelText: _isArabic
+                          ? 'اكتب DELETE للتأكيد'
+                          : 'Type DELETE to confirm',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: passwordController,
+                    obscureText: true,
+                    onChanged: (_) => setDialogState(() {}),
+                    decoration: InputDecoration(
+                      labelText: _isArabic ? 'كلمة المرور' : 'Password',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: Text(
+                  MaterialLocalizations.of(context).cancelButtonLabel,
+                ),
+              ),
+              FilledButton(
+                onPressed: canDelete
+                    ? () => Navigator.of(
+                        dialogContext,
+                      ).pop(passwordController.text)
+                    : null,
+                style: FilledButton.styleFrom(
+                  backgroundColor: colorScheme.error,
+                ),
+                child: Text(_isArabic ? 'حذف الحساب' : 'Delete account'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+    confirmationController.dispose();
+    passwordController.dispose();
+    return result;
+  }
+
+  Future<void> _showAccountClosedDialog() {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          Icons.check_circle_rounded,
+          color: context.colorScheme.primary,
+        ),
+        title: Text(_isArabic ? 'تم حذف الحساب' : 'Account deleted'),
+        content: Text(
+          _isArabic
+              ? 'تم تسجيل خروجك. لو حابب ترجع تاني، كلم الدعم.'
+              : 'You have been signed out. Contact support if you want to return.',
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(_isArabic ? 'حسنًا' : 'OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _showAccountCloseBlockedDialog({
+    required String title,
+    required String message,
+    bool openWallet = false,
+  }) async {
+    final shouldOpenWallet = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        icon: Icon(
+          Icons.info_outline_rounded,
+          color: context.colorScheme.error,
+        ),
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(_isArabic ? 'حسنًا' : 'OK'),
+          ),
+          if (openWallet)
+            FilledButton(
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: Text(_isArabic ? 'عرض السحوبات' : 'View withdrawals'),
+            ),
+        ],
+      ),
+    );
+    if (shouldOpenWallet == true && mounted) {
+      context.pushNamed(AppRoutes.wallet, rootNavigator: true);
     }
   }
 
@@ -397,8 +620,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                     title,
                     style: TextStyle(
                       color: sheetColor.onSurface,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                       fontSize: 16,
                     ),
                   ),

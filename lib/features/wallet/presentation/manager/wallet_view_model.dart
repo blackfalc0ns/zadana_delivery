@@ -236,13 +236,13 @@ class WalletViewModel extends Cubit<WalletState> {
     await doIntent(const WalletLoadEvent(refresh: true));
   }
 
-  Future<dynamic> doIntent(WalletEvent event) async {
+  Future<dynamic> doIntent(WalletEvent event) {
     switch (event) {
       case WalletLoadEvent():
         return _refreshWallet(forceRefresh: event.refresh);
       case WalletClearErrorEvent():
         _clearError();
-        return null;
+        return Future<void>.value();
       case WalletCreatePaymentMethodEvent():
         return _createPaymentMethod(event.request);
       case WalletUpdatePaymentMethodEvent():
@@ -309,7 +309,7 @@ class WalletViewModel extends Cubit<WalletState> {
   Future<bool> createPaymentMethod(
     DriverPayoutMethodUpsertRequestEntity request,
   ) {
-    return doIntent(WalletCreatePaymentMethodEvent(request)) as Future<bool>;
+    return _createPaymentMethod(request);
   }
 
   Future<bool> _createPaymentMethod(
@@ -324,8 +324,7 @@ class WalletViewModel extends Cubit<WalletState> {
     String id,
     DriverPayoutMethodUpsertRequestEntity request,
   ) {
-    return doIntent(WalletUpdatePaymentMethodEvent(id, request))
-        as Future<bool>;
+    return _updatePaymentMethod(id, request);
   }
 
   Future<bool> _updatePaymentMethod(
@@ -347,7 +346,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<bool> deletePaymentMethod(String id) {
-    return doIntent(WalletDeletePaymentMethodEvent(id)) as Future<bool>;
+    return _deletePaymentMethod(id);
   }
 
   Future<bool> _deletePaymentMethod(String id) async {
@@ -372,7 +371,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<bool> makePrimary(String id) {
-    return doIntent(WalletMakePaymentMethodPrimaryEvent(id)) as Future<bool>;
+    return _makePrimary(id);
   }
 
   Future<bool> _makePrimary(String id) async {
@@ -384,19 +383,29 @@ class WalletViewModel extends Cubit<WalletState> {
   Future<bool> createWithdrawal(
     DriverWalletCreateWithdrawalRequestEntity request,
   ) {
-    return doIntent(WalletCreateWithdrawalEvent(request)) as Future<bool>;
+    return _createWithdrawal(request);
   }
 
   Future<bool> cancelWithdrawal(String withdrawalId) async {
+    if (state.cancellingWithdrawalId != null) return false;
+    emit(
+      state.copyWith(cancellingWithdrawalId: withdrawalId, clearFailure: true),
+    );
     final result = await _cancelDriverWalletWithdrawalUseCase.call(
       withdrawalId,
     );
     switch (result) {
       case ApiSuccessResult():
         await _refreshWalletCollections(forceRefresh: true);
+        emit(state.copyWith(clearCancellingWithdrawalId: true));
         return true;
       case ApiErrorResult():
-        emit(state.copyWith(failure: result.failure));
+        emit(
+          state.copyWith(
+            failure: result.failure,
+            clearCancellingWithdrawalId: true,
+          ),
+        );
         return false;
     }
   }
@@ -425,8 +434,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<void> loadTransactions({bool refresh = false}) {
-    return doIntent(WalletLoadTransactionsEvent(refresh: refresh))
-        as Future<void>;
+    return _loadTransactions(refresh);
   }
 
   Future<void> _loadTransactions(bool refresh) async {
@@ -435,7 +443,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<void> loadMoreTransactions() {
-    return doIntent(const WalletLoadMoreTransactionsEvent()) as Future<void>;
+    return _loadMoreTransactions();
   }
 
   Future<void> ensureTransactionsLoaded() async {
@@ -449,8 +457,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<void> loadWithdrawals({bool refresh = false}) {
-    return doIntent(WalletLoadWithdrawalsEvent(refresh: refresh))
-        as Future<void>;
+    return _loadWithdrawals(refresh);
   }
 
   Future<void> _loadWithdrawals(bool refresh) async {
@@ -459,7 +466,7 @@ class WalletViewModel extends Cubit<WalletState> {
   }
 
   Future<void> loadMoreWithdrawals() {
-    return doIntent(const WalletLoadMoreWithdrawalsEvent()) as Future<void>;
+    return _loadMoreWithdrawals();
   }
 
   Future<void> ensureWithdrawalsLoaded() async {

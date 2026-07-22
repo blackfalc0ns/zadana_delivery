@@ -9,7 +9,6 @@ import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_method_upsert_request_entity.dart';
-import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_state.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
 import 'package:zadana_delivery/features/wallet/presentation/screens/wallet_payment_method_form_screen.dart';
@@ -131,20 +130,16 @@ class _WalletScreenState extends State<WalletScreen> {
       return;
     }
 
-    final request = await Navigator.of(context)
-        .push<DriverWalletCreateWithdrawalRequestEntity>(
-          MaterialPageRoute(
-            builder: (_) => WalletWithdrawalFormScreen(
-              viewModel: _viewModel,
-              availableBalance: availableBalance,
-              primaryMethod: _viewModel.primaryPaymentMethod,
-            ),
-          ),
-        );
-    if (request == null || !mounted) return;
-
-    final success = await _viewModel.createWithdrawal(request);
-    if (!mounted || !success) return;
+    final success = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => WalletWithdrawalFormScreen(
+          viewModel: _viewModel,
+          availableBalance: availableBalance,
+          primaryMethod: _viewModel.primaryPaymentMethod,
+        ),
+      ),
+    );
+    if (!mounted || success != true) return;
 
     CustomSnackbar.showSuccess(
       context: context,
