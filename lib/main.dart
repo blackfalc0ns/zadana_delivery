@@ -24,14 +24,7 @@ import 'package:zadana_delivery/features/driver_tracking/domain/repo/driver_trac
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-  runApp(
-    // DevicePreview(
-    //    ignore: avoid_redundant_argument_values
-    //   enabled: !kReleaseMode,
-    //   builder: (context) => const MyApp(),
-    // ),
-    const MyApp(),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {

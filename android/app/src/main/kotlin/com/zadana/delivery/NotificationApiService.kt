@@ -1,4 +1,4 @@
-package com.example.zadana_delivery
+package com.zadana.delivery
 
 import android.content.Context
 import android.content.SharedPreferences

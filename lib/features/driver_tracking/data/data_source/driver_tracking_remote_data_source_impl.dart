@@ -117,7 +117,9 @@ class DriverTrackingRemoteDataSourceImpl
       ' fg=${command.foregroundIntervalSeconds}s'
       ' bg=${command.backgroundIntervalSeconds}s',
     );
-    await _permissionService.checkAndRequestPermission();
+    // A delivery can continue after the UI is backgrounded. Do not start the
+    // native service with only foreground access.
+    await _permissionService.checkAndRequestBackgroundPermission();
 
     final isRunning = await _backgroundService.isRunning();
     if (!isRunning) {

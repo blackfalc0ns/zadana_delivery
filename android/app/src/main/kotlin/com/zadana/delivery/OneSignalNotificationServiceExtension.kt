@@ -1,4 +1,4 @@
-package com.example.zadana_delivery
+package com.zadana.delivery
 
 import androidx.annotation.Keep
 import androidx.core.app.NotificationCompat

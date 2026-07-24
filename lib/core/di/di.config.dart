@@ -14,7 +14,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart' as _i558;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:image_picker/image_picker.dart' as _i183;
 import 'package:injectable/injectable.dart' as _i526;
-import 'package:pretty_dio_logger/pretty_dio_logger.dart' as _i528;
 import 'package:shared_preferences/shared_preferences.dart' as _i460;
 
 import '../../features/auth/account_status/data/data_source/driver_account_status_remote_data_source.dart'
@@ -369,9 +368,6 @@ extension GetItInjectableX on _i174.GetIt {
       () => externalModules.provideSharedPreferences,
       preResolve: true,
     );
-    gh.lazySingleton<_i528.PrettyDioLogger>(
-      () => externalModules.providePrettyDioLogger(),
-    );
     gh.lazySingleton<_i558.FlutterSecureStorage>(
       () => externalModules.flutterSecureStorage(),
     );
@@ -401,7 +397,7 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i42.SharedPrefHelper(gh<_i460.SharedPreferences>()),
     );
     gh.lazySingleton<_i361.Dio>(
-      () => externalModules.provideOsmDio(gh<_i528.PrettyDioLogger>()),
+      () => externalModules.provideOsmDio(),
       instanceName: 'osmDio',
     );
     gh.lazySingleton<_i498.DriverTrackingRemoteDataSource>(
@@ -488,13 +484,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i32.LanguageInterceptor>(
       () => _i32.LanguageInterceptor(gh<_i819.LanguageService>()),
     );
-    gh.lazySingleton<_i361.Dio>(
-      () => externalModules.provideDio(
-        gh<_i528.PrettyDioLogger>(),
-        gh<_i1056.TokenInterceptor>(),
-        gh<_i32.LanguageInterceptor>(),
-      ),
-    );
     gh.lazySingleton<_i430.DriverLocalNotificationService>(
       () => _i430.DriverLocalNotificationService(
         gh<_i585.DriverNotificationRouterService>(),
@@ -508,21 +497,18 @@ extension GetItInjectableX on _i174.GetIt {
         realtimeService: gh<_i794.DriverRealtimeService>(),
       ),
     );
-    gh.lazySingleton<_i1059.DriverNotificationDeviceService>(
-      () => _i1059.DriverNotificationDeviceService(
-        gh<_i361.Dio>(),
-        gh<_i460.SharedPreferences>(),
-        gh<_i227.TokenService>(),
-        gh<_i819.LanguageService>(),
-        gh<_i134.NotificationSoundPreferencesService>(),
-      ),
-    );
     gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
       () => _i1015.DriverNotificationOverlayService(
         gh<_i179.AppNavigatorService>(),
         gh<_i585.DriverNotificationRouterService>(),
         gh<_i889.DriverNotificationDedupService>(),
         gh<_i794.DriverRealtimeService>(),
+      ),
+    );
+    gh.lazySingleton<_i361.Dio>(
+      () => externalModules.provideDio(
+        gh<_i1056.TokenInterceptor>(),
+        gh<_i32.LanguageInterceptor>(),
       ),
     );
     gh.lazySingleton<_i487.RegistrationUploadTokenService>(
@@ -544,25 +530,8 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i1070.WalletRemoteDataSource>(
       () => _i617.WalletRemoteDataSourceImpl(gh<_i804.ApiServices>()),
     );
-    gh.factory<_i173.NotificationsRemoteDataSource>(
-      () => _i2.NotificationsRemoteDataSourceImpl(
-        gh<_i804.ApiServices>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-      ),
-    );
     gh.factory<_i454.ResetPasswordRemoteDataSource>(
       () => _i17.ResetPasswordRemoteDataSourceImpl(gh<_i804.ApiServices>()),
-    );
-    gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
-      () => _i223.DriverNotificationBootstrapService(
-        gh<_i179.AppNavigatorService>(),
-        gh<_i430.DriverLocalNotificationService>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-        gh<_i368.DriverNotificationLaunchPayloadService>(),
-        gh<_i1015.DriverNotificationOverlayService>(),
-        gh<_i585.DriverNotificationRouterService>(),
-        gh<_i227.TokenService>(),
-      ),
     );
     gh.lazySingleton<_i456.WalletRepository>(
       () => _i520.WalletRepositoryImpl(gh<_i1070.WalletRemoteDataSource>()),
@@ -570,6 +539,15 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i656.OrderDetailsRepository>(
       () => _i565.OrderDetailsRepositoryImpl(
         gh<_i437.OrderDetailsRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i1059.DriverNotificationDeviceService>(
+      () => _i1059.DriverNotificationDeviceService(
+        gh<_i361.Dio>(),
+        gh<_i460.SharedPreferences>(),
+        gh<_i227.TokenService>(),
+        gh<_i819.LanguageService>(),
+        gh<_i134.NotificationSoundPreferencesService>(),
       ),
     );
     gh.factory<_i893.DriverAccountStatusRemoteDataSource>(
@@ -737,23 +715,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i819.LanguageService>(),
       ),
     );
-    gh.lazySingleton<_i30.DriverNotificationSessionService>(
-      () => _i30.DriverNotificationSessionService(
-        gh<_i227.TokenService>(),
-        gh<_i223.DriverNotificationBootstrapService>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-        gh<_i88.DriverRuntimeServicesController>(),
-        gh<_i794.DriverRealtimeService>(),
-        gh<_i458.DriverHomeRemoteDataSource>(),
-        gh<_i585.DriverNotificationRouterService>(),
-        gh<_i889.DriverNotificationDedupService>(),
-      ),
-    );
-    gh.factory<_i341.NotificationsRepository>(
-      () => _i166.NotificationsRepositoryImpl(
-        gh<_i173.NotificationsRemoteDataSource>(),
-      ),
-    );
     gh.lazySingleton<_i497.TripRequestGlobalAlertService>(
       () => _i497.TripRequestGlobalAlertService(
         gh<_i952.TripRequestOverlayService>(),
@@ -782,46 +743,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i78.LogoutUseCase>(
       () => _i78.LogoutUseCase(gh<_i751.LogoutRepository>()),
     );
-    gh.factory<_i484.DeleteAllDriverNotificationsUseCase>(
-      () => _i484.DeleteAllDriverNotificationsUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i842.DeleteDriverNotificationUseCase>(
-      () => _i842.DeleteDriverNotificationUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i261.GetDriverNotificationsUnreadCountUseCase>(
-      () => _i261.GetDriverNotificationsUnreadCountUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i127.GetDriverNotificationsUseCase>(
-      () => _i127.GetDriverNotificationsUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i104.GetNotificationPreferencesUseCase>(
-      () => _i104.GetNotificationPreferencesUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i1063.MarkAllDriverNotificationsReadUseCase>(
-      () => _i1063.MarkAllDriverNotificationsReadUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i430.MarkDriverNotificationReadUseCase>(
-      () => _i430.MarkDriverNotificationReadUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
-    gh.factory<_i323.UpdateNotificationPreferencesUseCase>(
-      () => _i323.UpdateNotificationPreferencesUseCase(
-        gh<_i341.NotificationsRepository>(),
-      ),
-    );
     gh.factory<_i251.RegisterRepository>(
       () => _i794.RegisterRepositoryImpl(
         gh<_i207.RegisterRemoteDataSource>(),
@@ -844,6 +765,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i929.CompletedOrdersRepository>(
       () => _i563.CompletedOrdersRepositoryImpl(
         gh<_i833.CompletedOrdersRemoteDataSource>(),
+      ),
+    );
+    gh.factory<_i173.NotificationsRemoteDataSource>(
+      () => _i2.NotificationsRemoteDataSourceImpl(
+        gh<_i804.ApiServices>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
       ),
     );
     gh.factory<_i635.RegisterUseCase>(
@@ -902,6 +829,17 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i550.DriverIdentityService>(),
       ),
     );
+    gh.lazySingleton<_i223.DriverNotificationBootstrapService>(
+      () => _i223.DriverNotificationBootstrapService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i430.DriverLocalNotificationService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i368.DriverNotificationLaunchPayloadService>(),
+        gh<_i1015.DriverNotificationOverlayService>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i227.TokenService>(),
+      ),
+    );
     gh.factory<_i725.AcceptDriverOfferUseCase>(
       () => _i725.AcceptDriverOfferUseCase(gh<_i803.DriverHomeRepository>()),
     );
@@ -938,18 +876,6 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i883.GetDriverSupportCaseDetailsUseCase>(),
         gh<_i455.SendDriverSupportCaseMessageUseCase>(),
         gh<_i794.DriverRealtimeService>(),
-      ),
-    );
-    gh.factory<_i422.NotificationsViewModel>(
-      () => _i422.NotificationsViewModel(
-        gh<_i127.GetDriverNotificationsUseCase>(),
-        gh<_i430.MarkDriverNotificationReadUseCase>(),
-        gh<_i1063.MarkAllDriverNotificationsReadUseCase>(),
-        gh<_i261.GetDriverNotificationsUnreadCountUseCase>(),
-        gh<_i842.DeleteDriverNotificationUseCase>(),
-        gh<_i484.DeleteAllDriverNotificationsUseCase>(),
-        gh<_i104.GetNotificationPreferencesUseCase>(),
-        gh<_i323.UpdateNotificationPreferencesUseCase>(),
       ),
     );
     gh.factory<_i583.WalletViewModel>(
@@ -1005,6 +931,23 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
     );
+    gh.lazySingleton<_i30.DriverNotificationSessionService>(
+      () => _i30.DriverNotificationSessionService(
+        gh<_i227.TokenService>(),
+        gh<_i223.DriverNotificationBootstrapService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i88.DriverRuntimeServicesController>(),
+        gh<_i794.DriverRealtimeService>(),
+        gh<_i458.DriverHomeRemoteDataSource>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+      ),
+    );
+    gh.factory<_i341.NotificationsRepository>(
+      () => _i166.NotificationsRepositoryImpl(
+        gh<_i173.NotificationsRemoteDataSource>(),
+      ),
+    );
     gh.factory<_i663.GetCompletedOrderDetailsUseCase>(
       () => _i663.GetCompletedOrderDetailsUseCase(
         gh<_i929.CompletedOrdersRepository>(),
@@ -1032,6 +975,46 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i371.VerifyDriverOtpUseCase>(
       () => _i371.VerifyDriverOtpUseCase(gh<_i338.DriverVerifyOtpRepository>()),
+    );
+    gh.factory<_i484.DeleteAllDriverNotificationsUseCase>(
+      () => _i484.DeleteAllDriverNotificationsUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i842.DeleteDriverNotificationUseCase>(
+      () => _i842.DeleteDriverNotificationUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i261.GetDriverNotificationsUnreadCountUseCase>(
+      () => _i261.GetDriverNotificationsUnreadCountUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i127.GetDriverNotificationsUseCase>(
+      () => _i127.GetDriverNotificationsUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i104.GetNotificationPreferencesUseCase>(
+      () => _i104.GetNotificationPreferencesUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i1063.MarkAllDriverNotificationsReadUseCase>(
+      () => _i1063.MarkAllDriverNotificationsReadUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i430.MarkDriverNotificationReadUseCase>(
+      () => _i430.MarkDriverNotificationReadUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
+    );
+    gh.factory<_i323.UpdateNotificationPreferencesUseCase>(
+      () => _i323.UpdateNotificationPreferencesUseCase(
+        gh<_i341.NotificationsRepository>(),
+      ),
     );
     gh.factory<_i641.ResetPasswordViewModel>(
       () => _i641.ResetPasswordViewModel(gh<_i184.ResetPasswordUseCase>()),
@@ -1095,6 +1078,18 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i191.DriverVerifyOtpViewModel(
         gh<_i371.VerifyDriverOtpUseCase>(),
         gh<_i324.ResendDriverOtpUseCase>(),
+      ),
+    );
+    gh.factory<_i422.NotificationsViewModel>(
+      () => _i422.NotificationsViewModel(
+        gh<_i127.GetDriverNotificationsUseCase>(),
+        gh<_i430.MarkDriverNotificationReadUseCase>(),
+        gh<_i1063.MarkAllDriverNotificationsReadUseCase>(),
+        gh<_i261.GetDriverNotificationsUnreadCountUseCase>(),
+        gh<_i842.DeleteDriverNotificationUseCase>(),
+        gh<_i484.DeleteAllDriverNotificationsUseCase>(),
+        gh<_i104.GetNotificationPreferencesUseCase>(),
+        gh<_i323.UpdateNotificationPreferencesUseCase>(),
       ),
     );
     gh.factory<_i808.LoginViewModel>(

@@ -1,4 +1,4 @@
-package com.example.zadana_delivery
+package com.zadana.delivery
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -183,8 +183,8 @@ class NotificationActionReceiver : BroadcastReceiver() {
 
     companion object {
         private const val TAG = "NotificationAction"
-        const val ACTION_ACCEPT = "com.example.zadana_delivery.ACCEPT_OFFER"
-        const val ACTION_REJECT = "com.example.zadana_delivery.REJECT_OFFER"
+        const val ACTION_ACCEPT = "com.zadana.delivery.ACCEPT_OFFER"
+        const val ACTION_REJECT = "com.zadana.delivery.REJECT_OFFER"
         const val EXTRA_ASSIGNMENT_ID = "assignment_id"
         const val EXTRA_ORDER_ID = "order_id"
         const val EXTRA_ORDER_TITLE = "order_title"

@@ -1,4 +1,4 @@
-package com.example.zadana_delivery
+package com.zadana.delivery
 
 import android.annotation.SuppressLint
 import android.content.Context

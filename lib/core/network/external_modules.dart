@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/network/retry_with_backoff.dart';
@@ -17,7 +16,6 @@ import 'network_constants.dart';
 abstract class ExternalModules {
   @lazySingleton
   Dio provideDio(
-    PrettyDioLogger prettyDioLogger,
     TokenInterceptor tokenInterceptor,
     LanguageInterceptor languageInterceptor,
   ) {
@@ -35,14 +33,13 @@ abstract class ExternalModules {
     dio.interceptors.add(languageInterceptor);
     dio.interceptors.add(tokenInterceptor);
     dio.interceptors.add(RetryWithBackoffInterceptor());
-    dio.interceptors.add(prettyDioLogger);
 
     return dio;
   }
 
   @Named('osmDio')
   @lazySingleton
-  Dio provideOsmDio(PrettyDioLogger prettyDioLogger) {
+  Dio provideOsmDio() {
     final dio = Dio();
 
     dio.options.baseUrl = 'https://nominatim.openstreetmap.org';
@@ -51,8 +48,6 @@ abstract class ExternalModules {
       'Accept': 'application/json',
       'User-Agent': 'zadana-user-app',
     };
-
-    dio.interceptors.add(prettyDioLogger);
 
     return dio;
   }
@@ -69,11 +64,6 @@ abstract class ExternalModules {
         },
       ),
     );
-  }
-
-  @lazySingleton
-  PrettyDioLogger providePrettyDioLogger() {
-    return PrettyDioLogger();
   }
 
   @preResolve

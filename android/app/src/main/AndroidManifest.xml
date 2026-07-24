@@ -14,7 +14,7 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data
             android:name="com.onesignal.NotificationServiceExtension"
-            android:value="com.example.zadana_delivery.OneSignalNotificationServiceExtension" />
+            android:value="com.zadana.delivery.OneSignalNotificationServiceExtension" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
             android:value="zadana_driver_general_notifications" />
@@ -70,8 +70,8 @@
             android:name=".NotificationActionReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.example.zadana_delivery.ACCEPT_OFFER" />
-                <action android:name="com.example.zadana_delivery.REJECT_OFFER" />
+                <action android:name="com.zadana.delivery.ACCEPT_OFFER" />
+                <action android:name="com.zadana.delivery.REJECT_OFFER" />
             </intent-filter>
         </receiver>
     </application>
