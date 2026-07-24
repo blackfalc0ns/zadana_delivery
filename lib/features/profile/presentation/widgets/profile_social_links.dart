@@ -38,19 +38,33 @@ class ProfileSocialLinks extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall,
           ),
           const SizedBox(height: 8),
-          Row(
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 8,
+            runSpacing: 8,
             children: links
                 .map(
-                  (link) => Expanded(
-                    child: IconButton(
-                      tooltip: link.$1,
-                      onPressed: () => _open(link.$2),
-                      color:
-                          _colors[link.$1] ??
-                          Theme.of(context).colorScheme.primary,
-                      icon: FaIcon(
-                        _icons[link.$1] ?? FontAwesomeIcons.link,
-                        size: 26,
+                  (link) => Tooltip(
+                    message: link.$1,
+                    child: Material(
+                      color: const Color(0xFFF1F3F5),
+                      shape: const CircleBorder(),
+                      child: InkWell(
+                        onTap: () => _open(link.$2),
+                        customBorder: const CircleBorder(),
+                        child: SizedBox(
+                          width: 44,
+                          height: 44,
+                          child: Center(
+                            child: FaIcon(
+                              _icons[link.$1] ?? FontAwesomeIcons.link,
+                              size: 22,
+                              color:
+                                  _colors[link.$1] ??
+                                  Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ),
