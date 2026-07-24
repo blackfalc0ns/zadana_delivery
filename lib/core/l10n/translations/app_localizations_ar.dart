@@ -1361,6 +1361,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get auth_signup_section_badge => 'رحلة جديدة';
 
   @override
+  String get auth_terms_prefix => 'أوافق على ';
+
+  @override
+  String get auth_terms_required =>
+      'يجب الموافقة على الشروط والأحكام للمتابعة.';
+
+  @override
   String get auth_forgot_hero_badge => 'استعادة سريعة';
 
   @override

@@ -11,6 +11,7 @@ import 'package:zadana_delivery/features/profile/presentation/widgets/profile_do
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_header_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_rejection_policy_card.dart';
 import 'package:zadana_delivery/features/profile/presentation/widgets/profile_sections_list.dart';
+import 'package:zadana_delivery/features/profile/presentation/widgets/profile_social_links.dart';
 
 class ProfileScreenContent extends StatelessWidget {
   const ProfileScreenContent({
@@ -92,13 +93,15 @@ class ProfileScreenContent extends StatelessWidget {
                         onActionTap: onActionTap,
                       ),
                     ),
-                    const SizedBox(height: Spacing.xl),
+                    const SizedBox(height: Spacing.base),
                     _DeleteAccountCallout(
                       actionLabel: locale.localeName.startsWith('ar')
                           ? 'حذف الحساب'
                           : 'Delete account',
                       onTap: () => onActionTap(ProfileActionType.deleteAccount),
                     ),
+                    const SizedBox(height: Spacing.lg),
+                    const ProfileSocialLinks(),
                     const SizedBox(height: Spacing.lg),
                   ],
                 ),

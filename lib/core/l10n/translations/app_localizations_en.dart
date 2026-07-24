@@ -1393,6 +1393,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get auth_signup_section_badge => 'New journey';
 
   @override
+  String get auth_terms_prefix => 'I agree to the ';
+
+  @override
+  String get auth_terms_required =>
+      'You must agree to the Terms & Conditions to continue.';
+
+  @override
   String get auth_forgot_hero_badge => 'Quick recovery';
 
   @override

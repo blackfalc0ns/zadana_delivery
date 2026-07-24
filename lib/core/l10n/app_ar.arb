@@ -477,6 +477,8 @@
   "auth_signup_hero_title": "إنشاء حساب مندوب",
   "auth_signup_hero_subtitle": "ابدأ ببياناتك الأساسية عشان تنضم بسرعة.",
   "auth_signup_section_badge": "رحلة جديدة",
+  "auth_terms_prefix": "أوافق على ",
+  "auth_terms_required": "يجب الموافقة على الشروط والأحكام للمتابعة.",
   "auth_forgot_hero_badge": "استعادة سريعة",
   "auth_forgot_hero_subtitle": "استرجع الوصول لحسابك بخطوات بسيطة.",
   "auth_forgot_section_badge": "استعادة الوصول",

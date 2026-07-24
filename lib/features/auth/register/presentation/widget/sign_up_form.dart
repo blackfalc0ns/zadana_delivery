@@ -16,8 +16,11 @@ class SignUpForm extends StatelessWidget {
     required this.phoneController,
     required this.emailController,
     required this.passwordController,
+    required this.hasAcceptedTerms,
     required this.isSubmitting,
     required this.onSubmit,
+    required this.onTermsChanged,
+    required this.onViewTerms,
     this.errorMessage,
   });
 
@@ -26,9 +29,12 @@ class SignUpForm extends StatelessWidget {
   final TextEditingController phoneController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final bool hasAcceptedTerms;
   final bool isSubmitting;
   final String? errorMessage;
   final VoidCallback onSubmit;
+  final ValueChanged<bool> onTermsChanged;
+  final VoidCallback onViewTerms;
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +92,75 @@ class SignUpForm extends StatelessWidget {
             enabled: !isSubmitting,
             onFieldSubmitted: (_) => onSubmit(),
           ),
+          const SizedBox(height: Spacing.base),
+          FormField<bool>(
+            initialValue: hasAcceptedTerms,
+            validator: (value) =>
+                value == true ? null : locale.auth_terms_required,
+            builder: (field) {
+              final errorColor = color.error;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Checkbox(
+                        value: hasAcceptedTerms,
+                        onChanged: isSubmitting
+                            ? null
+                            : (value) {
+                                final accepted = value ?? false;
+                                field.didChange(accepted);
+                                onTermsChanged(accepted);
+                              },
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 12),
+                          child: Wrap(
+                            children: [
+                              Text(
+                                locale.auth_terms_prefix,
+                                style: getRegularStyle(
+                                  fontFamily: FontConstant.cairo,
+                                  color: color.onSurface,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: onViewTerms,
+                                child: Text(
+                                  locale.terms_conditions,
+                                  style:
+                                      getRegularStyle(
+                                        fontFamily: FontConstant.cairo,
+                                        color: color.primary,
+                                      ).copyWith(
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (field.hasError)
+                    Padding(
+                      padding: const EdgeInsetsDirectional.only(start: 12),
+                      child: Text(
+                        field.errorText!,
+                        style: getRegularStyle(
+                          fontFamily: FontConstant.cairo,
+                          color: errorColor,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
           if ((errorMessage ?? '').trim().isNotEmpty) ...[
             const SizedBox(height: Spacing.base),
             Container(
@@ -107,7 +182,7 @@ class SignUpForm extends StatelessWidget {
           const SizedBox(height: Spacing.lg),
           AppButton.filled(
             text: locale.auth_continue,
-            onPressed: isSubmitting ? null : onSubmit,
+            onPressed: isSubmitting || !hasAcceptedTerms ? null : onSubmit,
             height: 52,
             borderRadius: 18,
           ),

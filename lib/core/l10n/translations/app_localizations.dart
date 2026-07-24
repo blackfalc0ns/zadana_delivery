@@ -2696,6 +2696,18 @@ abstract class AppLocalizations {
   /// **'New journey'**
   String get auth_signup_section_badge;
 
+  /// No description provided for @auth_terms_prefix.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the '**
+  String get auth_terms_prefix;
+
+  /// No description provided for @auth_terms_required.
+  ///
+  /// In en, this message translates to:
+  /// **'You must agree to the Terms & Conditions to continue.'**
+  String get auth_terms_required;
+
   /// No description provided for @auth_forgot_hero_badge.
   ///
   /// In en, this message translates to:

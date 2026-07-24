@@ -502,6 +502,8 @@
   "auth_signup_hero_title": "Create driver account",
   "auth_signup_hero_subtitle": "Start with your basic details and join quickly.",
   "auth_signup_section_badge": "New journey",
+  "auth_terms_prefix": "I agree to the ",
+  "auth_terms_required": "You must agree to the Terms & Conditions to continue.",
   "auth_forgot_hero_badge": "Quick recovery",
   "auth_forgot_hero_subtitle": "Recover access to your account in a few steps.",
   "auth_forgot_section_badge": "Recover access",

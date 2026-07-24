@@ -22,6 +22,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isSubmitting = false;
+  bool _hasAcceptedTerms = false;
   String? _errorMessage;
 
   @override
@@ -97,8 +98,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
             phoneController: _phoneController,
             emailController: _emailController,
             passwordController: _passwordController,
+            hasAcceptedTerms: _hasAcceptedTerms,
             isSubmitting: _isSubmitting,
             errorMessage: _errorMessage,
+            onTermsChanged: (value) => setState(() => _hasAcceptedTerms = value),
+            onViewTerms: () => context.pushNamed(
+              AppRoutes.termsAndConditions,
+              rootNavigator: true,
+            ),
             onSubmit: _submit,
           ),
           footer: AuthPromptText(

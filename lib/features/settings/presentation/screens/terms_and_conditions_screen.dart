@@ -1,43 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:zadana_delivery/config/theme/font_manger.dart';
-import 'package:zadana_delivery/config/theme/spacing.dart';
-import 'package:zadana_delivery/config/theme/styles_manger.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
+import 'package:zadana_delivery/features/settings/data/public_content_service.dart';
+import 'package:zadana_delivery/features/settings/presentation/widgets/public_content_shimmer.dart';
 
 class TermsAndConditionsScreen extends StatelessWidget {
   const TermsAndConditionsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => LegalScreen(
+    title: context.localization.terms_conditions,
+    type: 'DriverTerms',
+  );
+}
 
-  static const _arabicAsset =
-      'assets/documents/driver_terms_and_conditions_ar.md';
-  static const _englishAsset =
-      'assets/documents/driver_terms_and_conditions_en.md';
+class LegalScreen extends StatefulWidget {
+  const LegalScreen({super.key, required this.title, required this.type});
+  final String title, type;
+  @override
+  State<LegalScreen> createState() => _LegalScreenState();
+}
+
+class _LegalScreenState extends State<LegalScreen> {
+  late Future<LegalDocument> _future;
+  @override
+  void initState() {
+    super.initState();
+    _future = PublicContentService.instance.getLegal(widget.type);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final asset = isArabic ? _arabicAsset : _englishAsset;
-    final textDirection = isArabic ? TextDirection.rtl : TextDirection.ltr;
-
+    final ar = Localizations.localeOf(context).languageCode == 'ar';
     return Scaffold(
-      backgroundColor: context.colorScheme.surface,
       appBar: CustomAppBar.modern(
-        title: context.localization.terms_conditions,
+        title: widget.title,
         backgroundColor: context.colorScheme.surface,
       ),
-      body: FutureBuilder<String>(
-        future: rootBundle.loadString(asset),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError || snapshot.data == null) {
-            return _TermsLoadError(isArabic: isArabic);
-          }
-          return _TermsDocument(
-            document: snapshot.data!,
-            textDirection: textDirection,
+      body: FutureBuilder<LegalDocument>(
+        future: _future,
+        builder: (_, s) {
+          if (s.connectionState != ConnectionState.done)
+            return const PublicContentShimmer(rows: 7);
+          if (s.hasError)
+            return Center(
+              child: TextButton(
+                onPressed: () => setState(
+                  () => _future = PublicContentService.instance.getLegal(
+                    widget.type,
+                  ),
+                ),
+                child: Text(
+                  ar ? 'تعذر التحميل، أعد المحاولة' : 'Unable to load. Retry',
+                ),
+              ),
+            );
+          final d = s.data!;
+          final content = d.contentFor(ar);
+          if (content.isEmpty)
+            return Center(
+              child: Text(
+                ar
+                    ? 'المحتوى غير متاح حالياً.'
+                    : 'Content is currently unavailable.',
+              ),
+            );
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _MarkdownText(content: content, rtl: ar),
+              if (d.version.isNotEmpty || d.effectiveAtUtc != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 24),
+                  child: Text(
+                    '${d.version.isEmpty ? '' : 'v${d.version}'}${d.version.isNotEmpty && d.effectiveAtUtc != null ? ' • ' : ''}${d.effectiveAtUtc?.toLocal().toString().split(' ').first ?? ''}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+            ],
           );
         },
       ),
@@ -45,101 +84,35 @@ class TermsAndConditionsScreen extends StatelessWidget {
   }
 }
 
-class _TermsDocument extends StatelessWidget {
-  const _TermsDocument({required this.document, required this.textDirection});
-
-  final String document;
-  final TextDirection textDirection;
-
+class _MarkdownText extends StatelessWidget {
+  const _MarkdownText({required this.content, required this.rtl});
+  final String content;
+  final bool rtl;
   @override
-  Widget build(BuildContext context) {
-    final color = context.colorScheme;
-    final lines = document.split(RegExp(r'\r?\n'));
-
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(
-        Spacing.base,
-        Spacing.base,
-        Spacing.base,
-        Spacing.xl,
-      ),
-      itemCount: lines.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 8),
-      itemBuilder: (context, index) {
-        final line = lines[index].trim();
-        if (line.isEmpty) return const SizedBox.shrink();
-        final isTitle = line.startsWith('# ');
-        final isHeading = line.startsWith('## ');
-        final content = line.replaceFirst(RegExp(r'^#{1,2}\s+'), '');
-        final isMeta =
-            content.startsWith('**Version:') ||
-            content.startsWith('**الإصدار:') ||
-            content.startsWith('**Effective') ||
-            content.startsWith('**تاريخ');
-
-        if (isTitle) {
-          return Container(
-            padding: const EdgeInsets.all(Spacing.lg),
-            decoration: BoxDecoration(
-              color: color.primary.withValues(alpha: 0.10),
-              borderRadius: BorderRadius.circular(24),
-            ),
-            child: Text(
-              content,
-              textDirection: textDirection,
-              style: getBoldStyle(
-                fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size20,
-                color: color.onSurface,
-              ).copyWith(height: 1.45),
-            ),
-          );
-        }
-        if (isHeading) {
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: content
+        .split(RegExp(r'\r?\n'))
+        .where((line) => line.trim().isNotEmpty)
+        .map((line) {
+          final heading = line.startsWith('#');
+          final text = line
+              .replaceFirst(RegExp(r'^#+\s*'), '')
+              .replaceAll('**', '')
+              .replaceFirst(RegExp(r'^[-*]\s+'), '• ');
           return Padding(
-            padding: const EdgeInsets.only(top: Spacing.md),
+            padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              content,
-              textDirection: textDirection,
-              style: getBoldStyle(
-                fontFamily: FontConstant.cairo,
-                fontSize: FontSize.size16,
-                color: color.primary,
-              ),
+              text,
+              textDirection: rtl ? TextDirection.rtl : TextDirection.ltr,
+              style: heading
+                  ? Theme.of(context).textTheme.titleMedium
+                  : Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(height: 1.7),
             ),
           );
-        }
-        return Text(
-          content.replaceAll('**', '').replaceFirst(RegExp(r'^[-*]\s+'), '• '),
-          textDirection: textDirection,
-          style: getRegularStyle(
-            fontFamily: FontConstant.cairo,
-            fontSize: isMeta ? FontSize.size12 : FontSize.size14,
-            color: isMeta ? color.onSurfaceVariant : color.onSurface,
-          ).copyWith(height: 1.8),
-        );
-      },
-    );
-  }
-}
-
-class _TermsLoadError extends StatelessWidget {
-  const _TermsLoadError({required this.isArabic});
-
-  final bool isArabic;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(Spacing.xl),
-        child: Text(
-          isArabic
-              ? 'تعذر تحميل الشروط والأحكام. حاول مرة أخرى.'
-              : 'Unable to load the terms and conditions. Please try again.',
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
+        })
+        .toList(),
+  );
 }
