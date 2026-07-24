@@ -102,7 +102,6 @@ class ProfileScreenContent extends StatelessWidget {
                     ),
                     const SizedBox(height: Spacing.lg),
                     const ProfileSocialLinks(),
-                   
                   ],
                 ),
               ),
