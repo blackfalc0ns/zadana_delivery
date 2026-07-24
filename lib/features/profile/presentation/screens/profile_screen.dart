@@ -23,12 +23,98 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
+class _AccountCloseConfirmationDialog extends StatefulWidget {
+  const _AccountCloseConfirmationDialog({required this.isArabic});
+
+  final bool isArabic;
+
+  @override
+  State<_AccountCloseConfirmationDialog> createState() =>
+      _AccountCloseConfirmationDialogState();
+}
+
+class _AccountCloseConfirmationDialogState
+    extends State<_AccountCloseConfirmationDialog> {
+  final _confirmationController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  bool get _canDelete =>
+      _confirmationController.text.trim() == 'DELETE' &&
+      _passwordController.text.isNotEmpty;
+
+  @override
+  void dispose() {
+    _confirmationController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = context.colorScheme;
+    final isArabic = widget.isArabic;
+    return AlertDialog(
+      icon: Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+      title: Text(
+        isArabic ? 'حذف الحساب نهائيًا؟' : 'Delete account permanently?',
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              isArabic
+                  ? 'سيتم إغلاق حسابك وتسجيل خروجك من التطبيق. إذا أردت الرجوع مرة أخرى، تواصل مع الدعم.'
+                  : 'Your account will be closed and you will be signed out. Contact support if you need to return later.',
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _confirmationController,
+              textCapitalization: TextCapitalization.characters,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                labelText: isArabic
+                    ? 'اكتب DELETE للتأكيد'
+                    : 'Type DELETE to confirm',
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              onChanged: (_) => setState(() {}),
+              decoration: InputDecoration(
+                labelText: isArabic ? 'كلمة المرور' : 'Password',
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(MaterialLocalizations.of(context).cancelButtonLabel),
+        ),
+        FilledButton(
+          onPressed: _canDelete
+              ? () => Navigator.of(context).pop(_passwordController.text)
+              : null,
+          style: FilledButton.styleFrom(backgroundColor: colorScheme.error),
+          child: Text(isArabic ? 'حذف الحساب' : 'Delete account'),
+        ),
+      ],
+    );
+  }
+}
+
 class _ProfileScreenState extends State<ProfileScreen>
     with WidgetsBindingObserver {
   late final ProfileCubit _cubit;
   late final TripRequestOverlayService _overlayService;
   late final AppLifecycleListener _lifecycleListener;
   bool _hasOverlayPermission = false;
+  bool _isCheckingAccountClosure = false;
 
   @override
   void initState() {
@@ -127,7 +213,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                   overlayEnabled: _hasOverlayPermission,
                   onRefresh: _cubit.loadProfile,
                 ),
-                if (state.isLoggingOut || state.isClosingAccount) ...[
+                if (state.isLoggingOut ||
+                    state.isClosingAccount ||
+                    _isCheckingAccountClosure) ...[
                   Positioned.fill(
                     child: AbsorbPointer(
                       child: ColoredBox(
@@ -172,6 +260,10 @@ class _ProfileScreenState extends State<ProfileScreen>
         return _open(AppRoutes.forgetPassword);
       case ProfileActionType.support:
         return _open(AppRoutes.driverSupportCases);
+      case ProfileActionType.supportHelp:
+        return _open(AppRoutes.supportHelp);
+      case ProfileActionType.termsAndConditions:
+        return _open(AppRoutes.termsAndConditions);
       case ProfileActionType.privacy:
         return _open(AppRoutes.privacy);
       case ProfileActionType.deleteAccount:
@@ -182,7 +274,13 @@ class _ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _requestAccountClosure() async {
+    if (_isCheckingAccountClosure || _cubit.state.isClosingAccount) return;
+
+    setState(() => _isCheckingAccountClosure = true);
     final eligibility = await _cubit.checkAccountCloseEligibility();
+    if (mounted) {
+      setState(() => _isCheckingAccountClosure = false);
+    }
     if (!mounted) return;
 
     switch (eligibility) {
@@ -256,9 +354,11 @@ class _ProfileScreenState extends State<ProfileScreen>
       case AccountCloseResult.failed:
         CustomSnackbar.showError(
           context: context,
-          message: _isArabic
-              ? 'تعذر حذف الحساب. حاول مرة أخرى.'
-              : 'Unable to delete the account. Please try again.',
+          message:
+              _cubit.closeAccountFailure?.errorMessage ??
+              (_isArabic
+                  ? 'تعذر حذف الحساب. حاول مرة أخرى.'
+                  : 'Unable to delete the account. Please try again.'),
         );
     }
   }
@@ -266,81 +366,11 @@ class _ProfileScreenState extends State<ProfileScreen>
   bool get _isArabic => context.localization.localeName.startsWith('ar');
 
   Future<String?> _showAccountCloseConfirmationDialog() async {
-    final confirmationController = TextEditingController();
-    final passwordController = TextEditingController();
-    final colorScheme = context.colorScheme;
-    final result = await showDialog<String>(
+    return showDialog<String>(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => StatefulBuilder(
-        builder: (dialogContext, setDialogState) {
-          final canDelete =
-              confirmationController.text.trim() == 'DELETE' &&
-              passwordController.text.isNotEmpty;
-          return AlertDialog(
-            icon: Icon(Icons.warning_amber_rounded, color: colorScheme.error),
-            title: Text(
-              _isArabic ? 'حذف الحساب نهائيًا؟' : 'Delete account permanently?',
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    _isArabic
-                        ? 'سيتم إغلاق حسابك وتسجيل خروجك من التطبيق. إذا أردت الرجوع مرة أخرى، تواصل مع الدعم.'
-                        : 'Your account will be closed and you will be signed out. Contact support if you need to return later.',
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: confirmationController,
-                    textCapitalization: TextCapitalization.characters,
-                    onChanged: (_) => setDialogState(() {}),
-                    decoration: InputDecoration(
-                      labelText: _isArabic
-                          ? 'اكتب DELETE للتأكيد'
-                          : 'Type DELETE to confirm',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    onChanged: (_) => setDialogState(() {}),
-                    decoration: InputDecoration(
-                      labelText: _isArabic ? 'كلمة المرور' : 'Password',
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: Text(
-                  MaterialLocalizations.of(context).cancelButtonLabel,
-                ),
-              ),
-              FilledButton(
-                onPressed: canDelete
-                    ? () => Navigator.of(
-                        dialogContext,
-                      ).pop(passwordController.text)
-                    : null,
-                style: FilledButton.styleFrom(
-                  backgroundColor: colorScheme.error,
-                ),
-                child: Text(_isArabic ? 'حذف الحساب' : 'Delete account'),
-              ),
-            ],
-          );
-        },
-      ),
+      builder: (_) => _AccountCloseConfirmationDialog(isArabic: _isArabic),
     );
-    confirmationController.dispose();
-    passwordController.dispose();
-    return result;
   }
 
   Future<void> _showAccountClosedDialog() {

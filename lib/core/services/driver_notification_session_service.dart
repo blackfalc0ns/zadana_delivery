@@ -86,6 +86,14 @@ class DriverNotificationSessionService {
 
   Future<void> handleLogout() async {
     await _deviceService.unregisterCurrentDevice();
+    await handleLocalLogout();
+  }
+
+  /// Clears local notification and realtime state without contacting the API.
+  ///
+  /// Account closure revokes the server session immediately, so unregistering
+  /// the device afterwards would only produce authentication errors.
+  Future<void> handleLocalLogout() async {
     await _bootstrapService.logoutPush();
     await _tokenService.deleteCurrentUserId();
     _routerService.lockNavigation();

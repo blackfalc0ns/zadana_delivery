@@ -5,6 +5,7 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_pr
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_summary_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transactions_page_entity.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transfer_proof_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawals_page_entity.dart';
 
@@ -43,6 +44,10 @@ abstract class WalletRepository {
   });
 
   Future<ApiResult<void>> cancelWithdrawal(String withdrawalId);
+  Future<ApiResult<DriverWalletTransferProofEntity>>
+  downloadWithdrawalTransferProof(String withdrawalId);
   Future<ApiResult<DriverPayoutPreferenceEntity>> getPayoutPreference();
-  Future<ApiResult<DriverPayoutPreferenceEntity>> updatePayoutPreference(String payoutDay);
+  Future<ApiResult<DriverPayoutPreferenceEntity>> updatePayoutPreference(
+    String payoutDay,
+  );
 }

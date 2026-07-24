@@ -22,14 +22,16 @@ class LogoutRepositoryImpl implements LogoutRepository {
   final DriverProfileDraftService _draftService;
 
   @override
-  Future<ApiResult<void>> logout() {
+  Future<ApiResult<void>> logout({bool afterAccountClosure = false}) {
     // Local credentials must be cleared even when the server is unavailable.
     // This is also required after a successful account closure, which revokes
     // the server session before the app can issue its usual logout request.
     return safeLocalCall(() async {
       final refreshToken = await _tokenService.getRefreshToken();
 
-      if (refreshToken != null && refreshToken.trim().isNotEmpty) {
+      if (!afterAccountClosure &&
+          refreshToken != null &&
+          refreshToken.trim().isNotEmpty) {
         try {
           await _remoteDataSource.logout(refreshToken.trim());
         } catch (_) {
@@ -37,7 +39,12 @@ class LogoutRepositoryImpl implements LogoutRepository {
         }
       }
 
-      await getIt<DriverNotificationSessionService>().handleLogout();
+      final notificationSession = getIt<DriverNotificationSessionService>();
+      if (afterAccountClosure) {
+        await notificationSession.handleLocalLogout();
+      } else {
+        await notificationSession.handleLogout();
+      }
       await _tokenService.deleteToken();
       await _tokenService.deleteRefreshToken();
       await _identityService.clearIdentity();

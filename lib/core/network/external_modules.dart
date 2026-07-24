@@ -73,10 +73,7 @@ abstract class ExternalModules {
 
   @lazySingleton
   PrettyDioLogger providePrettyDioLogger() {
-    return PrettyDioLogger(
-      requestBody: true,
-    
-    );
+    return PrettyDioLogger();
   }
 
   @preResolve

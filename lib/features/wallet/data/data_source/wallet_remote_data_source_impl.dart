@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/errors/api_exception_mapper.dart';
@@ -8,6 +10,7 @@ import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_summar
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_transactions_page_model_dto.dart';
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawal_request_model_dto.dart';
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawals_page_model_dto.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transfer_proof_entity.dart';
 
 @LazySingleton(as: WalletRemoteDataSource)
 class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
@@ -155,17 +158,55 @@ class WalletRemoteDataSourceImpl implements WalletRemoteDataSource {
   }
 
   @override
+  Future<DriverWalletTransferProofEntity> downloadWithdrawalTransferProof(
+    String withdrawalId,
+  ) async {
+    try {
+      final response = await _apiServices
+          .downloadDriverWalletWithdrawalTransferProof(withdrawalId);
+      final disposition = response.response.headers.value(
+        'content-disposition',
+      );
+      return DriverWalletTransferProofEntity(
+        bytes: Uint8List.fromList(response.data),
+        fileName:
+            _fileNameFromContentDisposition(disposition) ??
+            'transfer-proof-$withdrawalId',
+      );
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
+  }
+
+  String? _fileNameFromContentDisposition(String? value) {
+    final match = RegExp(
+      r'''filename\*?=(?:UTF-8'')?["']?([^"';]+)''',
+    ).firstMatch(value ?? '');
+    return match == null ? null : Uri.decodeComponent(match.group(1)!);
+  }
+
+  @override
   Future<Map<String, dynamic>> getPayoutPreference() async {
     try {
-      return _normalizeMap(await _apiServices.getDriverWalletPayoutPreference());
-    } on DioException catch (exception) { throw ApiExceptionMapper.fromDioException(exception); }
+      return _normalizeMap(
+        await _apiServices.getDriverWalletPayoutPreference(),
+      );
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
   }
 
   @override
   Future<Map<String, dynamic>> updatePayoutPreference(String payoutDay) async {
     try {
-      return _normalizeMap(await _apiServices.updateDriverWalletPayoutPreference({'payoutDay': payoutDay}));
-    } on DioException catch (exception) { throw ApiExceptionMapper.fromDioException(exception); }
+      return _normalizeMap(
+        await _apiServices.updateDriverWalletPayoutPreference({
+          'payoutDay': payoutDay,
+        }),
+      );
+    } on DioException catch (exception) {
+      throw ApiExceptionMapper.fromDioException(exception);
+    }
   }
 
   Map<String, dynamic> _normalizeMap(dynamic value) {

@@ -8,6 +8,7 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_payout_pr
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_create_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_summary_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transactions_page_entity.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transfer_proof_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawals_page_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/repo/wallet_repository.dart';
@@ -123,15 +124,31 @@ class WalletRepositoryImpl implements WalletRepository {
   }
 
   @override
-  Future<ApiResult<DriverPayoutPreferenceEntity>> getPayoutPreference() => safeApiCall(() async {
-    final json = await _remoteDataSource.getPayoutPreference(); return _payoutPreference(json);
-  });
+  Future<ApiResult<DriverWalletTransferProofEntity>>
+  downloadWithdrawalTransferProof(String withdrawalId) {
+    return safeApiCall(
+      () => _remoteDataSource.downloadWithdrawalTransferProof(withdrawalId),
+    );
+  }
+
   @override
-  Future<ApiResult<DriverPayoutPreferenceEntity>> updatePayoutPreference(String payoutDay) => safeApiCall(() async {
-    final json = await _remoteDataSource.updatePayoutPreference(payoutDay); return _payoutPreference(json);
+  Future<ApiResult<DriverPayoutPreferenceEntity>> getPayoutPreference() =>
+      safeApiCall(() async {
+        final json = await _remoteDataSource.getPayoutPreference();
+        return _payoutPreference(json);
+      });
+  @override
+  Future<ApiResult<DriverPayoutPreferenceEntity>> updatePayoutPreference(
+    String payoutDay,
+  ) => safeApiCall(() async {
+    final json = await _remoteDataSource.updatePayoutPreference(payoutDay);
+    return _payoutPreference(json);
   });
-  DriverPayoutPreferenceEntity _payoutPreference(Map<String, dynamic> json) => DriverPayoutPreferenceEntity(
-    payoutDay: json['payoutDay']?.toString() ?? '',
-    availablePayoutDays: (json['availablePayoutDays'] as List? ?? const []).map((e) => e.toString()).toList(growable: false),
-  );
+  DriverPayoutPreferenceEntity _payoutPreference(Map<String, dynamic> json) =>
+      DriverPayoutPreferenceEntity(
+        payoutDay: json['payoutDay']?.toString() ?? '',
+        availablePayoutDays: (json['availablePayoutDays'] as List? ?? const [])
+            .map((e) => e.toString())
+            .toList(growable: false),
+      );
 }

@@ -156,6 +156,12 @@ abstract class ApiServices {
     @Path('withdrawalId') String withdrawalId,
   );
 
+  @GET(EndPoints.driverWalletWithdrawalTransferProof)
+  @DioResponseType(ResponseType.bytes)
+  Future<HttpResponse<List<int>>> downloadDriverWalletWithdrawalTransferProof(
+    @Path('withdrawalId') String withdrawalId,
+  );
+
   @GET(EndPoints.driverSupportCases)
   Future<dynamic> getDriverSupportCases({
     @Query('page') int page = 1,

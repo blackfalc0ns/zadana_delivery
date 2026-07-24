@@ -198,6 +198,16 @@ class ProfileScreenContent extends StatelessWidget {
             type: ProfileActionType.support,
           ),
           ProfileActionItemData(
+            icon: Icons.help_outline_rounded,
+            colorToken: ProfileColorToken.tertiary,
+            type: ProfileActionType.supportHelp,
+          ),
+          ProfileActionItemData(
+            icon: Icons.description_outlined,
+            colorToken: ProfileColorToken.primary,
+            type: ProfileActionType.termsAndConditions,
+          ),
+          ProfileActionItemData(
             icon: Icons.privacy_tip_outlined,
             colorToken: ProfileColorToken.tertiary,
             type: ProfileActionType.privacy,

@@ -102,6 +102,10 @@ extension DriverWalletWithdrawalRequestMapper
       amount: amount,
       status: status,
       transferReference: isPaid ? transferReference : null,
+      hasTransferProof: isPaid && hasTransferProof,
+      transferProofFileName: isPaid && hasTransferProof
+          ? transferProofFileName
+          : null,
       failureReason: failureReason,
       createdAt: DateTime.tryParse(createdAtUtc)?.toLocal() ?? DateTime(0),
       processedAt: processedAtUtc == null

@@ -2677,6 +2677,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wallet_transfer_reference => 'Transfer ref';
 
   @override
+  String get wallet_download_transfer_proof => 'Download transfer proof';
+
+  @override
+  String get wallet_transfer_proof_saved => 'Transfer proof downloaded.';
+
+  @override
+  String get wallet_transfer_proof_download_failed =>
+      'Could not download the transfer proof.';
+
+  @override
   String get wallet_bonus_weekend => 'Weekend challenge';
 
   @override

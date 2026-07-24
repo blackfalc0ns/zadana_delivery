@@ -70,6 +70,7 @@ flutter:
     - assets/images/
     - assets/animation/
     - assets/sounds/
+    - assets/documents/
   fonts:
     - family: Cairo
       fonts:

@@ -3,6 +3,7 @@ import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_summar
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_transactions_page_model_dto.dart';
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawal_request_model_dto.dart';
 import 'package:zadana_delivery/features/wallet/data/models/driver_wallet_withdrawals_page_model_dto.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transfer_proof_entity.dart';
 
 abstract class WalletRemoteDataSource {
   Future<DriverWalletSummaryModelDto> getWalletSummary();
@@ -37,6 +38,10 @@ abstract class WalletRemoteDataSource {
   });
 
   Future<void> cancelWithdrawal(String withdrawalId);
+
+  Future<DriverWalletTransferProofEntity> downloadWithdrawalTransferProof(
+    String withdrawalId,
+  );
 
   Future<Map<String, dynamic>> getPayoutPreference();
   Future<Map<String, dynamic>> updatePayoutPreference(String payoutDay);

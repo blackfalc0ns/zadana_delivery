@@ -5012,6 +5012,24 @@ abstract class AppLocalizations {
   /// **'Transfer ref'**
   String get wallet_transfer_reference;
 
+  /// No description provided for @wallet_download_transfer_proof.
+  ///
+  /// In en, this message translates to:
+  /// **'Download transfer proof'**
+  String get wallet_download_transfer_proof;
+
+  /// No description provided for @wallet_transfer_proof_saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer proof downloaded.'**
+  String get wallet_transfer_proof_saved;
+
+  /// No description provided for @wallet_transfer_proof_download_failed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not download the transfer proof.'**
+  String get wallet_transfer_proof_download_failed;
+
   /// No description provided for @wallet_bonus_weekend.
   ///
   /// In en, this message translates to:

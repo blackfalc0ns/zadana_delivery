@@ -3,6 +3,8 @@ package com.example.zadana_delivery
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import androidx.core.content.FileProvider
+import java.io.File
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -37,6 +39,21 @@ class MainActivity : FlutterActivity() {
                 "consumePendingPayload" -> {
                     result.success(pendingPayload)
                     pendingPayload = null
+                }
+
+                else -> result.notImplemented()
+            }
+        }
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            TRANSFER_PROOF_CHANNEL_NAME,
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "openTransferProof" -> {
+                    val path = call.argument<String>("path")
+                    val mimeType = call.argument<String>("mimeType")
+                    result.success(path?.let { openTransferProof(it, mimeType) } ?: false)
                 }
 
                 else -> result.notImplemented()
@@ -155,6 +172,27 @@ class MainActivity : FlutterActivity() {
         startActivity(intent)
     }
 
+    private fun openTransferProof(path: String, mimeType: String?): Boolean {
+        val file = File(path)
+        if (!file.isFile) return false
+
+        val uri = FileProvider.getUriForFile(
+            this,
+            "$packageName.fileprovider",
+            file,
+        )
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(uri, mimeType ?: "application/octet-stream")
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+        return try {
+            startActivity(Intent.createChooser(intent, null))
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     private fun cachePendingNotificationIntent(intent: Intent?) {
         val extras = intent?.extras ?: return
         if (extras.isEmpty) {
@@ -201,6 +239,8 @@ class MainActivity : FlutterActivity() {
             "zadana_delivery/native_notifications"
         private const val TRIP_OVERLAY_CHANNEL_NAME =
             "zadana_delivery/trip_overlay"
+        private const val TRANSFER_PROOF_CHANNEL_NAME =
+            "zadana_delivery/transfer_proof"
 
         @Volatile
         private var pendingPayload: HashMap<String, Any?>? = null

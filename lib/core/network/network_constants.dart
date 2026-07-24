@@ -90,6 +90,8 @@ abstract class EndPoints {
       '/drivers/wallet/payout-preference';
   static const String driverWalletWithdrawalCancel =
       '/drivers/wallet/withdrawals/{withdrawalId}/cancel';
+  static const String driverWalletWithdrawalTransferProof =
+      '/drivers/wallet/withdrawals/{withdrawalId}/transfer-proof';
   static const String driverSupportCases = '/drivers/support/cases';
   static const String driverSupportCaseDetails =
       '/drivers/support/cases/{caseId}';

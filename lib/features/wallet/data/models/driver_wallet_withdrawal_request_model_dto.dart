@@ -6,6 +6,8 @@ class DriverWalletWithdrawalRequestModelDto {
     required this.amount,
     required this.status,
     required this.transferReference,
+    required this.hasTransferProof,
+    required this.transferProofFileName,
     required this.failureReason,
     required this.createdAtUtc,
     required this.processedAtUtc,
@@ -20,6 +22,8 @@ class DriverWalletWithdrawalRequestModelDto {
       amount: _toDouble(json['amount']),
       status: json['status'] as String? ?? '',
       transferReference: json['transferReference'] as String?,
+      hasTransferProof: json['hasTransferProof'] == true,
+      transferProofFileName: json['transferProofFileName'] as String?,
       failureReason: json['failureReason'] as String?,
       createdAtUtc: json['createdAtUtc'] as String? ?? '',
       processedAtUtc: json['processedAtUtc'] as String?,
@@ -33,6 +37,8 @@ class DriverWalletWithdrawalRequestModelDto {
   final double amount;
   final String status;
   final String? transferReference;
+  final bool hasTransferProof;
+  final String? transferProofFileName;
   final String? failureReason;
   final String createdAtUtc;
   final String? processedAtUtc;

@@ -11,6 +11,7 @@ import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_cr
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_summary_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transaction_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transactions_page_entity.dart';
+import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_transfer_proof_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawals_page_entity.dart';
 import 'package:zadana_delivery/features/wallet/domain/usecase/create_driver_wallet_payment_method_usecase.dart';
@@ -409,6 +410,10 @@ class WalletViewModel extends Cubit<WalletState> {
         return false;
     }
   }
+
+  Future<ApiResult<DriverWalletTransferProofEntity>> downloadTransferProof(
+    String withdrawalId,
+  ) => _walletRepository.downloadWithdrawalTransferProof(withdrawalId);
 
   Future<bool> _createWithdrawal(
     DriverWalletCreateWithdrawalRequestEntity request,

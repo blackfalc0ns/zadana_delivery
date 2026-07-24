@@ -2630,6 +2630,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wallet_transfer_reference => 'مرجع التحويل';
 
   @override
+  String get wallet_download_transfer_proof => 'تحميل إثبات التحويل';
+
+  @override
+  String get wallet_transfer_proof_saved => 'تم تحميل إثبات التحويل.';
+
+  @override
+  String get wallet_transfer_proof_download_failed =>
+      'تعذر تحميل إثبات التحويل.';
+
+  @override
   String get wallet_bonus_weekend => 'تحدي نهاية الأسبوع';
 
   @override

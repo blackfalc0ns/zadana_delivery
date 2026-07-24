@@ -24,14 +24,15 @@ import 'package:zadana_delivery/features/notifications/presentation/screens/noti
 import 'package:zadana_delivery/features/order_details/presentation/screens/assignment_detail_entry_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_delivery_success_screen.dart';
 import 'package:zadana_delivery/features/order_details/presentation/screens/order_details_screen.dart';
+import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/personal_info_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/security_documents_screen.dart';
 import 'package:zadana_delivery/features/profile/presentation/screens/vehicle_info_screen.dart';
-import 'package:zadana_delivery/features/profile/domain/entities/driver_unified_profile_entity.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/privacy_screen.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/security_screen.dart';
 import 'package:zadana_delivery/features/settings/presentation/screens/support_help_screen.dart';
+import 'package:zadana_delivery/features/settings/presentation/screens/terms_and_conditions_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> getRoute(RouteSettings settings) {
@@ -154,6 +155,8 @@ class RouteGenerator {
         );
       case AppRoutes.privacy:
         return _pageRoute(settings, const PrivacyScreen());
+      case AppRoutes.termsAndConditions:
+        return _pageRoute(settings, const TermsAndConditionsScreen());
       case AppRoutes.security:
         return _pageRoute(settings, const SecurityScreen());
       case AppRoutes.profileEdit:

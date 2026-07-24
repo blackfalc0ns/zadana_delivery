@@ -8,7 +8,7 @@ class LogoutUseCase {
 
   final LogoutRepository _repository;
 
-  Future<ApiResult<void>> call() {
-    return _repository.logout();
+  Future<ApiResult<void>> call({bool afterAccountClosure = false}) {
+    return _repository.logout(afterAccountClosure: afterAccountClosure);
   }
 }

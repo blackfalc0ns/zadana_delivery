@@ -6,6 +6,8 @@ class DriverWalletWithdrawalRequestEntity {
     required this.amount,
     required this.status,
     required this.transferReference,
+    required this.hasTransferProof,
+    required this.transferProofFileName,
     required this.failureReason,
     required this.createdAt,
     required this.processedAt,
@@ -16,6 +18,8 @@ class DriverWalletWithdrawalRequestEntity {
   final double amount;
   final String status;
   final String? transferReference;
+  final bool hasTransferProof;
+  final String? transferProofFileName;
   final String? failureReason;
   final DateTime createdAt;
   final DateTime? processedAt;

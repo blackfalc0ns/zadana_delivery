@@ -59,6 +59,9 @@ class ProfileCubit extends Cubit<ProfileState> {
   final DeleteDriverProfilePhotoUseCase _deleteProfilePhotoUseCase;
   final GetDriverRegionsUseCase _getDriverRegionsUseCase;
   final ImagePicker _picker;
+  Failure? _closeAccountFailure;
+
+  Failure? get closeAccountFailure => _closeAccountFailure;
 
   Future<void> loadProfile() async {
     emit(state.copyWith(isLoading: true, clearFailure: true));
@@ -190,11 +193,13 @@ class ProfileCubit extends Cubit<ProfileState> {
   }
 
   Future<AccountCloseResult> closeAccount({required String password}) async {
+    _closeAccountFailure = null;
     emit(state.copyWith(isClosingAccount: true, clearFailure: true));
     final result = await _closeDriverAccountUseCase.call(password: password);
     if (isClosed) return AccountCloseResult.failed;
 
     if (result case ApiErrorResult()) {
+      _closeAccountFailure = result.failure;
       emit(state.copyWith(isClosingAccount: false));
       return switch (result.failure.normalizedCode) {
         'account_close_active_withdrawal' =>
@@ -207,7 +212,7 @@ class ProfileCubit extends Cubit<ProfileState> {
 
     // Account closure revokes server access; logout is used solely to clear
     // all local credentials, notifications, and cached driver data.
-    await _logoutUseCase.call();
+    await _logoutUseCase.call(afterAccountClosure: true);
     if (!isClosed) {
       emit(state.copyWith(isClosingAccount: false, clearFailure: true));
     }

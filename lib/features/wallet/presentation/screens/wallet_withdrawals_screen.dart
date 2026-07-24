@@ -1,12 +1,20 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zadana_delivery/config/theme/colors.dart';
 import 'package:zadana_delivery/core/errors/error_widgets/empty_state_widget.dart';
 import 'package:zadana_delivery/core/extensions/extensions.dart';
+import 'package:zadana_delivery/core/network/api_results.dart';
 import 'package:zadana_delivery/core/widgets/app_button.dart';
 import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 import 'package:zadana_delivery/core/widgets/custom_progress_indicator.dart';
+import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
+import 'package:zadana_delivery/core/widgets/loading/loading_overlay.dart';
 import 'package:zadana_delivery/features/wallet/domain/entities/driver_wallet_withdrawal_request_entity.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_state.dart';
 import 'package:zadana_delivery/features/wallet/presentation/manager/wallet_view_model.dart';
@@ -327,6 +335,14 @@ class _WithdrawalRequestCard extends StatelessWidget {
                 ),
             ],
           ),
+          if (item.status.trim().toLowerCase() == 'paid' &&
+              item.hasTransferProof) ...[
+            const SizedBox(height: 12),
+            AppButton.outlined(
+              text: locale.wallet_download_transfer_proof,
+              onPressed: () => _downloadTransferProof(context),
+            ),
+          ],
           if ((item.failureReason ?? '').trim().isNotEmpty) ...[
             const SizedBox(height: 12),
             Container(
@@ -413,6 +429,64 @@ class _WithdrawalRequestCard extends StatelessWidget {
       return context.localization.wallet_withdrawal_cancelled_by_driver;
     }
     return reason;
+  }
+
+  Future<void> _downloadTransferProof(BuildContext context) async {
+    LoadingOverlay.show(context);
+    final result = await (() async {
+      try {
+        return await viewModel.downloadTransferProof(item.id);
+      } finally {
+        LoadingOverlay.hide();
+      }
+    })();
+    if (!context.mounted) return;
+
+    switch (result) {
+      case ApiSuccessResult(data: final proof):
+        final directory = await getTemporaryDirectory();
+        final safeName = proof.fileName.replaceAll(
+          RegExp(r'[\\/:*?"<>|]'),
+          '_',
+        );
+        final file = File(
+          '${directory.path}${Platform.pathSeparator}$safeName',
+        );
+        await file.writeAsBytes(proof.bytes, flush: true);
+        if (!context.mounted) return;
+        CustomSnackbar.showSuccess(
+          context: context,
+          message: context.localization.wallet_transfer_proof_saved,
+        );
+        if (Platform.isAndroid) {
+          await const MethodChannel(
+            'zadana_delivery/transfer_proof',
+          ).invokeMethod<bool>('openTransferProof', <String, dynamic>{
+            'path': file.path,
+            'mimeType': _mimeTypeFor(file.path),
+          });
+        } else {
+          await launchUrl(
+            Uri.file(file.path),
+            mode: LaunchMode.externalApplication,
+          );
+        }
+      case ApiErrorResult(failure: final failure):
+        CustomSnackbar.showError(
+          context: context,
+          message: failure.errorMessage,
+        );
+    }
+  }
+
+  String _mimeTypeFor(String filePath) {
+    final extension = filePath.split('.').last.toLowerCase();
+    return switch (extension) {
+      'pdf' => 'application/pdf',
+      'png' => 'image/png',
+      'jpg' || 'jpeg' => 'image/jpeg',
+      _ => 'application/octet-stream',
+    };
   }
 }
 

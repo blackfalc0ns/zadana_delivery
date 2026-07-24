@@ -14,6 +14,8 @@ enum ProfileActionType {
   overlayPermission,
   security,
   support,
+  supportHelp,
+  termsAndConditions,
   privacy,
   deleteAccount,
   logout;
@@ -67,6 +69,18 @@ enum ProfileActionType {
         locale.localeName.startsWith('ar')
             ? 'راجع كل الشكاوى والنزاعات وتابع آخر التحديثات'
             : 'Review all submitted cases and track the latest updates',
+      ),
+      ProfileActionType.supportHelp => (
+        locale.help_support,
+        locale.localeName.startsWith('ar')
+            ? 'تواصل معنا أو اطّلع على الأسئلة الشائعة'
+            : 'Contact us or browse common questions',
+      ),
+      ProfileActionType.termsAndConditions => (
+        locale.terms_conditions,
+        locale.localeName.startsWith('ar')
+            ? 'اطلع على اتفاقية استخدام تطبيق المندوب'
+            : 'Review the Driver App usage agreement',
       ),
       ProfileActionType.privacy => (
         locale.privacy_policy,

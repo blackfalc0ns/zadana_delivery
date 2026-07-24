@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:zadana_delivery/config/routing/app_routes.dart';
-import 'package:zadana_delivery/config/routing/routing_extensions.dart';
 import 'package:zadana_delivery/config/theme/font_manger.dart';
 import 'package:zadana_delivery/config/theme/spacing.dart';
 import 'package:zadana_delivery/config/theme/styles_manger.dart';
@@ -12,9 +10,9 @@ import 'package:zadana_delivery/core/widgets/custom_app_bar.dart';
 class SupportHelpScreen extends StatelessWidget {
   const SupportHelpScreen({super.key});
 
-  static const _email = 'support@zadana.com';
-  static const _phone = '+201000000000';
-  static const _whatsApp = '+201000000000';
+  static const _email = 'support@zadna0.com';
+  static const _phone = '+966569928163';
+  static const _whatsApp = '+966569928163';
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +20,7 @@ class SupportHelpScreen extends StatelessWidget {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final color = context.colorScheme;
 
-    final faqItems = isArabic
+    var faqItems = isArabic
         ? const [
             (
               'كيف أتابع الطلبات الخاصة بي؟',
@@ -52,6 +50,36 @@ class SupportHelpScreen extends StatelessWidget {
             ),
           ];
 
+    faqItems = isArabic
+        ? const [
+            (
+              'كيف أتعامل مع طلب توصيل جديد؟',
+              'افتح تفاصيل الطلب، راجع موقع الاستلام والتسليم، ثم اقبل الطلب عندما تكون جاهزًا. استخدم حالة الطلب لتحديث التقدم أولًا بأول.',
+            ),
+            (
+              'ماذا أفعل إذا تعذر التواصل مع العميل أو المتجر؟',
+              'حاول الاتصال بالعميل أو المتجر من تفاصيل الطلب، وإذا استمرت المشكلة افتح قضية دعم من الطلب واكتب ما حدث بوضوح.',
+            ),
+            (
+              'كيف أتابع أرباحي أو تسوية COD؟',
+              'من صفحة المحفظة تقدر تراجع الرصيد والعمليات وطلبات السحب. إذا عندك رصيد COD مستحق، تواصل مع الدعم لإتمام التسوية.',
+            ),
+          ]
+        : const [
+            (
+              'How do I handle a new delivery request?',
+              'Open the order details, review the pickup and delivery locations, then accept the request when you are ready. Keep the order status updated as you progress.',
+            ),
+            (
+              'What if I cannot reach the customer or the store?',
+              'Try calling the customer or store from the order details. If the issue continues, open a support case from the order and clearly describe what happened.',
+            ),
+            (
+              'How do I track my earnings or COD settlement?',
+              'Use the Wallet page to review your balance, transactions, and withdrawals. Contact support if you need to settle an outstanding COD balance.',
+            ),
+          ];
+
     return Scaffold(
       backgroundColor: color.surface,
       appBar: CustomAppBar.modern(
@@ -70,16 +98,6 @@ class SupportHelpScreen extends StatelessWidget {
           const SizedBox(height: Spacing.xl),
           _SectionTitle(title: locale.contact_us),
           const SizedBox(height: Spacing.md),
-          _ContactTile(
-            icon: FontAwesomeIcons.listCheck,
-            title: isArabic ? 'قضايا الدعم' : 'My cases',
-            subtitle: isArabic
-                ? 'راجع النزاعات والمشكلات السابقة'
-                : 'Review your past disputes and issues',
-            iconColor: const Color(0xFF7C4DFF),
-            onTap: () => context.pushNamed(AppRoutes.driverSupportCases),
-          ),
-          const SizedBox(height: Spacing.sm),
           _ContactTile(
             icon: FontAwesomeIcons.whatsapp,
             title: 'WhatsApp',
