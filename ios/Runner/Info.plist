@@ -45,12 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>نستخدم الكاميرا ليتمكن السائق من تصوير مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نستخدم مكتبة الصور ليتمكن السائق من رفع مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>قد نحتاج إلى حفظ صور الإثبات التي تم إنشاؤها أو معالجتها في مكتبة الصور عند الحاجة.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We use your location to guide deliveries and update customers during active orders.</string>
+	<string>نستخدم موقعك لتوجيه عمليات التوصيل وتحديث حالة العميل أثناء الطلبات النشطة.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We use your location in the background while you are delivering an active order.</string>
+	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>We use your location in the background while you are delivering an active order.</string>
+	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
