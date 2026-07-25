@@ -51,7 +51,7 @@ class DriverTrackingRemoteDataSourceImpl
         autoStart: false,
         isForegroundMode: true,
         notificationChannelId: _trackingChannelId,
-        initialNotificationTitle: 'Zadana Delivery',
+        initialNotificationTitle: 'Zadna Delivery',
         initialNotificationContent: 'Sharing your location during delivery',
         foregroundServiceNotificationId: _notificationId,
       ),
@@ -398,7 +398,7 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
 
     if (service is AndroidServiceInstance) {
       await (service).setForegroundNotificationInfo(
-        title: 'Zadana Delivery',
+        title: 'Zadna Delivery',
         content: 'Sharing your location during delivery',
       );
     }

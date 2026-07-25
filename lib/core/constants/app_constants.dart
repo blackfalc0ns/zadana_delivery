@@ -3,7 +3,7 @@ import 'package:zadana_delivery/core/constants/assets.dart';
 class AppConstants {
   AppConstants._();
 
-  static const String appName = 'Zadana';
+  static const String appName = 'Zadna Delivery';
   static const String appNameAr = 'زادنا';
   static const String packageName = 'com.zadana.customer';
   static const String logoLight = Assets.logoDark;
