@@ -599,7 +599,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get about_app_title => 'حول التطبيق';
 
   @override
-  String get app_name => 'تطبيق زادانا للتسوق الذكي';
+  String get app_name => 'زادنا دليفري';
 
   @override
   String get version_label => 'الإصدار';

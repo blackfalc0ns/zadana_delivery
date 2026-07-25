@@ -620,7 +620,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get about_app_title => 'About App';
 
   @override
-  String get app_name => 'Zadana Smart Shopping App';
+  String get app_name => 'Zadna Delivery';
 
   @override
   String get version_label => 'Version';

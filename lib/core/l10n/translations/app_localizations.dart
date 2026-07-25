@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @app_name.
   ///
   /// In en, this message translates to:
-  /// **'Zadana Smart Shopping App'**
+  /// **'Zadna Delivery'**
   String get app_name;
 
   /// No description provided for @version_label.
