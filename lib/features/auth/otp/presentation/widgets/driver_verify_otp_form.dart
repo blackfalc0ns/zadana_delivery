@@ -124,6 +124,30 @@ class _DriverVerifyOtpFormState extends State<DriverVerifyOtpForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Text(
+            locale.otp_code_sent_to,
+            textAlign: TextAlign.center,
+            style: getRegularStyle(
+              fontFamily: FontConstant.cairo,
+              fontSize: FontSize.size13,
+              color: color.onSurface.withValues(alpha: 0.65),
+            ),
+          ),
+          const SizedBox(height: Spacing.xs),
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text(
+              widget.identifier,
+              textAlign: TextAlign.center,
+              style: getSemiBoldStyle(
+                fontFamily: FontConstant.cairo,
+                fontSize: FontSize.size14,
+                color: color.primary,
+              ),
+            ),
+          ),
+          const SizedBox(height: Spacing.lg),
+
           // OTP label
           Text(
             locale.label_verification_code,
@@ -219,13 +243,13 @@ class _DriverVerifyOtpFormState extends State<DriverVerifyOtpForm> {
             height: 52,
             borderRadius: 18,
           ),
-        
 
           // Resend button with countdown
           Align(
             alignment: AlignmentDirectional.centerStart,
             child: TextButton(
-              onPressed: (_resendCountdown > 0 ||
+              onPressed:
+                  (_resendCountdown > 0 ||
                       widget.isSubmitting ||
                       widget.isResending)
                   ? null
@@ -234,8 +258,8 @@ class _DriverVerifyOtpFormState extends State<DriverVerifyOtpForm> {
                 widget.isResending
                     ? locale.auth_verify_otp_resending
                     : _resendCountdown > 0
-                        ? '${locale.auth_verify_otp_resend_action} (${_resendCountdown}s)'
-                        : locale.auth_verify_otp_resend_action,
+                    ? '${locale.auth_verify_otp_resend_action} (${_resendCountdown}s)'
+                    : locale.auth_verify_otp_resend_action,
                 style: getSemiBoldStyle(
                   fontFamily: FontConstant.cairo,
                   fontSize: FontSize.size13,

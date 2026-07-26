@@ -41,20 +41,20 @@ class RegisterRepositoryImpl implements RegisterRepository {
     return safeApiCall(() async {
       final deviceId = await _deviceIdService.getOrCreateDeviceId();
 
-      final nationalIdFrontImageUrl =
-          await _uploadService.uploadRegistrationFile(
-        request.nationalIdFrontImagePath,
-        directory: DriverUploadDirectory.nationalId,
-        deviceId: deviceId,
-        tokenService: _registrationUploadTokenService,
-      );
-      final nationalIdBackImageUrl =
-          await _uploadService.uploadRegistrationFile(
-        request.nationalIdBackImagePath,
-        directory: DriverUploadDirectory.nationalId,
-        deviceId: deviceId,
-        tokenService: _registrationUploadTokenService,
-      );
+      final nationalIdFrontImageUrl = await _uploadService
+          .uploadRegistrationFile(
+            request.nationalIdFrontImagePath,
+            directory: DriverUploadDirectory.nationalId,
+            deviceId: deviceId,
+            tokenService: _registrationUploadTokenService,
+          );
+      final nationalIdBackImageUrl = await _uploadService
+          .uploadRegistrationFile(
+            request.nationalIdBackImagePath,
+            directory: DriverUploadDirectory.nationalId,
+            deviceId: deviceId,
+            tokenService: _registrationUploadTokenService,
+          );
       final licenseImageUrl = await _uploadService.uploadRegistrationFile(
         request.licenseImagePath,
         directory: DriverUploadDirectory.license,
@@ -94,7 +94,11 @@ class RegisterRepositoryImpl implements RegisterRepository {
           refreshToken.isEmpty ||
           _messageRequiresOtpVerification(entity.message);
 
-      if (user != null) {
+      // Before OTP verification, `user.id` may point to the temporary
+      // PendingRegistrations record. Never persist that value as an
+      // authenticated driver identity. The real user and its tokens are
+      // persisted by the OTP verification repository after verification.
+      if (user != null && !requiresOtpVerification) {
         await _identityService.saveIdentity(
           DriverIdentity(
             id: user.id,
@@ -106,20 +110,14 @@ class RegisterRepositoryImpl implements RegisterRepository {
             lastIdentifier: user.email.isNotEmpty ? user.email : user.phone,
           ),
         );
-        if (!requiresOtpVerification) {
-          if (accessToken.isNotEmpty) {
-            await _tokenService.saveAccessToken(accessToken);
-          }
-          if (refreshToken.isNotEmpty) {
-            await _tokenService.saveRefreshToken(refreshToken);
-          }
-          await _tokenService.saveCurrentUserId(user.id);
-          try {
-            await getIt<DriverNotificationSessionService>()
-                .handleSuccessfulAuthentication(user.id);
-          } catch (_) {
-            // Non-critical: notification/realtime setup can fail without blocking registration.
-          }
+        await _tokenService.saveAccessToken(accessToken);
+        await _tokenService.saveRefreshToken(refreshToken);
+        await _tokenService.saveCurrentUserId(user.id);
+        try {
+          await getIt<DriverNotificationSessionService>()
+              .handleSuccessfulAuthentication(user.id);
+        } catch (_) {
+          // Non-critical: notification/realtime setup can fail without blocking registration.
         }
       }
 

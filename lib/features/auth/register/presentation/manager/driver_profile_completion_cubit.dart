@@ -477,16 +477,22 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
     required RegisterResponseEntity result,
   }) {
     if (route == AppRoutes.driverVerifyOtp) {
-      final fallbackIdentifier =
-          _registrationDraft?.email.trim().isNotEmpty == true
-          ? _registrationDraft!.email.trim()
-          : _registrationDraft?.phone.trim() ?? '';
+      // The response user/id can represent a temporary pending registration.
+      // Use the identifier submitted by the driver to verify that pending
+      // registration, preferring email as required by the registration flow.
+      final submittedEmail = _registrationDraft?.email.trim() ?? '';
+      final submittedPhone = _registrationDraft?.phone.trim() ?? '';
+      final responseEmail = result.user?.email.trim() ?? '';
+      final responsePhone = result.user?.phone.trim() ?? '';
+      final identifier = submittedEmail.isNotEmpty
+          ? submittedEmail
+          : submittedPhone.isNotEmpty
+          ? submittedPhone
+          : responseEmail.isNotEmpty
+          ? responseEmail
+          : responsePhone;
       return <String, dynamic>{
-        'identifier': result.user?.email.trim().isNotEmpty == true
-            ? result.user!.email.trim()
-            : result.user?.phone.trim().isNotEmpty == true
-            ? result.user!.phone.trim()
-            : fallbackIdentifier,
+        'identifier': identifier,
         'message': result.message,
       };
     }
