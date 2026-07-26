@@ -7,6 +7,8 @@ import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 
 import 'app_navigator_service.dart';
 import 'driver_notification_dedup_service.dart';
+import 'driver_notification_device_service.dart';
+import 'driver_local_notification_service.dart';
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
 import 'driver_realtime_service.dart';
@@ -32,12 +34,16 @@ class DriverNotificationOverlayService {
     this._routerService,
     this._dedupService,
     this._driverRealtimeService,
+    this._localNotificationService,
+    this._deviceService,
   );
 
   final AppNavigatorService _navigatorService;
   final DriverNotificationRouterService _routerService;
   final DriverNotificationDedupService _dedupService;
   final DriverRealtimeService _driverRealtimeService;
+  final DriverLocalNotificationService _localNotificationService;
+  final DriverNotificationDeviceService _deviceService;
 
   static const Duration _overlayDuration = Duration(seconds: 4);
   static const Duration _overlayGap = Duration(milliseconds: 250);
@@ -146,6 +152,13 @@ class DriverNotificationOverlayService {
       return;
     }
 
+    // SignalR keeps the UI in sync, but it does not create an iOS/Android
+    // system notification by itself. Mirror actual notification-feed events
+    // to a local notification while the app is active.
+    if (source == 'signalr_notification') {
+      await _showRealtimeSystemNotification(normalizedPayload);
+    }
+
     _pendingBanners.add(
       _QueuedOverlayBanner(
         payload: normalizedPayload,
@@ -155,6 +168,44 @@ class DriverNotificationOverlayService {
       ),
     );
     unawaited(_processPendingBanners());
+  }
+
+  Future<void> _showRealtimeSystemNotification(
+    Map<String, dynamic> payload,
+  ) async {
+    try {
+      if (!await _deviceService.isPushEnabled()) {
+        debugPrint(
+          '[DriverNotificationOverlay] System notification skipped because notifications are disabled.',
+        );
+        return;
+      }
+
+      final content = DriverNotificationPayloadResolver.resolveDisplayContent(
+        payload: payload,
+      );
+      if (!content.hasVisibleContent) {
+        debugPrint(
+          '[DriverNotificationOverlay] System notification skipped because it has no visible content.',
+        );
+        return;
+      }
+
+      await _localNotificationService.showPayloadNotification(
+        payload: payload,
+        title: content.title,
+        body: content.body,
+      );
+      debugPrint(
+        '[DriverNotificationOverlay] SignalR notification displayed via local notification.',
+      );
+    } catch (error) {
+      // The in-app banner remains available if local notification display
+      // fails for any platform-specific reason.
+      debugPrint(
+        '[DriverNotificationOverlay] Failed to display SignalR local notification: $error',
+      );
+    }
   }
 
   Future<void> _processPendingBanners() async {

@@ -503,6 +503,8 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i585.DriverNotificationRouterService>(),
         gh<_i889.DriverNotificationDedupService>(),
         gh<_i794.DriverRealtimeService>(),
+        gh<_i430.DriverLocalNotificationService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
       ),
     );
     gh.lazySingleton<_i361.Dio>(

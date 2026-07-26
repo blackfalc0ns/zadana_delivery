@@ -237,6 +237,30 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
                 body: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    Text(
+                      locale.otp_code_sent_to,
+                      textAlign: TextAlign.center,
+                      style: getRegularStyle(
+                        fontFamily: FontConstant.cairo,
+                        fontSize: FontSize.size13,
+                        color: color.onSurface.withValues(alpha: 0.65),
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.xs),
+                    Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text(
+                        widget.identifier,
+                        textAlign: TextAlign.center,
+                        style: getSemiBoldStyle(
+                          fontFamily: FontConstant.cairo,
+                          fontSize: FontSize.size14,
+                          color: color.primary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: Spacing.lg),
+
                     // OTP label
                     Text(
                       locale.label_verification_code,
@@ -258,12 +282,10 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
                           return Container(
                             width: 60,
                             height: 60,
-                            margin:
-                                const EdgeInsets.symmetric(horizontal: 6),
+                            margin: const EdgeInsets.symmetric(horizontal: 6),
                             child: KeyboardListener(
                               focusNode: FocusNode(),
-                              onKeyEvent: (event) =>
-                                  _onKeyPress(index, event),
+                              onKeyEvent: (event) => _onKeyPress(index, event),
                               child: TextFormField(
                                 controller: _otpDigitControllers[index],
                                 focusNode: _otpFocusNodes[index],
@@ -287,34 +309,31 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
                                   fillColor: color.surface,
                                   contentPadding: EdgeInsets.zero,
                                   border: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide(
-                                      color: color.outline
-                                          .withValues(alpha: 0.3),
+                                      color: color.outline.withValues(
+                                        alpha: 0.3,
+                                      ),
                                     ),
                                   ),
                                   enabledBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide(
-                                      color: color.outline
-                                          .withValues(alpha: 0.3),
+                                      color: color.outline.withValues(
+                                        alpha: 0.3,
+                                      ),
                                     ),
                                   ),
                                   focusedBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
+                                    borderRadius: BorderRadius.circular(14),
                                     borderSide: BorderSide(
                                       color: color.primary,
                                       width: 2,
                                     ),
                                   ),
                                   errorBorder: OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.circular(14),
-                                    borderSide:
-                                        BorderSide(color: color.error),
+                                    borderRadius: BorderRadius.circular(14),
+                                    borderSide: BorderSide(color: color.error),
                                   ),
                                 ),
                               ),
@@ -329,7 +348,8 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
                     Align(
                       alignment: AlignmentDirectional.centerStart,
                       child: TextButton(
-                        onPressed: (_resendCountdown > 0 ||
+                        onPressed:
+                            (_resendCountdown > 0 ||
                                 state.isLoading ||
                                 state.isResending)
                             ? null
@@ -338,16 +358,14 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
                           state.isResending
                               ? locale.auth_verify_otp_resending
                               : _resendCountdown > 0
-                                  ? '${locale.auth_verify_otp_resend_action} (${_resendCountdown}s)'
-                                  : locale.auth_verify_otp_resend_action,
+                              ? '${locale.auth_verify_otp_resend_action} (${_resendCountdown}s)'
+                              : locale.auth_verify_otp_resend_action,
                           style: getSemiBoldStyle(
                             fontFamily: FontConstant.cairo,
                             fontSize: FontSize.size13,
-                            color:
-                                (_resendCountdown > 0 || state.isResending)
-                                    ? color.onSurface
-                                        .withValues(alpha: 0.4)
-                                    : color.primary,
+                            color: (_resendCountdown > 0 || state.isResending)
+                                ? color.onSurface.withValues(alpha: 0.4)
+                                : color.primary,
                           ),
                         ),
                       ),
@@ -383,10 +401,7 @@ class _VerifyResetOtpScreenState extends State<VerifyResetOtpScreen> {
 
 /// Arguments passed from [VerifyResetOtpScreen] to [ResetPasswordScreen].
 class ResetPasswordArgs {
-  const ResetPasswordArgs({
-    required this.identifier,
-    required this.resetToken,
-  });
+  const ResetPasswordArgs({required this.identifier, required this.resetToken});
 
   final String identifier;
   final String resetToken;
