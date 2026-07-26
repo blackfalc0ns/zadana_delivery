@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,6 +26,26 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>نستخدم الكاميرا ليتمكن السائق من تصوير مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نستخدم موقعك لتوجيه عمليات التوصيل وتحديث حالة العميل أثناء الطلبات النشطة.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>قد نحتاج إلى حفظ صور الإثبات التي تم إنشاؤها أو معالجتها في مكتبة الصور عند الحاجة.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>نستخدم مكتبة الصور ليتمكن السائق من رفع مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+		<string>remote-notification</string>
+		<string>fetch</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -40,27 +62,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>نستخدم الكاميرا ليتمكن السائق من تصوير مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>نستخدم مكتبة الصور ليتمكن السائق من رفع مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>قد نحتاج إلى حفظ صور الإثبات التي تم إنشاؤها أو معالجتها في مكتبة الصور عند الحاجة.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>نستخدم موقعك لتوجيه عمليات التوصيل وتحديث حالة العميل أثناء الطلبات النشطة.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>location</string>
-		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

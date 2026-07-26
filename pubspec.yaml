@@ -63,6 +63,8 @@ flutter_launcher_icons:
   ios_content_padding: 16
 
 flutter:
+  config:
+    enable-lldb-debugging: false
   uses-material-design: true
   generate: true
   assets:

@@ -7,6 +7,8 @@ import GoogleMaps
 @objc class AppDelegate: FlutterAppDelegate {
   private let notificationLaunchChannelName =
     "zadana_delivery/notification_launch"
+  private let nativeNotificationsChannelName =
+    "zadana_delivery/native_notifications"
   private var pendingNotificationPayload: [String: Any]?
 
   override func application(
@@ -29,11 +31,11 @@ import GoogleMaps
     )
 
     if let controller = window?.rootViewController as? FlutterViewController {
-      let channel = FlutterMethodChannel(
+      let launchChannel = FlutterMethodChannel(
         name: notificationLaunchChannelName,
         binaryMessenger: controller.binaryMessenger
       )
-      channel.setMethodCallHandler { [weak self] call, result in
+      launchChannel.setMethodCallHandler { [weak self] call, result in
         guard let self else {
           result([String: Any]())
           return
@@ -47,9 +49,57 @@ import GoogleMaps
           result(FlutterMethodNotImplemented)
         }
       }
+
+      let nativeNotificationsChannel = FlutterMethodChannel(
+        name: nativeNotificationsChannelName,
+        binaryMessenger: controller.binaryMessenger
+      )
+      nativeNotificationsChannel.setMethodCallHandler { call, result in
+        switch call.method {
+        case "registerForRemoteNotifications":
+          DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+          }
+          result(true)
+        case "installNativeForegroundFallback":
+          result(false)
+        case "consumeOfferPushTimestamp":
+          result(0)
+        case "consumePendingNotificationAction":
+          result(nil)
+        default:
+          result(FlutterMethodNotImplemented)
+        }
+      }
     }
 
     return didFinish
+  }
+
+  override func application(
+    _ application: UIApplication,
+    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data
+  ) {
+    let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+    NSLog("[ZadanaDelivery] APNs device token registered: %@", token)
+    super.application(
+      application,
+      didRegisterForRemoteNotificationsWithDeviceToken: deviceToken
+    )
+  }
+
+  override func application(
+    _ application: UIApplication,
+    didFailToRegisterForRemoteNotificationsWithError error: Error
+  ) {
+    NSLog(
+      "[ZadanaDelivery] APNs registration failed: %@",
+      String(describing: error)
+    )
+    super.application(
+      application,
+      didFailToRegisterForRemoteNotificationsWithError: error
+    )
   }
 
   override func userNotificationCenter(
