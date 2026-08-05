@@ -3,16 +3,18 @@ workflows:
     name: iOS IPA Build
 
     integrations:
-      app_store_connect: codemagic
+      app_store_connect: "Zadana Codemagic API Key"
 
     environment:
       flutter: stable
       xcode: latest
       groups:
         - app_store_connect
+
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.zadana.delivery
+
       vars:
         BUNDLE_ID: com.zadana.delivery
 
@@ -30,4 +32,4 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        submit_to_testflight: false
