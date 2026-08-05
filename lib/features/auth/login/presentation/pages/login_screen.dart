@@ -153,45 +153,50 @@ class _LoginScreenState extends State<LoginScreen> {
             );
           }
 
-          return Stack(
-            children: [
-              AuthExperienceShell(
-                heroBadge: locale.auth_login_hero_badge,
-                heroTitle: locale.auth_login_hero_title,
-                heroSubtitle: locale.auth_login_hero_subtitle,
-                sectionBadge: locale.auth_login_section_badge,
-                sectionTitle: locale.auth_title,
-                sectionDescription: locale.auth_login_description,
-                sectionIcon: Icons.delivery_dining_rounded,
-                body: LoginForm(
-                  formKey: _formKey,
-                  emailOrPhoneController: _identifierController,
-                  passwordController: _passwordController,
-                  isSubmitting: state.isLoading,
-                  onSubmit: _submit,
-                  onForgotPassword: () => context.pushNamed(
-                    AppRoutes.forgetPassword,
-                    rootNavigator: true,
+          return PopScope(
+            canPop: false,
+            child: Stack(
+              children: [
+                AuthExperienceShell(
+                  heroBadge: locale.auth_login_hero_badge,
+                  heroTitle: locale.auth_login_hero_title,
+                  heroSubtitle: locale.auth_login_hero_subtitle,
+                  sectionBadge: locale.auth_login_section_badge,
+                  sectionTitle: locale.auth_title,
+                  sectionDescription: locale.auth_login_description,
+                  sectionIcon: Icons.delivery_dining_rounded,
+                  body: LoginForm(
+                    formKey: _formKey,
+                    emailOrPhoneController: _identifierController,
+                    passwordController: _passwordController,
+                    isSubmitting: state.isLoading,
+                    onSubmit: _submit,
+                    onForgotPassword: () => context.pushNamed(
+                      AppRoutes.forgetPassword,
+                      rootNavigator: true,
+                    ),
                   ),
-                ),
-                footer: AuthPromptText(
-                  text: locale.footer_no_account,
-                  actionLabel: locale.footer_action_signup,
-                  onTap: () =>
-                      context.pushNamed(AppRoutes.signUp, rootNavigator: true),
-                ),
-              ),
-              if (state.isLoading) ...[
-                Positioned.fill(
-                  child: AbsorbPointer(
-                    child: ColoredBox(
-                      color: Colors.black.withValues(alpha: 0.10),
+                  footer: AuthPromptText(
+                    text: locale.footer_no_account,
+                    actionLabel: locale.footer_action_signup,
+                    onTap: () => context.pushNamed(
+                      AppRoutes.signUp,
+                      rootNavigator: true,
                     ),
                   ),
                 ),
-                const Positioned.fill(child: CustomProgressIndicator()),
+                if (state.isLoading) ...[
+                  Positioned.fill(
+                    child: AbsorbPointer(
+                      child: ColoredBox(
+                        color: Colors.black.withValues(alpha: 0.10),
+                      ),
+                    ),
+                  ),
+                  const Positioned.fill(child: CustomProgressIndicator()),
+                ],
               ],
-            ],
+            ),
           );
         },
       ),
