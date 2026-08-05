@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
-import 'package:path_provider/path_provider.dart';
 
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
@@ -37,7 +36,6 @@ class DriverLocalNotificationService {
 
   bool _isInitialized = false;
   Map<String, dynamic>? _initialLaunchPayload;
-  Future<String?>? _iosAttachmentPathFuture;
   Future<Uint8List?>? _androidLargeIconBytesFuture;
 
   Future<void> initialize() async {
@@ -91,9 +89,10 @@ class DriverLocalNotificationService {
     final category = DriverNotificationPayloadResolver.resolveCategory(
       normalizedPayload,
     );
-    final dataSound = DriverNotificationPayloadResolver.resolveNotificationSound(
-      normalizedPayload,
-    );
+    final dataSound =
+        DriverNotificationPayloadResolver.resolveNotificationSound(
+          normalizedPayload,
+        );
     final resolvedSoundKey = _soundPreferencesService.resolveSound(
       category: category,
       dataSound: dataSound,
@@ -125,14 +124,13 @@ class DriverLocalNotificationService {
               ? null
               : RawResourceAndroidNotificationSound(resolvedSoundKey),
         ),
+        // Keep iOS presentation aligned with the working customer app.
+        // iOS notification sounds must be bundled in the application root;
+        // a missing custom sound/attachment can cause presentation to fail.
         iOS: DarwinNotificationDetails(
-          attachments: await _resolveIosAttachments(),
           presentAlert: true,
           presentBadge: true,
-          presentBanner: true,
-          presentList: true,
           presentSound: !isSilent,
-          sound: isSilent ? null : '$resolvedSoundKey.wav',
         ),
       ),
       payload: jsonEncode(normalizedPayload),
@@ -140,8 +138,10 @@ class DriverLocalNotificationService {
   }
 
   Future<void> _createAndroidChannels() async {
-    final androidPlugin = _plugin.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>();
+    final androidPlugin = _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
     if (androidPlugin == null) {
       return;
     }
@@ -252,52 +252,6 @@ class DriverLocalNotificationService {
     }
 
     return ByteArrayAndroidBitmap(bytes);
-  }
-
-  Future<List<DarwinNotificationAttachment>> _resolveIosAttachments() async {
-    final attachmentPath = await _resolveIosAttachmentPath();
-    if (attachmentPath == null || attachmentPath.isEmpty) {
-      return const <DarwinNotificationAttachment>[];
-    }
-
-    return <DarwinNotificationAttachment>[
-      DarwinNotificationAttachment(attachmentPath),
-    ];
-  }
-
-  Future<String?> _resolveIosAttachmentPath() {
-    final existing = _iosAttachmentPathFuture;
-    if (existing != null) {
-      return existing;
-    }
-
-    final future = _copyNotificationImageToTemp();
-    _iosAttachmentPathFuture = future;
-    return future;
-  }
-
-  Future<String?> _copyNotificationImageToTemp() async {
-    if (kIsWeb || !(Platform.isIOS || Platform.isMacOS)) {
-      return null;
-    }
-
-    try {
-      final bytes = await _resolveNotificationImageBytes();
-      if (bytes == null || bytes.isEmpty) {
-        return null;
-      }
-      final temporaryDirectory = await getTemporaryDirectory();
-      final file = File(
-        '${temporaryDirectory.path}${Platform.pathSeparator}notification_logo.png',
-      );
-      await file.writeAsBytes(bytes, flush: true);
-      return file.path;
-    } catch (error) {
-      debugPrint(
-        '[DriverLocalNotification] Failed to prepare iOS notification attachment: $error',
-      );
-      return null;
-    }
   }
 
   Future<Uint8List?> _resolveNotificationImageBytes() {

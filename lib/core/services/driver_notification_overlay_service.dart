@@ -6,9 +6,9 @@ import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/core/widgets/custom_snack_bar.dart';
 
 import 'app_navigator_service.dart';
+import 'driver_local_notification_service.dart';
 import 'driver_notification_dedup_service.dart';
 import 'driver_notification_device_service.dart';
-import 'driver_local_notification_service.dart';
 import 'driver_notification_payload_resolver.dart';
 import 'driver_notification_router_service.dart';
 import 'driver_realtime_service.dart';
