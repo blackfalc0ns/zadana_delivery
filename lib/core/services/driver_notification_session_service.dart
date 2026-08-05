@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:zadana_delivery/features/driver_home/data/data_source/driver_home_remote_data_source.dart';
+import 'package:zadana_delivery/features/driver_tracking/domain/usecase/stop_driver_tracking_usecase.dart';
 
 import 'driver_notification_bootstrap_service.dart';
 import 'driver_notification_dedup_service.dart';
@@ -21,6 +22,7 @@ class DriverNotificationSessionService {
     this._driverHomeRemoteDataSource,
     this._routerService,
     this._dedupService,
+    this._stopDriverTrackingUseCase,
   );
 
   final TokenService _tokenService;
@@ -31,6 +33,7 @@ class DriverNotificationSessionService {
   final DriverHomeRemoteDataSource _driverHomeRemoteDataSource;
   final DriverNotificationRouterService _routerService;
   final DriverNotificationDedupService _dedupService;
+  final StopDriverTrackingUseCase _stopDriverTrackingUseCase;
 
   Future<void> restoreAuthenticatedSessionIfPossible() async {
     final accessToken = await _tokenService.getToken();
@@ -94,6 +97,11 @@ class DriverNotificationSessionService {
   /// Account closure revokes the server session immediately, so unregistering
   /// the device afterwards would only produce authentication errors.
   Future<void> handleLocalLogout() async {
+    try {
+      await _stopDriverTrackingUseCase.call();
+    } catch (error) {
+      debugPrint('[PUSH DEBUG] stop tracking during logout failed: $error');
+    }
     await _bootstrapService.logoutPush();
     await _tokenService.deleteCurrentUserId();
     _routerService.lockNavigation();

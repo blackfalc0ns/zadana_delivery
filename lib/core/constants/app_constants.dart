@@ -5,7 +5,7 @@ class AppConstants {
 
   static const String appName = 'Zadna Delivery';
   static const String appNameAr = 'زادنا';
-  static const String packageName = 'com.zadana.customer';
+  static const String packageName = 'com.zadana.delivery';
   static const String logoLight = Assets.logoDark;
   static const String logoDark = Assets.logoLight;
   static const String onboarding = Assets.onboarding;

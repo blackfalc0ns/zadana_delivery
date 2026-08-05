@@ -943,6 +943,7 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i458.DriverHomeRemoteDataSource>(),
         gh<_i585.DriverNotificationRouterService>(),
         gh<_i889.DriverNotificationDedupService>(),
+        gh<_i217.StopDriverTrackingUseCase>(),
       ),
     );
     gh.factory<_i341.NotificationsRepository>(

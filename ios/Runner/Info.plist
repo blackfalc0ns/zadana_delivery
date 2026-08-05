@@ -29,11 +29,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>نستخدم الكاميرا ليتمكن السائق من تصوير مستندات الملف الشخصي وصور الإثبات ومرفقات الدعم.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
+	<string>نستخدم موقعك في الخلفية لتحديث مسار التوصيل أثناء كونك متصلًا أو أثناء تنفيذ طلب نشط.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>نستخدم موقعك في الخلفية أثناء تنفيذ طلب توصيل نشط.</string>
+	<string>نستخدم موقعك في الخلفية لتحديث مسار التوصيل أثناء كونك متصلًا أو أثناء تنفيذ طلب نشط.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>نستخدم موقعك لتوجيه عمليات التوصيل وتحديث حالة العميل أثناء الطلبات النشطة.</string>
+	<string>نحتاج إلى موقعك لعرض الطلبات القريبة وتحديد موقع الاستلام والتوصيل.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>قد نحتاج إلى حفظ صور الإثبات التي تم إنشاؤها أو معالجتها في مكتبة الصور عند الحاجة.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -44,7 +44,6 @@
 	<array>
 		<string>location</string>
 		<string>remote-notification</string>
-		<string>fetch</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
@@ -53,15 +52,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>
