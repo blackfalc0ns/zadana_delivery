@@ -212,6 +212,7 @@ class DriverNotificationBootstrapService {
       debugPrint(
         '[DriverNotificationBootstrap] OneSignal initialized with appId=$_driverOneSignalAppId',
       );
+      await _registerForRemoteNotificationsIfAvailable(context: 'initialize');
       await _installNativeAndroidForegroundFallbackIfAvailable();
       await _logPlatformConfiguration();
 
@@ -301,6 +302,7 @@ class DriverNotificationBootstrapService {
       await _requestNotificationPermissionIfNeeded(context: context);
     }
     _isNotificationPermissionDeferredUntilUiReady = false;
+    await _registerForRemoteNotificationsIfAvailable(context: context);
     await _waitForSubscriptionReady(context: context);
   }
 
@@ -456,6 +458,29 @@ class DriverNotificationBootstrapService {
     } catch (error) {
       debugPrint(
         '[DriverNotificationBootstrap] Failed to inspect platform configuration: $error',
+      );
+    }
+  }
+
+  Future<void> _registerForRemoteNotificationsIfAvailable({
+    required String context,
+  }) async {
+    if (kIsWeb || !Platform.isIOS) {
+      return;
+    }
+
+    try {
+      final requested = await _nativeNotificationsChannel.invokeMethod<bool>(
+        'registerForRemoteNotifications',
+      );
+      debugPrint(
+        '[DriverNotificationBootstrap] Native APNs registration requested '
+        '[$context]: requested=${requested == true}',
+      );
+    } catch (error) {
+      debugPrint(
+        '[DriverNotificationBootstrap] Native APNs registration request failed '
+        '[$context]: $error',
       );
     }
   }

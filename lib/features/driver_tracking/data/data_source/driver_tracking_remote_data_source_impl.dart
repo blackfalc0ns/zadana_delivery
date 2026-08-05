@@ -176,6 +176,7 @@ class DriverTrackingRemoteDataSourceImpl
     );
     const initializationSettings = InitializationSettings(
       android: androidSettings,
+      iOS: DarwinInitializationSettings(),
     );
     await _localNotifications.initialize(initializationSettings);
 
