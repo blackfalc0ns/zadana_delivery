@@ -23,6 +23,7 @@ migrate_working_dir/
 *.g.dart
 *.mocks.dart
 *.config.dart
+.iconkitchen-import/
 
 
 # The .vscode folder contains launch configuration and tasks you configure in
