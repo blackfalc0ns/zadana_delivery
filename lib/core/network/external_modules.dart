@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:injectable/injectable.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/network/retry_with_backoff.dart';
@@ -22,9 +24,9 @@ abstract class ExternalModules {
     final dio = Dio();
 
     dio.options.baseUrl = NetworkConstants.baseUrl;
-    dio.options.connectTimeout = const Duration(seconds: 15);
-    dio.options.receiveTimeout = const Duration(seconds: 15);
-    dio.options.sendTimeout = const Duration(seconds: 15);
+    dio.options.connectTimeout = const Duration(seconds: 30);
+    dio.options.receiveTimeout = const Duration(seconds: 30);
+    dio.options.sendTimeout = const Duration(seconds: 30);
     dio.options.headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -33,6 +35,14 @@ abstract class ExternalModules {
     dio.interceptors.add(languageInterceptor);
     dio.interceptors.add(tokenInterceptor);
     dio.interceptors.add(RetryWithBackoffInterceptor());
+    if (kDebugMode) {
+      dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+        ),
+      );
+    }
 
     return dio;
   }
@@ -55,15 +65,29 @@ abstract class ExternalModules {
   @Named('refreshDio')
   @lazySingleton
   Dio provideRefreshDio() {
-    return Dio(
+    final dio = Dio(
       BaseOptions(
         baseUrl: NetworkConstants.baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 30),
         headers: const {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
       ),
     );
+
+    if (kDebugMode) {
+      dio.interceptors.add(
+        PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+        ),
+      );
+    }
+
+    return dio;
   }
 
   @preResolve

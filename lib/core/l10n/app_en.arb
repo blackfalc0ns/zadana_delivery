@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "en",
   "@@last_modified": "2025-11-13T13:30:00.000Z",
   "@_comment": "Property Details Texts",
@@ -580,7 +580,8 @@
       }
     }
   },
-  "driver_profile_zone_required_error": "Choose your region and city before continuing.",
+  "driver_profile_zone_required_error": "Choose your region before continuing.",
+  "driver_profile_region_coming_soon": "Coming soon",
   "driver_profile_vehicle_required_error": "Choose a vehicle type before continuing.",
   "driver_profile_zone_radius": "Coverage {radius} km",
   "@driver_profile_zone_radius": {
@@ -753,6 +754,7 @@
   "driver_account_status_missing_documents": "Missing documents",
   "driver_account_status_expired_documents": "Expired documents",
   "driver_account_status_rejected_documents": "Rejected documents",
+  "driver_account_status_missing_region": "Region missing",
   "driver_account_status_missing_region_city": "Region and city missing",
   "driver_account_status_document_rejected_banner": "A document needs your attention",
   "driver_account_status_document_approved_banner": "A document was approved",

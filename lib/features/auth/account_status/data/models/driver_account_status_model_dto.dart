@@ -18,6 +18,7 @@ class DriverAccountStatusModelDto {
     required this.restrictionMessage,
     required this.restrictionMessageAr,
     required this.restrictionMessageEn,
+    this.region,
     required this.primaryZoneId,
     required this.zoneName,
     required this.message,
@@ -50,6 +51,7 @@ class DriverAccountStatusModelDto {
           rejectionPolicy['restrictionMessage']?.toString(),
       restrictionMessageAr: json['restrictionMessageAr']?.toString(),
       restrictionMessageEn: json['restrictionMessageEn']?.toString(),
+      region: json['region']?.toString() ?? json['regionCode']?.toString(),
       primaryZoneId: json['primaryZoneId']?.toString(),
       zoneName: json['zoneName']?.toString(),
       message: json['message']?.toString() ?? '',
@@ -80,6 +82,7 @@ class DriverAccountStatusModelDto {
   final String? restrictionMessage;
   final String? restrictionMessageAr;
   final String? restrictionMessageEn;
+  final String? region;
   final String? primaryZoneId;
   final String? zoneName;
   final String message;

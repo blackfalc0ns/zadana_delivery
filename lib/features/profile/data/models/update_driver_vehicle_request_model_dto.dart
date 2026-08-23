@@ -8,7 +8,7 @@ class UpdateDriverVehicleRequestModelDto {
     required this.vehicleLicenseNumber,
     required this.vehicleLicenseExpiryDate,
     required this.region,
-    required this.city,
+    this.city,
   });
 
   final String vehicleType;
@@ -19,7 +19,7 @@ class UpdateDriverVehicleRequestModelDto {
   final String vehicleLicenseNumber;
   final String vehicleLicenseExpiryDate;
   final String region;
-  final String city;
+  final String? city;
 
   Map<String, dynamic> toJson() => {
     'vehicleType': vehicleType,
@@ -30,6 +30,6 @@ class UpdateDriverVehicleRequestModelDto {
     'vehicleLicenseNumber': vehicleLicenseNumber,
     'vehicleLicenseExpiryDate': vehicleLicenseExpiryDate,
     'region': region,
-    'city': city,
+    if (city != null) 'city': city,
   };
 }

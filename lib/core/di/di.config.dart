@@ -400,20 +400,10 @@ extension GetItInjectableX on _i174.GetIt {
       () => externalModules.provideOsmDio(),
       instanceName: 'osmDio',
     );
-    gh.lazySingleton<_i498.DriverTrackingRemoteDataSource>(
-      () => _i402.DriverTrackingRemoteDataSourceImpl(
-        gh<_i367.LocationPermissionService>(),
-      ),
-    );
     gh.lazySingleton<_i585.DriverNotificationRouterService>(
       () => _i585.DriverNotificationRouterService(
         gh<_i179.AppNavigatorService>(),
         gh<_i889.DriverNotificationDedupService>(),
-      ),
-    );
-    gh.lazySingleton<_i649.DriverTrackingRepository>(
-      () => _i228.DriverTrackingRepositoryImpl(
-        gh<_i498.DriverTrackingRemoteDataSource>(),
       ),
     );
     gh.lazySingleton<_i952.TripRequestOverlayService>(
@@ -451,34 +441,10 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i794.DriverRealtimeService>(
       () => _i794.DriverRealtimeService(gh<_i227.TokenService>()),
     );
-    gh.factory<_i832.PushDriverLocationUseCase>(
-      () =>
-          _i832.PushDriverLocationUseCase(gh<_i649.DriverTrackingRepository>()),
-    );
-    gh.factory<_i324.StartDriverTrackingUseCase>(
-      () => _i324.StartDriverTrackingUseCase(
-        gh<_i649.DriverTrackingRepository>(),
-      ),
-    );
-    gh.factory<_i217.StopDriverTrackingUseCase>(
-      () =>
-          _i217.StopDriverTrackingUseCase(gh<_i649.DriverTrackingRepository>()),
-    );
-    gh.factory<_i303.SyncDriverTrackingStatusUseCase>(
-      () => _i303.SyncDriverTrackingStatusUseCase(
-        gh<_i649.DriverTrackingRepository>(),
-      ),
-    );
     gh.factory<_i1056.TokenInterceptor>(
       () => _i1056.TokenInterceptor(
         gh<_i227.TokenService>(),
         gh<_i820.AuthRefreshService>(),
-      ),
-    );
-    gh.lazySingleton<_i88.DriverRuntimeServicesController>(
-      () => _i88.DriverRuntimeServicesController(
-        gh<_i649.DriverTrackingRepository>(),
-        gh<_i794.DriverRealtimeService>(),
       ),
     );
     gh.factory<_i32.LanguageInterceptor>(
@@ -497,16 +463,6 @@ extension GetItInjectableX on _i174.GetIt {
         realtimeService: gh<_i794.DriverRealtimeService>(),
       ),
     );
-    gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
-      () => _i1015.DriverNotificationOverlayService(
-        gh<_i179.AppNavigatorService>(),
-        gh<_i585.DriverNotificationRouterService>(),
-        gh<_i889.DriverNotificationDedupService>(),
-        gh<_i794.DriverRealtimeService>(),
-        gh<_i430.DriverLocalNotificationService>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-      ),
-    );
     gh.lazySingleton<_i361.Dio>(
       () => externalModules.provideDio(
         gh<_i1056.TokenInterceptor>(),
@@ -517,8 +473,19 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i487.RegistrationUploadTokenService(gh<_i361.Dio>()),
     );
     gh.factory<_i804.ApiServices>(() => _i804.ApiServices(gh<_i361.Dio>()));
+    gh.lazySingleton<_i498.DriverTrackingRemoteDataSource>(
+      () => _i402.DriverTrackingRemoteDataSourceImpl(
+        gh<_i367.LocationPermissionService>(),
+        gh<_i804.ApiServices>(),
+      ),
+    );
     gh.factory<_i247.ForgotPasswordRemoteDataSource>(
       () => _i925.ForgotPasswordRemoteDataSourceImpl(gh<_i361.Dio>()),
+    );
+    gh.lazySingleton<_i649.DriverTrackingRepository>(
+      () => _i228.DriverTrackingRepositoryImpl(
+        gh<_i498.DriverTrackingRemoteDataSource>(),
+      ),
     );
     gh.factory<_i437.OrderDetailsRemoteDataSource>(
       () => _i104.OrderDetailsRemoteDataSourceImpl(gh<_i804.ApiServices>()),
@@ -689,6 +656,24 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i755.DriverSupportRepository>(),
       ),
     );
+    gh.factory<_i832.PushDriverLocationUseCase>(
+      () =>
+          _i832.PushDriverLocationUseCase(gh<_i649.DriverTrackingRepository>()),
+    );
+    gh.factory<_i324.StartDriverTrackingUseCase>(
+      () => _i324.StartDriverTrackingUseCase(
+        gh<_i649.DriverTrackingRepository>(),
+      ),
+    );
+    gh.factory<_i217.StopDriverTrackingUseCase>(
+      () =>
+          _i217.StopDriverTrackingUseCase(gh<_i649.DriverTrackingRepository>()),
+    );
+    gh.factory<_i303.SyncDriverTrackingStatusUseCase>(
+      () => _i303.SyncDriverTrackingStatusUseCase(
+        gh<_i649.DriverTrackingRepository>(),
+      ),
+    );
     gh.factory<_i665.VerifyResetOtpRepository>(
       () => _i228.VerifyResetOtpRepositoryImpl(
         gh<_i863.VerifyResetOtpRemoteDataSource>(),
@@ -717,6 +702,12 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i819.LanguageService>(),
       ),
     );
+    gh.lazySingleton<_i88.DriverRuntimeServicesController>(
+      () => _i88.DriverRuntimeServicesController(
+        gh<_i649.DriverTrackingRepository>(),
+        gh<_i794.DriverRealtimeService>(),
+      ),
+    );
     gh.lazySingleton<_i497.TripRequestGlobalAlertService>(
       () => _i497.TripRequestGlobalAlertService(
         gh<_i952.TripRequestOverlayService>(),
@@ -733,6 +724,16 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i985.ResetPasswordRepository>(
       () => _i51.ResetPasswordRepositoryImpl(
         gh<_i454.ResetPasswordRemoteDataSource>(),
+      ),
+    );
+    gh.lazySingleton<_i1015.DriverNotificationOverlayService>(
+      () => _i1015.DriverNotificationOverlayService(
+        gh<_i179.AppNavigatorService>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+        gh<_i794.DriverRealtimeService>(),
+        gh<_i430.DriverLocalNotificationService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
       ),
     );
     gh.factory<_i137.LoginRepository>(
@@ -903,6 +904,19 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i78.LogoutUseCase>(),
       ),
     );
+    gh.lazySingleton<_i30.DriverNotificationSessionService>(
+      () => _i30.DriverNotificationSessionService(
+        gh<_i227.TokenService>(),
+        gh<_i223.DriverNotificationBootstrapService>(),
+        gh<_i1059.DriverNotificationDeviceService>(),
+        gh<_i88.DriverRuntimeServicesController>(),
+        gh<_i794.DriverRealtimeService>(),
+        gh<_i458.DriverHomeRemoteDataSource>(),
+        gh<_i585.DriverNotificationRouterService>(),
+        gh<_i889.DriverNotificationDedupService>(),
+        gh<_i217.StopDriverTrackingUseCase>(),
+      ),
+    );
     gh.factory<_i387.DriverAccountSupportAppealCubit>(
       () => _i387.DriverAccountSupportAppealCubit(
         gh<_i183.ImagePicker>(),
@@ -932,19 +946,6 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.factory<_i184.ResetPasswordUseCase>(
       () => _i184.ResetPasswordUseCase(gh<_i985.ResetPasswordRepository>()),
-    );
-    gh.lazySingleton<_i30.DriverNotificationSessionService>(
-      () => _i30.DriverNotificationSessionService(
-        gh<_i227.TokenService>(),
-        gh<_i223.DriverNotificationBootstrapService>(),
-        gh<_i1059.DriverNotificationDeviceService>(),
-        gh<_i88.DriverRuntimeServicesController>(),
-        gh<_i794.DriverRealtimeService>(),
-        gh<_i458.DriverHomeRemoteDataSource>(),
-        gh<_i585.DriverNotificationRouterService>(),
-        gh<_i889.DriverNotificationDedupService>(),
-        gh<_i217.StopDriverTrackingUseCase>(),
-      ),
     );
     gh.factory<_i341.NotificationsRepository>(
       () => _i166.NotificationsRepositoryImpl(

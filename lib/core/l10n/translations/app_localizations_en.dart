@@ -1619,7 +1619,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driver_profile_zone_required_error =>
-      'Choose your region and city before continuing.';
+      'Choose your region before continuing.';
+
+  @override
+  String get driver_profile_region_coming_soon => 'Coming soon';
 
   @override
   String get driver_profile_vehicle_required_error =>
@@ -2124,6 +2127,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get driver_account_status_rejected_documents => 'Rejected documents';
+
+  @override
+  String get driver_account_status_missing_region => 'Region missing';
 
   @override
   String get driver_account_status_missing_region_city =>

@@ -1582,7 +1582,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_profile_zone_required_error =>
-      'لازم تختار المنطقة والمدينة قبل المتابعة.';
+      'لازم تختار المنطقة قبل المتابعة.';
+
+  @override
+  String get driver_profile_region_coming_soon => 'قريبًا';
 
   @override
   String get driver_profile_vehicle_required_error =>
@@ -2083,6 +2086,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get driver_account_status_rejected_documents => 'مستندات مرفوضة';
+
+  @override
+  String get driver_account_status_missing_region => 'المنطقة غير محددة';
 
   @override
   String get driver_account_status_missing_region_city =>

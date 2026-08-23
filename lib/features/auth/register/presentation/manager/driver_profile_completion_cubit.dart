@@ -188,7 +188,7 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
       return vehicleRequiredMessage;
     }
 
-    if (state.currentStep == 1 && draft.cityId.trim().isEmpty) {
+    if (state.currentStep == 1 && draft.regionCode.trim().isEmpty) {
       return cityRequiredMessage;
     }
 
@@ -333,7 +333,6 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         vehicleLicenseExpiryDate: draft.vehicleLicenseExpiryDate,
         address: draft.address,
         region: draft.regionCode,
-        city: draft.cityId,
         nationalIdFrontImagePath: draft.images['idFront'] ?? '',
         nationalIdBackImagePath: draft.images['idBack'] ?? '',
         licenseImagePath: draft.images['license'] ?? '',
@@ -390,7 +389,6 @@ class DriverProfileCompletionCubit extends Cubit<DriverProfileCompletionState> {
         vehicleLicenseNumber: draft.vehicleLicenseNumber,
         vehicleLicenseExpiryDate: draft.vehicleLicenseExpiryDate,
         region: draft.regionCode,
-        city: draft.cityId,
       ),
     );
 

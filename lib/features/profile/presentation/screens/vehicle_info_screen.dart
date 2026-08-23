@@ -54,7 +54,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
   String _originalDriverLicenseExpiry = '';
   String _originalVehicleLicenseNumber = '';
   String _originalVehicleLicenseExpiry = '';
-  String _originalCityId = '';
   String _originalRegionCode = '';
 
   @override
@@ -106,7 +105,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
     _originalDriverLicenseExpiry = _driverLicenseExpiryController.text;
     _originalVehicleLicenseNumber = _vehicleLicenseNumberController.text;
     _originalVehicleLicenseExpiry = _vehicleLicenseExpiryController.text;
-    _originalCityId = _selectedCityId;
     _originalRegionCode = _selectedRegionCode;
   }
 
@@ -123,7 +121,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
         _driverLicenseExpiryController.text != _originalDriverLicenseExpiry ||
         _vehicleLicenseNumberController.text != _originalVehicleLicenseNumber ||
         _vehicleLicenseExpiryController.text != _originalVehicleLicenseExpiry ||
-        _selectedCityId != _originalCityId ||
         _selectedRegionCode != _originalRegionCode;
     if (dirty != _isFormDirty) {
       setState(() => _isFormDirty = dirty);
@@ -187,7 +184,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
             _originalDriverLicenseExpiry = _driverLicenseExpiryController.text;
             _originalVehicleLicenseNumber = _vehicleLicenseNumberController.text;
             _originalVehicleLicenseExpiry = _vehicleLicenseExpiryController.text;
-            _originalCityId = _selectedCityId;
             _originalRegionCode = _selectedRegionCode;
           }
 
@@ -280,22 +276,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
                   setState(() {
                     _selectedRegionCode = code;
                     _selectedRegionName = name;
-                    _selectedCityId = '';
-                    _selectedCityName = '';
-                  });
-                  _regionsCubit.loadCitiesForRegion(
-                    regionCode: code,
-                    regionName: name,
-                  );
-                  _cubit.clearError();
-                  _checkDirty();
-                },
-                onCitySelected: (regionCity) {
-                  setState(() {
-                    _selectedCityId = regionCity.id;
-                    _selectedRegionCode = regionCity.regionCode;
-                    _selectedCityName = regionCity.cityName;
-                    _selectedRegionName = regionCity.regionName;
                   });
                   _cubit.clearError();
                   _checkDirty();
@@ -319,7 +299,7 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    if (_selectedCityId.trim().isEmpty) {
+    if (_selectedRegionCode.trim().isEmpty) {
       CustomSnackbar.showError(
         context: context,
         message: context.localization.driver_profile_zone_required_error,
@@ -349,7 +329,6 @@ class _VehicleInfoScreenState extends State<VehicleInfoScreen> {
           vehicleLicenseNumber: _vehicleLicenseNumberController.text.trim(),
           vehicleLicenseExpiryDate: _vehicleLicenseExpiryController.text.trim(),
           region: _selectedRegionCode,
-          city: _selectedCityId,
         ),
       ),
     );

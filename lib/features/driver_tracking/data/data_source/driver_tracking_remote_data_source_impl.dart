@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zadana_delivery/core/helpers/permision_service.dart';
+import 'package:zadana_delivery/core/network/api_services.dart';
 import 'package:zadana_delivery/core/network/network_constants.dart';
 import 'package:zadana_delivery/core/utils/constants.dart';
 import 'package:zadana_delivery/features/driver_tracking/data/data_source/driver_tracking_remote_data_source.dart';
@@ -21,7 +22,10 @@ import 'package:zadana_delivery/features/driver_tracking/domain/entities/driver_
 @LazySingleton(as: DriverTrackingRemoteDataSource)
 class DriverTrackingRemoteDataSourceImpl
     implements DriverTrackingRemoteDataSource {
-  DriverTrackingRemoteDataSourceImpl(this._permissionService);
+  DriverTrackingRemoteDataSourceImpl(
+    this._permissionService,
+    this._apiServices,
+  );
 
   static const String _logTag = 'DriverTracking';
   static const String _trackingChannelId = 'driver_tracking_channel';
@@ -31,6 +35,7 @@ class DriverTrackingRemoteDataSourceImpl
   static const int _notificationId = 7412;
 
   final LocationPermissionService _permissionService;
+  final ApiServices _apiServices;
   final FlutterBackgroundService _backgroundService =
       FlutterBackgroundService();
   final FlutterLocalNotificationsPlugin _localNotifications =
@@ -96,7 +101,34 @@ class DriverTrackingRemoteDataSourceImpl
   @override
   Future<void> pushDriverLocation() async {
     await initialize();
-    _backgroundService.invoke('pushLocation');
+    final isRunning = await _backgroundService.isRunning();
+    if (isRunning) {
+      _backgroundService.invoke('pushLocation');
+    }
+
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 5),
+        ),
+      );
+      final accuracyMeters = _resolveAccuracyMeters(position);
+      _logTracking(
+        'pushDriverLocation (foreground HTTP)'
+        ' lat=${position.latitude}'
+        ' lng=${position.longitude}'
+        ' acc=$accuracyMeters',
+      );
+      await _apiServices.updateDriverLocation({
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'accuracyMeters': accuracyMeters,
+      });
+      _logTracking('pushDriverLocation (foreground HTTP) success');
+    } catch (error) {
+      _logTracking('pushDriverLocation (foreground HTTP) error=$error');
+    }
   }
 
   @override
@@ -509,7 +541,17 @@ void _driverTrackingServiceEntrypoint(ServiceInstance service) async {
   });
 
   service.on('pushLocation').listen((_) async {
-    final position = latestEligiblePosition;
+    var position = latestEligiblePosition;
+    if (position == null) {
+      try {
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.high,
+            timeLimit: Duration(seconds: 5),
+          ),
+        );
+      } catch (_) {}
+    }
     if (position == null) return;
     await pushPosition(position, force: true);
   });

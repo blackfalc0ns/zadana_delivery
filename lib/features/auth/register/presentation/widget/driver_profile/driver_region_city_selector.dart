@@ -11,16 +11,16 @@ import 'package:zadana_delivery/features/auth/register/domain/entities/driver_zo
 class DriverRegionCitySelector extends StatelessWidget {
   const DriverRegionCitySelector({
     super.key,
-    required this.regionCities,
+    this.regionCities = const [],
     required this.isLoading,
-    required this.isCitiesLoading,
-    required this.selectedCityId,
+    this.isCitiesLoading = false,
+    this.selectedCityId = '',
     required this.selectedRegionCode,
-    required this.selectedCityName,
+    this.selectedCityName = '',
     required this.selectedRegionName,
     required this.regions,
     required this.onRegionSelected,
-    required this.onCitySelected,
+    this.onCitySelected,
     required this.onRetry,
     this.failure,
     this.citiesFailure,
@@ -37,7 +37,7 @@ class DriverRegionCitySelector extends StatelessWidget {
   final Failure? failure;
   final Failure? citiesFailure;
   final void Function(String regionCode, String regionName) onRegionSelected;
-  final ValueChanged<DriverRegionCityEntity> onCitySelected;
+  final ValueChanged<DriverRegionCityEntity>? onCitySelected;
   final VoidCallback onRetry;
 
   @override
@@ -45,12 +45,11 @@ class DriverRegionCitySelector extends StatelessWidget {
     final color = context.colorScheme;
     final locale = context.localization;
     final selectedRegion = selectedRegionName;
-    final selectedCity = selectedCityName;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          locale.driver_profile_zone_label,
+          locale.driver_profile_zone_region_label,
           style: getSemiBoldStyle(
             fontFamily: FontConstant.cairo,
             color: color.onSurface,
@@ -58,35 +57,14 @@ class DriverRegionCitySelector extends StatelessWidget {
         ),
         const SizedBox(height: Spacing.sm),
         if (isLoading)
-          const _ZonesLoadingRow()
+          const _LoadingTile(icon: Icons.map_outlined)
         else
-          Row(
-            children: [
-              Expanded(
-                child: _SelectorTile(
-                  title: locale.driver_profile_zone_region_label,
-                  value: selectedRegion,
-                  placeholder: locale.driver_profile_zone_region_placeholder,
-                  icon: Icons.map_outlined,
-                  onTap: () => _showRegionPicker(context),
-                ),
-              ),
-              const SizedBox(width: Spacing.sm),
-              Expanded(
-                child: isCitiesLoading
-                    ? const _LoadingTile(icon: Icons.location_city_outlined)
-                    : _SelectorTile(
-                        title: locale.driver_profile_zone_city_label,
-                        value: selectedCity,
-                        placeholder:
-                            locale.driver_profile_zone_city_placeholder,
-                        icon: Icons.location_city_outlined,
-                        onTap: selectedRegionCode.isEmpty
-                            ? null
-                            : () => _showCityPicker(context),
-                      ),
-              ),
-            ],
+          _SelectorTile(
+            title: locale.driver_profile_zone_region_label,
+            value: selectedRegion,
+            placeholder: locale.driver_profile_zone_region_placeholder,
+            icon: Icons.map_outlined,
+            onTap: () => _showRegionPicker(context),
           ),
         if (failure != null) ...[
           const SizedBox(height: Spacing.sm),
@@ -116,6 +94,11 @@ class DriverRegionCitySelector extends StatelessWidget {
         itemTitle: (region) => region.name,
         itemSubtitle: (_) => '',
         itemIcon: Icons.map_outlined,
+        itemEnabled: (region) => region.isOperational,
+        itemBadge: (region) =>
+            !region.isOperational
+                ? locale.driver_profile_region_coming_soon
+                : null,
         onSelected: (region) => region,
         selectedMatcher: (region, selected) => region.code == selected,
       ),
@@ -124,51 +107,6 @@ class DriverRegionCitySelector extends StatelessWidget {
     if (selected == null) return;
 
     onRegionSelected(selected.code, selected.name);
-  }
-
-  Future<void> _showCityPicker(BuildContext context) async {
-    final locale = context.localization;
-    final normalizedRegionName = selectedRegionName.trim();
-    final selectedCity = await showModalBottomSheet<DriverRegionCityEntity>(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (context) => _SelectionSheet<DriverRegionCityEntity>(
-        title: locale.driver_profile_zone_city_sheet_title,
-        subtitle: locale.driver_profile_zone_city_sheet_subtitle,
-        items: regionCities,
-        selectedValue: selectedCityId,
-        emptyMessage: normalizedRegionName.isEmpty
-            ? locale.driver_profile_zone_no_cities
-            : locale.driver_profile_zone_no_cities_for_region(
-                normalizedRegionName,
-              ),
-        itemTitle: (city) => city.cityName,
-        itemSubtitle: (_) => selectedRegionName,
-        itemIcon: Icons.location_city_outlined,
-        onSelected: (city) => city,
-        selectedMatcher: (city, selected) => city.id == selected,
-      ),
-    );
-
-    if (selectedCity != null) {
-      onCitySelected(selectedCity);
-    }
-  }
-}
-
-class _ZonesLoadingRow extends StatelessWidget {
-  const _ZonesLoadingRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Row(
-      children: [
-        Expanded(child: _LoadingTile(icon: Icons.map_outlined)),
-        SizedBox(width: Spacing.sm),
-        Expanded(child: _LoadingTile(icon: Icons.location_city_outlined)),
-      ],
-    );
   }
 }
 
@@ -331,6 +269,8 @@ class _SelectionSheet<T> extends StatelessWidget {
     required this.itemSubtitle,
     required this.itemIcon,
     required this.onSelected,
+    this.itemEnabled,
+    this.itemBadge,
     this.selectedMatcher,
   });
 
@@ -343,6 +283,8 @@ class _SelectionSheet<T> extends StatelessWidget {
   final String Function(T item) itemSubtitle;
   final IconData itemIcon;
   final Object Function(T item) onSelected;
+  final bool Function(T item)? itemEnabled;
+  final String? Function(T item)? itemBadge;
   final bool Function(T item, String selectedValue)? selectedMatcher;
 
   @override
@@ -414,82 +356,139 @@ class _SelectionSheet<T> extends StatelessWidget {
                       separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, index) {
                         final item = items[index];
+                        final isEnabled = itemEnabled?.call(item) ?? true;
+                        final badge = itemBadge?.call(item);
                         final isSelected =
-                            selectedMatcher?.call(item, selectedValue) ??
-                            itemTitle(item) == selectedValue;
+                            isEnabled &&
+                            (selectedMatcher?.call(item, selectedValue) ??
+                                itemTitle(item) == selectedValue);
 
-                        return InkWell(
-                          onTap: () =>
-                              Navigator.of(context).pop(onSelected(item)),
-                          borderRadius: BorderRadius.circular(22),
-                          child: Ink(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? color.primary.withValues(alpha: 0.10)
-                                  : color.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(22),
-                              border: Border.all(
+                        return Opacity(
+                          opacity: isEnabled ? 1.0 : 0.55,
+                          child: InkWell(
+                            onTap: isEnabled
+                                ? () => Navigator.of(
+                                    context,
+                                  ).pop(onSelected(item))
+                                : null,
+                            borderRadius: BorderRadius.circular(22),
+                            child: Ink(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
                                 color: isSelected
-                                    ? color.primary
-                                    : color.outlineVariant.withValues(
-                                        alpha: 0.55,
-                                      ),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 48,
-                                  height: 48,
-                                  decoration: BoxDecoration(
-                                    color: isSelected
-                                        ? color.primary
-                                        : color.primary.withValues(alpha: 0.10),
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  child: Icon(
-                                    itemIcon,
-                                    color: isSelected
-                                        ? color.onPrimary
-                                        : color.primary,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        itemTitle(item),
-                                        style: getBoldStyle(
-                                          fontFamily: FontConstant.cairo,
-                                          fontSize: FontSize.size15,
-                                          color: color.onSurface,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        itemSubtitle(item),
-                                        style: getRegularStyle(
-                                          fontFamily: FontConstant.cairo,
-                                          color: color.onSurfaceVariant,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  isSelected
-                                      ? Icons.check_circle_rounded
-                                      : Icons.circle_outlined,
+                                    ? color.primary.withValues(alpha: 0.10)
+                                    : isEnabled
+                                        ? color.surfaceContainerLow
+                                        : color.surfaceContainerHighest
+                                            .withValues(alpha: 0.35),
+                                borderRadius: BorderRadius.circular(22),
+                                border: Border.all(
                                   color: isSelected
                                       ? color.primary
-                                      : color.outline,
+                                      : color.outlineVariant.withValues(
+                                          alpha: 0.55,
+                                        ),
                                 ),
-                              ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Container(
+                                    width: 48,
+                                    height: 48,
+                                    decoration: BoxDecoration(
+                                      color: isSelected
+                                          ? color.primary
+                                          : isEnabled
+                                              ? color.primary.withValues(
+                                                  alpha: 0.10,
+                                                )
+                                              : color.outlineVariant
+                                                  .withValues(alpha: 0.4),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: Icon(
+                                      itemIcon,
+                                      color: isSelected
+                                          ? color.onPrimary
+                                          : isEnabled
+                                              ? color.primary
+                                              : color.onSurfaceVariant
+                                                  .withValues(alpha: 0.6),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                itemTitle(item),
+                                                style: getBoldStyle(
+                                                  fontFamily:
+                                                      FontConstant.cairo,
+                                                  fontSize: FontSize.size15,
+                                                  color: isEnabled
+                                                      ? color.onSurface
+                                                      : color.onSurfaceVariant,
+                                                ),
+                                              ),
+                                            ),
+                                            if (badge != null)
+                                              Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                  vertical: 3,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  color: color.surfaceContainerHighest,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                  border: Border.all(
+                                                    color: color.outlineVariant,
+                                                  ),
+                                                ),
+                                                child: Text(
+                                                  badge,
+                                                  style: getMediumStyle(
+                                                    fontFamily:
+                                                        FontConstant.cairo,
+                                                    fontSize: FontSize.size11,
+                                                    color: color.onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                        if (itemSubtitle(item).trim().isNotEmpty) ...[
+                                          const SizedBox(height: 4),
+                                          Text(
+                                            itemSubtitle(item),
+                                            style: getRegularStyle(
+                                              fontFamily: FontConstant.cairo,
+                                              color: color.onSurfaceVariant,
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  if (isEnabled)
+                                    Icon(
+                                      isSelected
+                                          ? Icons.check_circle_rounded
+                                          : Icons.circle_outlined,
+                                      color: isSelected
+                                          ? color.primary
+                                          : color.outline,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         );

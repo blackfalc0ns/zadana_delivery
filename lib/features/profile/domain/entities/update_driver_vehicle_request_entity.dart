@@ -8,7 +8,7 @@ class UpdateDriverVehicleRequestEntity {
     required this.vehicleLicenseNumber,
     required this.vehicleLicenseExpiryDate,
     required this.region,
-    required this.city,
+    this.city,
   });
 
   final String vehicleType;
@@ -19,5 +19,5 @@ class UpdateDriverVehicleRequestEntity {
   final String vehicleLicenseNumber;
   final String vehicleLicenseExpiryDate;
   final String region;
-  final String city;
+  final String? city;
 }

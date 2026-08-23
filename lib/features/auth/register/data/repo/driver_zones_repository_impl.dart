@@ -38,6 +38,9 @@ class DriverRegionsRepositoryImpl implements DriverRegionsRepository {
             (item) => DriverRegionEntity(
               code: item.code,
               name: _localizedName(nameAr: item.nameAr, nameEn: item.nameEn),
+              nameAr: item.nameAr,
+              nameEn: item.nameEn,
+              isOperational: item.isOperational,
             ),
           )
           .toList(growable: false);

@@ -3,10 +3,11 @@ class DriverRegionModelDto {
     required this.code,
     required this.nameAr,
     required this.nameEn,
-    required this.latitude,
-    required this.longitude,
-    required this.mapZoom,
-    required this.sortOrder,
+    this.latitude = 0,
+    this.longitude = 0,
+    this.mapZoom = 0,
+    this.sortOrder = 0,
+    this.isOperational = false,
   });
 
   factory DriverRegionModelDto.fromJson(Map<String, dynamic> json) {
@@ -18,6 +19,7 @@ class DriverRegionModelDto {
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0,
       mapZoom: (json['mapZoom'] as num?)?.toInt() ?? 0,
       sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+      isOperational: json['isOperational'] == true,
     );
   }
 
@@ -28,4 +30,5 @@ class DriverRegionModelDto {
   final double longitude;
   final int mapZoom;
   final int sortOrder;
+  final bool isOperational;
 }

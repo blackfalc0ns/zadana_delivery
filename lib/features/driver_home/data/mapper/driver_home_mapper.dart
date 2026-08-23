@@ -40,6 +40,7 @@ extension DriverHomeOperationalStatusModelMapper
       suspensionReason: suspensionReason,
       message: message,
       policyIsFrozen: policyIsFrozen,
+      region: region,
     );
   }
 }

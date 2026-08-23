@@ -3095,8 +3095,14 @@ abstract class AppLocalizations {
   /// No description provided for @driver_profile_zone_required_error.
   ///
   /// In en, this message translates to:
-  /// **'Choose your region and city before continuing.'**
+  /// **'Choose your region before continuing.'**
   String get driver_profile_zone_required_error;
+
+  /// No description provided for @driver_profile_region_coming_soon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get driver_profile_region_coming_soon;
 
   /// No description provided for @driver_profile_vehicle_required_error.
   ///
@@ -4003,6 +4009,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected documents'**
   String get driver_account_status_rejected_documents;
+
+  /// No description provided for @driver_account_status_missing_region.
+  ///
+  /// In en, this message translates to:
+  /// **'Region missing'**
+  String get driver_account_status_missing_region;
 
   /// No description provided for @driver_account_status_missing_region_city.
   ///

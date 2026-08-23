@@ -1,4 +1,4 @@
-﻿{
+{
   "@@locale": "ar",
   "@@last_modified": "2025-11-13T13:30:00.000Z",
   "@_comment": "Property Details Texts",
@@ -555,7 +555,8 @@
       }
     }
   },
-  "driver_profile_zone_required_error": "لازم تختار المنطقة والمدينة قبل المتابعة.",
+  "driver_profile_zone_required_error": "لازم تختار المنطقة قبل المتابعة.",
+  "driver_profile_region_coming_soon": "قريبًا",
   "driver_profile_vehicle_required_error": "لازم تختار نوع المركبة قبل المتابعة.",
   "driver_profile_zone_radius": "نطاق التغطية {radius} كم",
   "@driver_profile_zone_radius": {
@@ -722,12 +723,30 @@
   "driver_account_status_verification_needs_documents": "مطلوب مستندات",
   "driver_account_status_verification_under_review": "قيد المراجعة",
   "driver_account_status_account_active": "نشط",
+  "profile_rejection_today_label": "اليوم",
+  "profile_rejection_today_remaining_label": "المتبقي اليوم",
+  "profile_rejection_week_label": "هذا الأسبوع",
+  "profile_rejection_week_remaining_label": "المتبقي هذا الأسبوع",
+  "driver_account_status_completion_label": "نسبة اكتمال الملف",
+  "driver_account_status_account_label": "حالة الحساب",
+  "driver_account_status_portrait_ready": "تم رفع الصورة الشخصية",
+  "driver_account_status_portrait_missing": "الصورة الشخصية غير مرفوعة",
+  "driver_account_status_files_label": "الملفات المرفوعة",
+  "driver_account_status_files_count": "{count} ملف",
+  "@driver_account_status_files_count": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "driver_account_status_account_pending": "معلّق",
   "driver_account_status_missing_personal_info": "بيانات شخصية ناقصة",
   "driver_account_status_missing_vehicle_info": "بيانات المركبة ناقصة",
   "driver_account_status_missing_documents": "مستندات ناقصة",
   "driver_account_status_expired_documents": "مستندات منتهية",
   "driver_account_status_rejected_documents": "مستندات مرفوضة",
+  "driver_account_status_missing_region": "المنطقة غير محددة",
   "driver_account_status_missing_region_city": "المنطقة والمدينة غير مكتملتين",
   "driver_account_status_document_rejected_banner": "يوجد مستند يحتاج تعديلًا",
   "driver_account_status_document_approved_banner": "تم اعتماد أحد المستندات",

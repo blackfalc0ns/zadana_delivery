@@ -132,7 +132,7 @@ class RegisterRepositoryImpl implements RegisterRepository {
           vehicleLicenseNumber: request.vehicleLicenseNumber,
           vehicleLicenseExpiryDate: request.vehicleLicenseExpiryDate,
           region: request.region,
-          city: request.city,
+          city: request.city ?? '',
           vehicleBrand: '',
           vehicleModel: '',
           plateNumber: '',

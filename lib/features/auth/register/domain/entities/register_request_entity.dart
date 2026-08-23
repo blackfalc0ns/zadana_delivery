@@ -13,7 +13,7 @@ class RegisterRequestEntity {
     required this.vehicleLicenseExpiryDate,
     required this.address,
     required this.region,
-    required this.city,
+    this.city,
     required this.nationalIdFrontImagePath,
     required this.nationalIdBackImagePath,
     required this.licenseImagePath,
@@ -34,7 +34,7 @@ class RegisterRequestEntity {
   final String vehicleLicenseExpiryDate;
   final String address;
   final String region;
-  final String city;
+  final String? city;
   final String nationalIdFrontImagePath;
   final String nationalIdBackImagePath;
   final String licenseImagePath;

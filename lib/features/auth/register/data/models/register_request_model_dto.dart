@@ -18,7 +18,7 @@ class RegisterRequestModelDto {
     required this.vehicleLicenseExpiryDate,
     required this.address,
     required this.region,
-    required this.city,
+    this.city,
     required this.nationalIdFrontImageUrl,
     required this.nationalIdBackImageUrl,
     required this.licenseImageUrl,
@@ -42,7 +42,7 @@ class RegisterRequestModelDto {
   final String vehicleLicenseExpiryDate;
   final String address;
   final String region;
-  final String city;
+  final String? city;
   final String nationalIdFrontImageUrl;
   final String nationalIdBackImageUrl;
   final String licenseImageUrl;

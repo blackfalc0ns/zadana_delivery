@@ -150,17 +150,8 @@ class DriverProfileCompletionStepContent extends StatelessWidget {
                             isActive: true,
                           ),
                         );
-                        context
-                            .read<RegisterRegionsCubit>()
-                            .loadCitiesForRegion(
-                              regionCode: code,
-                              regionName: name,
-                            );
                       }
                     },
-                    onCitySelected: isSubmitting
-                        ? (_) {}
-                        : onRegionCityChanged,
                   ),
                   const SizedBox(height: 14),
                   _buildField(

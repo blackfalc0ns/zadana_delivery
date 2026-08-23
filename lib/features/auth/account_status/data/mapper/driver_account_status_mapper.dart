@@ -22,6 +22,7 @@ extension DriverAccountStatusMapper on DriverAccountStatusModelDto {
       restrictionMessage: restrictionMessage,
       restrictionMessageAr: restrictionMessageAr,
       restrictionMessageEn: restrictionMessageEn,
+      region: region,
       primaryZoneId: primaryZoneId,
       zoneName: zoneName,
       message: message.trim(),

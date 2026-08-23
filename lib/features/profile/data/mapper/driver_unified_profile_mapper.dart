@@ -146,7 +146,7 @@ extension UpdateDriverVehicleRequestMapper on UpdateDriverVehicleRequestEntity {
         vehicleLicenseExpiryDate,
       ),
       region: region.trim(),
-      city: city.trim(),
+      city: city?.trim(),
     );
   }
 }

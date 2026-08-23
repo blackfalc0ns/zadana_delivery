@@ -21,19 +21,19 @@ class VehicleInfoFields extends StatelessWidget {
     required this.driverLicenseExpiryController,
     required this.vehicleLicenseNumberController,
     required this.vehicleLicenseExpiryController,
-    required this.regionCities,
+    this.regionCities = const [],
     required this.isRegionCitiesLoading,
-    required this.isCitiesLoading,
+    this.isCitiesLoading = false,
     required this.regions,
-    required this.selectedCityId,
+    this.selectedCityId = '',
     required this.selectedRegionCode,
-    required this.selectedCityName,
+    this.selectedCityName = '',
     required this.selectedRegionName,
     required this.regionCitiesFailure,
-    required this.citiesFailure,
+    this.citiesFailure,
     required this.onRetryRegionCities,
     required this.onRegionSelected,
-    required this.onCitySelected,
+    this.onCitySelected,
     required this.onPickDate,
   });
 
@@ -57,7 +57,7 @@ class VehicleInfoFields extends StatelessWidget {
   final Failure? citiesFailure;
   final VoidCallback onRetryRegionCities;
   final void Function(String regionCode, String regionName) onRegionSelected;
-  final ValueChanged<DriverRegionCityEntity> onCitySelected;
+  final ValueChanged<DriverRegionCityEntity>? onCitySelected;
   final ValueChanged<TextEditingController> onPickDate;
 
   @override

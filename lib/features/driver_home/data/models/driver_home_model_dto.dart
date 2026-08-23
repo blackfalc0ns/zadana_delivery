@@ -89,6 +89,7 @@ class DriverHomeOperationalStatusModelDto {
     required this.message,
     required this.policyIsFrozen,
     this.canGoAvailable,
+    this.region,
   });
 
   factory DriverHomeOperationalStatusModelDto.fromJson(
@@ -120,6 +121,7 @@ class DriverHomeOperationalStatusModelDto {
       suspensionReason: json['suspensionReason']?.toString(),
       message: json['message']?.toString() ?? '',
       policyIsFrozen: rejectionPolicy['isFrozen'] == true,
+      region: json['region']?.toString() ?? json['regionCode']?.toString(),
     );
   }
 
@@ -138,6 +140,7 @@ class DriverHomeOperationalStatusModelDto {
   final String enforcementLevel;
   final bool canReceiveOffers;
   final String? restrictionMessage;
+  final String? region;
   final String? reviewedAtUtc;
   final String? reviewNote;
   final String? suspensionReason;

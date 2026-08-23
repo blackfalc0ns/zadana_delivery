@@ -18,6 +18,7 @@ class DriverAccountStatusEntity {
     required this.restrictionMessage,
     required this.restrictionMessageAr,
     required this.restrictionMessageEn,
+    this.region,
     required this.primaryZoneId,
     required this.zoneName,
     required this.message,
@@ -45,6 +46,7 @@ class DriverAccountStatusEntity {
   final String? restrictionMessage;
   final String? restrictionMessageAr;
   final String? restrictionMessageEn;
+  final String? region;
   final String? primaryZoneId;
   final String? zoneName;
   final String message;
@@ -98,7 +100,8 @@ class DriverAccountStatusEntity {
       normalizedVerificationStatus == 'approved' ||
       normalizedVerificationStatus == 'verified';
 
-  bool get hasCompletedProfile => (primaryZoneId ?? '').trim().isNotEmpty;
+  bool get hasCompletedProfile =>
+      (region ?? primaryZoneId ?? '').trim().isNotEmpty;
 
   bool get shouldGoHome =>
       isApproved &&

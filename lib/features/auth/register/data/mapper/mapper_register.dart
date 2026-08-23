@@ -39,7 +39,7 @@ extension RegisterRequestEntityMapper on RegisterRequestEntity {
       ),
       address: address.trim(),
       region: region.trim(),
-      city: city.trim(),
+      city: city?.trim(),
       nationalIdFrontImageUrl: nationalIdFrontImageUrl,
       nationalIdBackImageUrl: nationalIdBackImageUrl,
       licenseImageUrl: licenseImageUrl,

@@ -1074,7 +1074,7 @@ class _ApiServices implements ApiServices {
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/geography/regions',
+            '/geography/driver/regions',
             queryParameters: queryParameters,
             data: _data,
           )

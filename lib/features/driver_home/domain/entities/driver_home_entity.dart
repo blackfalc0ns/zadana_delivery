@@ -42,6 +42,7 @@ class DriverHomeOperationalStatusEntity {
     required this.message,
     required this.policyIsFrozen,
     this.canGoAvailable,
+    this.region,
   });
 
   final String driverId;
@@ -64,6 +65,7 @@ class DriverHomeOperationalStatusEntity {
   final String? suspensionReason;
   final String message;
   final bool policyIsFrozen;
+  final String? region;
 }
 
 class DriverHomeOfferEntity {

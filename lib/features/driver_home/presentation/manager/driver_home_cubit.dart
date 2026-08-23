@@ -612,6 +612,9 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       await _locationPermissionService.ensureBackgroundPermission();
       await _driverRuntimeServicesController.initializeDriverRuntimeServices();
       await _loadCurrentLocation();
+      try {
+        await _pushDriverLocationUseCase.call();
+      } catch (_) {}
     } on LocationServiceException catch (error) {
       _emitLocationPermissionFailure(error);
       return;
@@ -655,6 +658,9 @@ class DriverHomeCubit extends Cubit<DriverHomeState> {
       if (home.operationalStatus.isAvailable) {
         await _locationPermissionService.ensureBackgroundPermission();
         await _loadCurrentLocation();
+        try {
+          await _pushDriverLocationUseCase.call();
+        } catch (_) {}
       }
     } on LocationServiceException catch (error) {
       _emitLocationPermissionFailure(error);
