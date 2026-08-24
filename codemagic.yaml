@@ -8,6 +8,7 @@ workflows:
     environment:
       flutter: stable
       xcode: latest
+
       groups:
         - app_store_connect
 
@@ -17,13 +18,58 @@ workflows:
 
       vars:
         BUNDLE_ID: com.zadana.delivery
+        DRIVER_ONESIGNAL_APP_ID: 1eead1ea-3d6f-4f2a-8bc5-c681d71b55f6
 
     scripts:
-      - flutter pub get
-      - dart run build_runner build --delete-conflicting-outputs
-      - keychain initialize
-      - xcode-project use-profiles
-      - flutter build ipa --release --dart-define=DRIVER_ONESIGNAL_APP_ID=$DRIVER_ONESIGNAL_APP_ID
+      - name: Get Flutter packages
+        script: flutter pub get
+
+      - name: Generate files
+        script: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Initialize keychain
+        script: keychain initialize
+
+      - name: Apply provisioning profiles
+        script: xcode-project use-profiles
+
+      - name: Validate OneSignal App ID
+        script: |
+          if [ "$DRIVER_ONESIGNAL_APP_ID" != "1eead1ea-3d6f-4f2a-8bc5-c681d71b55f6" ]; then
+            echo "Incorrect or missing DRIVER_ONESIGNAL_APP_ID"
+            exit 1
+          fi
+
+          echo "OneSignal App ID is configured correctly"
+
+      - name: Build signed IPA
+        script: |
+          flutter build ipa \
+            --release \
+            --dart-define=DRIVER_ONESIGNAL_APP_ID="$DRIVER_ONESIGNAL_APP_ID"
+
+      - name: Verify signed entitlements
+        script: |
+          APP_PATH="$CM_BUILD_DIR/build/ios/archive/Runner.xcarchive/Products/Applications/Runner.app"
+
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Runner.app was not found at: $APP_PATH"
+            exit 1
+          fi
+
+          echo "Signed application entitlements:"
+          codesign -d --entitlements :- "$APP_PATH"
+
+          echo "Provisioning profile aps-environment:"
+          security cms -D -i "$APP_PATH/embedded.mobileprovision" > /tmp/profile.plist
+          /usr/libexec/PlistBuddy \
+            -c "Print :Entitlements:aps-environment" \
+            /tmp/profile.plist
+
+          echo "Provisioning profile application identifier:"
+          /usr/libexec/PlistBuddy \
+            -c "Print :Entitlements:application-identifier" \
+            /tmp/profile.plist
 
     artifacts:
       - build/ios/ipa/*.ipa
