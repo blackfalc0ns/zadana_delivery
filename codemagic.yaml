@@ -12,10 +12,6 @@ workflows:
       groups:
         - app_store_connect
 
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.zadana.delivery
-
       vars:
         BUNDLE_ID: com.zadana.delivery
         DRIVER_ONESIGNAL_APP_ID: 1eead1ea-3d6f-4f2a-8bc5-c681d71b55f6
@@ -25,13 +21,8 @@ workflows:
         script: flutter pub get
 
       - name: Generate files
-        script: dart run build_runner build --delete-conflicting-outputs
-
-      - name: Initialize keychain
-        script: keychain initialize
-
-      - name: Apply provisioning profiles
-        script: xcode-project use-profiles
+        script: |
+          dart run build_runner build --delete-conflicting-outputs
 
       - name: Validate OneSignal App ID
         script: |
@@ -40,7 +31,18 @@ workflows:
             exit 1
           fi
 
-          echo "OneSignal App ID is configured correctly"
+          echo "OneSignal App ID is correct"
+
+      - name: Fetch App Store signing files
+        script: |
+          keychain initialize
+
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+
+          keychain add-certificates
+          xcode-project use-profiles
 
       - name: Build signed IPA
         script: |
@@ -60,13 +62,16 @@ workflows:
           echo "Signed application entitlements:"
           codesign -d --entitlements :- "$APP_PATH"
 
-          echo "Provisioning profile aps-environment:"
-          security cms -D -i "$APP_PATH/embedded.mobileprovision" > /tmp/profile.plist
+          security cms -D \
+            -i "$APP_PATH/embedded.mobileprovision" \
+            > /tmp/profile.plist
+
+          echo "APNs environment:"
           /usr/libexec/PlistBuddy \
             -c "Print :Entitlements:aps-environment" \
             /tmp/profile.plist
 
-          echo "Provisioning profile application identifier:"
+          echo "Application identifier:"
           /usr/libexec/PlistBuddy \
             -c "Print :Entitlements:application-identifier" \
             /tmp/profile.plist
@@ -74,8 +79,3 @@ workflows:
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: false
