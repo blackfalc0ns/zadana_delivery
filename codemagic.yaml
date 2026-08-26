@@ -38,15 +38,8 @@ workflows:
 
           echo "OneSignal App ID is correct"
 
-      - name: Fetch App Store signing files
+      - name: Set up iOS code signing
         script: |
-          keychain initialize
-
-          app-store-connect fetch-signing-files "$BUNDLE_ID" \
-            --type IOS_APP_STORE \
-            --create
-
-          keychain add-certificates
           xcode-project use-profiles
 
       - name: Build signed IPA
@@ -67,6 +60,11 @@ workflows:
           echo "Signed application entitlements:"
           codesign -d --entitlements :- "$APP_PATH"
 
+          if [ ! -f "$APP_PATH/embedded.mobileprovision" ]; then
+            echo "Provisioning profile was not found inside Runner.app"
+            exit 1
+          fi
+
           security cms -D \
             -i "$APP_PATH/embedded.mobileprovision" \
             > /tmp/profile.plist
@@ -79,6 +77,11 @@ workflows:
           echo "Application identifier:"
           /usr/libexec/PlistBuddy \
             -c "Print :Entitlements:application-identifier" \
+            /tmp/profile.plist
+
+          echo "Provisioning profile name:"
+          /usr/libexec/PlistBuddy \
+            -c "Print :Name" \
             /tmp/profile.plist
 
     artifacts:
