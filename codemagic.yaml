@@ -9,6 +9,10 @@ workflows:
       flutter: stable
       xcode: latest
 
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.zadana.delivery
+
       groups:
         - app_store_connect
 
@@ -18,7 +22,8 @@ workflows:
 
     scripts:
       - name: Get Flutter packages
-        script: flutter pub get
+        script: |
+          flutter pub get
 
       - name: Generate files
         script: |
