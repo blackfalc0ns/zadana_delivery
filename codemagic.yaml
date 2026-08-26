@@ -46,7 +46,8 @@ workflows:
         script: |
           flutter build ipa \
             --release \
-            --dart-define=DRIVER_ONESIGNAL_APP_ID="$DRIVER_ONESIGNAL_APP_ID"
+            --dart-define=DRIVER_ONESIGNAL_APP_ID="$DRIVER_ONESIGNAL_APP_ID" \
+            --export-options-plist=/Users/builder/export_options.plist
 
       - name: Verify signed entitlements
         script: |
@@ -57,13 +58,13 @@ workflows:
             exit 1
           fi
 
-          echo "Signed application entitlements:"
-          codesign -d --entitlements :- "$APP_PATH"
-
           if [ ! -f "$APP_PATH/embedded.mobileprovision" ]; then
             echo "Provisioning profile was not found inside Runner.app"
             exit 1
           fi
+
+          echo "Signed application entitlements:"
+          codesign -d --entitlements - "$APP_PATH"
 
           security cms -D \
             -i "$APP_PATH/embedded.mobileprovision" \
